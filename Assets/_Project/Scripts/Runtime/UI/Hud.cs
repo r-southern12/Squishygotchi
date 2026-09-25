@@ -156,7 +156,8 @@ namespace Squishy.Runtime.UI
             _giftLbl = Label(_gift, "", "Gluten", 700, 13).Margin(0, 0, 0, 4);
             Tap(_gift, () => _g.OnGift());
             Modal(_gift, "home");
-            _snd = IconBtn(row1, "sound_off", 36, 18, -1, ToggleSound, out _sndIcon);
+            // Sound lives in Settings; the gear takes the sound button's place so the row fits the screen.
+            _snd = IconBtn(null, "sound_off", 36, 18, -1, ToggleSound, out _sndIcon);
             IconBtn(row1, "gear", 36, 18, -1, () => _g.OnSettings(), out _);
             row1.Gap(6);
 
