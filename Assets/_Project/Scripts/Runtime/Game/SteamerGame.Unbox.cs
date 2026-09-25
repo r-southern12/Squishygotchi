@@ -74,6 +74,7 @@ namespace Squishy.Runtime.Game
             raysMat = ThreeMat.Basic(ThreeMat.Lin("#FFE3A8"), 0, ThreeMat.Blend.Additive, Textures.Rays(), false, false);
             raysMat.renderQueue = 3100;
             rays = Node.Mesh(unbox, ThreeGeo.Plane(2.4f, 2.4f), raysMat, 0, 0, 0, shadow: false);
+            BuildKitchen();
             Node.SetLayer(unbox, UnboxLayer);
         }
 
@@ -322,12 +323,14 @@ namespace Squishy.Runtime.Game
             raysOn = 0;
             sfx.Tap();
             UMove("closed", reduce ? .3f : .8f);
-            DropLid();
+            StartSwap(); // a fresh steamer each time, not the same box again
         }
 
         private void StepUnbox(float dt)
         {
             ust += dt;
+            StepKitchen(dt);
+            if (ustate == "swap") StepSwap();
             if (ucam.k < 1)
             {
                 ucam.k = Mathf.Min(1, ucam.k + dt / ucam.dur);
@@ -371,7 +374,7 @@ namespace Squishy.Runtime.Game
                 if (charge >= 1) Pop();
             }
             float c2 = charging ? charge * charge : 0, amp = reduce ? 0 : c2 * .06f;
-            box.localPosition = new Vector3(Rnd(-amp, amp), 0, Rnd(-amp, amp));
+            box.localPosition = new Vector3(boxSlide + Rnd(-amp, amp), 0, Rnd(-amp, amp));
             box.RotZ(reduce ? 0 : Rnd(-1f, 1f) * c2 * .015f);
             ThreeMat.SetOpacity(rimMat, c2 * .9f);
             _warm = c2;
