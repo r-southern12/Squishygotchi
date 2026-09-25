@@ -233,6 +233,7 @@ namespace Squishy.Runtime.Game
             if (reward.type == "sq") { newbie.SetFinish(C.finishes[reward.i]); ucam.half = .5f; }
             else
             {
+                prize.gameObject.SetActive(true); // measure while visible (bounds skip hidden meshes)
                 var holder = Node.Group(prize, "holder");
                 Transform obj;
                 if (reward.type == "item") { var a = reward.key.Split(':'); obj = ItemModels.Build(C, a[0], a[1], holder, new ItemParts()); }
@@ -271,7 +272,7 @@ namespace Squishy.Runtime.Game
             nbVy = 6;
             nbAir = true;
             nbSpin = 0;
-            plate.gameObject.SetActive(true);
+            plate.gameObject.SetActive(reward.type == "food" || reward.type == "kit"); // the plate is for food only
             if (reward.type == "sq") { newbie.Pivot.gameObject.SetActive(true); newbie.X = -.5f; newbie.V = 0; }
             else prize.gameObject.SetActive(true);
             sfx.Tap();

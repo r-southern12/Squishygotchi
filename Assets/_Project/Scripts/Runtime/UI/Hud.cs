@@ -133,7 +133,13 @@ namespace Squishy.Runtime.UI
             pill.style.flexShrink = 0;
             pill.Add(Icons.Make("coin", 20));
             _coins = Label(pill, "248", "Gluten", 700, 15).Margin(0, 0, 0, 5);
-            Tap(pill, () => _g.OnCoinPill());
+            // Tap: shop. Hold for a second: the hidden admin test panel.
+            bool held = false;
+            IVisualElementScheduledItem hold = null;
+            pill.RegisterCallback<PointerDownEvent>(e => { held = false; hold = pill.schedule.Execute(() => { held = true; _g.OnAdmin(); }).StartingIn(1000); });
+            pill.RegisterCallback<PointerUpEvent>(e => hold?.Pause());
+            pill.RegisterCallback<PointerLeaveEvent>(e => hold?.Pause());
+            Tap(pill, () => { if (!held) _g.OnCoinPill(); });
             var odds = Modal(Chip(row1, 12).Row().Pad(0, 12, 0, 12).Size(null, 36), "unbox");
             odds.style.flexShrink = 0;
             _oddsBtnLbl = Label(odds, "Odds", "Figtree", 700, 13);

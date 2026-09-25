@@ -93,6 +93,8 @@ namespace Squishy.Runtime.Game
             ui.TaskDot(Rules.AnyTaskDone());
             DrawNeeds();
             if (S.dead) ResumeDead();
+            Notifier.Init();
+            Notifier.Clear();
         }
 
         private void SetupRendering()
@@ -304,7 +306,8 @@ namespace Squishy.Runtime.Game
         /// <summary>Phones keep the game alive in the background, so time away is applied on every return, not just cold starts.</summary>
         private void OnApplicationPause(bool paused)
         {
-            if (paused) { _pausedAt = System.DateTime.UtcNow; WriteSave(); return; }
+            if (paused) { _pausedAt = System.DateTime.UtcNow; WriteSave(); Notifier.Schedule(Rules, comfort); return; }
+            Notifier.Clear();
             if (!_pausedAt.HasValue) return;
             bool wasDead = S.dead;
             CatchUp(_pausedAt.Value, System.DateTime.UtcNow);
@@ -313,6 +316,6 @@ namespace Squishy.Runtime.Game
             UpdateSub();
             if (S.dead && !wasDead) { S.dead = false; Die(); }
         }
-        private void OnApplicationQuit() { WriteSave(); }
+        private void OnApplicationQuit() { WriteSave(); Notifier.Schedule(Rules, comfort); }
     }
 }

@@ -231,37 +231,54 @@ namespace Squishy.Runtime.Three
         /// </summary>
         public static Texture2D Weave(string a, string b, string gap)
         {
-            string key = "weave" + a + b + gap;
+            // A real steamer base: thin flat bamboo strips in an open over-under lattice, small square gaps
+            // showing the darker frame beneath, grain along each strip and a shadow where a strip dips under.
+            string key = "weave2" + a + b + gap;
             if (Cache.TryGetValue(key, out var cached)) return cached;
-            var g = new Canvas2D(256, 256);
-            Color ca = Canvas2D.Css(a), cb = Canvas2D.Css(b), cg = Canvas2D.Css(gap), shade = new Color(cg.r, cg.g, cg.b, .28f), hi = new Color(1, 1, 1, .18f);
-            const int S = 32;
-            for (int j = 0; j < 8; j++)
-            for (int i = 0; i < 8; i++)
+            const int N = 512, P = 32, W = 24, E = (P - W) / 2;
+            var g = new Canvas2D(N, N);
+            Color ca = Canvas2D.Css(a), cb = Canvas2D.Css(b), cg = Canvas2D.Css(gap);
+            Color hole = Color.Lerp(cg, Color.black, .35f), shade = new Color(cg.r * .6f, cg.g * .6f, cg.b * .6f, .45f), grain = new Color(cg.r, cg.g, cg.b, .16f), hi = new Color(1, 1, 1, .22f);
+            g.FillRect(0, 0, N, N, hole);
+            int n = N / P;
+            System.Func<int, Color> tone = i => Color.Lerp(ca, cb, ((i * 37) % 5) / 5f);
+            // Horizontal strips (full length), then vertical ones drawn over the gaps and where they cross on top.
+            for (int j = 0; j < n; j++) Strip(g, 0, j * P + E, N, W, true, tone(j), grain, hi);
+            for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
             {
-                float x = i * S, y = j * S;
-                bool across = (i + j) % 2 == 0;
-                g.FillRect(x, y, S, S, across ? ca : cb);
-                if (across)
+                float x = i * P + E;
+                bool vOnTop = (i + j) % 2 == 1;
+                // The stretch over the gap below row j is always visible.
+                Strip(g, x, j * P + E + W, W, P - W, false, tone(i + 7), grain, hi);
+                if (vOnTop)
                 {
-                    g.FillRect(x, y + 12, S, 5, hi);
-                    for (int k = 0; k < 3; k++) g.FillRect(x, y + 6 + k * 9, S, 1, shade);
-                    g.FillRect(x, y, 3, S, shade);
-                    g.FillRect(x + S - 3, y, 3, S, shade);
-                    g.FillRect(x, y, S, 2, cg);
-                    g.FillRect(x, y + S - 2, S, 2, cg);
+                    Strip(g, x, j * P + E, W, W, false, tone(i + 7), grain, hi);
+                    g.FillRect(x - 3, j * P + E, 3, W, shade); // the horizontal strip dips under
+                    g.FillRect(x + W, j * P + E, 3, W, shade);
                 }
                 else
                 {
-                    g.FillRect(x + 12, y, 5, S, hi);
-                    for (int k = 0; k < 3; k++) g.FillRect(x + 6 + k * 9, y, 1, S, shade);
-                    g.FillRect(x, y, S, 3, shade);
-                    g.FillRect(x, y + S - 3, S, 3, shade);
-                    g.FillRect(x, y, 2, S, cg);
-                    g.FillRect(x + S - 2, y, 2, S, cg);
+                    g.FillRect(x, j * P + E - 3, W, 3, shade); // the vertical strip dips under
+                    g.FillRect(x, j * P + E + W, W, 3, shade);
                 }
             }
             return Cache[key] = g.ToTexture(true, true, true, "Weave");
+        }
+
+        private static void Strip(Canvas2D g, float x, float y, float w, float h, bool across, Color c, Color grain, Color hi)
+        {
+            g.FillRect(x, y, w, h, c);
+            if (across)
+            {
+                g.FillRect(x, y + h * .3f, w, h * .18f, hi);
+                for (int k = 1; k < 4; k++) g.FillRect(x, y + h * k / 4f, w, 1, grain);
+            }
+            else
+            {
+                g.FillRect(x + w * .3f, y, w * .18f, h, hi);
+                for (int k = 1; k < 4; k++) g.FillRect(x + w * k / 4f, y, 1, h, grain);
+            }
         }
 
         /// <summary>tileTex: the unbox counter's back wall tiles (repeat 8x3).</summary>

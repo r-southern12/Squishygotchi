@@ -33,7 +33,7 @@ namespace Squishy.Runtime.Models
             Group = Node.Group(parent, "Steamer");
             Node.Mesh(Group, Cyl(R + .02f, R + .02f, .14f, 48), M("#A97E47"), 0, .07f, 0);
             Liner = Lambert(Color.white);
-            Liner.SetTextureScale("_BaseMap", new Vector2(2.5f, 2.5f));
+            Liner.SetTextureScale("_BaseMap", new Vector2(1.6f, 1.6f));
             Node.Mesh(Group, Cyl(R * .9f, R * .9f, .05f, 48), Liner, 0, .165f, 0);
 
             _capMat = Lambert(Lin("#D6AE72"));
@@ -85,7 +85,7 @@ namespace Squishy.Runtime.Models
             _capMat.SetVector("_BaseColor", Lin(sk.a));
             _bandMat.SetVector("_BaseColor", Lin(sk.t));
             // The woven base takes the skin's tones, lifted towards cream so the floor stays light.
-            Floor(Mix(sk.a, "#F2E7D2", .3f), Mix(sk.b, "#F2E7D2", .6f), Mix(sk.t, sk.a, .35f));
+            Floor(Mix(sk.a, "#F2E7D2", .25f), Mix(sk.b, "#F2E7D2", .4f), sk.t);
         }
 
         /// <summary>Repaints the woven floor (also used by the style preview).</summary>
