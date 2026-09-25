@@ -72,6 +72,22 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Tucked_In_Pauses_Needs_And_Death()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var rules = new GameRules(c, s);
+            Assert.IsTrue(rules.CanTuck());
+            s.tucked = true;
+            float h = s.needs[Needs.Hunger];
+            s.needs[Needs.Play] = 0f;
+            Assert.IsFalse(rules.StepCare(100000f, 0f), "no death while tucked in");
+            Assert.AreEqual(h, s.needs[Needs.Hunger], "no drain while tucked in");
+            s.tucked = false;
+            Assert.IsFalse(rules.CanTuck(), "can't tuck in while Critical");
+        }
+
+        [Test]
         public void Comfort_Counts_Wilt_And_Set_Bonus()
         {
             var c = Content();

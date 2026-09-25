@@ -164,6 +164,7 @@ namespace Squishy.Runtime.Game
             if (S.dead) return;
             if (PetHit(p))
             {
+                if (S.tucked) { Wake(); return; }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
                 drag.squish = true;
                 pet.Held = true;

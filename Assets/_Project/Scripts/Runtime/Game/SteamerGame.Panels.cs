@@ -365,6 +365,12 @@ namespace Squishy.Runtime.Game
                 meta = f.tier + " tier";
                 note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") : "Not found yet. Find it in steamers.";
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { SetPet(e.i); Floater("Now " + f.name + "!"); CloseCatalogue(); });
+                if (e.i == S.favIdx && !S.dead)
+                {
+                    if (S.tucked) Act("Wake up", () => { Wake(); CloseCatalogue(); });
+                    else if (Rules.CanTuck()) Act("Tuck in (pauses needs)", () => { Tuck(); CloseCatalogue(); });
+                    else note = "Too weak to rest now: look after it first. " + note;
+                }
                 if (e.i == S.favIdx) note = "Your favourite · " + note;
             }
             else if (kind == "tool")

@@ -264,6 +264,7 @@ namespace Squishy.Runtime.Game
         private void UseItem(Item it, bool user, RecipeData recipe = null)
         {
             if (S.dead) return;
+            if (S.tucked) { if (user) Floater("Tucked in · tap " + Rules.Fav.name + " to wake", "bad"); return; }
             string role = it.a.role;
             if (role == "decor") { FloaterAt(it, "Decor · +" + it.a.comfort + " comfort"); return; }
             if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
@@ -490,6 +491,37 @@ namespace Squishy.Runtime.Game
             FinishActivity();
         }
 
+        // ---------------- tuck in (pause) ----------------
+
+        public void Tuck()
+        {
+            if (S.tucked || !Rules.CanTuck()) return;
+            CleanupCook();
+            ai.act = null;
+            ai.target = null;
+            ai.path.Clear();
+            ai.seg = null;
+            ai.mode = "idle";
+            ui.HideBubble();
+            S.tucked = true;
+            Floater("Sleep tight!");
+            ui.SetHint(Rules.Fav.name + " is tucked in · needs are paused");
+            sfx.Chime();
+            WriteSave();
+        }
+
+        public void Wake()
+        {
+            if (!S.tucked) return;
+            S.tucked = false;
+            ai.idleT = 1.5f;
+            pet.V += 3;
+            Floater("Good morning!");
+            ui.SetHint("Tap furniture to send " + Rules.Fav.name + " there");
+            sfx.Chime();
+            WriteSave();
+        }
+
         // ---------------- death ----------------
 
         private bool _dying;
@@ -592,6 +624,18 @@ namespace Squishy.Runtime.Game
         private void StepHome(float dt)
         {
             if (S.dead || _dying) { pet.Update(dt, .35f, true, 1); ApplyPetTransform(0, true); AnimateFurniture(dt); return; }
+            if (S.tucked)
+            {
+                // Tucked in: fast asleep where it lies, gently breathing; nothing drains.
+                pet.Update(dt, .18f + .04f * Mathf.Sin(time * 1.6f), true, 0);
+                zTimer -= dt;
+                if (zTimer <= 0 && mode == "home") { zTimer = 1.6f; Floater("z", "z"); }
+                ui.SetCond("Tucked in", "#8C7BB0");
+                ai.actT += dt;
+                ApplyPetTransform(0, true);
+                AnimateFurniture(dt);
+                return;
+            }
             float sdt = dt * timeScale;
             int age0 = S.age;
             bool died = Rules.StepCare(sdt, comfort);
@@ -643,7 +687,7 @@ namespace Squishy.Runtime.Game
                     if (S.needs[low] < .3f) { ui.ShowBubble(Needs.Names[low], NeedWord[low], true); Later(2.2f, () => { if (ai.mode == "idle") ui.HideBubble(); }); }
                 }
             }
-            else if (ai.mode == "walk" || ai.mode == "chase") StepWalk(dt, slowMove, droop, hopH, ref lift);
+            else if (ai.mode == "walk" || ai.mode == "chase") StepWalk(dt, slowMove, droop, hopH, ref lift, ref extra);
             else if (ai.mode == "act") StepAct(dt, ref extra, ref lift);
             StepBalls(dt);
             float rr = Dist(ai.x, ai.z);
@@ -668,7 +712,7 @@ namespace Squishy.Runtime.Game
             Node.Rot(pet.Yaw, 0, petYawY, petYawZ);
         }
 
-        private void StepWalk(float dt, float slowMove, float droop, float hopH, ref float lift)
+        private void StepWalk(float dt, float slowMove, float droop, float hopH, ref float lift, ref float extra)
         {
             var ball = ai.mode == "chase" ? ai.act.it : null;
             if (ball != null && ai.path.Count == 0 && ai.seg == null) ai.path = new List<PathPt> { new PathPt { x = ball.tx, z = ball.tz, y = 0, chase = true } };
@@ -695,7 +739,9 @@ namespace Squishy.Runtime.Game
                 float prev = ai.hopPh;
                 ai.hopPh += step / (.16f + pet.Scale * .6f);
                 lift = hopH * (1 - droop * .6f) * Mathf.Abs(Mathf.Sin(Mathf.PI * ai.hopPh));
-                if (Mathf.Floor(ai.hopPh) > Mathf.Floor(prev)) { pet.V += 2.2f; if (Random.value < .25f) sfx.Hop(); }
+                // Stretch in the air, squash on landing (the prototype squashed on take-off, so it looked flattened mid-hop).
+                extra = -.12f * Mathf.Sin(Mathf.PI * (ai.hopPh - Mathf.Floor(ai.hopPh)));
+                if (Mathf.Floor(ai.hopPh) > Mathf.Floor(prev)) { pet.V += 1.2f; if (Random.value < .25f) sfx.Hop(); }
             }
             if (s.chase)
             {

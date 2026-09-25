@@ -120,6 +120,7 @@ namespace Squishy.Simulation.Game
         /// <summary>Drains needs, ages the squishy and runs the death clock. Returns true when it dies.</summary>
         public bool StepCare(float sdt, float comfort)
         {
+            if (S.tucked) return false;
             float slow = ComfortSlow(comfort);
             float[] decay = { R.decayHunger, R.decayPlay, R.decayRest, R.decayClean };
             for (int k = 0; k < 4; k++) S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * sdt);
@@ -131,6 +132,9 @@ namespace Squishy.Simulation.Game
             else S.deathClock = Math.Max(0f, S.deathClock - sdt);
             return false;
         }
+
+        /// <summary>Whether the squishy can be tucked in now (not while Critical).</summary>
+        public bool CanTuck() { return !S.dead && Condition() >= R.tuckMinCondition; }
 
         /// <summary>Happy, Droopy, Flat or Critical with its colour.</summary>
         public static string[] Stage(float cond)

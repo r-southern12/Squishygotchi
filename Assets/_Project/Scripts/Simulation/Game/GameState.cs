@@ -14,6 +14,8 @@ namespace Squishy.Simulation.Game
         public float[] needs = new float[4]; // hunger, play, rest, clean
         public float dayT, deathClock, happyT;
         public bool dead;
+        /// <summary>Tucked in: needs, ageing and the death clock are paused (holidays, busy weeks).</summary>
+        public bool tucked;
         public int sinceRare, sinceEpic, setDone;
         public ulong rng;
         public List<TaskState> tasks = new List<TaskState>();

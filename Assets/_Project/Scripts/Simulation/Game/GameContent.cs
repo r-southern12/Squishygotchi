@@ -54,7 +54,7 @@ namespace Squishy.Simulation.Game
         public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;
-        public float squishPlayGain, squishPlayGainCritical, scrubGain;
+        public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition;
     }
 
     [Serializable]
