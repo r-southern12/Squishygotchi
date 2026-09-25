@@ -1,5 +1,6 @@
 using Squishy.Runtime.Room;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
@@ -8,7 +9,7 @@ namespace Squishy.Runtime.CameraRig
 {
     /// <summary>
     /// Home camera. Follows the squishy close up; zoom (pinch / scroll) blends out to the whole room.
-    /// Drag turns (with inertia) and tilts. Double-tap or Tab toggles follow / whole room.
+    /// Drag turns (with inertia) and tilts. Tab or the HUD's Room button toggles follow / whole room; taps are passed on.
     /// Distances are fitted to the screen width, so portrait phones of any shape frame the same.
     /// </summary>
     [RequireComponent(typeof(Camera))]
@@ -42,7 +43,6 @@ namespace Squishy.Runtime.CameraRig
         private Vector3 _focus;
         private bool _dragging;
         private float _pinchStart, _zoomAtPinchStart;
-        private float _lastTapTime;
 
         public void Init(SteamerRoom room, Transform target, float targetRadius)
         {
@@ -117,47 +117,80 @@ namespace Squishy.Runtime.CameraRig
             }
             _pinchStart = 0f;
 
-            Vector2 delta;
-            bool pressed;
+            Vector2 delta, position;
+            bool pressed, began, ended;
+            int touchId = -1;
             if (touches.Count == 1)
             {
                 var t = touches[0];
-                pressed = true;
+                touchId = t.touchId;
+                position = t.screenPosition;
                 delta = t.delta;
-                if (t.began) OnTap();
+                began = t.began;
+                ended = t.ended;
+                pressed = !ended;
             }
             else
             {
                 var mouse = Mouse.current;
-                pressed = mouse != null && mouse.leftButton.isPressed;
-                delta = mouse != null ? mouse.delta.ReadValue() : Vector2.zero;
-                if (mouse != null && mouse.leftButton.wasPressedThisFrame) OnTap();
-                if (mouse != null)
-                {
-                    float scroll = mouse.scroll.ReadValue().y;
-                    if (Mathf.Abs(scroll) > 0.01f) _zoomGoal = Mathf.Clamp01(_zoomGoal - Mathf.Sign(scroll) * scrollStep);
-                }
+                if (mouse == null) return;
+                position = mouse.position.ReadValue();
+                delta = mouse.delta.ReadValue();
+                began = mouse.leftButton.wasPressedThisFrame;
+                ended = mouse.leftButton.wasReleasedThisFrame;
+                pressed = mouse.leftButton.isPressed;
+                float scroll = mouse.scroll.ReadValue().y;
+                if (Mathf.Abs(scroll) > 0.01f && !PointerOverUi(-1)) _zoomGoal = Mathf.Clamp01(_zoomGoal - Mathf.Sign(scroll) * scrollStep);
             }
 
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.tabKey.wasPressedThisFrame) ToggleWholeRoom();
 
+            if (began)
+            {
+                _pressOverUi = PointerOverUi(touchId);
+                _pressPosition = position;
+                _pressTime = Time.unscaledTime;
+                _moved = false;
+            }
+            if (_pressOverUi)
+            {
+                _dragging = false;
+                return;
+            }
+
+            // Only turn once the finger has really moved, so taps don't nudge the camera.
+            if (pressed && (position - _pressPosition).magnitude > tapSlopPixels) _moved = true;
+            _dragging = pressed && _moved;
+
             // Screen-size independent: treat drag deltas as fractions of a 1080-wide screen.
             float scale = 1080f / Mathf.Max(1f, Screen.width);
-            _dragging = pressed;
-            if (pressed && dt > 0f)
+            if (_dragging && dt > 0f)
             {
                 _yawVelocity = delta.x * scale * turnPerPixel / dt;
                 _yaw += delta.x * scale * turnPerPixel;
                 _tiltOffset = Mathf.Clamp(_tiltOffset - delta.y * scale * tiltPerPixel, tiltOffsetRange.x, tiltOffsetRange.y);
             }
+
+            if (ended && !_moved && Time.unscaledTime - _pressTime < tapMaxSeconds && Tapped != null) Tapped(position);
         }
 
-        private void OnTap()
+        private static bool PointerOverUi(int touchId)
         {
-            if (Time.unscaledTime - _lastTapTime < 0.3f) ToggleWholeRoom();
-            _lastTapTime = Time.unscaledTime;
+            var es = EventSystem.current;
+            if (es == null) return false;
+            return touchId >= 0 ? es.IsPointerOverGameObject(touchId) : es.IsPointerOverGameObject();
         }
+
+        /// <summary>A quick press and release without dragging, in screen pixels.</summary>
+        public event System.Action<Vector2> Tapped;
+
+        [Header("Taps")]
+        [SerializeField] private float tapSlopPixels = 14f;
+        [SerializeField] private float tapMaxSeconds = 0.4f;
+        private bool _pressOverUi, _moved;
+        private Vector2 _pressPosition;
+        private float _pressTime;
 
         public void ToggleWholeRoom()
         {

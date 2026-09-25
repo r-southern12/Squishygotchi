@@ -30,6 +30,13 @@ namespace Squishy.EditorTools
         {
             EditorApplication.delayCall += () =>
             {
+                // New content types added in later milestones get seeded automatically.
+                var db = AssetDatabase.LoadAssetAtPath<ContentDatabase>(ContentSeeder.DatabasePath);
+                if (db != null && db.care == null)
+                {
+                    Debug.Log("Squishy: new content types found, seeding missing assets.");
+                    ContentSeeder.SeedFromSpec();
+                }
                 if (GraphicsSettings.defaultRenderPipeline != null) return;
                 Debug.Log("Squishy: first open detected, running project setup.");
                 RunAll();
@@ -197,7 +204,7 @@ namespace Squishy.EditorTools
             var squishyGo = new GameObject("Squishy");
             squishyGo.transform.SetParent(home.transform, false);
             var body = squishyGo.AddComponent<SquishyBody>();
-            squishyGo.AddComponent<SquishyWander>();
+            squishyGo.AddComponent<SquishyBrain>();
             Wire(body, "bodyMaterial", AssetDatabase.LoadAssetAtPath<Material>(MaterialsFolder + "/Squishy.mat"));
             Wire(body, "faceMaterial", AssetDatabase.LoadAssetAtPath<Material>(MaterialsFolder + "/Face.mat"));
 

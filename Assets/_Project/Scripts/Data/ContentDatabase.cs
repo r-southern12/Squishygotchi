@@ -14,6 +14,17 @@ namespace Squishy.Data
         public EconomyAsset economy;
         public DropTableAsset dropTable;
         public ProgressionAsset progression;
+        public CareAsset care;
+
+        public ItemTypeAsset ItemType(string id)
+        {
+            return itemTypes.Find(t => t.def.id == id);
+        }
+
+        public StyleAsset Style(string id)
+        {
+            return styles.Find(s => s.def.id == id);
+        }
 
         public List<StyleAsset> styles = new List<StyleAsset>();
         public List<ItemTypeAsset> itemTypes = new List<ItemTypeAsset>();

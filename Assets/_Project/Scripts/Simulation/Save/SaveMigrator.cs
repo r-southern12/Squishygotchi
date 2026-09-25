@@ -13,7 +13,7 @@ namespace Squishy.Simulation.Save
     public sealed class SaveMigrator
     {
         /// <summary>The version new saves are written with.</summary>
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         private readonly Dictionary<int, ISaveMigration> _byFromVersion = new Dictionary<int, ISaveMigration>();
 
@@ -31,7 +31,20 @@ namespace Squishy.Simulation.Save
         /// <summary>The default chain used by the game. Add each new migration here.</summary>
         public static SaveMigrator CreateDefault()
         {
-            return new SaveMigrator(new ISaveMigration[0]);
+            return new SaveMigrator(new ISaveMigration[] { new V1AddCareAndRoom() });
+        }
+
+        /// <summary>v1 saves had no needs or room. Start them healthy; the starter room is added on load.</summary>
+        private sealed class V1AddCareAndRoom : ISaveMigration
+        {
+            public int FromVersion { get { return 1; } }
+
+            public void Apply(SaveData data)
+            {
+                if (data.care == null) data.care = new Care.CareState();
+                if (data.pieces == null) data.pieces = new List<Room.PlacedPiece>();
+                if (data.nextPieceId < 1) data.nextPieceId = 1;
+            }
         }
 
         /// <summary>Runs migrations in order until the save reaches <paramref name="targetVersion"/>.</summary>

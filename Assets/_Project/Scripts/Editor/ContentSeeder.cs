@@ -24,6 +24,7 @@ namespace Squishy.EditorTools
         {
             int before = CountAssets();
             SeedTables();
+            SeedCare();
             SeedStyles();
             SeedItemTypes();
             SeedFinishes();
@@ -48,6 +49,7 @@ namespace Squishy.EditorTools
             db.economy = FindFirst<EconomyAsset>();
             db.dropTable = FindFirst<DropTableAsset>();
             db.progression = FindFirst<ProgressionAsset>();
+            db.care = FindFirst<CareAsset>();
             db.styles = FindAll<StyleAsset>();
             db.itemTypes = FindAll<ItemTypeAsset>();
             db.skins = FindAll<SkinAsset>();
@@ -119,6 +121,78 @@ namespace Squishy.EditorTools
                 };
                 a.mastery = new MasteryDef();
             });
+        }
+
+        // ---- Care ---------------------------------------------------------------------
+
+        private static void SeedCare()
+        {
+            Make<CareAsset>("Tables", "Care", a =>
+            {
+                a.care = new CareDef();
+                // From the prototype's ACTS table.
+                a.activities = new List<ActivityDef>
+                {
+                    Act("nap", "Napping", NeedKind.Rest, 7f, 0.14f, self: true, sleep: true),
+                    Act("lounge", "Lounging", NeedKind.Rest, 5f, 0.08f, self: true),
+                    Act("sit", "Sitting", null, 2.5f, 0f),
+                    Act("tea", "Tea time", NeedKind.Rest, 4.5f, 0.1f, also: NeedKind.Hunger, seat: true),
+                    Act("eat", "Eating congee", NeedKind.Hunger, 5.5f, 0.18f, cap: 0.6f, self: true),
+                    Act("snack", "Snacking", NeedKind.Hunger, 2.5f, 0.06f, cap: 0.6f, self: true, snack: true),
+                    Act("wash", "Quick wash", NeedKind.Clean, 2.5f, 0.12f, cap: 0.65f, self: true),
+                    Act("bath", "Bath time", NeedKind.Clean, 5f, 0.14f),
+                    Act("shower", "Shower", NeedKind.Clean, 4.5f, 0.18f),
+                    Act("play", "Playing", NeedKind.Play, 4f, 0.12f, self: true),
+                    Act("bounce", "Bouncing", NeedKind.Play, 4f, 0.2f),
+                    Act("lamp", "Lights", null, 1f, 0f),
+                    Act("water", "Watering", null, 2.2f, 0f),
+                    Act("mourn", "Remembering", null, 3f, 0f),
+                };
+                a.itemActivities = new List<ItemActivityDef>();
+                string[,] links =
+                {
+                    { "bed", "nap" }, { "beanbag", "lounge" }, { "floor_cushion", "lounge" }, { "stool", "sit" },
+                    { "tea_table", "tea" }, { "stove", "eat" }, { "pantry", "snack" }, { "sink", "wash" },
+                    { "bathtub", "bath" }, { "shower", "shower" }, { "ball", "play" }, { "trampoline", "bounce" },
+                    { "lamp", "lamp" }, { "plant", "water" }, { "tombstone", "mourn" },
+                };
+                for (int i = 0; i < links.GetLength(0); i++)
+                    a.itemActivities.Add(new ItemActivityDef { itemTypeId = links[i, 0], activityId = links[i, 1] });
+
+                // The prototype's starting room (its coordinates x 0.87, rotations in degrees).
+                a.starterRoom = new List<StarterPieceDef>
+                {
+                    Starter("rug", "persian", 0f, 0.25f, 0f),
+                    Starter("bed", "cottage", 1.25f, -0.4f, -31.5f),
+                    Starter("tea_table", "teahouse", -1.05f, -0.8f, 0f),
+                    Starter("stool", "teahouse", -1.62f, -0.35f, 0f),
+                    Starter("stove", "nordic", 0.5f, -1.6f, 0f),
+                    Starter("pantry", "blockprint", 1.25f, -1.3f, 0f),
+                    Starter("bathtub", "aegean", 1.35f, 0.9f, -17.2f),
+                    Starter("lamp", "midcentury", -0.2f, -1.85f, 0f),
+                    Starter("plant", "greenhouse", -1.72f, 0.45f, 0f),
+                    Starter("shelf", "teahouse", -1.35f, 1.2f, 0f),
+                    Starter("floor_cushion", "blockprint", -0.6f, 0.95f, 0f),
+                    Starter("ball", "candy", 0.45f, 0.95f, 0f),
+                };
+            });
+        }
+
+        private static ActivityDef Act(string id, string label, NeedKind? need, float seconds, float rate,
+            NeedKind? also = null, float cap = 1f, bool self = false, bool seat = false, bool sleep = false, bool snack = false)
+        {
+            return new ActivityDef
+            {
+                id = id, label = label, fillsNeed = need.HasValue, need = need ?? NeedKind.Hunger,
+                fillsAlso = also.HasValue, alsoNeed = also ?? NeedKind.Hunger,
+                seconds = seconds, ratePerSecond = rate, playerCap = cap, selfCare = self,
+                needsSeatNearby = seat, isSleep = sleep, usesSnack = snack,
+            };
+        }
+
+        private static StarterPieceDef Starter(string type, string style, float x, float z, float yaw)
+        {
+            return new StarterPieceDef { itemTypeId = type, styleId = style, x = x * 0.87f, z = z * 0.87f, yawDegrees = yaw };
         }
 
         // ---- Styles -------------------------------------------------------------------

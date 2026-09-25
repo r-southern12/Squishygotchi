@@ -37,6 +37,8 @@ namespace Squishy.Runtime.Room
         private Transform _root;
 
         public float Radius { get; private set; }
+        /// <summary>Shared per-colour scenery materials; furniture reuses them.</summary>
+        public MaterialPalette Palette { get { return _palette; } }
         /// <summary>Radius the squishy can walk within (inside the liner edge).</summary>
         public float WalkRadius { get { return Radius * 0.8f; } }
         public float FloorY { get; private set; }

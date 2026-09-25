@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Squishy.Simulation.Care;
 using Squishy.Simulation.Gacha;
+using Squishy.Simulation.Room;
 
 namespace Squishy.Simulation.Save
 {
@@ -36,6 +38,13 @@ namespace Squishy.Simulation.Save
         public List<OwnedCount> snacks = new List<OwnedCount>();
 
         public int roomLevel;
+
+        // Room (v2)
+        public List<PlacedPiece> pieces = new List<PlacedPiece>();
+        public int nextPieceId = 1;
+
+        // The favourite's needs and life (v2)
+        public CareState care = new CareState();
 
         public DateTime LastSavedUtc
         {

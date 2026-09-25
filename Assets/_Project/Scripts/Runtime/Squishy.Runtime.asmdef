@@ -4,7 +4,8 @@
     "references": [
         "Squishy.Simulation",
         "Squishy.Data",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
