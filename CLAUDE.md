@@ -5,7 +5,7 @@ A Tamagotchi-style mobile game: a squishy dumpling pet lives inside a 3D bamboo 
 ## Sources of truth
 
 - `docs/spec.md` is the game design spec. Follow it. Its numbers are starting points for tuning; keep them in data, not hard-coded.
-- `reference/steamer-room.html` is the working browser prototype. Open it in a browser to see how things should look, feel and animate. It's a behaviour reference only: do not port its code line by line or copy its structure (it is one big file on purpose).
+- `reference/steamer-room.html` is the working browser prototype. **The Unity game must replicate it exactly**: every system, model (same shapes, sizes, colours, patterns), HUD and panel (same layout at a 375×812 reference, fonts, icons, colours), animation and number. Port its logic and geometry faithfully, translated into clean Unity code (don't copy its one-file structure). Numbers still live in data assets. No simplified stand-ins. (Decided 25 Sep 2026.)
 - If the spec and the prototype disagree, the spec wins. If the spec is silent, ask before inventing a system.
 
 ## Engine and platform
@@ -25,11 +25,12 @@ A Tamagotchi-style mobile game: a squishy dumpling pet lives inside a 3D bamboo 
 
 ## Project layout
 
-- `Assets/_Project/Scripts/Simulation` (`Squishy.Simulation`, no Unity references): content definitions (`*Def`), gacha, save data/migrations, `IClock`, `Pcg32` RNG. All game rules go here.
-- `Assets/_Project/Scripts/Data` (`Squishy.Data`): ScriptableObjects that wrap a `*Def` (`DefAsset<T>`) plus presentation-only fields. `ContentDatabase` lists everything.
-- `Assets/_Project/Scripts/Runtime` (`Squishy.Runtime`): MonoBehaviours and Unity adapters (`GameBootstrap`, JSON serializer, file save store).
-- `Assets/_Project/Scripts/Editor`: `Squishy > Setup` (portrait/URP/scene) and `Squishy > Content` (seed from spec, rebuild database).
-- `Assets/_Project/Content`: the data assets. `Assets/_Project/Tests/EditMode`: NUnit tests.
+- `Assets/_Project/Scripts/Simulation` (`Squishy.Simulation`, no Unity references): `Game/` holds content records (`GameContent`), saved state (`GameState`) and all rules (`GameRules`: needs, comfort, kitchen, gacha with pity, tasks, wallet); plus save data/migrations, `IClock`, `Pcg32`.
+- `Assets/_Project/Resources/Content/game_content.json`: all content and tuning numbers (styles, item types, finishes, tools, recipes, tasks, rules, starter room).
+- `Assets/_Project/Scripts/Runtime` (`Squishy.Runtime`): the faithful prototype port. `Three/` (three.js geometry, materials, canvas-painted textures; the world sits under a root scaled (1,1,-1) so the prototype's numbers copy across unchanged), `Models/` (steamer, items, kitchen, squishy), `World/` (particles, ray picking, lighting, post globals), `Game/` (`SteamerGame` partials: Home, View, Unbox, Panels; thumbnails, sound), `UI/` (UI Toolkit HUD at the 375px CSS scale).
+- `Assets/_Project/Shaders`: `ThreeLit` (three.js r128 Lambert/Standard lighting), `ThreeBasic`, `Sparkles`, `TiltShiftGrade` (the one full-screen pass).
+- `Assets/_Project/Scripts/Editor`: `Squishy > Setup` (portrait, URP, tilt-shift pass, scene). Batch: `-executeMethod Squishy.EditorTools.ProjectSetup.Batch`. `Assets/_Project/Tests/EditMode`: NUnit tests.
+- `Legacy/` (outside Assets, ignored by Unity): the pre-port stand-in code, kept for reference.
 - Content ids are lowercase snake_case strings; saves store ids, never asset references. Bump `SaveMigrator.CurrentVersion` and add a migration when save fields change meaning.
 
 ## Art direction

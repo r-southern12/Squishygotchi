@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Squishy.Simulation",
-        "Squishy.Data",
+        
         "Squishy.Runtime"
     ],
     "includePlatforms": [

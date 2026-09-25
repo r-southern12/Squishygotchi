@@ -1,14 +1,13 @@
 using System;
-using Squishy.Simulation.Content;
 using Squishy.Simulation.Core;
 
 namespace Squishy.Simulation.Save
 {
-    /// <summary>Where save text lives: a local file today, cloud storage later.</summary>
     public interface ISaveStore
     {
         bool TryRead(out string text);
         void Write(string text);
+        void WriteCorruptCopy(string text);
     }
 
     public interface ISaveSerializer
@@ -17,14 +16,9 @@ namespace Squishy.Simulation.Save
         SaveData Deserialize(string text);
     }
 
-    public enum LoadOutcome
-    {
-        NewGame,
-        Loaded,
-        /// <summary>The save couldn't be read. A new game was started and the old text kept aside.</summary>
-        Corrupt,
-    }
+    public enum LoadOutcome { NewGame, Loaded, Corrupt }
 
+    /// <summary>Loads, migrates and writes the save. A missing, corrupt or pre-port save starts a new game.</summary>
     public sealed class SaveService
     {
         private readonly ISaveStore _store;
@@ -40,38 +34,16 @@ namespace Squishy.Simulation.Save
             _clock = clock;
         }
 
-        /// <summary>Text of a save that failed to load, so it can be backed up rather than lost.</summary>
-        public string LastCorruptText { get; private set; }
-
-        public SaveData Load(EconomyDef economy, out LoadOutcome outcome)
+        public SaveData Load(Func<long, Game.GameState> newState, out LoadOutcome outcome)
         {
-            LastCorruptText = null;
             string text;
-            if (!_store.TryRead(out text) || string.IsNullOrEmpty(text))
-            {
-                outcome = LoadOutcome.NewGame;
-                return NewGame(economy);
-            }
-
+            if (!_store.TryRead(out text) || string.IsNullOrEmpty(text)) { outcome = LoadOutcome.NewGame; return NewGame(newState); }
             SaveData data;
-            try
-            {
-                data = _serializer.Deserialize(text);
-            }
-            catch (Exception)
-            {
-                data = null;
-            }
-
-            if (data == null)
-            {
-                LastCorruptText = text;
-                outcome = LoadOutcome.Corrupt;
-                return NewGame(economy);
-            }
-
-            // A save from a newer build throws SaveVersionException on purpose: never overwrite it.
-            _migrator.Migrate(data);
+            try { data = _serializer.Deserialize(text); }
+            catch (Exception) { data = null; }
+            if (data == null) { _store.WriteCorruptCopy(text); outcome = LoadOutcome.Corrupt; return NewGame(newState); }
+            _migrator.Migrate(data); // a save from a newer build throws: never overwrite it
+            if (data.state == null) { outcome = LoadOutcome.NewGame; return NewGame(newState); }
             outcome = LoadOutcome.Loaded;
             return data;
         }
@@ -83,24 +55,10 @@ namespace Squishy.Simulation.Save
             _store.Write(_serializer.Serialize(data));
         }
 
-        public SaveData NewGame(EconomyDef economy)
+        public SaveData NewGame(Func<long, Game.GameState> newState)
         {
             long now = _clock.UtcNow.Ticks;
-            var data = new SaveData();
-            data.version = SaveMigrator.CurrentVersion;
-            data.createdUtcTicks = now;
-            data.lastSavedUtcTicks = now;
-            data.coins = economy.startingCoins;
-            data.steamers = economy.startingSteamers;
-            data.roomLevel = economy.startingRoomLevel;
-            if (!string.IsNullOrEmpty(economy.startingSquishyId))
-            {
-                data.favouriteSquishyId = economy.startingSquishyId;
-                data.squishies.Add(new OwnedCount(economy.startingSquishyId, 1));
-            }
-            // Seed from the clock so each new game gets its own sequence; the state is then saved.
-            data.gachaRngState = new Pcg32((ulong)now).State;
-            return data;
+            return new SaveData { version = SaveMigrator.CurrentVersion, createdUtcTicks = now, lastSavedUtcTicks = now, state = newState(now) };
         }
     }
 }

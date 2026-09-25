@@ -1,17 +1,8 @@
-// The game's one full-screen post effect: tilt-shift blur, colour grade and flash in a single pass.
-// Driven by TiltShiftController; run by a Full Screen Pass renderer feature on the mobile renderer.
+// The game's one full-screen pass, exactly the prototype's: tilt-shift blur, filmic tone curve,
+// gamma, saturation, warm tint, vignette and flash. Values come from globals set by PostController.
+// _PostMode 1 renders catalogue thumbnails: tone-mapped, un-premultiplied, alpha kept, no blur or grade.
 Shader "Squishy/TiltShiftGrade"
 {
-    Properties
-    {
-        // _FocusY and _Flash are globals set by TiltShiftController every frame, so they're not listed here.
-        _Band ("Sharp band half-height", Range(0, 0.5)) = 0.12
-        _Amount ("Blur strength (pixels at 1080p)", Float) = 36
-        _Saturation ("Saturation", Range(0, 2)) = 1.1
-        _Warmth ("Warmth", Range(-0.5, 0.5)) = 0.04
-        _Vignette ("Vignette", Range(0, 1)) = 0.22
-    }
-
     SubShader
     {
         Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
@@ -27,43 +18,57 @@ Shader "Squishy/TiltShiftGrade"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 
-            float _FocusY, _Band, _Amount, _Saturation, _Warmth, _Vignette, _Flash;
+            float _PostFocus, _PostBand, _PostWarm, _PostFlash, _PostMode;
+
+            float3 Filmic(float3 c)
+            {
+                c = saturate(c) * 0.92;
+                c = (c * (2.51 * c + 0.03)) / (c * (2.43 * c + 0.59) + 0.14);
+                return pow(saturate(c), 1.0 / 2.2);
+            }
 
             half4 Frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float2 uv = input.texcoord;
 
-                // Blur grows with distance outside the focus band. Ten taps on a golden-angle spiral.
-                float d = max(0.0, abs(uv.y - _FocusY) - _Band);
-                float radius = d * _Amount * (_ScreenParams.y / 1080.0);
-                half3 c;
-                if (radius < 0.7)
+                if (_PostMode > 0.5)
+                {
+                    float4 s = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, uv);
+                    float3 t = s.a > 0.0 ? Filmic(s.rgb / s.a) : 0;
+                    return half4(t, s.a);
+                }
+
+                float2 texel = _BlitTexture_TexelSize.xy;
+                float amt = 18.0 * (_BlitTexture_TexelSize.w / 800.0);
+                float d = max(0.0, abs(uv.y - _PostFocus) - _PostBand);
+                float rad = d * amt;
+                float3 c;
+                if (rad < 0.7)
                 {
                     c = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv).rgb;
                 }
                 else
                 {
                     c = 0;
-                    [unroll] for (int k = 0; k < 10; k++)
+                    [unroll] for (int i = 0; i < 10; i++)
                     {
-                        float a = k * 2.39996;
-                        float r = sqrt((k + 0.5) / 10.0) * radius;
-                        c += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv + float2(cos(a), sin(a)) * r * _BlitTexture_TexelSize.xy).rgb;
+                        float fi = i;
+                        float a = fi * 2.39996;
+                        float r = sqrt((fi + 0.5) / 10.0) * rad;
+                        c += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv + float2(cos(a), sin(a)) * r * texel).rgb;
                     }
                     c *= 0.1;
                 }
-
-                // Grade: saturation, warm tint, soft vignette.
-                half luma = dot(c, half3(0.2126, 0.7152, 0.0722));
-                c = lerp(luma.xxx, c, _Saturation);
-                c *= half3(1.0 + _Warmth, 1.0, 1.0 - _Warmth);
-                float2 v = (uv - 0.5) * float2(1.2, 1.0);
-                c *= 1.0 - _Vignette * saturate(dot(v, v) * 1.6);
-
-                c = lerp(c, 1.0, _Flash);
-                return half4(c, 1.0);
+                c = Filmic(c);
+                c = lerp(dot(c, float3(0.299, 0.587, 0.114)).xxx, c, 1.1);
+                c *= lerp(float3(1, 1, 1), float3(1.05, 0.98, 0.9), 0.4 + _PostWarm * 0.6);
+                c *= 1.0 - 0.14 * smoothstep(0.4, 0.95, distance(uv, float2(0.5, 0.47)));
+                c = lerp(c, float3(1.0, 0.97, 0.88), _PostFlash);
+                // c is a display (gamma) value; the sRGB back buffer encodes, so hand it back linear.
+                return half4(SRGBToLinear(saturate(c)), 1.0);
             }
             ENDHLSL
         }
