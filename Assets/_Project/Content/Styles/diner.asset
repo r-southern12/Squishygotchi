@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43cc7e65f1c5f974583063b256d232cc, type: 3}
+  m_Name: diner
+  m_EditorClassIdentifier: Squishy.Data::Squishy.Data.StyleAsset
+  def:
+    id: diner
+    displayName: Retro Diner
+    shortName: Diner
+    group: 1
+  palette:
+  - {r: 0.89411765, g: 0.89411765, b: 0.8784314, a: 1}
+  - {r: 0.8509804, g: 0.22745098, b: 0.22745098, a: 1}
+  - {r: 0.4117647, g: 0.7647059, b: 0.7882353, a: 1}
+  - {r: 0.16862746, g: 0.16862746, b: 0.16862746, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}

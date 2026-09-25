@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ceade2c0ed61194f83a06e3d4f86211, type: 3}
+  m_Name: opal
+  m_EditorClassIdentifier: Squishy.Data::Squishy.Data.SquishyFinishAsset
+  def:
+    id: opal
+    displayName: Opal
+    tier: Holographic
+    rarity: 2
+  baseColor: {r: 0.90588236, g: 0.8784314, b: 0.95686275, a: 1}
+  smoothness: 0.8
+  sparkleColors:
+  - {r: 0.60784316, g: 0.90588236, b: 1, a: 1}
+  - {r: 1, g: 0.7019608, b: 0.9019608, a: 1}
+  - {r: 1, g: 0.94509804, b: 0.65882355, a: 1}
+  - {r: 0.7019608, g: 1, b: 0.81960785, a: 1}
+  glowColor: {r: 0, g: 0, b: 0, a: 1}
+  riseSeconds: 1.5
+  patternMap: {fileID: 0}

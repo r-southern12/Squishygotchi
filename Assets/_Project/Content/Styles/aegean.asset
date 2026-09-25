@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43cc7e65f1c5f974583063b256d232cc, type: 3}
+  m_Name: aegean
+  m_EditorClassIdentifier: Squishy.Data::Squishy.Data.StyleAsset
+  def:
+    id: aegean
+    displayName: Mediterranean
+    shortName: Aegean
+    group: 0
+  palette:
+  - {r: 0.7882353, g: 0.6509804, b: 0.47843137, a: 1}
+  - {r: 0.18431373, g: 0.43529412, b: 0.6901961, a: 1}
+  - {r: 0.95686275, g: 0.94509804, b: 0.91764706, a: 1}
+  - {r: 0.49803922, g: 0.56078434, b: 0.30588236, a: 1}
+  - {r: 0.98039216, g: 0.96862745, b: 0.9411765, a: 1}

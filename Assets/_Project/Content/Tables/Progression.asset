@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 442f3de411a785749b4d8bd58caa70d2, type: 3}
+  m_Name: Progression
+  m_EditorClassIdentifier: Squishy.Data::Squishy.Data.ProgressionAsset
+  sizeTiers:
+  - size: 0
+    copiesNeeded: 1
+    relativeScale: 1
+  - size: 1
+    copiesNeeded: 3
+    relativeScale: 1.5
+  - size: 2
+    copiesNeeded: 6
+    relativeScale: 2.1
+  - size: 3
+    copiesNeeded: 12
+    relativeScale: 2.9
+  - size: 4
+    copiesNeeded: 25
+    relativeScale: 4
+  roomLevels:
+  - level: 1
+    relativeWidth: 0.66
+    decorSlots: 4
+    squishiesRequired: 0
+    coinCost: 0
+    availableAtLaunch: 0
+  - level: 2
+    relativeWidth: 0.77
+    decorSlots: 6
+    squishiesRequired: 0
+    coinCost: 0
+    availableAtLaunch: 1
+  - level: 3
+    relativeWidth: 0.89
+    decorSlots: 9
+    squishiesRequired: 5
+    coinCost: 400
+    availableAtLaunch: 1
+  - level: 4
+    relativeWidth: 1
+    decorSlots: 12
+    squishiesRequired: 10
+    coinCost: 1000
+    availableAtLaunch: 1
+  kitchenLevels:
+  - level: 1
+    toolsOwnedRequired: 0
+  - level: 2
+    toolsOwnedRequired: 2
+  - level: 3
+    toolsOwnedRequired: 4
+  - level: 4
+    toolsOwnedRequired: 6
+  mastery:
+    cooksPerStar: 3
+    maxStars: 5
+    bonusPerStar: 0.1

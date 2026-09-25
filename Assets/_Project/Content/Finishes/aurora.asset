@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ceade2c0ed61194f83a06e3d4f86211, type: 3}
+  m_Name: aurora
+  m_EditorClassIdentifier: Squishy.Data::Squishy.Data.SquishyFinishAsset
+  def:
+    id: aurora
+    displayName: Aurora
+    tier: Galaxy
+    rarity: 2
+  baseColor: {r: 0.12156863, g: 0.36862746, b: 0.43137255, a: 1}
+  smoothness: 0.7
+  sparkleColors:
+  - {r: 0.60784316, g: 1, b: 0.72156864, a: 1}
+  - {r: 1, g: 0.60784316, b: 0.9019608, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  glowColor: {r: 0, g: 0, b: 0, a: 1}
+  riseSeconds: 2
+  patternMap: {fileID: 0}

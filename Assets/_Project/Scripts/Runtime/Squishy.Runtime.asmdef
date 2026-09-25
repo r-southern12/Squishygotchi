@@ -1,0 +1,17 @@
+{
+    "name": "Squishy.Runtime",
+    "rootNamespace": "Squishy.Runtime",
+    "references": [
+        "Squishy.Simulation",
+        "Squishy.Data"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Squishy.Data",
+    "rootNamespace": "Squishy.Data",
+    "references": [
+        "Squishy.Simulation"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
