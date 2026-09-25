@@ -134,6 +134,18 @@ namespace Squishy.Runtime.Game
             Hud.Para(body, "Needs drain " + slow + "% slower (up to 40%).");
             Hud.Para(body, "While Happy you earn " + Rules.HappyRate(comfort).ToString("0.0") + " coins a minute.");
             Hud.Para(body, "Raise it with decor from steamers or the shop. Decor space grows when you expand the room or your squishy grows.");
+            // Room progression at a glance.
+            var cur = C.roomLevels[S.roomLv];
+            int bonus = Rules.SizeDecorBonus(Rules.FavSizeIdx);
+            Hud.Sec(body, "Room · level " + (S.roomLv + 1) + " of " + C.roomLevels.Length);
+            Hud.Para(body, "Decor space " + DecorCount() + " of " + Rules.DecorSlots() + ": " + cur.slots + " from the room" + (bonus > 0 ? ", +" + bonus + " from " + Rules.Fav.name + "'s " + C.sizes[Rules.FavSizeIdx].name + " size" : "") + ".");
+            if (S.roomLv + 1 < C.roomLevels.Length)
+            {
+                var nx = C.roomLevels[S.roomLv + 1];
+                Hud.Para(body, "Next level: " + Rules.SquishKinds + " of " + nx.need + " squishies" + (Rules.SquishKinds >= nx.need ? " ✓" : "") + " · " + S.coins + " of " + nx.cost + " coins" + (S.coins >= nx.cost ? " ✓" : "") + ". Wider steamer, " + (nx.slots + bonus) + " decor spaces.");
+                if (Rules.CanExpand()) Hud.Button(body, "Expand now · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; ExpandRoom(); ui.ClosePanel("info"); }, false, 4);
+            }
+            else Hud.Para(body, "Your steamer is at its largest.");
             ui.OpenPanel("info");
             sfx.Tap();
         }

@@ -18,6 +18,7 @@ namespace Squishy.Runtime.Game
         private float lifeTick;
         private bool paywallShown;
         private int shownPrestige = -1;
+        private bool toldExpand;
         private GameRules.Life shownStage = (GameRules.Life)(-1);
 
         private void InitMeta()
@@ -44,6 +45,10 @@ namespace Squishy.Runtime.Game
                 shownPrestige = S.prestige;
                 ui.SetPrestige(S.prestige);
             }
+            bool canExpand = Rules.CanExpand();
+            ui.ExpandDot(canExpand && mode == "home");
+            if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can grow! Open Arrange to expand"); sfx.Chime(); }
+            if (!canExpand) toldExpand = false;
             if (Rules.GiftReady()) ui.SetGift("Gift!", true);
             else { var w = Rules.GiftWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();

@@ -28,6 +28,7 @@ namespace Squishy.Runtime.UI
         private VisualElement _top, _bottom, _canvas, _floaters;
         private Frame _gift;
         private Frame _prestige;
+        private Frame _expandDot;
         private Label _prestigeLbl;
         private Label _giftLbl;
         private Label _name, _sub, _coins, _condTx, _hint, _mainLbl, _badge, _fps, _tiltLbl, _trayTitle, _oddsBtnLbl, _pityTx;
@@ -221,7 +222,9 @@ namespace Squishy.Runtime.UI
             Spacer(controls);
             BuildMain(controls);
             Side(controls, "catalogue", () => _g.OnCatalogue(), "home", out _);
-            Side(controls, "edit", () => _g.EnterEdit(), "home", out _);
+            var editBtn = Side(controls, "edit", () => _g.EnterEdit(), "home", out _);
+            _expandDot = new Frame().Set(C("#6F9A74"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
+            editBtn.Add(_expandDot);
             _rot = Side(controls, "rotate", () => _g.RotateSelected(), "edit", out _);
             Spacer(controls);
             _bottom.Gap(9);
@@ -458,6 +461,8 @@ namespace Squishy.Runtime.UI
             _gift.Fill = ready ? C("#FBE3DA") : ChipFill;
             _gift.MarkDirtyRepaint();
         }
+
+        public void ExpandDot(bool on) { _expandDot.Shown(on); }
 
         public void SetPrestige(int n) { _prestigeLbl.text = n.ToString(); }
 

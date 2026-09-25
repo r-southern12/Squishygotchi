@@ -205,6 +205,14 @@ namespace Squishy.Simulation.Game
         public RoomLevelData RoomLevel { get { return C.roomLevels[S.roomLv]; } }
 
         /// <summary>Decor space: the room level's slots plus a bonus for the favourite's size (you play, it grows, the room gets better).</summary>
+        /// <summary>True when the next room level's collection and coin needs are both met.</summary>
+        public bool CanExpand()
+        {
+            if (S.roomLv + 1 >= C.roomLevels.Length) return false;
+            var nx = C.roomLevels[S.roomLv + 1];
+            return SquishKinds >= nx.need && S.coins >= nx.cost;
+        }
+
         public int DecorSlots() { return RoomLevel.slots + SizeDecorBonus(FavSizeIdx); }
         public int SizeDecorBonus(int sizeIdx) { return C.sizes[sizeIdx].decor; }
 
