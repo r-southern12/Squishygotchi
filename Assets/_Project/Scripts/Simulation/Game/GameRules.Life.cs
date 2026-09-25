@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Squishy.Simulation.Game
 {
     [Serializable] public class LifeRecord { public string name, cause; public int finish, days, prestige; public float qol; }
-    [Serializable] public class CosmeticData { public string id, name, slot, color; public int price; }
+    [Serializable] public class CosmeticData { public string id, name, slot, kind, color; public int price; }
     [Serializable] public class TierRewardData { public string tier; public int steamers, prestige; }
 
     /// <summary>
@@ -92,6 +92,7 @@ namespace Squishy.Simulation.Game
             var c = Cosmetic(id);
             if (c == null || !HasCosmetic(id)) return;
             if (c.slot == "hat") S.hat = S.hat == id ? "" : id;
+            else if (c.slot == "neck") S.neck = S.neck == id ? "" : id;
             else S.face = S.face == id ? "" : id;
         }
 

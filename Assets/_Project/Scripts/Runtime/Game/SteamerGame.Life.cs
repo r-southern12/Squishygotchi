@@ -50,12 +50,12 @@ namespace Squishy.Runtime.Game
             if (st == shownStage) return;
             shownStage = st;
             pet.SetStage(st);
-            pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face));
+            pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck));
             UpdateSub();
             Notifier.RefreshPictures(Rules); // widget and notification pictures follow the squishy
         }
 
-        private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face)); Notifier.RefreshPictures(Rules); }
+        private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck)); Notifier.RefreshPictures(Rules); }
 
         // ---------------- old age ----------------
 
@@ -167,9 +167,9 @@ namespace Squishy.Runtime.Game
             Hud.Para(body, "Prestige comes from squishies that live a full life. The better their life, the more you earn.", 12, "#6F5F52");
             foreach (var c in C.cosmetics)
             {
-                bool own = Rules.HasCosmetic(c.id), worn = S.hat == c.id || S.face == c.id;
+                bool own = Rules.HasCosmetic(c.id), worn = S.hat == c.id || S.face == c.id || S.neck == c.id;
                 var id = c.id;
-                ui.Rec(body, null, c.name, (c.slot == "hat" ? "Hat" : "Glasses") + (own ? worn ? " · wearing" : " · owned" : " · " + c.price + " prestige"),
+                ui.Rec(body, null, c.name, (c.slot == "hat" ? "Hat" : c.slot == "neck" ? "Neck" : "Face") + (own ? worn ? " · wearing" : " · owned" : " · " + c.price + " prestige"),
                     own ? (worn ? "Take off" : "Wear") : c.price.ToString(),
                     () =>
                     {

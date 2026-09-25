@@ -27,7 +27,7 @@ namespace Squishy.Simulation.Game
         public int prestige;
         public List<LifeRecord> lives = new List<LifeRecord>();
         public List<string> cosmetics = new List<string>();
-        public string hat = "", face = "";
+        public string hat = "", face = "", neck = "";
         public bool premium;
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;
