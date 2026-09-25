@@ -239,6 +239,15 @@ namespace Squishy.Runtime.Game
                 else if (reward.type == "skin") { obj = Node.Group(holder, "steamer"); new SteamerModel(obj, 28).Skin(C.skins[reward.i]); }
                 else if (reward.type == "tskin") obj = KitchenModels.Tool(C, S, reward.i, reward.j, holder);
                 else if (reward.type == "tool") obj = KitchenModels.Tool(C, S, reward.i, null, holder);
+                else if (reward.type == "kit")
+                {
+                    // The recipe's tools and ingredients laid out side by side.
+                    obj = Node.Group(holder, "kit");
+                    var rc = C.recipes[reward.i];
+                    int n = rc.tools.Length + rc.ing.Length, slot = 0;
+                    foreach (var t in rc.tools) KitchenModels.Tool(C, S, t, null, obj).localPosition = new Vector3((slot++ - (n - 1) / 2f) * .42f, 0, 0);
+                    foreach (var i in rc.ing) KitchenModels.Food(C, i, obj).localPosition = new Vector3((slot++ - (n - 1) / 2f) * .42f, 0, .05f);
+                }
                 else obj = KitchenModels.Food(C, reward.i, holder);
                 // Normalise every prize to the same display size and stand it on the plate.
                 var bb = Node.LocalBounds(obj, holder);

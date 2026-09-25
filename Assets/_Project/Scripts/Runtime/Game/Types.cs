@@ -95,7 +95,7 @@ namespace Squishy.Runtime.Game
     public sealed class Drag
     {
         public Vector2 start;
-        public bool moved, touch, squish, scrub;
+        public bool moved, touch, squish, scrub, wand;
         public Item item, ball;
         public float ox, oz;
         public readonly List<Vector3> hist = new List<Vector3>(); // x, z, time

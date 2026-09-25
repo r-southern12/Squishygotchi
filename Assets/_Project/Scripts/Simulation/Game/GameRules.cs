@@ -44,9 +44,28 @@ namespace Squishy.Simulation.Game
             S = state;
             _owned = new HashSet<string>(state.owned);
             _rng = Pcg32.FromState(state.rng == 0 ? 0x9E3779B97F4A7C15UL : state.rng);
+            // Content can grow between versions (new recipes, tools): keep per-item arrays the right length.
+            state.pantry = Fit(state.pantry, content.pantry.Length);
+            state.snacks = Fit(state.snacks, content.snacks.Length);
+            state.toolSkin = Fit(state.toolSkin, content.tools.Length);
+            state.recipeXP = Fit(state.recipeXP, content.recipes.Length);
+            if (state.toolDur == null || state.toolDur.Length < content.tools.Length)
+            {
+                int old = state.toolDur == null ? 0 : state.toolDur.Length;
+                state.toolDur = Fit(state.toolDur, content.tools.Length);
+                for (int i = old; i < content.tools.Length; i++) state.toolDur[i] = content.tools[i].maxDur;
+            }
         }
 
         public RulesData R { get { return C.rules; } }
+
+        private static int[] Fit(int[] a, int n)
+        {
+            if (a != null && a.Length >= n) return a;
+            var b = new int[n];
+            if (a != null) Array.Copy(a, b, a.Length);
+            return b;
+        }
 
         public static GameState NewState(GameContent c, ulong seed)
         {
@@ -182,6 +201,10 @@ namespace Squishy.Simulation.Game
         public int DecorCount() { int n = 0; foreach (var it in S.items) if (C.IsDecor(it.Arch)) n++; return n; }
         public RoomLevelData RoomLevel { get { return C.roomLevels[S.roomLv]; } }
 
+        /// <summary>Decor space: the room level's slots plus a bonus for the favourite's size (you play, it grows, the room gets better).</summary>
+        public int DecorSlots() { return RoomLevel.slots + SizeDecorBonus(FavSizeIdx); }
+        public int SizeDecorBonus(int sizeIdx) { return C.sizes[sizeIdx].decor; }
+
         // ---- kitchen ----
         public string ToolKey(int i) { return "tool:" + i; }
         public int ToolsOwned() { int n = 0; for (int i = 0; i < C.tools.Length; i++) if (Owned(ToolKey(i))) n++; return n; }
@@ -227,14 +250,8 @@ namespace Squishy.Simulation.Game
             if (rar == "Common")
             {
                 if (r < .52) return Item(rar);
-                if (r < .8)
-                {
-                    var o = new List<int>();
-                    for (int k = 0; k < C.pantry.Length; k++) if (C.pantry[k].rarity == "Common") o.Add(k);
-                    return new Reward { type = "food", i = Pick(o), rar = rar };
-                }
-                if (r < .9) return Sq(rar);
-                if (r < .96) return Tool(rar);
+                if (r < .86) return Kit(rar); // kitchen kits replace loose common ingredients and single tools
+                if (r < .96) return Sq(rar);
                 return ToolSkin(rar);
             }
             if (rar == "Rare")
@@ -247,7 +264,7 @@ namespace Squishy.Simulation.Game
                     return new Reward { type = "food", i = Pick(o), rar = rar };
                 }
                 if (r < .8) return Sq(rar);
-                if (r < .9) return Tool(rar);
+                if (r < .9) return Kit(rar);
                 if (r < .97) return ToolSkin(rar);
                 return Skin(rar);
             }
@@ -269,6 +286,15 @@ namespace Squishy.Simulation.Game
         {
             var o = C.Catalogue.FindAll(c => c.rarity == rar);
             return new Reward { type = "item", key = Pick(o).key, rar = rar };
+        }
+
+        /// <summary>A recipe kit: its tools plus ingredients. Common steamers give easier recipes.</summary>
+        private Reward Kit(string rar)
+        {
+            var o = new List<int>();
+            for (int k = 0; k < C.recipes.Length; k++)
+                if (C.recipes[k].tools.Length > 0 && (rar != "Common" || C.recipes[k].lvl <= 2)) o.Add(k);
+            return new Reward { type = "kit", i = Pick(o), rar = rar };
         }
 
         private Reward Tool(string rar)
@@ -358,6 +384,35 @@ namespace Squishy.Simulation.Game
                 card.meta = card.isNew ? "Reskins your whole room · use it from the catalogue" : "Duplicate · +" + R.dupeSteamerSkinCoins + " coins";
                 if (!card.isNew) card.delayedCoins = R.dupeSteamerSkinCoins;
             }
+            else if (rw.type == "kit")
+            {
+                var rc = C.recipes[rw.i];
+                card.name = rc.name + " kit";
+                card.tier = rw.rar + " · Kitchen kit";
+                card.dot = rc.col;
+                int lv0 = KitchenLvl();
+                var parts = new List<string>();
+                bool anyNew = false;
+                foreach (var t in rc.tools)
+                {
+                    bool isNewTool = !Owned(ToolKey(t));
+                    anyNew |= isNewTool;
+                    AddOwned(ToolKey(t));
+                    bool repaired = !isNewTool && S.toolDur[t] < C.tools[t].maxDur;
+                    S.toolDur[t] = C.tools[t].maxDur;
+                    parts.Add(C.tools[t].name + (isNewTool ? " (new!)" : repaired ? " (repaired)" : ""));
+                }
+                foreach (var i in rc.ing)
+                {
+                    S.pantry[i] += R.kitIngredients;
+                    AddOwned("food:" + i);
+                    parts.Add(R.kitIngredients + " " + C.pantry[i].name);
+                }
+                int lv1 = KitchenLvl();
+                card.isNew = anyNew;
+                card.meta = (lv1 > lv0 ? "Kitchen upgraded to level " + lv1 + "! · " : "") + string.Join(" · ", parts);
+                card.kitchenChanged = true;
+            }
             else if (rw.type == "food")
             {
                 var t = C.pantry[rw.i];
@@ -383,6 +438,23 @@ namespace Squishy.Simulation.Game
                 card.kitchenChanged = true;
             }
             return card;
+        }
+
+        /// <summary>Recipes the shop sells as meal kits: common ingredients only (rare ones come from steamers).</summary>
+        public bool ShopKit(RecipeData rc)
+        {
+            if (rc.ing.Length == 0) return false;
+            foreach (var i in rc.ing) if (C.pantry[i].rarity != "Common") return false;
+            return true;
+        }
+
+        public int ShopKitPrice(RecipeData rc) { return rc.ing.Length * R.shopKitCooks * R.shopKitPricePerIngredient; }
+
+        public bool BuyKit(RecipeData rc)
+        {
+            if (!ShopKit(rc) || !Spend(ShopKitPrice(rc))) return false;
+            foreach (var i in rc.ing) { S.pantry[i] += R.shopKitCooks; AddOwned("food:" + i); }
+            return true;
         }
 
         // ---- tasks ----

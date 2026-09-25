@@ -12,6 +12,8 @@ namespace Squishy.Simulation.Game
     public class ItemTypeData
     {
         public string id, name, cat, role, face;
+        /// <summary>Items sharing a slot are swapped for one another (one toy out at a time).</summary>
+        public string slot;
         public float r;
         /// <summary>Collision circles as flat (x, z, r) triples; empty means one circle of radius r.</summary>
         public float[] circles;
@@ -27,7 +29,7 @@ namespace Squishy.Simulation.Game
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; }
     [Serializable] public class SnackData { public string name, color; }
-    [Serializable] public class SizeData { public string name; public float s; public int at; }
+    [Serializable] public class SizeData { public string name; public float s; public int at, decor; }
     [Serializable] public class RoomLevelData { public float r; public int slots, need, cost; }
 
     [Serializable]
@@ -51,7 +53,7 @@ namespace Squishy.Simulation.Game
         public float deathSeconds, dayLength, selfCareCap, happyBase, happyComfortDivisor;
         public float pLegendary, pEpic, pRare, favouriteChance;
         public int pityRare, pityEpic;
-        public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop;
+        public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition;
@@ -149,6 +151,14 @@ namespace Squishy.Simulation.Game
             if (arch == tomb.id) return false;
             var t = Type(arch);
             return t != null && t.max == 0;
+        }
+
+        /// <summary>Item types sharing this type's slot (itself when it has none).</summary>
+        public bool SameSlot(string a, string b)
+        {
+            if (a == b) return true;
+            var ta = Type(a); var tb = Type(b);
+            return ta != null && tb != null && !string.IsNullOrEmpty(ta.slot) && ta.slot == tb.slot;
         }
 
         public int MaxPerRoom(string arch) { var t = Type(arch); return t != null && t.max > 0 ? t.max : 1; }

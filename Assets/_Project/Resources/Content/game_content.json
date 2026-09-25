@@ -42,7 +42,11 @@
     {"id":"rug","name":"Rug","cat":"Floor","role":"","r":0.62,"walk":true,"comfort":1,"price":70},
     {"id":"wall","name":"Wall panel","cat":"Wall","role":"","r":0.2,"circles":[-0.42,0,0.16,0,0,0.16,0.42,0,0.16],"face":"z","comfort":0,"price":60},
     {"id":"screen","name":"Folding screen","cat":"Wall","role":"","r":0.18,"circles":[-0.34,0,0.15,0,0,0.15,0.34,0,0.15],"face":"z","comfort":1,"price":90},
-    {"id":"ball","name":"Ball","cat":"Toy","role":"play","r":0.1,"comfort":0,"max":1,"price":40},
+    {"id":"ball","name":"Ball","cat":"Toy","role":"play","r":0.1,"comfort":0,"max":1,"slot":"toy","price":40},
+    {"id":"pomwand","name":"Pom-pom wand","cat":"Toy","role":"wand","r":0.12,"comfort":0,"max":1,"slot":"toy","price":60},
+    {"id":"bubbles","name":"Bubble wand","cat":"Toy","role":"bubbles","r":0.12,"comfort":0,"max":1,"slot":"toy","price":60},
+    {"id":"xylophone","name":"Toy xylophone","cat":"Toy","role":"music","r":0.26,"comfort":0,"max":1,"slot":"toy","price":80},
+    {"id":"slide","name":"Slide","cat":"Toy","role":"slide","r":0.34,"circles":[0,-0.2,0.2,0,0.18,0.2],"face":"z","comfort":0,"max":1,"slot":"toy","price":120},
     {"id":"trampoline","name":"Trampoline","cat":"Toy","role":"bounce","r":0.36,"comfort":0,"size":2,"max":1,"price":300},
     {"id":"beanbag","name":"Beanbag","cat":"Furniture","role":"lounge","r":0.36,"comfort":2,"size":3,"max":1,"price":260}
   ],
@@ -132,7 +136,13 @@
     {"name":"Veg dumplings","ing":[0,1,4],"tools":[4,5],"lvl":2,"hunger":0.55,"bonusNeed":"rest","bonus":0.1,"col":"#EDE6D6"},
     {"name":"Tofu stir-fry","ing":[6,10,11],"tools":[3,0],"lvl":3,"hunger":0.55,"bonusNeed":"play","bonus":0.15,"col":"#E7C27A"},
     {"name":"Prawn har gow","ing":[0,5,2],"tools":[4,5,1],"lvl":3,"hunger":0.7,"bonusNeed":"clean","bonus":0.1,"col":"#F6D5C8"},
-    {"name":"Chili wontons","ing":[0,5,11],"tools":[1,4,7],"lvl":4,"hunger":0.65,"bonusNeed":"play","bonus":0.25,"col":"#E0674A"}
+    {"name":"Chili wontons","ing":[0,5,11],"tools":[1,4,7],"lvl":4,"hunger":0.65,"bonusNeed":"play","bonus":0.25,"col":"#E0674A"},
+    {"name":"Steamed egg custard","ing":[7],"tools":[5],"lvl":1,"hunger":0.35,"bonusNeed":"rest","bonus":0.15,"col":"#F7E3A0"},
+    {"name":"Sesame tofu","ing":[6,8],"tools":[0],"lvl":1,"hunger":0.4,"bonusNeed":"clean","bonus":0.1,"col":"#E9D9B0"},
+    {"name":"Egg fried rice","ing":[7,2,9],"tools":[3],"lvl":2,"hunger":0.5,"bonusNeed":"play","bonus":0.1,"col":"#F2D56B"},
+    {"name":"Ginger greens","ing":[10,3],"tools":[3],"lvl":2,"hunger":0.3,"bonusNeed":"clean","bonus":0.15,"col":"#6FAE5A"},
+    {"name":"Carrot cake squares","ing":[0,9],"tools":[4,1],"lvl":3,"hunger":0.5,"bonusNeed":"play","bonus":0.15,"col":"#EE8A3A"},
+    {"name":"Mushroom noodle soup","ing":[0,4,2],"tools":[4,6],"lvl":3,"hunger":0.6,"bonusNeed":"rest","bonus":0.15,"col":"#C9A27A"}
   ],
   "snacks": [
     {"name":"Rice cracker","color":"#E9C98A"},
@@ -140,11 +150,11 @@
     {"name":"Mochi bite","color":"#F4E1E8"}
   ],
   "sizes": [
-    {"name":"Mini","s":0.1,"at":1},
-    {"name":"Standard","s":0.15,"at":3},
-    {"name":"Jumbo","s":0.21,"at":6},
-    {"name":"Giant","s":0.29,"at":12},
-    {"name":"Super Mega","s":0.4,"at":25}
+    {"name":"Mini","s":0.1,"at":1,"decor":0},
+    {"name":"Standard","s":0.15,"at":3,"decor":1},
+    {"name":"Jumbo","s":0.21,"at":6,"decor":2},
+    {"name":"Giant","s":0.29,"at":12,"decor":3},
+    {"name":"Super Mega","s":0.4,"at":25,"decor":4}
   ],
   "roomLevels": [
     {"r":1.75,"slots":4},
@@ -163,6 +173,10 @@
     {"role":"bath","label":"Bath time","need":"clean","dur":5,"rate":0.14,"perch":0.06,"scrub":true},
     {"role":"shower","label":"Shower","need":"clean","dur":4.5,"rate":0.18,"inside":true,"scrub":true},
     {"role":"play","label":"Playing","need":"play"},
+    {"role":"wand","label":"Pom-pom chase","need":"play","dur":9,"rate":0.02,"front":0.2},
+    {"role":"bubbles","label":"Bubble time","need":"play","dur":10,"rate":0.01,"front":0.2},
+    {"role":"music","label":"Music time","need":"play","dur":6,"rate":0.03,"front":0.18,"toward":true},
+    {"role":"slide","label":"Sliding","need":"play","dur":6,"rate":0.035,"perch":0.01},
     {"role":"bounce","label":"Bouncing","need":"play","dur":4,"rate":0.2,"perch":0.2},
     {"role":"plant","label":"Watering","dur":2.2,"front":0.15,"toward":true},
     {"role":"lamp","label":"Lights","dur":1,"front":0.12,"toward":true},
@@ -185,14 +199,14 @@
     "deathSeconds":43200,"dayLength":86400,"selfCareCap":0.5,
     "happyBase":1,"happyComfortDivisor":20,
     "pLegendary":0.01,"pEpic":0.05,"pRare":0.18,"pityRare":10,"pityEpic":50,"favouriteChance":0.4,
-    "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,
+    "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,"kitIngredients":2,"shopKitCooks":2,"shopKitPricePerIngredient":7,
     "steamerPrice":150,"snackPrice":5,"ingredientPrice":8,"newToolPrice":60,"minRepair":10,"tasksPerSteamer":3,"taskSetSteamers":2,"taskCooldownHours":3,
     "tuckMinCondition":0.12,"squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012
   },
   "starter": {
     "coins":248,"steamers":3,"favourite":8,"roomLevel":1,"age":3,
     "needs":[0.74,0.62,0.8,0.72],
-    "owned":["bed:cottage","chair:teahouse","teatable:teahouse","stove:nordic","fridge:blockprint","sink:aegean","tub:aegean","lamp:midcentury","plant:greenhouse","shelf:teahouse","rug:persian","ball:candy","cushion:blockprint","wall:tatami","tool:0","tool:3","tool:5","food:0","food:1","food:2","food:4","food:6","food:7","skin:0","skin:1"],
+    "owned":["bed:cottage","chair:teahouse","teatable:teahouse","stove:nordic","fridge:blockprint","sink:aegean","tub:aegean","lamp:midcentury","plant:greenhouse","shelf:teahouse","rug:persian","ball:candy","pomwand:candy","bubbles:aegean","xylophone:folk","slide:cottage","cushion:blockprint","wall:tatami","tool:0","tool:3","tool:5","food:0","food:1","food:2","food:4","food:6","food:7","skin:0","skin:1"],
     "squishies":[{"i":8,"n":1},{"i":0,"n":1},{"i":4,"n":1},{"i":12,"n":1}],
     "pantry":[3,2,2,0,2,0,1,1,0,0,0,0],
     "snacks":[3,2,0],
@@ -211,6 +225,6 @@
       {"key":"cushion:blockprint","x":-0.6,"z":0.95,"ry":0},
       {"key":"ball:candy","x":0.45,"z":0.95,"ry":0}
     ],
-    "storage":["wall:tatami"]
+    "storage":["wall:tatami","pomwand:candy","bubbles:aegean","xylophone:folk","slide:cottage"]
   }
 }

@@ -131,7 +131,7 @@ namespace Squishy.Runtime.Game
             Big(body, Mathf.RoundToInt(comfort).ToString(), "From " + decor + " furnished pieces" + (setBonus.Length > 0 ? ", plus a " + setBonus + " set bonus (+3) for three pieces in one style" : "") + ". Wilted plants count less.");
             Hud.Para(body, "Needs drain " + slow + "% slower (up to 40%).");
             Hud.Para(body, "While Happy you earn " + Rules.HappyRate(comfort).ToString("0.0") + " coins a minute.");
-            Hud.Para(body, "Raise it with decor from steamers or the shop. Decor space grows when you expand the room.");
+            Hud.Para(body, "Raise it with decor from steamers or the shop. Decor space grows when you expand the room or your squishy grows.");
             ui.OpenPanel("info");
             sfx.Tap();
         }
@@ -151,10 +151,11 @@ namespace Squishy.Runtime.Game
             var nx = S.roomLv + 1 < C.roomLevels.Length ? C.roomLevels[S.roomLv + 1] : null;
             ui.SetPanelTitle("info", "Expand room");
             var body = ui.PanelBody("info");
-            Big(body, "Level " + (S.roomLv + 1), "Decor space " + DecorCount() + " of " + cur.slots + ".");
+            int bonus = Rules.SizeDecorBonus(Rules.FavSizeIdx);
+            Big(body, "Level " + (S.roomLv + 1), "Decor space " + DecorCount() + " of " + Rules.DecorSlots() + (bonus > 0 ? " (" + cur.slots + " from the room, +" + bonus + " for " + Rules.Fav.name + "'s " + C.sizes[Rules.FavSizeIdx].name + " size)" : "") + ". Bigger squishies unlock more decor space.");
             if (nx == null) { Hud.Para(body, "Your steamer is at its largest."); ui.OpenPanel("info"); return; }
             int have = Rules.SquishKinds;
-            Hud.Para(body, "Level " + (S.roomLv + 2) + " makes the steamer wider and gives " + nx.slots + " decor spaces. It needs " + nx.need + " squishies in your collection (you have " + have + ") and " + nx.cost + " coins.");
+            Hud.Para(body, "Level " + (S.roomLv + 2) + " makes the steamer wider and gives " + (nx.slots + bonus) + " decor spaces. It needs " + nx.need + " squishies in your collection (you have " + have + ") and " + nx.cost + " coins.");
             Hud.Button(body, "Expand · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 48, 17, () =>
             {
                 if (!Spend(nx.cost)) return;
@@ -179,12 +180,14 @@ namespace Squishy.Runtime.Game
                 int k = i;
                 ui.Rec(body, "snack:" + i, C.snacks[i].name, "Quick snack from the pantry cupboard · you have " + S.snacks[i], R.snackPrice.ToString(), () => { if (Spend(R.snackPrice)) { S.snacks[k]++; OpenShop(); } }, S.coins < R.snackPrice);
             }
-            Hud.Sec(body, "Ingredients");
-            for (int i = 0; i < C.pantry.Length; i++)
+            Hud.Sec(body, "Meal kits");
+            for (int i = 0; i < C.recipes.Length; i++)
             {
-                if (!C.pantry[i].basic) continue;
-                int k = i;
-                ui.Rec(body, "food:" + i, C.pantry[i].name, "For recipes · you have " + S.pantry[i], R.ingredientPrice.ToString(), () => { if (Spend(R.ingredientPrice)) { S.pantry[k]++; Rules.AddOwned("food:" + k); OpenShop(); } }, S.coins < R.ingredientPrice);
+                var rc = C.recipes[i];
+                if (!Rules.ShopKit(rc)) continue;
+                int price = Rules.ShopKitPrice(rc);
+                string contents = string.Join(", ", rc.ing.Select(k => R.shopKitCooks + " " + C.pantry[k].name));
+                ui.Rec(body, "dish:" + i, rc.name + " kit", "Ingredients for " + R.shopKitCooks + " cooks · " + contents, price.ToString(), () => { if (Rules.BuyKit(rc)) { sfx.Coin(); OpenShop(); } else sfx.Bonk(); }, S.coins < price);
             }
             Hud.Sec(body, "Kitchen tools");
             for (int i = 0; i < C.tools.Length; i++)
@@ -363,7 +366,7 @@ namespace Squishy.Runtime.Game
                 int c = Rules.SquishCount(e.i), si = C.SizeIdxFor(Mathf.Max(1, c));
                 var nxt = si + 1 < C.sizes.Length ? C.sizes[si + 1] : null;
                 meta = f.tier + " tier";
-                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") : "Not found yet. Find it in steamers.";
+                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + " · +" + C.sizes[si].decor + " decor space" + (nxt != null ? " (" + nxt.name + ": +" + nxt.decor + ")" : "") : "Not found yet. Find it in steamers.";
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { SetPet(e.i); Floater("Now " + f.name + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {
@@ -400,7 +403,7 @@ namespace Squishy.Runtime.Game
                 var uses = C.recipes.Where(r => r.ing.Contains(e.i)).Select(r => r.name).ToList();
                 meta = "Ingredient · " + f.rarity;
                 note = (e.count > 0 ? e.count + " in your pantry. " : "None left. ") + (uses.Count > 0 ? "Used for: " + string.Join(", ", uses) + "." : "");
-                note += f.basic ? " Sold in the shop." : " Rare: steamers only.";
+                note += f.rarity == "Common" ? " Comes in kitchen kits and shop meal kits." : " Rare: steamers only.";
             }
             else if (kind == "snack") { meta = "Snack"; note = e.count + " in the pantry cupboard. A quick bite: hunger up to 60%. Sold in the shop."; }
             else if (kind == "dish")
@@ -428,7 +431,7 @@ namespace Squishy.Runtime.Game
                     { "bed", "Naps here (Rest)" }, { "seat", "Seat for tea time" }, { "tea", "Tea time with a seat nearby (Rest, Hunger)" }, { "eat", "Cook and eat (Hunger)" },
                     { "snack", "Snacks (Hunger, up to 60%)" }, { "wash", "Quick wash (Clean, up to 65%)" }, { "bath", "Baths, with scrubbing (Clean)" }, { "shower", "Showers, with scrubbing (Clean)" },
                     { "lamp", "Lights off for a full night’s rest" }, { "plant", "Needs watering or it wilts" }, { "play", "Kick it or flick it (Play)" }, { "bounce", "Bouncing (Play)" },
-                    { "lounge", "Lounging (Rest)" }, { "decor", "Decor" },
+                    { "lounge", "Lounging (Rest)" }, { "wand", "Wave the pom-pom and it chases (Play)" }, { "bubbles", "Bubbles to chase and pop (Play)" }, { "music", "Tap the bars to make it dance (Play)" }, { "slide", "Climbs up and slides down (Play)" }, { "decor", "Decor" },
                 };
                 string role = !string.IsNullOrEmpty(a.role) && roles.TryGetValue(a.role, out var rr) ? rr : a.cat == "Wall" ? "Divides the room" : "Decor";
                 note = role + (a.comfort > 0 ? " · +" + a.comfort + " comfort" : "") + (a.size > 0 ? " · needs " + C.sizes[a.size].name + " size" : "");

@@ -172,6 +172,14 @@ namespace Squishy.Runtime.Game
                 Buzz(12);
                 return;
             }
+            if (ai.mode == "act" && ai.act != null && ai.act.role == "wand" && ItemHit(p) == null)
+            {
+                // Wave the pom-pom: it follows your finger across the floor.
+                drag.wand = true;
+                var fw = FloorPoint(p, 0);
+                if (fw.HasValue) wandFinger = new Vector2(fw.Value.x, fw.Value.z);
+                return;
+            }
             var hitIt = ItemHit(p);
             if (hitIt != null && hitIt.arch == "ball")
             {
@@ -249,6 +257,12 @@ namespace Squishy.Runtime.Game
                 }
                 return;
             }
+            if (drag.wand)
+            {
+                var fw = FloorPoint(p, 0);
+                if (fw.HasValue) wandFinger = new Vector2(fw.Value.x, fw.Value.z);
+                return;
+            }
             if (drag.ball != null)
             {
                 var fp = FloorPoint(p, 0);
@@ -272,6 +286,7 @@ namespace Squishy.Runtime.Game
             if (mode == "unbox") { HoldEnd(); return; }
             if (drag == null) return;
             if (ptrs.Count > 0 && drag.item != null) return;
+            if (drag.wand) { wandFinger = null; drag = null; return; }
             if (drag.item != null)
             {
                 var it = drag.item;
@@ -317,9 +332,11 @@ namespace Squishy.Runtime.Game
             }
             else if (!drag.moved && !drag.scrub)
             {
+                if (TapBubble(p)) { drag = null; return; }
                 var it = ItemHit(p);
                 if (it != null)
                 {
+                    if (it.a.role == "music" && ai.mode == "act" && ai.act != null && ai.act.it == it) { PlayBar(it, BarAt(it, p), true); drag = null; return; }
                     it.bv = -7;
                     sfx.Tap();
                     Buzz(8);
@@ -471,7 +488,7 @@ namespace Squishy.Runtime.Game
                 });
                 return;
             }
-            string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.RoomLevel.slots;
+            string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.DecorSlots();
             if (S.storage.Count == 0) { ui.DrawTray(title, new List<(string, bool, bool, string)>(), "Empty. Get more from steamers.", null); return; }
             var list = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
             ui.DrawTray(title, list, null, key => PlaceFromStorage(int.Parse(key.Substring(key.IndexOf('#') + 1))));
@@ -480,17 +497,19 @@ namespace Squishy.Runtime.Game
         private void PlaceFromStorage(int i)
         {
             string key0 = S.storage[i], arch = key0.Split(':')[0];
-            if (C.IsDecor(arch) && DecorCount() >= Rules.RoomLevel.slots) { ui.SetHint("Decor full (" + Rules.RoomLevel.slots + "). Expand the room for more.", true); sfx.Bonk(); Buzz(20); return; }
+            if (C.IsDecor(arch) && DecorCount() >= Rules.DecorSlots()) { ui.SetHint("Decor full (" + Rules.DecorSlots() + "). Expand the room or grow your squishy for more.", true); sfx.Bonk(); Buzz(20); return; }
             if (!C.IsDecor(arch) && items.Count(x => x.arch == arch) >= C.MaxPerRoom(arch)) { ui.SetHint("Only " + C.MaxPerRoom(arch) + " " + C.Type(arch).name.ToLowerInvariant() + " per room", true); sfx.Bonk(); Buzz(20); return; }
             Snap();
             string key = S.storage[i];
             S.storage.RemoveAt(i);
             float x = camS.target.x, z = camS.target.z;
+            var swapped = SwapOutSlot(arch); // one toy at a time: the old one goes to storage
             for (int k = 0; k < 12; k++)
             {
                 float a = Rnd(0, Mathf.PI * 2), r = Rnd(0, FLOOR_R * .7f), tx = Mathf.Cos(a) * r, tz = Mathf.Sin(a) * r;
                 if (!obstacles.Any(o => Dist(o.x - tx, o.z - tz) < o.r + .35f)) { x = tx; z = tz; break; }
             }
+            if (swapped != null) { x = swapped.tx; z = swapped.tz; }
             var it = AddItem(key, x, z, 0);
             it.g.localPosition = new Vector3(x, Y0 + 1.2f, z);
             it.bv = -6;

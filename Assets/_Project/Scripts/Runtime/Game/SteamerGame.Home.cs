@@ -311,6 +311,15 @@ namespace Squishy.Runtime.Game
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, s.y, s.approach, seat);
             }
+            else if (role == "slide")
+            {
+                // Start at the foot of the ladder, behind the slide.
+                float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry);
+                var s = new Spot { stand = new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), y = 0, face = new Vector2(it.tx, it.tz) };
+                ai.spot = s;
+                ai.mode = "walk";
+                PlanPath(s.stand.x, s.stand.y, 0, null, it);
+            }
             else
             {
                 var s = SpotOf(it, act);
@@ -324,7 +333,7 @@ namespace Squishy.Runtime.Game
         /// <summary>The squishy looks after itself, but only up to about half.</summary>
         private void SelfCare(int need)
         {
-            string[][] map = { new[] { "snack", "eat" }, new[] { "play" }, new[] { "lounge", "bed" }, new[] { "wash" } };
+            string[][] map = { new[] { "snack", "eat" }, PlayRoles, new[] { "lounge", "bed" }, new[] { "wash" } };
             foreach (var role in map[need])
             {
                 if (role == "snack" && !S.snacks.Any(n => n > 0)) continue;
@@ -372,6 +381,7 @@ namespace Squishy.Runtime.Game
         private void FinishActivity()
         {
             CleanupCook();
+            EndToys();
             var a = ai.act;
             if (a != null && !string.IsNullOrEmpty(a.act.need))
                 Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1) + (ai.self ? " (half)" : ""));
@@ -419,6 +429,7 @@ namespace Squishy.Runtime.Game
             }
             if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; ComputeComfort(); }
             if (A.role == "shower" && A.it != null) A.it.parts.openT = 0;
+            StartToy(A);
             if (A.recipe != null && A.role == "eat")
             {
                 var rc = A.recipe;
@@ -889,6 +900,7 @@ namespace Squishy.Runtime.Game
                 if (Random.value < dt * 10) { var wp = it.Pos; drops.Spawn(new Vector3(wp.x + Rnd(-.1f, .1f), wp.y + .7f, wp.z + Rnd(-.1f, .1f)), new Vector3(0, -1, 0), .015f, .4f, 0, -3); }
             }
             else if (A.role == "makeDo") extra = .06f * Mathf.Sin(t * 5);
+            StepToy(A, dt, t, ref lift, ref extra);
             if (t >= act.dur) EndAct();
         }
 

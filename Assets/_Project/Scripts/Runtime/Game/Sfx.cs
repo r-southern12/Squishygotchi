@@ -40,6 +40,14 @@ namespace Squishy.Runtime.Game
         public void Sad() { Play("sad", c => { float[] f = { 520, 440, 370, 300 }; for (int i = 0; i < 4; i++) Tone(c, i * .26f, f[i], f[i] * .97f, .4f, 'S', .12f); }); }
         public void Chime() { Play("chime", c => { float[] f = { 660, 880, 1320 }; for (int i = 0; i < 3; i++) Tone(c, i * .09f, f[i], f[i], .35f, 'S', .1f); }); }
 
+        /// <summary>A xylophone note (a major pentatonic run, one clip per bar).</summary>
+        public void Note(int bar)
+        {
+            float[] f = { 523, 587, 659, 784, 880, 1047 };
+            float fr = f[Mathf.Clamp(bar, 0, 5)];
+            Play("note" + bar, c => { Tone(c, 0, fr, fr * .99f, .5f, 'S', .16f); Tone(c, 0, fr * 2, fr * 2, .2f, 'T', .04f); });
+        }
+
         /// <summary>humUpdate(level): 0 fades the hum out.</summary>
         public void Hum(float level) { _hum.Level = SoundOn ? level : 0; }
 

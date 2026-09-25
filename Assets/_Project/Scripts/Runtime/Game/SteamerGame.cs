@@ -120,7 +120,7 @@ namespace Squishy.Runtime.Game
             keyLight.color = ThreeMat.Hex("#FFE6C8");
             keyLight.intensity = 1.9f;
             keyLight.shadows = LightShadows.Soft;
-            keyLight.shadowStrength = 1;
+            keyLight.shadowStrength = .7f; // softer shadows than the prototype
             keyLight.shadowBias = .02f;
             keyLight.shadowNormalBias = .2f;
             SceneLighting.Key(keyLight);

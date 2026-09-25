@@ -9,7 +9,8 @@ namespace Squishy.Runtime.Models
     /// <summary>Named parts of an item that animate (the prototype's `parts`).</summary>
     public sealed class ItemParts
     {
-        public Transform pot, pan, door, water, top, ball, mat, rack, curtain, shade;
+        public Transform pot, pan, door, water, top, ball, mat, rack, curtain, shade, pom, wand;
+        public Transform[] bars;
         public Material shadeMat;
         public Mesh curtainMesh;
         public Vector3[] curtainBase, curtainWork;
@@ -180,6 +181,60 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(b, Sph(.1f, 14, 10), M(s.pal[1]));
                     Node.Mesh(b, Torus(.1f, .018f, 6, 18), M(s.pal[4])).RotY(.6f);
                     p.ball = b;
+                    break;
+                }
+                case "pomwand":
+                {
+                    // A little stand with an arm; the pom-pom hangs from a string until play time.
+                    Node.Mesh(g, Cyl(.12f, .14f, .05f, 12), W, 0, .025f, 0);
+                    Node.Mesh(g, Cyl(.015f, .018f, .42f, 6), T, 0, .23f, 0);
+                    Node.Mesh(g, Cyl(.012f, .012f, .26f, 6), T, .12f, .44f, 0).RotZ(PI / 2);
+                    Node.Mesh(g, Cyl(.004f, .004f, .14f, 4), M("#EFE2C9"), .25f, .37f, 0);
+                    var pom = Node.Group(g, "pom", .25f, .3f, 0);
+                    Node.Mesh(pom, Sph(.065f, 12, 10), P);
+                    Node.Mesh(pom, Sph(.03f, 8, 6), A, .04f, .03f, .03f);
+                    p.pom = pom;
+                    break;
+                }
+                case "bubbles":
+                {
+                    Node.Mesh(g, Cyl(.1f, .09f, .14f, 14), L, 0, .07f, 0);
+                    Node.Mesh(g, Cyl(.102f, .102f, .04f, 14), P, 0, .08f, 0);
+                    Node.Mesh(g, Cyl(.085f, .085f, .01f, 14), M("#BFE6F0", "#9FD3E0"), 0, .14f, 0, shadow: false);
+                    var wand = Node.Group(g, "wand", .04f, .14f, 0);
+                    Node.Mesh(wand, Cyl(.008f, .008f, .26f, 6), T, 0, .13f, 0);
+                    Node.Mesh(wand, Torus(.045f, .009f, 6, 16), A, 0, .3f, 0);
+                    wand.RotZ(-.35f);
+                    p.wand = wand;
+                    break;
+                }
+                case "xylophone":
+                {
+                    Node.Mesh(g, RBox(.52f, .05f, .26f, .02f), W, 0, .025f, 0);
+                    Node.Mesh(g, RBox(.5f, .03f, .03f, .01f), T, 0, .065f, .09f);
+                    Node.Mesh(g, RBox(.5f, .03f, .03f, .01f), T, 0, .065f, -.09f);
+                    string[] cols = { "#E86A5A", "#F2A03D", "#F2D34C", "#8FC46A", "#5FA7D9", "#9C7BD1" };
+                    p.bars = new Transform[6];
+                    for (int i = 0; i < 6; i++) p.bars[i] = Node.Mesh(g, RBox(.065f, .022f, .24f - i * .022f, .008f), M(cols[i]), -.2f + i * .08f, .09f, 0);
+                    Node.Mesh(g, Cyl(.006f, .006f, .2f, 5), M("#8A5D3B"), .1f, .07f, .18f).RotZ(PI / 2);
+                    Node.Mesh(g, Sph(.02f, 8, 6), A, .2f, .07f, .18f);
+                    break;
+                }
+                case "slide":
+                {
+                    // Ladder at the back, ramp down to the front (+z faces the room centre).
+                    Node.Mesh(g, RBox(.26f, .04f, .2f, .02f), W, 0, .45f, -.12f);
+                    foreach (var x in new[] { -.11f, .11f })
+                    {
+                        Node.Mesh(g, Cyl(.014f, .014f, .45f, 6), T, x, .225f, -.2f);
+                        Node.Mesh(g, Cyl(.014f, .014f, .45f, 6), T, x, .225f, -.04f);
+                    }
+                    for (int k = 0; k < 4; k++) Node.Mesh(g, Cyl(.008f, .008f, .22f, 5), T, 0, .09f + k * .1f, -.23f).RotZ(PI / 2);
+                    var ramp = Node.Group(g, "ramp", 0, .24f, .15f);
+                    ramp.RotX(.87f);
+                    Node.Mesh(ramp, RBox(.2f, .025f, .56f, .01f), P);
+                    Node.Mesh(ramp, RBox(.02f, .06f, .56f, .01f), A, -.1f, .02f, 0);
+                    Node.Mesh(ramp, RBox(.02f, .06f, .56f, .01f), A, .1f, .02f, 0);
                     break;
                 }
                 case "trampoline":

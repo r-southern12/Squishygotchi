@@ -63,9 +63,9 @@ Shader "Squishy/TiltShiftGrade"
                     c *= 0.1;
                 }
                 c = Filmic(c);
-                c = lerp(dot(c, float3(0.299, 0.587, 0.114)).xxx, c, 1.1);
+                c = lerp(dot(c, float3(0.299, 0.587, 0.114)).xxx, c, 0.94); // softened (prototype 1.1)
                 c *= lerp(float3(1, 1, 1), float3(1.05, 0.98, 0.9), 0.4 + _PostWarm * 0.6);
-                c *= 1.0 - 0.14 * smoothstep(0.4, 0.95, distance(uv, float2(0.5, 0.47)));
+                c *= 1.0 - 0.07 * smoothstep(0.4, 0.95, distance(uv, float2(0.5, 0.47)));
                 c = lerp(c, float3(1.0, 0.97, 0.88), _PostFlash);
                 // c is a display (gamma) value; the sRGB back buffer encodes, so hand it back linear.
                 return half4(SRGBToLinear(saturate(c)), 1.0);
