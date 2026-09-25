@@ -27,12 +27,15 @@ namespace Squishy.Runtime.Models
         private static float Sstep(float a, float b, float x) { x = Mathf.Clamp01((x - a) / (b - a)); return x * x * (3 - 2 * x); }
         private static float Smax(float a, float b, float k) { float h = Mathf.Max(k - Mathf.Abs(a - b), 0) / k; return Mathf.Max(a, b) + h * h * k * .25f; }
 
-        /// <summary>shapeAt: maps a unit direction onto the bao surface (pleated top, flat bottom).</summary>
+        /// <summary>
+        /// shapeAt: maps a unit direction onto the bao surface (flat bottom). The top swirl is stronger than the
+        /// prototype's (user request, 25 Sep 2026): deeper pleats that twist into a raised, pinched knot.
+        /// </summary>
         public static Vector3 ShapeAt(Vector3 d)
         {
-            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.2f, .97f, d.y);
-            float r = 1.14f * (1 + .05f * t * Mathf.Cos(12 * th + t * 2.4f)) * (1 - .22f * Sstep(.72f, 1, d.y)) * (1 + .06f * Sstep(-.1f, -.7f, d.y));
-            return new Vector3(d.x * r, Smax(d.y * .84f + .09f * Sstep(.9f, 1, d.y), B, .14f), d.z * r);
+            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.2f, .97f, d.y), top = Sstep(.86f, 1, d.y);
+            float r = 1.14f * (1 + .1f * t * t * Mathf.Cos(12 * th + t * 7f)) * (1 - .3f * Sstep(.7f, 1, d.y)) * (1 + .06f * Sstep(-.1f, -.7f, d.y));
+            return new Vector3(d.x * r, Smax(d.y * .84f + .09f * Sstep(.9f, 1, d.y) + .16f * top * top, B, .14f), d.z * r);
         }
 
         public static Mesh BaoMesh() { return ThreeGeo.Deformed("bao", 40, 28, v => ShapeAt(v.normalized)); }
@@ -62,6 +65,22 @@ namespace Squishy.Runtime.Models
                 e.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
                 e.localScale = new Vector3(1, 1.25f, .45f);
                 _eyes[k] = e;
+                // A shine in each eye (blinks with it).
+                var shine = Node.Mesh(e, ThreeGeo.Sph(.028f, 8, 6), ThreeMat.Basic(Color.white), -.028f, .032f, .07f, shadow: false);
+                shine.name = "shine";
+            }
+
+            // A small smile between the eyes.
+            {
+                var d = new Vector3(0, .06f, 1).normalized;
+                var p = ShapeAt(d);
+                var n = p - new Vector3(0, -.1f, 0);
+                n.y *= 1.3f;
+                n.Normalize();
+                var mouth = Node.Mesh(Body, ThreeGeo.Torus(.06f, .014f, 6, 16, Mathf.PI), eyeMat, 0, 0, 0, shadow: false, receive: true);
+                mouth.localPosition = p + n * -.004f;
+                mouth.localRotation = Quaternion.FromToRotation(Vector3.forward, n) * Quaternion.AngleAxis(180, Vector3.forward);
+                mouth.name = "mouth";
             }
 
             _blush = ThreeMat.Basic(ThreeMat.Lin("#FF8FA3"), .5f, ThreeMat.Blend.Alpha, depthWrite: false);

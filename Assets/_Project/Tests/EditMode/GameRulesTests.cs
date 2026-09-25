@@ -90,7 +90,8 @@ namespace Squishy.Tests
         {
             var c = Content();
             var s = GameRules.NewState(c, 3);
-            var rules = new GameRules(c, s);
+            var clock = new ManualClock(new DateTime(2026, 9, 25, 9, 0, 0, DateTimeKind.Utc));
+            var rules = new GameRules(c, s) { Clock = clock };
             int coins = s.coins, steamers = s.steamers, paid = 0;
             for (int k = 0; k < 3; k++)
             {
@@ -99,9 +100,11 @@ namespace Squishy.Tests
                 rules.TaskEvent(t.id, d.goal);
                 paid += d.coins;
                 rules.ClaimTask(0);
+                Assert.IsFalse(rules.TaskReady(s.tasks[0]), "a claimed slot rests before its next task");
+                clock.Advance(TimeSpan.FromHours(c.rules.taskCooldownHours));
             }
             Assert.AreEqual(coins + paid, s.coins);
-            Assert.AreEqual(steamers + 1, s.steamers);
+            Assert.AreEqual(steamers + c.rules.taskSetSteamers, s.steamers);
         }
 
         [Test]

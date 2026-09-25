@@ -11,7 +11,7 @@ namespace Squishy.Runtime.Game
     public sealed partial class SteamerGame
     {
         private static readonly (string id, string label)[] TabList =
-            { ("sq", "Squishies"), ("furniture", "Furniture"), ("walls", "Walls & floors"), ("tools", "Kitchen tools"), ("recipes", "Recipes"), ("pantry", "Pantry"), ("skins", "Steamers") };
+            { ("furniture", "Furniture"), ("walls", "Walls & floors"), ("tools", "Kitchen tools"), ("recipes", "Recipes"), ("pantry", "Pantry"), ("skins", "Steamers") };
 
         private sealed class Entry
         {
@@ -91,11 +91,17 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            ui.SetPanelSub("tasks", "Finish 3 for a free steamer · " + S.setDone + " of 3 done");
+            ui.SetPanelSub("tasks", "Finish 3 for " + C.rules.taskSetSteamers + " free steamers · " + S.setDone + " of 3 done");
             for (int i = 0; i < S.tasks.Count; i++)
             {
                 var t = S.tasks[i];
                 var d = Rules.TaskDef(t);
+                if (!Rules.TaskReady(t))
+                {
+                    var w = Rules.TaskWait(t);
+                    ui.Rec(body, null, "New task on its way", "Next care task in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m", "…", null, true, null, true);
+                    continue;
+                }
                 var pr = Hud.Bar(t.prog / d.goal, 8, "#6F9A74", 0, 6);
                 string sub = d.time ? Mathf.FloorToInt(t.prog / 60) + ":" + Mathf.FloorToInt(t.prog % 60).ToString("00") + " of 3:00" : Mathf.FloorToInt(t.prog) + " of " + d.goal;
                 int idx = i;
@@ -103,7 +109,7 @@ namespace Squishy.Runtime.Game
                 {
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
-                    if (Rules.ClaimTask(idx)) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .5f), "+1 steamer!"); sfx.Chime(); }
+                    if (Rules.ClaimTask(idx)) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .5f), "+" + C.rules.taskSetSteamers + " steamers!"); sfx.Chime(); }
                     ui.TaskDot(Rules.AnyTaskDone());
                     DrawTasks();
                 }, !t.done, pr, true);
@@ -206,37 +212,22 @@ namespace Squishy.Runtime.Game
                     ui.Rec(body, "tool:" + i, t.name + (d <= 0 ? " (broken)" : ""), d + " of " + t.maxDur + " uses left", "Fix " + cost, () => { if (Spend(cost)) { S.toolDur[k] = C.tools[k].maxDur; OpenShop(); } }, S.coins < cost, dur);
                 }
             }
-            Hud.Sec(body, "Furniture");
-            foreach (var a in C.types.OrderBy(PriceOrder))
-            {
-                int cnt = PieceCount(a.id), max = a.max;
-                if (max > 0 && cnt >= max) continue;
-                var skin = C.Catalogue.FirstOrDefault(c => c.arch == a.id && Rules.Owned(c.key)) ?? C.Catalogue.FirstOrDefault(c => c.arch == a.id && c.rarity == "Common") ?? C.Catalogue.First(c => c.arch == a.id);
-                int price = a.price;
-                ui.Rec(body, skin.key, (cnt > 0 ? "Extra " : "") + a.name, (C.IsDecor(a.id) ? "Decor · +" + a.comfort + " comfort" : "Station") + (cnt > 0 ? " · you have " + cnt : ""), price.ToString(), () =>
-                {
-                    if (!Spend(price)) return;
-                    Rules.AddOwned(skin.key);
-                    S.storage.Add(skin.key);
-                    ui.SetHint("Bought! Place it from Arrange");
-                    OpenShop();
-                }, S.coins < price);
-            }
             body.Gap(8);
             if (!ui.PanelOpen("shop")) ui.OpenPanel("shop");
         }
 
-        /// <summary>The shop lists furniture in the prototype's PIECE_PRICE order.</summary>
-        private static int PriceOrder(ItemTypeData a)
-        {
-            string[] order = { "plant", "lamp", "rug", "cushion", "shelf", "wardrobe", "wall", "screen", "chair", "sink", "shower", "trampoline", "beanbag", "bed", "stove", "teatable", "fridge", "tub", "ball" };
-            int i = Array.IndexOf(order, a.id);
-            return i < 0 ? 99 : i;
-        }
-
         // ---------------- catalogue ----------------
 
-        public void OnCatalogue() { OpenCatalogue(); }
+        public void OnCatalogue() { if (tab == "sq") { tab = "furniture"; selKey = null; } OpenCatalogue(); }
+
+        /// <summary>The squishy collection opens from the name chip (top left), not the catalogue.</summary>
+        public void OnSquishies()
+        {
+            if (mode != "home") return;
+            tab = "sq";
+            selKey = null;
+            OpenCatalogue();
+        }
 
         private void OpenCatalogue()
         {
@@ -264,8 +255,7 @@ namespace Squishy.Runtime.Game
         private void EndPreview()
         {
             foreach (var (it, st) in preview.Value.list) if (items.Contains(it)) Restyle(it, st);
-            homeWall.Liner.SetVector("_BaseColor", Three.ThreeMat.Lin("#F2E7D2"));
-            homeWall.Holes.SetVector("_BaseColor", Three.ThreeMat.Lin("#9E7646"));
+            homeWall.Skin(curSkin);
             preview = null;
             RebuildObstacles();
         }
@@ -277,8 +267,7 @@ namespace Squishy.Runtime.Game
             if (s == null) return;
             preview = (s.id, items.Where(it => it.arch != "tomb").Select(it => (it, it.style)).ToList());
             foreach (var it in items) if (it.arch != "tomb") Restyle(it, s.id);
-            homeWall.Liner.SetVector("_BaseColor", Three.ThreeMat.Lin(s.pal[4]));
-            homeWall.Holes.SetVector("_BaseColor", Three.ThreeMat.Lin(s.pal[0]));
+            homeWall.Floor(s.pal[4], Models.SteamerModel.Mix(s.pal[4], s.pal[0], .3f), s.pal[0]);
             RebuildObstacles();
             ui.CloseSheet();
             camS.zoomT = 1;
@@ -308,6 +297,9 @@ namespace Squishy.Runtime.Game
 
         private void DrawCatalogue()
         {
+            bool squishies = tab == "sq";
+            ui.CatTitle.text = squishies ? "Squishies" : "Catalogue";
+            ui.Tabs.Shown(!squishies);
             ui.Tabs.Clear();
             foreach (var (id, label) in TabList) { string t = id; ui.Tab(label, id == tab, () => { tab = t; selKey = null; DrawCatalogue(); }); }
             bool styled = tab == "furniture" || tab == "walls";
@@ -443,7 +435,7 @@ namespace Squishy.Runtime.Game
                 {
                     int si = S.storage.FindIndex(k => k.Split(':')[0] == c.arch);
                     if (si >= 0 && !S.dead) Act("Place in room", () => { S.storage[si] = c.key; CloseCatalogue(); EnterEdit(); PlaceFromStorage(si); });
-                    else note += ". You don’t have a " + a.name.ToLowerInvariant() + " yet: find one in steamers or the shop.";
+                    else note += ". You don’t have a " + a.name.ToLowerInvariant() + " yet: find one in steamers.";
                 }
             }
             ui.DMeta.text = meta;

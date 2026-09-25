@@ -15,7 +15,7 @@ namespace Squishy.Runtime.Game
     /// </summary>
     public static class Thumbs
     {
-        private const int TS = 144;
+        private const int TS = 384; // the prototype used 144; sharper for phone screens
         private static readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
         private static SteamerGame _game;
         private static GameContent _c;
@@ -40,10 +40,11 @@ namespace Squishy.Runtime.Game
             _cam.clearFlags = CameraClearFlags.SolidColor;
             _cam.backgroundColor = new Color(0, 0, 0, 0);
             _cam.cullingMask = 1 << SteamerGame.ThumbLayer;
-            _cam.allowMSAA = false;
+            _cam.allowMSAA = true;
             var data = _cam.GetUniversalAdditionalCameraData();
             data.renderPostProcessing = false;
             _rt = new RenderTexture(TS, TS, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+            _rt.antiAliasing = 4;
             _cam.targetTexture = _rt;
             _pet = new SquishyModel(_root, .5f);
             _pet.Pivot.gameObject.SetActive(false);
@@ -107,7 +108,7 @@ namespace Squishy.Runtime.Game
             RenderTexture.active = prev;
 
             if (kind == "sq") _pet.Pivot.gameObject.SetActive(false);
-            else Node.Destroy(obj);
+            else { obj.gameObject.SetActive(false); Node.Destroy(obj); } // hide now: Destroy waits for frame end and the next thumbnail would see it
             return Cache[key] = tex;
         }
     }

@@ -27,6 +27,8 @@ namespace Squishy.Simulation.Game
         public string id;
         public float prog;
         public bool done;
+        /// <summary>UTC ticks when this slot gets a task again after a claim (0 = active now).</summary>
+        public long readyAt;
     }
 
     /// <summary>A piece placed in the room. Runtime objects keep a reference and write back as they move.</summary>

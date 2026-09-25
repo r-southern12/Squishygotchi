@@ -13,8 +13,10 @@ namespace Squishy.Runtime.Models
         public const float H = 1.35f, DefaultR = 2.3f;
 
         public readonly Transform Group;
-        public readonly Material Liner, Holes;
+        public readonly Material Liner;
         public float? Grow; // expansion animation progress, null when idle
+        /// <summary>The skin a new steamer starts in (buildSteamer applies SKINS[0]); set from content at start-up.</summary>
+        public static SteamerSkinData DefaultSkin;
 
         private readonly int _n;
         private readonly float _r;
@@ -30,26 +32,9 @@ namespace Squishy.Runtime.Models
             float R = rad;
             Group = Node.Group(parent, "Steamer");
             Node.Mesh(Group, Cyl(R + .02f, R + .02f, .14f, 48), M("#A97E47"), 0, .07f, 0);
-            Liner = Lambert(Lin("#F2E7D2"));
+            Liner = Lambert(Color.white);
+            Liner.SetTextureScale("_BaseMap", new Vector2(2.5f, 2.5f));
             Node.Mesh(Group, Cyl(R * .9f, R * .9f, .05f, 48), Liner, 0, .165f, 0);
-
-            // Steam holes in the liner: one combined mesh (they never move).
-            var pts = new List<Vector2>();
-            for (double x = -R; x <= R; x += .42)
-            for (double z = -R; z <= R; z += .42)
-            {
-                long k = (long)System.Math.Floor(x / .42 + .5);
-                double zz = z + (k % 2 != 0 ? .21 : 0);
-                if (System.Math.Sqrt(x * x + zz * zz) < R * .82) pts.Add(new Vector2((float)x, (float)zz));
-            }
-            Holes = Lambert(Lin("#9E7646"));
-            var hole = Cyl(.07f, .07f, .052f, 8);
-            var combine = new CombineInstance[pts.Count];
-            for (int i = 0; i < pts.Count; i++)
-                combine[i] = new CombineInstance { mesh = hole, transform = Matrix4x4.Translate(new Vector3(pts[i].x, .167f, pts[i].y)) };
-            var holes = new Mesh { name = "holes", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-            holes.CombineMeshes(combine, true, true);
-            Node.Mesh(Group, holes, Holes, 0, 0, 0, shadow: false, receive: true);
 
             _capMat = Lambert(Lin("#D6AE72"));
             _bandMat = Lambert(Lin("#A97E47"));
@@ -75,6 +60,7 @@ namespace Squishy.Runtime.Models
                 _high[i] = Node.Mesh(Group, bandG, _bandMat);
                 Place(i);
             }
+            if (DefaultSkin != null) Skin(DefaultSkin);
         }
 
         public float Radius { get { return _r; } }
@@ -98,7 +84,14 @@ namespace Squishy.Runtime.Models
                 _slatMats[i].SetVector("_BaseColor", OffsetHsl(i % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f));
             _capMat.SetVector("_BaseColor", Lin(sk.a));
             _bandMat.SetVector("_BaseColor", Lin(sk.t));
+            // The woven base takes the skin's tones, lifted towards cream so the floor stays light.
+            Floor(Mix(sk.a, "#F2E7D2", .3f), Mix(sk.b, "#F2E7D2", .6f), Mix(sk.t, sk.a, .35f));
         }
+
+        /// <summary>Repaints the woven floor (also used by the style preview).</summary>
+        public void Floor(string a, string b, string gap) { Liner.SetTexture("_BaseMap", Textures.Weave(a, b, gap)); }
+
+        public static string Mix(string x, string y, float t) { return "#" + ColorUtility.ToHtmlStringRGB(Color.Lerp(Hex(x), Hex(y), t)); }
 
         /// <summary>Slats facing the camera (direction cx, cz) sink so the room stays visible.</summary>
         public void Cutaway(float cx, float cz, float dt, float limit)

@@ -21,7 +21,7 @@ namespace Squishy.Runtime.UI
         // Catalogue sheet
         public VisualElement Sheet, Tabs, Chips, PvBar, Detail, DetailThumb;
         public ScrollView Grid, ChipScroll;
-        public Label CatCount, PvNote, DName, DMeta, DNote, PvBtnLbl;
+        public Label CatTitle, CatCount, PvNote, DName, DMeta, DNote, PvBtnLbl;
         public Frame PvBtn, DAct;
         public Label DActLbl;
 
@@ -38,6 +38,7 @@ namespace Squishy.Runtime.UI
                 pn.pickingMode = PickingMode.Position;
                 pn.style.maxHeight = Length.Percent(72);
                 var head = new VisualElement().Row(Align.FlexStart, Justify.SpaceBetween).Pad(14, 14, 8, 14).In(pn);
+                head.style.flexShrink = 0;
                 var hx = new VisualElement().In(head);
                 hx.style.flexShrink = 1;
                 _panelTitle[id] = Label(hx, "", "Gluten", 800, 22);
@@ -276,7 +277,7 @@ namespace Squishy.Runtime.UI
             Sheet.pickingMode = PickingMode.Position;
             var head = new VisualElement().Row(Align.Center, Justify.SpaceBetween).Pad(16 + safeTop, 14, 8, 14).In(Sheet);
             var hx = new VisualElement().In(head);
-            Label(hx, "Catalogue", "Gluten", 800, 24);
+            CatTitle = Label(hx, "Catalogue", "Gluten", 800, 24);
             CatCount = Label(hx, "", "Figtree", 700, 12, Muted);
             IconBtn(head, "close", 36, 18, -1, () => _g.OnCatClose(), out _);
             Tabs = new VisualElement().Row().Pad(4, 14, 8, 14).In(Sheet);

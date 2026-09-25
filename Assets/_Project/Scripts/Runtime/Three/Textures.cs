@@ -225,6 +225,45 @@ namespace Squishy.Runtime.Three
             return Cache["rays"] = g.ToTexture(false, false, true, "Rays");
         }
 
+        /// <summary>
+        /// The woven bamboo base of the steamer (replaces the prototype's dotted paper liner, 25 Sep 2026):
+        /// a plain over-under weave of 32px strips in two tones, with dark gaps and soft shading where strips dip under.
+        /// </summary>
+        public static Texture2D Weave(string a, string b, string gap)
+        {
+            string key = "weave" + a + b + gap;
+            if (Cache.TryGetValue(key, out var cached)) return cached;
+            var g = new Canvas2D(256, 256);
+            Color ca = Canvas2D.Css(a), cb = Canvas2D.Css(b), cg = Canvas2D.Css(gap), shade = new Color(cg.r, cg.g, cg.b, .28f), hi = new Color(1, 1, 1, .18f);
+            const int S = 32;
+            for (int j = 0; j < 8; j++)
+            for (int i = 0; i < 8; i++)
+            {
+                float x = i * S, y = j * S;
+                bool across = (i + j) % 2 == 0;
+                g.FillRect(x, y, S, S, across ? ca : cb);
+                if (across)
+                {
+                    g.FillRect(x, y + 12, S, 5, hi);
+                    for (int k = 0; k < 3; k++) g.FillRect(x, y + 6 + k * 9, S, 1, shade);
+                    g.FillRect(x, y, 3, S, shade);
+                    g.FillRect(x + S - 3, y, 3, S, shade);
+                    g.FillRect(x, y, S, 2, cg);
+                    g.FillRect(x, y + S - 2, S, 2, cg);
+                }
+                else
+                {
+                    g.FillRect(x + 12, y, 5, S, hi);
+                    for (int k = 0; k < 3; k++) g.FillRect(x + 6 + k * 9, y, 1, S, shade);
+                    g.FillRect(x, y, S, 3, shade);
+                    g.FillRect(x, y + S - 3, S, 3, shade);
+                    g.FillRect(x, y, 2, S, cg);
+                    g.FillRect(x + S - 2, y, 2, S, cg);
+                }
+            }
+            return Cache[key] = g.ToTexture(true, true, true, "Weave");
+        }
+
         /// <summary>tileTex: the unbox counter's back wall tiles (repeat 8x3).</summary>
         public static Texture2D Tiles()
         {

@@ -121,6 +121,7 @@ namespace Squishy.Runtime.UI
             who.style.flexShrink = 0;
             _name = Label(who, "Pinky", "Gluten", 700, 18);
             _sub = Label(who, "Day 3 · Mini", "Figtree", 600, 11, Muted);
+            Tap(who, () => _g.OnSquishies());
             var edittag = Modal(new Frame().Set(C("#D9A64A"), 14, new Shadow(0, 3, 0, 0, C("#A07324"))).Pad(7, 14, 7, 14).In(row1), "edit");
             Label(edittag, "Arrange room", "Gluten", 800, 17, Cream);
             var back = Modal(Chip(row1, 14).Row().Pad(0, 14, 0, 10).Size(null, 38), "unbox");

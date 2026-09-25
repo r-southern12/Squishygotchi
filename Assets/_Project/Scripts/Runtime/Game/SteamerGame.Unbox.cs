@@ -332,7 +332,8 @@ namespace Squishy.Runtime.Game
                 lidV.y -= 16 * dt;
                 lidP += lidV * dt;
                 lidR += lidW * dt;
-                if (lidP.y > 14) { lidOn = false; lid.gameObject.SetActive(false); }
+                // Gone once it tops out and the camera zooms in on the prize (the prototype let it fall back through).
+                if (lidP.y > 14 || lidV.y < 0) { lidOn = false; lid.gameObject.SetActive(false); }
             }
             bool charging = ustate == "closed" || ustate == "charging";
             if (charging)

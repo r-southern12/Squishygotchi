@@ -471,7 +471,7 @@ namespace Squishy.Runtime.Game
                 return;
             }
             string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.RoomLevel.slots;
-            if (S.storage.Count == 0) { ui.DrawTray(title, new List<(string, bool, bool, string)>(), "Empty. Get more from steamers or the shop.", null); return; }
+            if (S.storage.Count == 0) { ui.DrawTray(title, new List<(string, bool, bool, string)>(), "Empty. Get more from steamers.", null); return; }
             var list = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
             ui.DrawTray(title, list, null, key => PlaceFromStorage(int.Parse(key.Substring(key.IndexOf('#') + 1))));
         }

@@ -66,6 +66,7 @@ namespace Squishy.Runtime.Game
             QualitySettings.vSyncCount = 0;
             C = JsonUtility.FromJson<GameContent>(Resources.Load<TextAsset>("Content/game_content").text);
             C.Init();
+            SteamerModel.DefaultSkin = C.skins[0];
 
             var clock = new SystemClock();
             _saves = new SaveService(new FileSaveStore(Path.Combine(Application.persistentDataPath, "save.json")), new JsonUtilitySaveSerializer(false), SaveMigrator.CreateDefault(), clock);
@@ -205,6 +206,7 @@ namespace Squishy.Runtime.Game
             float ms = accT / accF * 1000;
             cool -= accT;
             ui.SetFps(Mathf.RoundToInt(1000 / ms) + " fps · " + Mathf.RoundToInt(quality * 100) + "% res");
+            if (ui.PanelOpen("tasks")) DrawTasks(); // keeps the task countdowns ticking
             if (cool <= 0 && !ui.SheetOpen)
             {
                 if (ms > 22 && quality > .5f) { quality = Mathf.Max(.5f, quality - .15f); ApplyQuality(); cool = 2; }

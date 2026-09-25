@@ -35,6 +35,9 @@ namespace Squishy.Simulation.Game
 
         public event Action CoinsChanged, SteamersChanged, TasksChanged;
 
+        /// <summary>Wall clock for task cooldowns (a server clock later).</summary>
+        public IClock Clock = new SystemClock();
+
         public GameRules(GameContent content, GameState state)
         {
             C = content;
@@ -395,7 +398,7 @@ namespace Squishy.Simulation.Game
             bool fin = false;
             foreach (var t in S.tasks)
             {
-                if (t.id != id || t.done) continue;
+                if (t.id != id || t.done || !TaskReady(t)) continue;
                 var d = TaskDef(t);
                 t.prog = Math.Min(d.goal, t.prog + n);
                 if (t.prog >= d.goal) { t.done = true; fin = true; }
@@ -406,16 +409,23 @@ namespace Squishy.Simulation.Game
 
         public bool AnyTaskDone() { return S.tasks.Exists(t => t.done); }
 
-        /// <summary>Pays a finished task and replaces it. Returns true when the set earns a free steamer.</summary>
+        public bool TaskReady(TaskState t) { return t.readyAt <= Clock.UtcNow.Ticks; }
+
+        /// <summary>Time until a resting slot gets its next task.</summary>
+        public TimeSpan TaskWait(TaskState t) { return TimeSpan.FromTicks(Math.Max(0, t.readyAt - Clock.UtcNow.Ticks)); }
+
+        /// <summary>Pays a finished task and replaces it. Returns true when the set earns its steamers.</summary>
         public bool ClaimTask(int i)
         {
             var t = S.tasks[i];
             if (!t.done) return false;
             AddCoins(TaskDef(t).coins);
             S.setDone++;
-            S.tasks[i] = NewTask();
+            var next = NewTask();
+            next.readyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.taskCooldownHours).Ticks; // rate-limited: one new task per slot every few hours
+            S.tasks[i] = next;
             bool steamer = false;
-            if (S.setDone >= R.tasksPerSteamer) { S.setDone = 0; SetSteamers(S.steamers + 1); steamer = true; }
+            if (S.setDone >= R.tasksPerSteamer) { S.setDone = 0; SetSteamers(S.steamers + R.taskSetSteamers); steamer = true; }
             if (TasksChanged != null) TasksChanged();
             return steamer;
         }
