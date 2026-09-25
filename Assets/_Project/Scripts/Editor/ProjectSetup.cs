@@ -44,12 +44,15 @@ namespace Squishy.EditorTools
         {
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             EditorUserBuildSettings.buildAppBundle = false;
+            // Keep test APKs small enough to send to a phone: strip unused engine code, compress tightly.
+            PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.Android, ManagedStrippingLevel.Medium);
+            PlayerSettings.stripEngineCode = true;
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
                 scenes = new[] { ScenePath },
                 locationPathName = "Builds/Squishy.apk",
                 target = BuildTarget.Android,
-                options = BuildOptions.None,
+                options = BuildOptions.CompressWithLz4HC,
             });
             Debug.Log("Squishy: Android build " + report.summary.result + ", " + report.summary.totalSize / (1024 * 1024) + " MB, " + report.summary.totalErrors + " errors.");
             if (Application.isBatchMode) EditorApplication.Exit(report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded ? 0 : 1);
