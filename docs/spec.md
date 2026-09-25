@@ -71,6 +71,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - **On its own**, the squishy looks after itself when a need drops below 35%: it snacks, dozes, grooms or nudges the ball. On its own it can never get a need above 50% (snacks 60%).
 - **Only the player** can fill a need completely, by sending it to a station: cook a meal, nap with the lights off, bath and scrub, play fetch.
 - **Comfort** slows the drain (see Room).
+- **Neglect** (decided 25 Sep 2026): self-care weakens the longer the player stays away. It's at full strength right after any player care and fades to nothing, so a squishy that's never looked after ends up sad (no happy income), then its self-care fails, and after about 2 days of neglect it dies. Test speed: about 45 minutes. Any player care resets it.
 
 **Decline stages** (based on the lowest need)
 

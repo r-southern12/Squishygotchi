@@ -94,13 +94,37 @@ namespace Squishy.Tests
         }
 
         [Test]
-        public void Offline_HealthySquishyScrapesByButStaysUnderHalf()
+        public void Offline_WithSelfCareIntact_ScrapesByButStaysUnderHalf()
         {
+            _def.selfCareFadeSeconds = 0f; // no fading: isolate the autonomy cap
             var s = new CareState();
             bool died = CareSim.SimulateOffline(s, _def, 6 * 3600, 0f);
             Assert.IsFalse(died);
             Assert.Greater(CareSim.Condition(s), _def.criticalBelow);
             Assert.LessOrEqual(CareSim.Condition(s), _def.selfCareCap + 1e-4f);
+        }
+
+        [Test]
+        public void SelfCare_WeakensWithNeglect_AndPlayerCareRestoresIt()
+        {
+            var s = new CareState();
+            Assert.AreEqual(1f, CareSim.SelfCareStrength(s, _def), 1e-5);
+            CareSim.Tick(s, _def, _def.selfCareFadeSeconds * 0.5f, 0f);
+            Assert.AreEqual(0.5f, CareSim.SelfCareStrength(s, _def), 1e-3);
+            CareSim.Tick(s, _def, _def.selfCareFadeSeconds, 0f);
+            Assert.AreEqual(0f, CareSim.SelfCareStrength(s, _def), 1e-5);
+            Assert.IsFalse(CareSim.CanSelfCare(s, _def), "Worn-out self-care can't help, even above Critical.");
+
+            CareSim.RecordPlayerCare(s);
+            Assert.AreEqual(1f, CareSim.SelfCareStrength(s, _def), 1e-5);
+        }
+
+        [Test]
+        public void Offline_LongNeglect_Kills()
+        {
+            var s = new CareState();
+            bool died = CareSim.SimulateOffline(s, _def, _def.selfCareFadeSeconds * 3f, 0f);
+            Assert.IsTrue(died, "Self-care fades, needs empty, and the death clock runs out.");
         }
 
         [Test]

@@ -20,6 +20,13 @@ namespace Squishy.Simulation.Content
         public float selfCareCap = 0.5f;
         /// <summary>Chance per idle decision that it looks after its lowest need (when below selfCareBelow).</summary>
         public float selfCareChance = 0.8f;
+        /// <summary>
+        /// Self-care weakens the longer the player stays away: full strength right after player care,
+        /// none after this many seconds (then needs fall to zero and the death clock runs).
+        /// Test speed 1800 (about 45 minutes to death in total). Release target: about 36 hours,
+        /// which with release drain and death timing makes roughly 2 days of neglect before death.
+        /// </summary>
+        public float selfCareFadeSeconds = 1800f;
         /// <summary>"Make do" self-care when no station suits: fill rate and duration.</summary>
         public float makeDoRate = 0.06f;
         public float makeDoSeconds = 4f;

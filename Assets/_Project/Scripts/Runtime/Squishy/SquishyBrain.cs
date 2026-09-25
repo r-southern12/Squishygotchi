@@ -267,6 +267,7 @@ namespace Squishy.Runtime.SquishyPet
             _actTime = 0f;
             _mode = Mode.Act;
             if (act.usesSnack) _useSnack();
+            if (byPlayer && act.fillsNeed) CareSim.RecordPlayerCare(_care);
             _body.SetSleeping(act.isSleep);
             _body.Impulse(landingSquash);
             Say(act.label + (byPlayer ? "" : " (on its own)"), false, act.seconds + 0.5f);
@@ -282,6 +283,7 @@ namespace Squishy.Runtime.SquishyPet
                 var def = _careData.care;
                 float rate = _act.ratePerSecond;
                 if (_act.isSleep && _byPlayer && AnyLampOn()) rate *= 0.5f;
+                if (!_byPlayer) rate *= CareSim.SelfCareStrength(_care, def); // neglect wears self-care down
                 float cap = CareSim.CapFor(_act, _byPlayer, def);
                 CareSim.Fill(_care, _act.need, rate * dt, cap);
                 if (_act.fillsAlso) CareSim.Fill(_care, _act.alsoNeed, rate * 0.5f * dt, cap);

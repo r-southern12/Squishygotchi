@@ -22,6 +22,8 @@ namespace Squishy.Simulation.Care
         public float clean = 1f;
 
         public float secondsAtZero;
+        /// <summary>Time since the player last cared for it. Self-care weakens as this grows.</summary>
+        public float secondsSincePlayerCare;
         public float ageSeconds;
         public int generation = 1;
         public bool dead;
@@ -80,10 +82,26 @@ namespace Squishy.Simulation.Care
             return CareStage.Critical;
         }
 
-        /// <summary>Too weak to look after itself; only the player can help.</summary>
+        /// <summary>
+        /// False when too weak (Critical) or when self-care has worn out from neglect; only the player can help.
+        /// </summary>
         public static bool CanSelfCare(CareState s, CareDef def)
         {
-            return !s.dead && Condition(s) >= def.criticalBelow;
+            return !s.dead && Condition(s) >= def.criticalBelow && SelfCareStrength(s, def) > 0f;
+        }
+
+        /// <summary>1 right after player care, falling to 0 over CareDef.selfCareFadeSeconds. Multiplies self-care fill rates.</summary>
+        public static float SelfCareStrength(CareState s, CareDef def)
+        {
+            if (def.selfCareFadeSeconds <= 0f) return 1f;
+            float k = 1f - s.secondsSincePlayerCare / def.selfCareFadeSeconds;
+            return k < 0f ? 0f : (k > 1f ? 1f : k);
+        }
+
+        /// <summary>The player looked after it: self-care is back to full strength.</summary>
+        public static void RecordPlayerCare(CareState s)
+        {
+            s.secondsSincePlayerCare = 0f;
         }
 
         /// <summary>Drain slowdown from Comfort, 0..max.</summary>
@@ -110,6 +128,7 @@ namespace Squishy.Simulation.Care
                 if (s.Get(n) <= 0f) anyZero = true;
             }
             s.ageSeconds += seconds;
+            s.secondsSincePlayerCare += seconds;
 
             if (anyZero) s.secondsAtZero += seconds;
             else s.secondsAtZero = Math.Max(0f, s.secondsAtZero - seconds);
@@ -156,9 +175,10 @@ namespace Squishy.Simulation.Care
                 remaining -= dt;
                 died = Tick(s, def, dt, comfortSlowdown);
                 if (s.dead || !CanSelfCare(s, def)) continue;
+                float strength = SelfCareStrength(s, def);
                 for (int i = 0; i < AllNeeds.Length; i++)
                     if (s.Get(AllNeeds[i]) < def.selfCareBelow)
-                        Fill(s, AllNeeds[i], def.offlineSelfCareRate * dt, def.selfCareCap);
+                        Fill(s, AllNeeds[i], def.offlineSelfCareRate * strength * dt, def.selfCareCap);
             }
             return died;
         }
@@ -169,6 +189,7 @@ namespace Squishy.Simulation.Care
             int generation = s.generation + 1;
             s.hunger = s.play = s.rest = s.clean = 1f;
             s.secondsAtZero = 0f;
+            s.secondsSincePlayerCare = 0f;
             s.ageSeconds = 0f;
             s.dead = false;
             s.generation = generation;
