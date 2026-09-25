@@ -1,5 +1,9 @@
 using Squishy.Data;
 using Squishy.Runtime;
+using Squishy.Runtime.CameraRig;
+using Squishy.Runtime.Rendering;
+using Squishy.Runtime.Room;
+using Squishy.Runtime.SquishyPet;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.SceneManagement;
@@ -38,6 +42,8 @@ namespace Squishy.EditorTools
             ContentSeeder.SeedFromSpec();
             ApplyPlayerSettings();
             CreateRenderPipeline();
+            CreateMaterials();
+            AddTiltShiftPass();
             CreateMainScene();
             AssetDatabase.SaveAssets();
             Debug.Log("Squishy: setup done. Open " + ScenePath + " and press Play.");
@@ -101,51 +107,125 @@ namespace Squishy.EditorTools
             QualitySettings.SetQualityLevel(current, false);
         }
 
-        [MenuItem("Squishy/Setup/Create Main Scene")]
+
+        private const string MaterialsFolder = "Assets/_Project/Placeholder/Materials";
+        private const string TiltShiftMaterialPath = SettingsFolder + "/TiltShiftGrade.mat";
+
+        [MenuItem("Squishy/Setup/Create Materials")]
+        public static void CreateMaterials()
+        {
+            ContentSeeder.EnsureFolder(MaterialsFolder);
+            // Cheap matte material for all scenery; the squishy alone gets full Lit.
+            Mat(MaterialsFolder + "/Scenery.mat", "Universal Render Pipeline/Simple Lit", m => m.SetFloat("_Smoothness", 0f));
+            Mat(MaterialsFolder + "/Squishy.mat", "Universal Render Pipeline/Lit", m => m.SetFloat("_Smoothness", 0.5f));
+            Mat(MaterialsFolder + "/Face.mat", "Universal Render Pipeline/Unlit", m => m.SetColor("_BaseColor", new Color(0.2f, 0.15f, 0.13f)));
+            Mat(TiltShiftMaterialPath, "Squishy/TiltShiftGrade", m => { });
+        }
+
+        [MenuItem("Squishy/Setup/Add Tilt-Shift Pass")]
+        public static void AddTiltShiftPass()
+        {
+            var rendererData = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererPath);
+            var material = AssetDatabase.LoadAssetAtPath<Material>(TiltShiftMaterialPath);
+            if (rendererData == null || material == null) { Debug.LogWarning("Squishy: renderer or tilt-shift material missing."); return; }
+            foreach (var f in rendererData.rendererFeatures)
+                if (f is FullScreenPassRendererFeature fs && fs.passMaterial == material) return;
+
+            var feature = ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();
+            feature.name = "TiltShiftGrade";
+            feature.passMaterial = material;
+            feature.injectionPoint = FullScreenPassRendererFeature.InjectionPoint.AfterRenderingPostProcessing;
+            feature.fetchColorBuffer = true;
+            AssetDatabase.AddObjectToAsset(feature, rendererData);
+            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature, out string _, out long localId);
+
+            // Add through the serialized lists so URP's feature map stays in sync with the list.
+            var so = new SerializedObject(rendererData);
+            var list = so.FindProperty("m_RendererFeatures");
+            var map = so.FindProperty("m_RendererFeatureMap");
+            list.arraySize++;
+            list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = feature;
+            map.arraySize++;
+            map.GetArrayElementAtIndex(map.arraySize - 1).longValue = localId;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(rendererData);
+            AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>Generated scene: rebuilding overwrites it. Once we start hand-editing the scene, stop calling this.</summary>
+        [MenuItem("Squishy/Setup/Rebuild Main Scene")]
         public static void CreateMainScene()
         {
-            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)
-            {
-                ContentSeeder.EnsureFolder("Assets/_Project/Scenes");
-                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            ContentSeeder.EnsureFolder("Assets/_Project/Scenes");
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-                var cameraGo = new GameObject("Main Camera");
-                cameraGo.tag = "MainCamera";
-                var camera = cameraGo.AddComponent<Camera>();
-                camera.clearFlags = CameraClearFlags.SolidColor;
-                camera.backgroundColor = new Color(0.95f, 0.90f, 0.82f); // cream
-                camera.fieldOfView = 35f;
-                cameraGo.AddComponent<UniversalAdditionalCameraData>();
-                cameraGo.transform.position = new Vector3(0f, 6f, -9f);
-                cameraGo.transform.rotation = Quaternion.Euler(32f, 0f, 0f);
+            RenderSettings.skybox = null;
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.62f, 0.56f, 0.5f);
 
-                var lightGo = new GameObject("Sun");
-                var light = lightGo.AddComponent<Light>();
-                light.type = LightType.Directional;
-                light.color = new Color(1f, 0.95f, 0.86f);
-                light.shadows = LightShadows.Soft;
-                lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+            var cameraGo = new GameObject("Main Camera");
+            cameraGo.tag = "MainCamera";
+            var camera = cameraGo.AddComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.95f, 0.90f, 0.82f); // cream
+            camera.fieldOfView = 30f;
+            camera.nearClipPlane = 0.1f;
+            camera.farClipPlane = 60f;
+            cameraGo.AddComponent<UniversalAdditionalCameraData>();
+            var follow = cameraGo.AddComponent<FollowCamera>();
+            var tilt = cameraGo.AddComponent<TiltShiftController>();
+            Wire(tilt, "targetCamera", camera);
 
-                // Placeholder floor and squishy so Play shows something. Milestone 2 replaces them.
-                var floor = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                floor.name = "Placeholder_SteamerFloor";
-                floor.transform.localScale = new Vector3(8f, 0.1f, 8f);
-                var squishy = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                squishy.name = "Placeholder_Squishy";
-                squishy.transform.position = new Vector3(0f, 0.55f, 0f);
-                squishy.transform.localScale = new Vector3(1.1f, 0.9f, 1.1f);
+            var lightGo = new GameObject("Sun");
+            var light = lightGo.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.color = new Color(1f, 0.93f, 0.82f);
+            light.intensity = 1.1f;
+            light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.6f;
+            lightGo.transform.rotation = Quaternion.Euler(55f, -35f, 0f);
 
-                var game = new GameObject("Game");
-                var boot = game.AddComponent<GameBootstrap>();
-                var so = new SerializedObject(boot);
-                so.FindProperty("content").objectReferenceValue =
-                    AssetDatabase.LoadAssetAtPath<ContentDatabase>(ContentSeeder.DatabasePath);
-                so.ApplyModifiedPropertiesWithoutUndo();
+            var game = new GameObject("Game");
+            Wire(game.AddComponent<GameBootstrap>(), "content", AssetDatabase.LoadAssetAtPath<ContentDatabase>(ContentSeeder.DatabasePath));
 
-                EditorSceneManager.SaveScene(scene, ScenePath);
-            }
+            var home = new GameObject("Home");
+            var roomGo = new GameObject("Room");
+            roomGo.transform.SetParent(home.transform, false);
+            var room = roomGo.AddComponent<SteamerRoom>();
+            Wire(room, "sceneryMaterial", AssetDatabase.LoadAssetAtPath<Material>(MaterialsFolder + "/Scenery.mat"));
 
+            var squishyGo = new GameObject("Squishy");
+            squishyGo.transform.SetParent(home.transform, false);
+            var body = squishyGo.AddComponent<SquishyBody>();
+            squishyGo.AddComponent<SquishyWander>();
+            Wire(body, "bodyMaterial", AssetDatabase.LoadAssetAtPath<Material>(MaterialsFolder + "/Squishy.mat"));
+            Wire(body, "faceMaterial", AssetDatabase.LoadAssetAtPath<Material>(MaterialsFolder + "/Face.mat"));
+
+            var homeScene = home.AddComponent<HomeScene>();
+            Wire(homeScene, "room", room);
+            Wire(homeScene, "squishy", body);
+            Wire(homeScene, "followCamera", follow);
+            Wire(homeScene, "tiltShift", tilt);
+
+            EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+        }
+
+        private static void Mat(string path, string shaderName, System.Action<Material> setup)
+        {
+            if (AssetDatabase.LoadAssetAtPath<Material>(path) != null) return;
+            var shader = Shader.Find(shaderName);
+            if (shader == null) { Debug.LogWarning("Squishy: shader not found: " + shaderName); return; }
+            var m = new Material(shader);
+            setup(m);
+            AssetDatabase.CreateAsset(m, path);
+        }
+
+        private static void Wire(Object component, string field, Object value)
+        {
+            var so = new SerializedObject(component);
+            so.FindProperty(field).objectReferenceValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

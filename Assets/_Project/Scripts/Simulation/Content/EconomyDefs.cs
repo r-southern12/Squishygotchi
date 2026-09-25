@@ -22,6 +22,8 @@ namespace Squishy.Simulation.Content
         public int startingCoins = 248;
         public int startingSteamers = 3;
         public int startingRoomLevel = 2;
+        /// <summary>Finish id of the squishy a new player starts with (one copy, as favourite).</summary>
+        public string startingSquishyId = "peach";
 
         public int steamerPrice = 150;
         public int tasksActive = 3;

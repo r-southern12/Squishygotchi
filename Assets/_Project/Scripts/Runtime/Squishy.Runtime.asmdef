@@ -3,7 +3,8 @@
     "rootNamespace": "Squishy.Runtime",
     "references": [
         "Squishy.Simulation",
-        "Squishy.Data"
+        "Squishy.Data",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -57,6 +57,8 @@ namespace Squishy.Tests
             Assert.AreEqual(248, data.coins);
             Assert.AreEqual(3, data.steamers);
             Assert.AreEqual(2, data.roomLevel);
+            Assert.AreEqual("peach", data.favouriteSquishyId);
+            Assert.AreEqual(1, data.squishies.Count);
             Assert.AreEqual(SaveMigrator.CurrentVersion, data.version);
         }
 

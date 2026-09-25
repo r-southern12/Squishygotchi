@@ -93,6 +93,11 @@ namespace Squishy.Simulation.Save
             data.coins = economy.startingCoins;
             data.steamers = economy.startingSteamers;
             data.roomLevel = economy.startingRoomLevel;
+            if (!string.IsNullOrEmpty(economy.startingSquishyId))
+            {
+                data.favouriteSquishyId = economy.startingSquishyId;
+                data.squishies.Add(new OwnedCount(economy.startingSquishyId, 1));
+            }
             // Seed from the clock so each new game gets its own sequence; the state is then saved.
             data.gachaRngState = new Pcg32((ulong)now).State;
             return data;
