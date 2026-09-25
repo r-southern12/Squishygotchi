@@ -15,10 +15,10 @@
     {"id":"cottage","name":"Cottagecore","shortName":"Cottage","group":"Mood","pal":["#B48A5E","#E3A0A8","#A9C39A","#7A6048","#FBF3E6"],"pat":"gingham","round":true},
     {"id":"midcentury","name":"Mid-century","shortName":"Mid-century","group":"Mood","pal":["#A0642F","#E08A2E","#3F8A8C","#2B2B2B","#F0E6D2"],"pat":"atomic"},
     {"id":"minimal","name":"Minimal","shortName":"Minimal","group":"Mood","pal":["#E6E1D8","#BDB6AA","#F4F2EE","#3C3A37","#FFFFFF"],"pat":"none"},
-    {"id":"candy","name":"Candy Shop","shortName":"Candy","group":"Mood","pal":["#F4B8C8","#8ED1C6","#FFF1A8","#E86A92","#FFF7FA"],"pat":"candy","round":true},
-    {"id":"seaside","name":"Seaside","shortName":"Seaside","group":"Mood","pal":["#D8C29A","#3C8DBC","#9FD3E0","#E8765A","#F4FAFA"],"pat":"scales"},
-    {"id":"space","name":"Star Station","shortName":"Star","group":"Mood","pal":["#3A3F5C","#7B6CF6","#2A2D45","#C9D1E8","#CBD2E6"],"pat":"stars"},
-    {"id":"spooky","name":"Spooky Manor","shortName":"Spooky","group":"Mood","pal":["#3B2E3A","#E07B39","#5E4A74","#1E1A1F","#D9CFC0"],"pat":"moons"},
+    {"id":"candy","name":"Candy Shop","shortName":"Candy","group":"Mood","pal":["#F4B8C8","#8ED1C6","#FFF1A8","#E86A92","#FFF7FA"],"pat":"candy","round":true,"eventMonths":[2,3]},
+    {"id":"seaside","name":"Seaside","shortName":"Seaside","group":"Mood","pal":["#D8C29A","#3C8DBC","#9FD3E0","#E8765A","#F4FAFA"],"pat":"scales","eventMonths":[6,7,8]},
+    {"id":"space","name":"Star Station","shortName":"Star","group":"Mood","pal":["#3A3F5C","#7B6CF6","#2A2D45","#C9D1E8","#CBD2E6"],"pat":"stars","eventMonths":[12,1]},
+    {"id":"spooky","name":"Spooky Manor","shortName":"Spooky","group":"Mood","pal":["#3B2E3A","#E07B39","#5E4A74","#1E1A1F","#D9CFC0"],"pat":"moons","eventMonths":[10,11]},
     {"id":"pixel","name":"Pixel Den","shortName":"Pixel","group":"Mood","pal":["#2E3440","#4DD9A5","#E0457B","#6C7AE0","#D8DEE9"],"pat":"pixels"},
     {"id":"greenhouse","name":"Greenhouse","shortName":"Greenhouse","group":"Mood","pal":["#9C7A54","#5E9E5A","#D9E8C4","#6B5B45","#F2F4E8"],"pat":"leaves"},
     {"id":"bakery","name":"Bakery","shortName":"Bakery","group":"Mood","pal":["#C89A64","#E8C27A","#F6E6CF","#8C5A3A","#FFF8EC"],"pat":"checker","round":true},
@@ -201,8 +201,26 @@
     "pLegendary":0.01,"pEpic":0.05,"pRare":0.18,"pityRare":10,"pityEpic":50,"favouriteChance":0.4,
     "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,"kitIngredients":2,"shopKitCooks":2,"shopKitPricePerIngredient":7,
     "steamerPrice":150,"snackPrice":5,"ingredientPrice":8,"newToolPrice":60,"minRepair":10,"tasksPerSteamer":3,"taskSetSteamers":2,"taskCooldownHours":3,
-    "tuckMinCondition":0.12,"squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012
+    "tuckMinCondition":0.12,"lifespanMinDays":30,"lifespanMaxDays":60,"babyDays":3,"prestigeBase":10,"prestigePerQol":90,"trialDays":28,"giftHours":3,"streakWeekPrestige":10,"weeklyGoal":15,"weeklySteamers":3,"adminTools":true,"fullUnlockProductId":"full_unlock","adsGameIdAndroid":"","adsGameIdIos":"","squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012
   },
+  "cosmetics": [
+    {"id":"party_hat","name":"Party hat","slot":"hat","color":"#E86A92","price":20},
+    {"id":"flower_crown","name":"Flower crown","slot":"hat","color":"#F3A6BD","price":30},
+    {"id":"beret","name":"Beret","slot":"hat","color":"#C8674E","price":25},
+    {"id":"chef_hat","name":"Chef hat","slot":"hat","color":"#FFFFFF","price":40},
+    {"id":"bow","name":"Bow","slot":"hat","color":"#8C7BB0","price":15},
+    {"id":"round_glasses","name":"Round glasses","slot":"face","color":"#3B2A20","price":20},
+    {"id":"star_glasses","name":"Star glasses","slot":"face","color":"#D9A64A","price":35}
+  ],
+  "tierRewards": [
+    {"tier":"Common","steamers":2,"prestige":5},
+    {"tier":"Glitter","steamers":3,"prestige":10},
+    {"tier":"Pattern","steamers":3,"prestige":10},
+    {"tier":"Galaxy","steamers":4,"prestige":15},
+    {"tier":"UV","steamers":4,"prestige":15},
+    {"tier":"Holographic","steamers":4,"prestige":15},
+    {"tier":"Legendary","steamers":5,"prestige":25}
+  ],
   "starter": {
     "coins":248,"steamers":3,"favourite":8,"roomLevel":1,"age":3,
     "needs":[0.74,0.62,0.8,0.72],

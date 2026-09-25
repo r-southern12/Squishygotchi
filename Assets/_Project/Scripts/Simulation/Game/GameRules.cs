@@ -26,7 +26,7 @@ namespace Squishy.Simulation.Game
     /// The prototype's game rules on plain data: needs, comfort, kitchen, steamers with pity,
     /// care tasks and the wallet. No Unity types, so it runs in tests and fast-forward.
     /// </summary>
-    public sealed class GameRules
+    public sealed partial class GameRules
     {
         public readonly GameContent C;
         public readonly GameState S;
@@ -43,6 +43,7 @@ namespace Squishy.Simulation.Game
             C = content;
             S = state;
             _owned = new HashSet<string>(state.owned);
+            if (state.trialStart == 0) state.trialStart = DateTime.UtcNow.Ticks;
             _rng = Pcg32.FromState(state.rng == 0 ? 0x9E3779B97F4A7C15UL : state.rng);
             // Content can grow between versions (new recipes, tools): keep per-item arrays the right length.
             state.pantry = Fit(state.pantry, content.pantry.Length);
@@ -140,6 +141,8 @@ namespace Squishy.Simulation.Game
         public bool StepCare(float sdt, float comfort)
         {
             if (S.tucked) return false;
+            S.qolSum += Condition() * sdt;
+            S.qolTime += sdt;
             float slow = ComfortSlow(comfort);
             float[] decay = { R.decayHunger, R.decayPlay, R.decayRest, R.decayClean };
             for (int k = 0; k < 4; k++) S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * sdt);
@@ -284,7 +287,7 @@ namespace Squishy.Simulation.Game
 
         private Reward Item(string rar)
         {
-            var o = C.Catalogue.FindAll(c => c.rarity == rar);
+            var o = C.Catalogue.FindAll(c => c.rarity == rar && StyleActive(C.Style(c.style)));
             return new Reward { type = "item", key = Pick(o).key, rar = rar };
         }
 
@@ -458,6 +461,9 @@ namespace Squishy.Simulation.Game
         }
 
         // ---- tasks ----
+        /// <summary>Streak or weekly-goal reward from the last claim, if any.</summary>
+        public string LastRewardMessage;
+
         public TaskData TaskDef(TaskState t) { foreach (var d in C.tasks) if (d.id == t.id) return d; return C.tasks[0]; }
 
         public TaskState NewTask()
@@ -497,6 +503,7 @@ namespace Squishy.Simulation.Game
             if (!t.done) return false;
             AddCoins(TaskDef(t).coins);
             S.setDone++;
+            LastRewardMessage = RecordTaskDone();
             var next = NewTask();
             next.readyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.taskCooldownHours).Ticks; // rate-limited: one new task per slot every few hours
             S.tasks[i] = next;

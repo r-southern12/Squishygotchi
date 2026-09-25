@@ -16,6 +16,7 @@ namespace Squishy.Runtime.Game
         public void OnAdmin()
         {
             if (mode != "home") return;
+            if (!C.rules.adminTools && !Debug.isDebugBuild) return; // switched off for release in game_content.json
             ui.SetPanelTitle("info", "Admin (testing)");
             var body = ui.PanelBody("info");
             Hud.Para(body, "Hidden test tools. Hold the coin counter to open. Speed: " + timeScale + "x · Day " + S.age + " · death clock " + Mathf.RoundToInt(S.deathClock / 60) + " min.");
@@ -24,6 +25,8 @@ namespace Squishy.Runtime.Game
             Row(body, "Speed", (timeScale > 1 ? "Normal" : "60x", () => { timeScale = timeScale > 1 ? 1 : 60; OnAdmin(); }), ("Kill now", () => { ui.ClosePanels(); if (!S.dead) Die(); }));
             Row(body, "Wallet", ("+500 coins", () => { Rules.AddCoins(500); OnAdmin(); }), ("+5 steamers", () => { Rules.SetSteamers(S.steamers + 5); OnAdmin(); }));
             Row(body, "Squishy", ("Grow", Grow), ("Age +1 day", () => { S.age++; UpdateSub(); OnAdmin(); }));
+            Row(body, "Life", ("Old age now", () => { ui.ClosePanels(); S.age = Mathf.CeilToInt(Rules.ExpectedLifespanDays()); }), ("+50 prestige", () => { S.prestige += 50; OnAdmin(); }));
+            Row(body, "Unlock", (S.premium ? "Premium: on" : "Premium: off", () => { S.premium = !S.premium; paywallShown = false; OnAdmin(); }), ("Gift ready", () => { S.giftReadyAt = 0; OnAdmin(); }), ("End trial", () => { S.trialStart = 1; ui.ClosePanels(); }));
             Row(body, "Save", ("Reset game", ResetGame));
             ui.OpenPanel("info");
         }

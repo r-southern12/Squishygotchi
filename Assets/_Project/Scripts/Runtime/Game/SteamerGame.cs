@@ -92,6 +92,7 @@ namespace Squishy.Runtime.Game
             ui.SetSteamers(S.steamers, true);
             ui.TaskDot(Rules.AnyTaskDone());
             DrawNeeds();
+            InitMeta();
             if (S.dead) ResumeDead();
             Notifier.Init();
             Notifier.Clear();
@@ -168,6 +169,7 @@ namespace Squishy.Runtime.Game
             else
             {
                 StepHome(dt);
+                StepMeta(dt);
                 HomeCamera(dt);
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
@@ -283,6 +285,7 @@ namespace Squishy.Runtime.Game
 
         private void CatchUp(DateTime saved, DateTime now)
         {
+            now = Rules.TrustedNow(now); // never trust a clock wound backwards
             float away = (float)Math.Min((now - saved).TotalSeconds, 7 * 24 * 3600.0);
             if (away <= 1) return;
             ComputeComfort();

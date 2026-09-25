@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Squishy.Runtime.Models
 {
     /// <summary>makeSquishy: the bao-shaped pet with eyes, blush, glitter and spring squash.</summary>
-    public sealed class SquishyModel
+    public sealed partial class SquishyModel
     {
         private const float B = -.6f;
         private const int SPK = 48;
@@ -150,21 +150,22 @@ namespace Squishy.Runtime.Models
         /// <summary>Spring squash, blinking, squint and greying, once per frame.</summary>
         public void Update(float dt, float extraSquash, bool closed, float droop = 0)
         {
-            float k = Held ? 120 : K, c = Held ? 2 * Mathf.Sqrt(120) * .9f : C;
+            float k = Held ? 120 : K * StageBounce, c = Held ? 2 * Mathf.Sqrt(120) * .9f : C;
             V += (k * ((Held ? 1 : 0) - X) - c * V) * dt;
             X += V * dt;
             float x = Mathf.Clamp(X + extraSquash + droop * .3f, -.45f, 1);
-            Pivot.localScale = new Vector3(Scale * (1 + .3f * x), Scale * (1 - .42f * x), Scale * (1 + .3f * x));
+            float sc = Scale * StageScale;
+            Pivot.localScale = new Vector3(sc * (1 + .3f * x), sc * (1 - .42f * x), sc * (1 + .3f * x));
             Blink -= dt;
             if (Blink < 0) Blink = Random.Range(2.5f, 5f);
             float bl = Blink < .12f ? .1f : 1, squint = 1 - .8f * Mathf.Clamp01(x * 1.6f);
             float open = closed ? .08f : Mathf.Min(bl, squint) * (1 - droop * .45f);
             EyeOpen += (open - EyeOpen) * Mathf.Min(1, dt * 14);
-            foreach (var e in _eyes) e.localScale = new Vector3(1, 1.25f * EyeOpen + .02f, .45f);
+            foreach (var e in _eyes) e.localScale = new Vector3(_eyeW, 1.25f * EyeOpen * _eyeW + .02f, .45f);
             if (Grey != _g)
             {
                 _g = Grey;
-                Mat.SetVector("_BaseColor", Color.Lerp(_base, GreyC, Grey));
+                Mat.SetVector("_BaseColor", Color.Lerp(StageTint(_base), GreyC, Grey));
                 _sparkles.enabled = Fin != null && Fin.spark != null && Fin.spark.Length > 0 && Grey < .5f;
             }
         }

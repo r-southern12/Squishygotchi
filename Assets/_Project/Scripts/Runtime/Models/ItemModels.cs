@@ -251,9 +251,15 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Sph(.2f, 12, 8), M(s.pal[2]), -.1f, .3f, 0).Scale(1, .7f, 1);
                     break;
                 case "tomb":
-                    Node.Mesh(g, RBox(.26f, .34f, .1f, .1f), M("#A9A39C"), 0, .17f, 0);
-                    Node.Mesh(g, RBox(.34f, .05f, .18f, .02f), M("#8F8983"), 0, .025f, 0);
-                    Node.Mesh(g, Sph(.05f, 10, 8), M("#F3A6BD"), 0, .24f, .06f).ScaleY(.7f);
+                {
+                    // Neglect leaves a grey tombstone; a full life leaves a golden keepsake with a star.
+                    bool gold = styleId == "gold";
+                    Node.Mesh(g, RBox(.26f, .34f, .1f, .1f), M(gold ? "#E2BE5E" : "#A9A39C"), 0, .17f, 0);
+                    Node.Mesh(g, RBox(.34f, .05f, .18f, .02f), M(gold ? "#B8913A" : "#8F8983"), 0, .025f, 0);
+                    Node.Mesh(g, Sph(.05f, 10, 8), M(gold ? "#FFF1A8" : "#F3A6BD"), 0, .24f, .06f).ScaleY(.7f);
+                    if (gold) Node.Mesh(g, Cyl(.07f, .07f, .02f, 5), M("#FFF7EC", "#FFE08A"), 0, .42f, 0).RotX(Mathf.PI / 2);
+                    break;
+                }
                     break;
             }
             return g;

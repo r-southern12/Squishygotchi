@@ -72,6 +72,27 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Good_Care_Lives_Longer_And_Earns_More_Prestige()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var rules = new GameRules(c, s);
+            s.qolSum = .9f; s.qolTime = 1;
+            float good = rules.ExpectedLifespanDays();
+            s.qolSum = .3f;
+            Assert.Less(rules.ExpectedLifespanDays(), good);
+            s.age = 1; Assert.AreEqual(GameRules.Life.Baby, rules.LifeStage());
+            s.qolSum = .9f; s.age = 100;
+            Assert.IsTrue(rules.ReachedOldAge());
+            var rec = rules.EndLife(true, "Old age");
+            Assert.AreEqual((int)Math.Round(c.rules.prestigeBase + c.rules.prestigePerQol * .9f), rec.prestige);
+            Assert.AreEqual(rec.prestige, s.prestige);
+            Assert.IsTrue(rules.TrialOver(), "free players get one life");
+            s.premium = true;
+            Assert.IsFalse(rules.TrialOver());
+        }
+
+        [Test]
         public void Tucked_In_Pauses_Needs_And_Death()
         {
             var c = Content();

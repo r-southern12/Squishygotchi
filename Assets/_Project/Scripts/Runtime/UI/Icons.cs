@@ -47,6 +47,8 @@ namespace Squishy.Runtime.UI
             { "plus", new[] { S("M12 5v14M5 12h14", "currentColor", 2.6f) } },
             { "minus", new[] { S("M5 12h14", "currentColor", 2.6f) } },
             { "check", new[] { S("M5 12.5l4.5 4.5L19 7.5", "currentColor", 3.2f) } },
+            { "gift", new[] { F(RectPath(4, 9, 16, 12, 2), "#C8674E"), F(RectPath(3, 6, 18, 4.5f, 1.5f), "#D9A64A"), S("M12 6v15", "#FFF7EC", 2), S("M12 6c-2-4-6-3-5 0M12 6c2-4 6-3 5 0", "#D9A64A", 1.8f) } },
+            { "gear", new[] { F(Circle(12, 12, 7.5f), "#33261D"), F(Circle(12, 12, 3), "#F7F0E4"), S("M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1", "#33261D", 2.6f) } },
             { "star", new[] { F("M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z", "currentColor") } },
             { "star_empty", new[] { S("M12 3.2l2.6 5.9 6.3.6-4.8 4.3 1.4 6.2L12 16.9l-5.5 3.3 1.4-6.2L3.1 9.7l6.3-.6z", "currentColor", 1.8f) } },
         };

@@ -211,7 +211,7 @@ namespace Squishy.Runtime.UI
             btns.Gap(10);
 
             _memo = CardShell(safeBottom);
-            var tomb = new Frame { Fill = C("#A9A39C"), Corners = new Vector4(22, 22, 6, 6) }.Size(46, 56).Margin(0, 0, 4, 0).In(_memo);
+            var tomb = _tomb = new Frame { Fill = C("#A9A39C"), Corners = new Vector4(22, 22, 6, 6) }.Size(46, 56).Margin(0, 0, 4, 0).In(_memo);
             tomb.Shadows.Add(new Shadow(0, -6, 0, 0, C("#8F8983"), true));
             tomb.style.alignSelf = Align.Center;
             _mName = Label(_memo, "", "Gluten", 800, 26).Margin(8, 0, 6, 0);
@@ -220,7 +220,7 @@ namespace Squishy.Runtime.UI
             _mMeta = Label(_memo, "", "Figtree", 400, 13, Muted).Margin(8, 0, 12, 0);
             _mMeta.style.unityTextAlign = TextAnchor.MiddleCenter;
             _mMeta.Wrap();
-            Button(_memo, "Choose next squishy", "#6F9A74", "#4C7552", Cream, 16, 50, 17, () => _g.NextSquishy(), false, 5);
+            _memoBtns = new VisualElement().Col().In(_memo);
         }
 
         private Frame CardShell(float safeBottom)
@@ -260,8 +260,26 @@ namespace Squishy.Runtime.UI
 
         public void HideCard() { _card.Shown(false); }
 
+        private Frame _tomb;
+        private VisualElement _memoBtns;
+
+        /// <summary>The memorial card (or any centred dialog): a keepsake shape, title, text and buttons.</summary>
+        public void ShowDialog(string name, string meta, string keepsake, params (string label, string bg, string shadow, string color, Action act)[] buttons)
+        {
+            _tomb.Shown(keepsake != null);
+            if (keepsake != null) { _tomb.Fill = C(keepsake); _tomb.MarkDirtyRepaint(); }
+            _memoBtns.Clear();
+            foreach (var b in buttons) Button(_memoBtns, b.label, b.bg, b.shadow, b.color, 16, 50, 17, b.act, false, 5);
+            _memoBtns.Gap(10);
+            _mName.text = name;
+            _mMeta.text = meta;
+            PopIn(_memo, .55f, .2f, 1.6f, .4f, 1, 60, .7f);
+        }
+
         public void ShowMemo(string name, string meta)
         {
+            ShowDialog(name, meta, "#A9A39C", ("Choose next squishy", "#6F9A74", "#4C7552", Cream, (Action)(() => _g.NextSquishy())));
+            return;
             _mName.text = name;
             _mMeta.text = meta;
             PopIn(_memo, .55f, .2f, 1.6f, .4f, 1, 60, .7f);

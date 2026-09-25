@@ -150,8 +150,11 @@ namespace Squishy.Runtime.Game
     /// <summary>navigator.vibrate: short buzzes on phones.</summary>
     public static class Haptics
     {
+        public static bool Enabled = true;
+
         public static void Buzz(params int[] ms)
         {
+            if (!Enabled) return;
 #if UNITY_ANDROID && !UNITY_EDITOR
             if (ms.Length == 0) Handheld.Vibrate(); // keeps the VIBRATE permission in the manifest
             try

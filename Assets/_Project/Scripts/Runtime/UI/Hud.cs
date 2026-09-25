@@ -26,6 +26,8 @@ namespace Squishy.Runtime.UI
 
         private readonly List<(VisualElement el, string[] modes)> _modal = new List<(VisualElement, string[])>();
         private VisualElement _top, _bottom, _canvas, _floaters;
+        private Frame _gift;
+        private Label _giftLbl;
         private Label _name, _sub, _coins, _condTx, _hint, _mainLbl, _badge, _fps, _tiltLbl, _trayTitle, _oddsBtnLbl, _pityTx;
         private Frame _condDot, _comfort, _main, _taskDot, _bubble, _undo, _rot, _putAway, _snd;
         private Glyph _sndIcon, _viewIcon, _bIcon, _ring;
@@ -144,7 +146,15 @@ namespace Squishy.Runtime.UI
             odds.style.flexShrink = 0;
             _oddsBtnLbl = Label(odds, "Odds", "Figtree", 700, 13);
             Tap(odds, () => _g.OnOdds());
+            // Gift steamer: ready every few hours.
+            _gift = Chip(row1, -1).Row().Pad(4, 10, 4, 6);
+            _gift.style.flexShrink = 0;
+            _gift.Add(Icons.Make("gift", 20));
+            _giftLbl = Label(_gift, "", "Gluten", 700, 13).Margin(0, 0, 0, 4);
+            Tap(_gift, () => _g.OnGift());
+            Modal(_gift, "home");
             _snd = IconBtn(row1, "sound_off", 36, 18, -1, ToggleSound, out _sndIcon);
+            IconBtn(row1, "gear", 36, 18, -1, () => _g.OnSettings(), out _);
             row1.Gap(6);
 
             var needs = Modal(Chip(_top, 16).Row().Pad(7, 9, 7, 9), "home");
@@ -432,6 +442,20 @@ namespace Squishy.Runtime.UI
         {
             _badge.text = n.ToString();
             ((VisualElement)_badge.userData).Shown(visible);
+        }
+
+        public void SetGift(string text, bool ready)
+        {
+            _giftLbl.text = text;
+            _gift.Fill = ready ? C("#FBE3DA") : ChipFill;
+            _gift.MarkDirtyRepaint();
+        }
+
+        public void SetSoundIcon(bool on)
+        {
+            _soundOn = on;
+            _snd.Set(on ? C(Ink) : ChipFill, -1, ChipShadow);
+            Icons.Set(_sndIcon, on ? "sound_on" : "sound_off", on ? "#FFF7EC" : Ink);
         }
 
         public void TaskDot(bool on) { _taskDot.Shown(on); }

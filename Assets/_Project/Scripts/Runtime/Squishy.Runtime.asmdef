@@ -4,11 +4,13 @@
     "references": [
         "Squishy.Simulation",
         
-        "Unity.InputSystem",
         "UnityEngine.UI",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.Notifications.Unified"
+        "Unity.Notifications.Unified",
+        "Unity.Notifications.Android",
+        "UnityEngine.Purchasing",
+        "UnityEngine.Purchasing.Stores"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -21,6 +21,19 @@ namespace Squishy.Simulation.Game
         public List<TaskState> tasks = new List<TaskState>();
         public List<PieceState> items = new List<PieceState>();
         public List<string> storage = new List<string>();
+
+        // Life cycle and meta progression.
+        public float qolSum, qolTime;
+        public int prestige;
+        public List<LifeRecord> lives = new List<LifeRecord>();
+        public List<string> cosmetics = new List<string>();
+        public string hat = "", face = "";
+        public bool premium;
+        public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
+        public int streak, weekTasks;
+        public bool weekClaimed;
+        public List<string> tiersClaimed = new List<string>();
+        public bool soundOn = false, hapticsOn = true, notificationsOn = true;
     }
 
     [Serializable]

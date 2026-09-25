@@ -6,7 +6,7 @@ namespace Squishy.Simulation.Game
     // Plain content records, loaded from Resources/Content/game_content.json (JsonUtility-friendly: public fields).
     // Adding a style, recipe, finish or task is a data change only.
 
-    [Serializable] public class StyleData { public string id, name, shortName, group, pat; public string[] pal; public bool low, round; }
+    [Serializable] public class StyleData { public string id, name, shortName, group, pat; public string[] pal; public bool low, round; public int[] eventMonths; }
 
     [Serializable]
     public class ItemTypeData
@@ -57,6 +57,10 @@ namespace Squishy.Simulation.Game
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition;
+        public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
+        public int streakWeekPrestige, weeklyGoal, weeklySteamers;
+        public bool adminTools;
+        public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos;
     }
 
     [Serializable]
@@ -98,6 +102,8 @@ namespace Squishy.Simulation.Game
         public TaskData[] tasks;
         public RulesData rules;
         public StarterData starter;
+        public CosmeticData[] cosmetics;
+        public TierRewardData[] tierRewards;
 
         [NonSerialized] public List<CatalogueItem> Catalogue;
         [NonSerialized] private Dictionary<string, CatalogueItem> _catByKey;

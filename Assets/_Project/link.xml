@@ -1,0 +1,4 @@
+<linker>
+  <!-- Save and content data are read by JsonUtility via reflection: keep them whole. -->
+  <assembly fullname="Squishy.Simulation" preserve="all" />
+</linker>

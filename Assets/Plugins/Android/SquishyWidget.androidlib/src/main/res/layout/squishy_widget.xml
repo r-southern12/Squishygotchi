@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/squishy_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center" android:padding="8dp" android:background="#F7F0E4">
+  <ImageView android:id="@+id/squishy_img" android:layout_width="match_parent" android:layout_height="0dp"
+      android:layout_weight="1" android:scaleType="fitCenter" android:contentDescription="Your squishy" />
+  <TextView android:id="@+id/squishy_name" android:layout_width="wrap_content" android:layout_height="wrap_content"
+      android:textColor="#33261D" android:textSize="15sp" android:textStyle="bold" android:text="Squishy" />
+  <TextView android:id="@+id/squishy_mood" android:layout_width="wrap_content" android:layout_height="wrap_content"
+      android:textColor="#7A6656" android:textSize="12sp" android:text="Happy" />
+</LinearLayout>

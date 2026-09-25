@@ -163,7 +163,7 @@ namespace Squishy.Runtime.Game
             UpdateSub();
         }
 
-        private void UpdateSub() { ui.SetSub("Day " + S.age + " · " + C.sizes[Rules.FavSizeIdx].name); }
+        private void UpdateSub() { ui.SetSub("Day " + S.age + " · " + C.sizes[Rules.FavSizeIdx].name + " · " + GameRules.StageName(Rules.LifeStage())); }
 
         private void DrawNeeds() { ui.DrawNeeds(S.needs); }
 
@@ -544,6 +544,7 @@ namespace Squishy.Runtime.Game
             ui.HideBubble();
             int low = Rules.LowestNeed();
             string why = new[] { "Left hungry", "Left lonely", "Left exhausted", "Left grubby" }[low];
+            var rec = Rules.EndLife(false, why);
             sfx.Sad();
             Buzz(60, 80, 60);
             _dying = true;
@@ -560,7 +561,7 @@ namespace Squishy.Runtime.Game
                     float a = i / 12f * Mathf.PI * 2;
                     HPuff(new Vector3(ai.x + Mathf.Cos(a) * .15f, Y0 + .08f, ai.z + Mathf.Sin(a) * .15f), new Vector3(Mathf.Cos(a) * .8f, .5f, Mathf.Sin(a) * .8f), .07f, .7f, 3, .3f);
                 }
-                ShowMemo(why);
+                ShowLifeCard(rec);
             });
         }
 
@@ -578,26 +579,24 @@ namespace Squishy.Runtime.Game
             var t = items.Find(i => i.arch == "tomb");
             if (t == null) { S.dead = false; Die(); return; }
             pet.Pivot.gameObject.SetActive(false);
-            ShowMemo(new[] { "Left hungry", "Left lonely", "Left exhausted", "Left grubby" }[Rules.LowestNeed()]);
+            if (S.lives.Count > 0) ShowLifeCard(S.lives[S.lives.Count - 1]);
         }
 
         public void NextSquishy()
         {
+            if (Rules.TrialOver()) { ui.HideMemo(); ShowPaywall(); return; }
             ui.HideMemo();
             ui.ShowHud(true);
             var opts = S.squishOwned.Select(q => q.i).Where(i => i != S.favIdx).ToList();
             int next = opts.Count > 0 ? opts[0] : 0;
-            Rules.RemoveSquish(S.favIdx);
-            if (Rules.SquishCount(next) == 0) Rules.SetSquish(next, 1);
-            S.dead = false;
-            S.deathClock = 0;
-            S.age = 1;
+            Rules.StartLife(next);
             SetPet(next);
+            shownStage = (GameRules.Life)(-1);
+            ApplyLook();
             pet.Grey = 0;
             pet.Pivot.gameObject.SetActive(true);
-            for (int k = 0; k < 4; k++) S.needs[k] = .75f;
             DrawNeeds();
-            var t = items.Find(i => i.arch == "tomb");
+            var t = items.FindLast(i => i.arch == "tomb");
             float x = 0, z = .3f;
             if (t != null) { x = t.tx + .5f; z = t.tz; }
             ai.x = x; ai.z = z; ai.y = 0;

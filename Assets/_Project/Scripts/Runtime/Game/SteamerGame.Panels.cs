@@ -39,6 +39,7 @@ namespace Squishy.Runtime.Game
         public void OnSound(bool on)
         {
             sfx.SoundOn = on;
+            S.soundOn = on;
             if (on) sfx.Tap(); else sfx.Hum(0);
         }
 
@@ -91,7 +92,7 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            ui.SetPanelSub("tasks", "Finish 3 for " + C.rules.taskSetSteamers + " free steamers · " + S.setDone + " of 3 done");
+            ui.SetPanelSub("tasks", "Finish 3 for " + C.rules.taskSetSteamers + " free steamers · " + S.setDone + " of 3 done · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s") + " · this week " + Rules.WeekTasks() + "/" + C.rules.weeklyGoal);
             for (int i = 0; i < S.tasks.Count; i++)
             {
                 var t = S.tasks[i];
@@ -110,6 +111,7 @@ namespace Squishy.Runtime.Game
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
                     if (Rules.ClaimTask(idx)) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .5f), "+" + C.rules.taskSetSteamers + " steamers!"); sfx.Chime(); }
+                    if (Rules.LastRewardMessage != null) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .42f), Rules.LastRewardMessage); sfx.Chime(); Rules.LastRewardMessage = null; }
                     ui.TaskDot(Rules.AnyTaskDone());
                     DrawTasks();
                 }, !t.done, pr, true);
@@ -189,6 +191,7 @@ namespace Squishy.Runtime.Game
                 string contents = string.Join(", ", rc.ing.Select(k => R.shopKitCooks + " " + C.pantry[k].name));
                 ui.Rec(body, "dish:" + i, rc.name + " kit", "Ingredients for " + R.shopKitCooks + " cooks · " + contents, price.ToString(), () => { if (Rules.BuyKit(rc)) { sfx.Coin(); OpenShop(); } else sfx.Bonk(); }, S.coins < price);
             }
+            ShopCosmetics(body);
             Hud.Sec(body, "Kitchen tools");
             for (int i = 0; i < C.tools.Length; i++)
             {
@@ -321,6 +324,7 @@ namespace Squishy.Runtime.Game
             var grid = ui.Grid.contentContainer;
             grid.Clear();
             ui.ClearThumbQueue();
+            if (tab == "sq") { ui.CatCount.text = "Your squishy tree"; DrawTree(grid); ui.Detail.Shown(selKey != null); return; }
             int own = list.Count(e => e.own);
             ui.CatCount.text = own + " of " + list.Count + (styled ? " skins" : "") + " found" + (tab == "furniture" && styleF == "all" ? " · " + C.styles.Length + " styles" : "");
             VisualElement row = null;
@@ -435,6 +439,7 @@ namespace Squishy.Runtime.Game
                 };
                 string role = !string.IsNullOrEmpty(a.role) && roles.TryGetValue(a.role, out var rr) ? rr : a.cat == "Wall" ? "Divides the room" : "Decor";
                 note = role + (a.comfort > 0 ? " · +" + a.comfort + " comfort" : "") + (a.size > 0 ? " · needs " + C.sizes[a.size].name + " size" : "");
+                if (!Rules.StyleActive(s)) note += " · Event style: in steamers in " + string.Join(", ", s.eventMonths.Select(mo => new System.DateTime(2000, mo, 1).ToString("MMMM")));
                 var inRoom = items.Find(i => i.key == c.key);
                 var piece = items.Find(i => i.arch == c.arch);
                 if (!e.own) note += ". Skin not found yet.";
