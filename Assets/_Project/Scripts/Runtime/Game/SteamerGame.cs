@@ -299,7 +299,20 @@ namespace Squishy.Runtime.Game
             _saves.Save(_save);
         }
 
-        private void OnApplicationPause(bool paused) { if (paused) WriteSave(); }
+        private System.DateTime? _pausedAt;
+
+        /// <summary>Phones keep the game alive in the background, so time away is applied on every return, not just cold starts.</summary>
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) { _pausedAt = System.DateTime.UtcNow; WriteSave(); return; }
+            if (!_pausedAt.HasValue) return;
+            bool wasDead = S.dead;
+            CatchUp(_pausedAt.Value, System.DateTime.UtcNow);
+            _pausedAt = null;
+            DrawNeeds();
+            UpdateSub();
+            if (S.dead && !wasDead) { S.dead = false; Die(); }
+        }
         private void OnApplicationQuit() { WriteSave(); }
     }
 }

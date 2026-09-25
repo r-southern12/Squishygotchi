@@ -67,8 +67,8 @@ namespace Squishy.Tests
             rules.StepCare(100f, 20f);
             Assert.AreEqual(plain * 0.6f, before - s.needs[Needs.Hunger], 1e-4f, "comfort 20 slows drain by the 40% cap");
             s.needs[Needs.Play] = 0f;
-            Assert.IsFalse(rules.StepCare(290f, 0f));
-            Assert.IsTrue(rules.StepCare(20f, 0f), "an empty need for over 5 minutes kills");
+            Assert.IsFalse(rules.StepCare(c.rules.deathSeconds - 10f, 0f));
+            Assert.IsTrue(rules.StepCare(20f, 0f), "an empty need for too long kills");
         }
 
         [Test]

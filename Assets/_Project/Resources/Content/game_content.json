@@ -180,9 +180,9 @@
     {"id":"snack","text":"Give a snack","goal":1,"coins":15}
   ],
   "rules": {
-    "decayHunger":0.0007,"decayPlay":0.0009,"decayRest":0.0005,"decayClean":0.0004,
-    "comfortSlowPerPoint":0.02,"comfortSlowMax":0.4,"setBonus":3,"setCount":3,"plantWiltRate":0.0006,
-    "deathSeconds":300,"dayLength":600,"selfCareCap":0.5,
+    "decayHunger":0.0000278,"decayPlay":0.0000347,"decayRest":0.0000198,"decayClean":0.0000154,
+    "comfortSlowPerPoint":0.02,"comfortSlowMax":0.4,"setBonus":3,"setCount":3,"plantWiltRate":0.0000058,
+    "deathSeconds":43200,"dayLength":86400,"selfCareCap":0.5,
     "happyBase":1,"happyComfortDivisor":20,
     "pLegendary":0.01,"pEpic":0.05,"pRare":0.18,"pityRare":10,"pityEpic":50,"favouriteChance":0.4,
     "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,

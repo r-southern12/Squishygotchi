@@ -303,6 +303,11 @@ namespace Squishy.Runtime.Game
         public void CardAgain()
         {
             if (S.steamers <= 0) { GoHome(); Later(.5f, OpenShop); return; }
+            // Clear the last prize straight away so it never shows inside the next steamer.
+            ClearPrize();
+            plate.gameObject.SetActive(false);
+            newbie.Pivot.gameObject.SetActive(false);
+            prize.gameObject.SetActive(false);
             ui.HideCard();
             raysOn = 0;
             sfx.Tap();
