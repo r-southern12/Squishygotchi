@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Project Path="Squishy.Runtime.csproj" />
+  <Project Path="Squishy.Simulation.csproj" />
+  <Project Path="Squishy.Editor.csproj" />
+  <Project Path="Squishy.Tests.EditMode.csproj" />
+</Solution>

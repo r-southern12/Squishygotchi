@@ -109,11 +109,11 @@ namespace Squishy.Runtime.Models
         {
             Fin = f;
             _base = ThreeMat.Lin(f.color);
-            Mat.SetColor("_BaseColor", _base);
+            Mat.SetVector("_BaseColor", _base);
             Mat.SetFloat("_Roughness", f.rough);
             Mat.SetFloat("_Metalness", f.metal ? .6f : 0f);
             Mat.SetTexture("_BaseMap", string.IsNullOrEmpty(f.map) ? Texture2D.whiteTexture : Textures.FinishMap(f.map));
-            Mat.SetColor("_EmissionColor", string.IsNullOrEmpty(f.glow) ? Color.black : ThreeMat.Lin(f.glow) * .25f);
+            Mat.SetVector("_EmissionColor", string.IsNullOrEmpty(f.glow) ? Color.black : ThreeMat.Lin(f.glow) * .25f);
             K = f.tier == "UV" ? 40 : f.tier == "Common" ? 5 : 12;
             C = f.tier == "UV" ? 3 : f.tier == "Common" ? 5 : 4.5f;
             bool spark = f.spark != null && f.spark.Length > 0;
@@ -145,7 +145,7 @@ namespace Squishy.Runtime.Models
             if (Grey != _g)
             {
                 _g = Grey;
-                Mat.SetColor("_BaseColor", Color.Lerp(_base, GreyC, Grey));
+                Mat.SetVector("_BaseColor", Color.Lerp(_base, GreyC, Grey));
                 _sparkles.enabled = Fin != null && Fin.spark != null && Fin.spark.Length > 0 && Grey < .5f;
             }
         }

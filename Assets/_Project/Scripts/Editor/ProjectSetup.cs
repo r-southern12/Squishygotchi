@@ -38,6 +38,23 @@ namespace Squishy.EditorTools
             EditorApplication.Exit(0);
         }
 
+        /// <summary>Builds a test APK to Builds/Squishy.apk (debug-signed). Batch: -executeMethod Squishy.EditorTools.ProjectSetup.BuildAndroid</summary>
+        [MenuItem("Squishy/Build/Android APK")]
+        public static void BuildAndroid()
+        {
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+            EditorUserBuildSettings.buildAppBundle = false;
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = new[] { ScenePath },
+                locationPathName = "Builds/Squishy.apk",
+                target = BuildTarget.Android,
+                options = BuildOptions.None,
+            });
+            Debug.Log("Squishy: Android build " + report.summary.result + ", " + report.summary.totalSize / (1024 * 1024) + " MB, " + report.summary.totalErrors + " errors.");
+            if (Application.isBatchMode) EditorApplication.Exit(report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded ? 0 : 1);
+        }
+
         [MenuItem("Squishy/Setup/Run Full Setup")]
         public static void RunAll()
         {

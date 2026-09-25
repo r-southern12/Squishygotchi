@@ -95,9 +95,9 @@ namespace Squishy.Runtime.Models
         public void Skin(SteamerSkinData sk)
         {
             for (int i = 0; i < _n; i++)
-                _slatMats[i].SetColor("_BaseColor", OffsetHsl(i % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f));
-            _capMat.SetColor("_BaseColor", Lin(sk.a));
-            _bandMat.SetColor("_BaseColor", Lin(sk.t));
+                _slatMats[i].SetVector("_BaseColor", OffsetHsl(i % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f));
+            _capMat.SetVector("_BaseColor", Lin(sk.a));
+            _bandMat.SetVector("_BaseColor", Lin(sk.t));
         }
 
         /// <summary>Slats facing the camera (direction cx, cz) sink so the room stays visible.</summary>

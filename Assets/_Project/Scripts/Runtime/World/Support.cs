@@ -181,11 +181,11 @@ namespace Squishy.Runtime.World
 
         public static void Globals()
         {
-            Shader.SetGlobalColor(HemiSky, ThreeMat.Lin("#FFF1DC") * .62f);
-            Shader.SetGlobalColor(HemiGround, ThreeMat.Lin("#8A6445") * .62f);
+            Shader.SetGlobalVector(HemiSky, ThreeMat.Lin("#FFF1DC") * .62f);
+            Shader.SetGlobalVector(HemiGround, ThreeMat.Lin("#8A6445") * .62f);
             // Fill light at (6, 5, -3) aimed at the origin.
             Shader.SetGlobalVector(FillDir, Space3.U(new Vector3(6, 5, -3).normalized));
-            Shader.SetGlobalColor(FillColor, ThreeMat.Lin("#D8E4FF") * .3f);
+            Shader.SetGlobalVector(FillColor, ThreeMat.Lin("#D8E4FF") * .3f);
             ClearLamps();
         }
 

@@ -264,8 +264,8 @@ namespace Squishy.Runtime.Game
         private void EndPreview()
         {
             foreach (var (it, st) in preview.Value.list) if (items.Contains(it)) Restyle(it, st);
-            homeWall.Liner.SetColor("_BaseColor", Three.ThreeMat.Lin("#F2E7D2"));
-            homeWall.Holes.SetColor("_BaseColor", Three.ThreeMat.Lin("#9E7646"));
+            homeWall.Liner.SetVector("_BaseColor", Three.ThreeMat.Lin("#F2E7D2"));
+            homeWall.Holes.SetVector("_BaseColor", Three.ThreeMat.Lin("#9E7646"));
             preview = null;
             RebuildObstacles();
         }
@@ -277,8 +277,8 @@ namespace Squishy.Runtime.Game
             if (s == null) return;
             preview = (s.id, items.Where(it => it.arch != "tomb").Select(it => (it, it.style)).ToList());
             foreach (var it in items) if (it.arch != "tomb") Restyle(it, s.id);
-            homeWall.Liner.SetColor("_BaseColor", Three.ThreeMat.Lin(s.pal[4]));
-            homeWall.Holes.SetColor("_BaseColor", Three.ThreeMat.Lin(s.pal[0]));
+            homeWall.Liner.SetVector("_BaseColor", Three.ThreeMat.Lin(s.pal[4]));
+            homeWall.Holes.SetVector("_BaseColor", Three.ThreeMat.Lin(s.pal[0]));
             RebuildObstacles();
             ui.CloseSheet();
             camS.zoomT = 1;

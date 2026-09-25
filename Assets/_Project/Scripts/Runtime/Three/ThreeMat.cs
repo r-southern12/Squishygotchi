@@ -44,8 +44,8 @@ namespace Squishy.Runtime.Three
         public static Material Lambert(Color linear, Color? emissive = null, Texture map = null, bool doubleSided = false)
         {
             var mat = new Material(Base(ref _lambert, "Lambert"));
-            mat.SetColor("_BaseColor", linear);
-            mat.SetColor("_EmissionColor", emissive ?? Color.black);
+            mat.SetVector("_BaseColor", linear);
+            mat.SetVector("_EmissionColor", emissive ?? Color.black);
             if (map != null) mat.SetTexture("_BaseMap", map);
             if (doubleSided) mat.SetFloat("_Cull", (float)CullMode.Off);
             return mat;
@@ -67,10 +67,10 @@ namespace Squishy.Runtime.Three
         {
             var mat = new Material(Base(ref _standard, "Standard"));
             mat.EnableKeyword("_STANDARD");
-            mat.SetColor("_BaseColor", linear);
+            mat.SetVector("_BaseColor", linear);
             mat.SetFloat("_Roughness", roughness);
             mat.SetFloat("_Metalness", metalness);
-            mat.SetColor("_EmissionColor", Color.black);
+            mat.SetVector("_EmissionColor", Color.black);
             return mat;
         }
 
@@ -81,7 +81,7 @@ namespace Squishy.Runtime.Three
         {
             var mat = new Material(Base(ref _basic, "Basic"));
             linear.a = opacity;
-            mat.SetColor("_BaseColor", linear);
+            mat.SetVector("_BaseColor", linear);
             if (map != null) mat.SetTexture("_BaseMap", map);
             mat.SetFloat("_Cull", doubleSided ? (float)CullMode.Off : (float)CullMode.Back);
             SetBlend(mat, blend, depthWrite);
@@ -98,9 +98,9 @@ namespace Squishy.Runtime.Three
 
         public static void SetOpacity(Material mat, float opacity)
         {
-            var c = mat.GetColor("_BaseColor");
-            c.a = opacity;
-            mat.SetColor("_BaseColor", c);
+            var c = mat.GetVector("_BaseColor");
+            c.w = opacity;
+            mat.SetVector("_BaseColor", c);
         }
 
         public static Material Sparkles()

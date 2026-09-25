@@ -381,7 +381,7 @@ namespace Squishy.Runtime.Game
             newbie.Pivot.localPosition = new Vector3(0, Y0 * US + .05f + Mathf.Max(0, nbY), 0);
             prize.localPosition = new Vector3(0, Y0 * US + .01f + Mathf.Max(0, nbY), 0);
             float tgt = raysOn > 0 ? .8f : 0;
-            float op = raysMat.GetColor("_BaseColor").a;
+            float op = raysMat.GetVector("_BaseColor").w;
             op += (tgt - op) * Mathf.Min(1, dt * 4);
             ThreeMat.SetOpacity(raysMat, op);
             rays.gameObject.SetActive(op > .01f);

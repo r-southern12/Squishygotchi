@@ -150,7 +150,7 @@ namespace Squishy.Runtime.Game
             }
         }
 
-        private void SetLampShade(Item it) { it.parts.shadeMat.SetColor("_EmissionColor", ThreeMat.Lin("#FFB65C") * (it.st.lampOn ? .6f : 0)); }
+        private void SetLampShade(Item it) { it.parts.shadeMat.SetVector("_EmissionColor", ThreeMat.Lin("#FFB65C") * (it.st.lampOn ? .6f : 0)); }
 
         // ---------------- squishy ----------------
 
