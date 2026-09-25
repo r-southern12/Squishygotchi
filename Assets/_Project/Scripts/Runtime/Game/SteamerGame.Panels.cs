@@ -138,6 +138,8 @@ namespace Squishy.Runtime.Game
             sfx.Tap();
         }
 
+        internal static void BigText(VisualElement body, string big, string rest) { Big(body, big, rest); }
+
         private static void Big(VisualElement body, string big, string rest)
         {
             var p = new VisualElement().In(body);

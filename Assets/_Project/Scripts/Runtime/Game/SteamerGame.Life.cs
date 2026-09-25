@@ -17,6 +17,7 @@ namespace Squishy.Runtime.Game
         private Store store;
         private float lifeTick;
         private bool paywallShown;
+        private int shownPrestige = -1;
         private GameRules.Life shownStage = (GameRules.Life)(-1);
 
         private void InitMeta()
@@ -37,6 +38,12 @@ namespace Squishy.Runtime.Game
             if (lifeTick > 0) return;
             lifeTick = 1;
             ApplyLook();
+            if (S.prestige != shownPrestige)
+            {
+                if (shownPrestige >= 0 && S.prestige > shownPrestige && mode == "home") ui.FloatAt(new Vector2(ui.Width * .3f, 120), "+" + (S.prestige - shownPrestige) + " prestige", null);
+                shownPrestige = S.prestige;
+                ui.SetPrestige(S.prestige);
+            }
             if (Rules.GiftReady()) ui.SetGift("Gift!", true);
             else { var w = Rules.GiftWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();
@@ -56,6 +63,18 @@ namespace Squishy.Runtime.Game
         }
 
         private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck)); Notifier.RefreshPictures(Rules); }
+
+        /// <summary>Prestige explained: total, this life's outlook and how to earn more.</summary>
+        public void OnPrestige()
+        {
+            ui.SetPanelTitle("info", "Prestige");
+            var body = ui.PanelBody("info");
+            Big(body, S.prestige + " prestige", "Spend it on accessories in the shop.");
+            Hud.Para(body, Rules.Fav.name + "'s life so far: day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + ", quality of life " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "%. If it keeps living like this, it will earn about " + Rules.ProjectedPrestige() + " prestige at old age. Better care means a longer life and more prestige.");
+            Hud.Para(body, "Also earned by: growing a size (+" + C.rules.sizePrestige + "), a 7-day care streak (+" + C.rules.streakWeekPrestige + "), and completing a tier in your squishy tree.");
+            ui.OpenPanel("info");
+            sfx.Tap();
+        }
 
         // ---------------- old age ----------------
 

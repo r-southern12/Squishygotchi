@@ -27,6 +27,8 @@ namespace Squishy.Runtime.UI
         private readonly List<(VisualElement el, string[] modes)> _modal = new List<(VisualElement, string[])>();
         private VisualElement _top, _bottom, _canvas, _floaters;
         private Frame _gift;
+        private Frame _prestige;
+        private Label _prestigeLbl;
         private Label _giftLbl;
         private Label _name, _sub, _coins, _condTx, _hint, _mainLbl, _badge, _fps, _tiltLbl, _trayTitle, _oddsBtnLbl, _pityTx;
         private Frame _condDot, _comfort, _main, _taskDot, _bubble, _undo, _rot, _putAway, _snd;
@@ -179,6 +181,12 @@ namespace Squishy.Runtime.UI
             cond.style.flexShrink = 0;
             _condDot = new Frame().Set(C("#6F9A74"), -1).Size(10, 10).In(cond);
             _condTx = Label(cond, "Happy", "Figtree", 700, 13).Margin(0, 0, 0, 6);
+            // Prestige at a glance; tap for this life's outlook.
+            _prestige = Chip(row3, -1).Row().Pad(4, 10, 4, 7);
+            _prestige.style.flexShrink = 0;
+            _prestige.Add(Icons.Make("star", 14, "#D9A64A"));
+            _prestigeLbl = Label(_prestige, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
+            Tap(_prestige, () => _g.OnPrestige());
             _comfort = Chip(row3, -1).Pad(4, 10, 4, 10);
             _comfort.style.flexGrow = 1;
             _comfort.style.flexShrink = 1;
@@ -450,6 +458,8 @@ namespace Squishy.Runtime.UI
             _gift.Fill = ready ? C("#FBE3DA") : ChipFill;
             _gift.MarkDirtyRepaint();
         }
+
+        public void SetPrestige(int n) { _prestigeLbl.text = n.ToString(); }
 
         public void SetSoundIcon(bool on)
         {

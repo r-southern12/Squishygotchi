@@ -32,6 +32,9 @@ namespace Squishy.Simulation.Game
 
         public static string StageName(Life s) { return s == Life.Baby ? "Baby" : s == Life.Young ? "Young" : s == Life.Adult ? "Adult" : "Elder"; }
 
+        /// <summary>What this life would earn at old age if care stays as it has been.</summary>
+        public int ProjectedPrestige() { return (int)Math.Round(R.prestigeBase + R.prestigePerQol * QualityOfLife()); }
+
         public bool ReachedOldAge() { return !S.dead && S.age >= ExpectedLifespanDays(); }
 
         /// <summary>Ends this life. Old age earns prestige from quality of life; neglect earns none.</summary>

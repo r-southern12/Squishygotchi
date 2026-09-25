@@ -341,7 +341,7 @@ namespace Squishy.Simulation.Game
                     var nxt = after + 1 < C.sizes.Length ? C.sizes[after + 1] : null;
                     card.meta = after > before ? "Your favourite grows to " + C.sizes[after].name + "!"
                         : nxt != null ? "Your favourite · " + (had + 1) + " of " + nxt.at + " to " + nxt.name : "Your favourite is fully grown";
-                    if (after > before) card.grewTo = after;
+                    if (after > before) { card.grewTo = after; S.prestige += R.sizePrestige; card.meta += " +" + R.sizePrestige + " prestige"; }
                 }
                 else card.meta = card.isNew ? "Added to your collection · " + SquishKinds + " of " + C.finishes.Length : "Duplicate · " + (had + 1) + " copies";
             }

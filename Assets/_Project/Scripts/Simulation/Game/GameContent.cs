@@ -58,6 +58,7 @@ namespace Squishy.Simulation.Game
         public float taskCooldownHours;
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition;
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
+        public int sizePrestige;
         public int streakWeekPrestige, weeklyGoal, weeklySteamers;
         public bool adminTools;
         public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos;
