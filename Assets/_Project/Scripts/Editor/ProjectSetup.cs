@@ -55,6 +55,17 @@ namespace Squishy.EditorTools
             if (Application.isBatchMode) EditorApplication.Exit(report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded ? 0 : 1);
         }
 
+        /// <summary>Web build to Builds/Web, for side-by-side comparison with the prototype in a browser.</summary>
+        [MenuItem("Squishy/Build/Web (comparison)")]
+        public static void BuildWeb()
+        {
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL);
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+            var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, "Builds/Web", BuildTarget.WebGL, BuildOptions.None);
+            Debug.Log("Squishy: Web build " + report.summary.result + ", " + report.summary.totalErrors + " errors.");
+            if (Application.isBatchMode) EditorApplication.Exit(report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded ? 0 : 1);
+        }
+
         [MenuItem("Squishy/Setup/Run Full Setup")]
         public static void RunAll()
         {
@@ -132,7 +143,7 @@ namespace Squishy.EditorTools
             var feature = ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();
             feature.name = "TiltShiftGrade";
             feature.passMaterial = material;
-            feature.injectionPoint = FullScreenPassRendererFeature.InjectionPoint.AfterRenderingPostProcessing;
+            feature.injectionPoint = FullScreenPassRendererFeature.InjectionPoint.BeforeRenderingPostProcessing; // so URP's final blit encodes sRGB on every platform
             feature.fetchColorBuffer = true;
             AssetDatabase.AddObjectToAsset(feature, rendererData);
             AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature, out string _, out long localId);

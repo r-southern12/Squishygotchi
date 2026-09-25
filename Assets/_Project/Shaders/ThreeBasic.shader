@@ -4,7 +4,7 @@ Shader "Squishy/ThreeBasic"
 {
     Properties
     {
-        _BaseColor ("Color (linear, alpha = opacity)", Color) = (1, 1, 1, 1)
+        _BaseColor ("Color (linear, alpha = opacity, set raw)", Vector) = (1, 1, 1, 1)
         _BaseMap ("Map", 2D) = "white" {}
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 1

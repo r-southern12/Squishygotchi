@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TiltShiftGrade
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.FullScreenPassRendererFeature
   m_Active: 1
-  injectionPoint: 600
+  injectionPoint: 550
   fetchColorBuffer: 1
   requirements: 0
   passMaterial: {fileID: 2100000, guid: 5cafc4da23ec463408dc45280f0823ed, type: 2}

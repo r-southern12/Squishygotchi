@@ -7,9 +7,9 @@ Shader "Squishy/ThreeLit"
 {
     Properties
     {
-        _BaseColor ("Color (linear)", Color) = (1, 1, 1, 1)
+        _BaseColor ("Color (linear, set raw)", Vector) = (1, 1, 1, 1)
         _BaseMap ("Map", 2D) = "white" {}
-        _EmissionColor ("Emissive (linear, times intensity)", Color) = (0, 0, 0, 0)
+        _EmissionColor ("Emissive (linear, times intensity, set raw)", Vector) = (0, 0, 0, 0)
         _Roughness ("Roughness", Range(0, 1)) = 1
         _Metalness ("Metalness", Range(0, 1)) = 0
         _ReceiveShadows ("Receive shadows", Float) = 1
