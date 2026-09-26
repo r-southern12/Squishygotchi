@@ -108,7 +108,7 @@ namespace Squishy.Runtime.Game
                 switch (type)
                 {
                     case 'T': w = 1 - 4 * Mathf.Abs(p - .5f); w = -w; break;
-                    case 'T': w = p < .5f ? 1 : -1; break;
+                    case 'Q': w = p < .5f ? 1 : -1; break;
                     case 'W': w = 2 * p - 1; break;
                     default: w = Mathf.Sin(2 * Mathf.PI * p); break;
                 }
