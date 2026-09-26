@@ -16,11 +16,15 @@ namespace Squishy.EditorTools
     {
         private const string Dir = "Assets/_Project/Art/Icon";
 
+        /// <summary>Knot style: 0 twisted pinch, 1 flush spiral nub, 2 soft dimple where the pleats meet.</summary>
+        public static int Knot;
+
         [MenuItem("Squishy/Icon Variants (painted)")]
         public static void Variants()
         {
             Directory.CreateDirectory(Dir);
-            for (int v = 0; v < 3; v++) File.WriteAllBytes(Path.Combine(Dir, "icon_paint_" + v + ".png"), Png(Draw(1024, v, true, true, 1)));
+            for (Knot = 0; Knot < 3; Knot++) File.WriteAllBytes(Path.Combine(Dir, "icon_knot_" + "ABC"[Knot] + ".png"), Png(Draw(1024, 0, true, true, 1)));
+            Knot = 0;
         }
 
         public static byte[] Png(Canvas2D g)
@@ -81,8 +85,8 @@ namespace Squishy.EditorTools
             float Uy(float a) => U(a + lift);
             float Ur(float a) => a * k * zoom;
 
-            float cx = Ux(.5f), bunY = Uy(.52f), rx = Ur(.34f), ry = Ur(.29f);
-            float rimY = Uy(.64f), rimRx = Ur(.43f), rimRy = Ur(.1f), bandBot = Uy(.88f);
+            float cx = Ux(.5f), bunY = Uy(.475f), rx = Ur(.325f), ry = Ur(.305f);
+            float rimY = Uy(.6f), rimRx = Ur(.44f), rimRy = Ur(.125f), bandBot = Uy(.86f);
             var bun = Hex(v == 2 ? "#FFB8CF" : "#F7A8C6");
             var bamboo = Hex("#E7B77E");
             var L = new Vector3(-.45f, -.6f, .66f).normalized;
@@ -97,7 +101,14 @@ namespace Squishy.EditorTools
 
             // Back of the steamer: rim and the dark inside.
             Ellipse(g, S, cx, rimY, rimRx, rimRy, (x, y) => Hex("#C89556"));
-            Ellipse(g, S, cx, rimY + Ur(.005f), rimRx * .92f, rimRy * .8f, (x, y) => Color.Lerp(Hex("#6B4527"), Hex("#8E6038"), (y - rimY) / rimRy * .5f + .5f));
+            Ellipse(g, S, cx, rimY + Ur(.006f), rimRx * .9f, rimRy * .78f, (x, y) => Color.Lerp(Hex("#B98249"), Hex("#4E301A"), Mathf.Clamp01((y - (rimY - rimRy * .78f)) / (rimRy * 1.2f))));
+
+            Cloud(g, S, Ux(.15f), Uy(.6f), Ur(.075f));
+            Cloud(g, S, Ux(.12f), Uy(.45f), Ur(.05f));
+            Cloud(g, S, Ux(.17f), Uy(.35f), Ur(.03f));
+            Cloud(g, S, Ux(.85f), Uy(.58f), Ur(.07f));
+            Cloud(g, S, Ux(.89f), Uy(.44f), Ur(.045f));
+            Cloud(g, S, Ux(.84f), Uy(.35f), Ur(.028f));
 
             // The bun: shaded dome with creases fanning from the knot.
             float knotX = cx, knotY = bunY - ry + Ur(.045f);
@@ -121,19 +132,15 @@ namespace Squishy.EditorTools
                 var c = bun * (.74f + .34f * diff);
                 c = Color.Lerp(c, Hex("#FFD6C4"), Mathf.Clamp01(ny) * .18f); // warm bounce low down
                 c *= 1 - .38f * crease;
+                // Shadow where the bun sinks into the steamer.
+                float fx = (x - cx) / rimRx, front = rimY + rimRy * Mathf.Sqrt(Mathf.Max(0, 1 - fx * fx));
+                c *= 1 - .4f * Mathf.SmoothStep(0, 1, (y - (front - Ur(.07f))) / Ur(.07f));
                 c *= .93f + .07f * nz;
                 c += Color.white * spec;
                 c.a = Mathf.Clamp01((1 - Mathf.Sqrt(rr)) * rx * S * 1.5f);
                 return c;
             });
-            // Swirl knot on top.
-            Ellipse(g, S, knotX, knotY - Ur(.012f), Ur(.055f), Ur(.036f), (x, y) =>
-            {
-                float nx = (x - knotX) / Ur(.055f), ny = (y - knotY + Ur(.012f)) / Ur(.036f);
-                float d = Mathf.Max(0, Vector3.Dot(new Vector3(nx, ny, Mathf.Sqrt(Mathf.Max(0, 1 - nx * nx - ny * ny))).normalized, L));
-                return bun * (.62f + .5f * d);
-            });
-            g.StrokeArc(knotX * S + Ur(.004f) * S, (knotY - Ur(.016f)) * S, Ur(.022f) * S, Mathf.PI * .9f, Mathf.PI * 2.4f, bun * .72f, Ur(.009f) * S);
+            DrawKnot(g, S, knotX, knotY, Ur, bun, L, H);
 
             // Face: bead eyes, "w" mouth, soft blush.
             float eyeY = bunY + Ur(.06f), eyeDx = Ur(.125f), er = Ur(.047f);
@@ -173,6 +180,14 @@ namespace Squishy.EditorTools
                 return c;
             });
 
+            Cloud(g, S, Ux(.1f), Uy(.7f), Ur(.055f));
+            Cloud(g, S, Ux(.9f), Uy(.7f), Ur(.05f));
+            foreach (var a in new[] { -2.5f, -2.1f, -1.05f, -.65f })
+            {
+                float r0 = Ur(.39f), r1 = Ur(.45f), py = bunY - Ur(.02f);
+                g.Line((cx + r0 * Mathf.Cos(a)) * S, (py + r0 * Mathf.Sin(a)) * S, (cx + r1 * Mathf.Cos(a)) * S, (py + r1 * Mathf.Sin(a)) * S, Hex("#FFFFFF", .9f), Ur(.012f) * S);
+            }
+
             if (v == 1)
             {
                 // The lid floating above at a jaunty tilt, with its woven top.
@@ -195,6 +210,88 @@ namespace Squishy.EditorTools
             Twinkle(g, S, Ux(.16f), Uy(.2f - lift), Ur(.045f));
             Twinkle(g, S, Ux(.86f), Uy(.36f - lift), Ur(.03f));
             return g;
+        }
+
+        /// <summary>Soft steam puffs: white discs with a feathered edge.</summary>
+        private static void Steam(Canvas2D g, float S, Vector3[] puffs, float alpha)
+        {
+            foreach (var p in puffs)
+            {
+                float px = p.x, py = p.y, pr = p.z;
+                Shade(g, S, px - pr, py - pr, px + pr, py + pr, (x, y) =>
+                {
+                    float d = Mathf.Sqrt(Sq(x - px) + Sq(y - py)) / pr;
+                    if (d > 1) return Color.clear;
+                    return new Color(1, 1, 1, alpha * Mathf.SmoothStep(0, 1, (1 - d) * 2.2f) * (.85f + .15f * (1 - d)));
+                });
+            }
+        }
+
+        /// <summary>A cartoon steam puff: a cluster of round lobes, white on top with a cool shade underneath.</summary>
+        private static void Cloud(Canvas2D g, float S, float x, float y, float r)
+        {
+            var lobes = new[] { new Vector3(0, 0, 1), new Vector3(-.85f, .25f, .7f), new Vector3(.85f, .25f, .72f), new Vector3(-.35f, -.55f, .72f), new Vector3(.4f, -.5f, .62f) };
+            foreach (var l in lobes) Ellipse(g, S, x + l.x * r, y + l.y * r + r * .12f, l.z * r, l.z * r, (a, b) => Hex("#BFE3E0", .95f));
+            foreach (var l in lobes) Ellipse(g, S, x + l.x * r, y + l.y * r, l.z * r * .97f, l.z * r * .97f, (a, b) => Hex("#FFFFFF", .97f));
+        }
+
+        private static void DrawKnot(Canvas2D g, float S, float kx, float ky, Func<float, float> Ur, Color bun, Vector3 L, Vector3 H)
+        {
+            Color Dome(float x, float y, float cx, float cy, float rx, float ry, float shade)
+            {
+                float nx = (x - cx) / rx, ny = (y - cy) / ry;
+                var nn = new Vector3(nx, ny, Mathf.Sqrt(Mathf.Max(0, 1 - nx * nx - ny * ny))).normalized;
+                return bun * (shade + .36f * Mathf.Max(0, Vector3.Dot(nn, L))) + Color.white * (Mathf.Pow(Mathf.Max(0, Vector3.Dot(nn, H)), 50) * .35f);
+            }
+            if (Knot == 0)
+            {
+                // Dumpling crown: the pleats gather into a small puckered mound, folds twisting into a pinched centre.
+                float cx = kx, cy = ky - Ur(.006f), rx = Ur(.064f), ry = Ur(.04f);
+                Ellipse(g, S, cx, cy, rx, ry, (x, y) =>
+                {
+                    float nx = (x - cx) / rx, ny = (y - cy) / ry;
+                    float a = Mathf.Atan2(ny, nx), d = Mathf.Sqrt(nx * nx + ny * ny);
+                    // Puffy lobes between the folds, twisting towards the centre.
+                    float lobe = Mathf.Abs(Mathf.Sin(5 * (a + (1 - d) * 1.3f)));
+                    var c = Dome(x, y, cx, cy, rx, ry, .7f);
+                    return c * (.78f + .26f * Mathf.Sqrt(lobe));
+                });
+                for (int i = 0; i < 10; i++)
+                {
+                    float a0 = i * Mathf.PI / 5;
+                    Vector2 prev = new Vector2(cx, cy - ry * .15f);
+                    for (int s = 1; s <= 6; s++)
+                    {
+                        float t = s / 6f, a = a0 + (1 - t) * 1.3f;
+                        var p = new Vector2(cx + Mathf.Cos(a) * rx * t * .98f, cy - ry * .15f + Mathf.Sin(a) * ry * t * .98f);
+                        g.Line(prev.x * S, prev.y * S, p.x * S, p.y * S, bun * .64f, Ur(.005f) * (1.2f - t * .5f) * S);
+                        prev = p;
+                    }
+                }
+                float px0 = cx, py0 = cy - ry * .2f, pr = Ur(.017f);
+                Ellipse(g, S, px0, py0, pr, pr * .85f, (x, y) => Dome(x, y, px0, py0, pr, pr * .85f, .8f));
+            }
+            else if (Knot == 1)
+            {
+                // Flush spiral nub: the pleats wind into a snail-shell swirl.
+                float cx = kx, cy = ky - Ur(.008f), rx = Ur(.058f), ry = Ur(.038f);
+                Ellipse(g, S, cx, cy, rx, ry, (x, y) => Dome(x, y, cx, cy, rx, ry, .72f));
+                Vector2 prev = new Vector2(cx, cy - ry * .15f);
+                for (int i = 1; i <= 60; i++)
+                {
+                    float t = i / 60f, a = t * Mathf.PI * 4.2f, rr = t * .92f;
+                    var p = new Vector2(cx + Mathf.Cos(a) * rx * rr, cy - ry * .15f + Mathf.Sin(a) * ry * rr);
+                    g.Line(prev.x * S, prev.y * S, p.x * S, p.y * S, bun * .66f, Ur(.0075f) * S);
+                    prev = p;
+                }
+            }
+            else
+            {
+                // Soft dimple: the pleats meet in a small pinched hollow with a lit lip.
+                float cx = kx, cy = ky, rx = Ur(.04f), ry = Ur(.022f);
+                Ellipse(g, S, cx, cy - Ur(.004f), rx * 1.2f, ry * 1.25f, (x, y) => Dome(x, y, cx, cy - Ur(.004f), rx * 1.2f, ry * 1.25f, .82f));
+                Ellipse(g, S, cx, cy, rx * .55f, ry * .5f, (x, y) => bun * .6f);
+            }
         }
 
         private static float Sq(float a) { return a * a; }
