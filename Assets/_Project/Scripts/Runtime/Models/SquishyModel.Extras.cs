@@ -220,7 +220,7 @@ namespace Squishy.Runtime.Models
             for (int k = 0; k < 2; k++)
             {
                 if (c.kind == "monocle" && k == 0) continue;
-                var p = ShapeAt(new Vector3((k == 0 ? -1 : 1) * .3f, .2f, .93f).normalized);
+                var p = ShapeAt(new Vector3((k == 0 ? -1 : 1) * .36f, .1f, .93f).normalized);
                 var n = (p - new Vector3(0, -.1f, 0)).normalized;
                 Mesh rimMesh = c.kind == "star" ? Torus(.13f, .022f, 4, 5) : c.kind == "heart" ? Torus(.12f, .022f, 4, 6)
                     : c.kind == "square" ? Torus(.13f, .02f, 4, 4) : c.kind == "thick" ? Torus(.12f, .032f, 6, 20) : Torus(.12f, .016f, 6, 20);
@@ -241,7 +241,7 @@ namespace Squishy.Runtime.Models
                     return g;
                 }
             }
-            var bridge = ShapeAt(new Vector3(0, .22f, 1).normalized);
+            var bridge = ShapeAt(new Vector3(0, .12f, 1).normalized);
             Node.Mesh(g, Cyl(.012f, .012f, .16f, 5), mat, bridge.x, bridge.y + .02f, bridge.z + .05f, shadow: false).RotZ(Mathf.PI / 2);
             return g;
         }

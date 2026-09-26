@@ -16,14 +16,15 @@ namespace Squishy.EditorTools
     public static class AppIcon
     {
         private const string Dir = "Assets/_Project/Art/Icon";
+        public static int Variant = 0; // which painted design (AppIconPaint) is the app icon
 
         [MenuItem("Squishy/Make App Icon")]
         public static void Make()
         {
             Directory.CreateDirectory(Dir);
-            Write("icon_full.png", Paint(1024, true, true, 1f));
-            Write("icon_bg.png", Paint(432, true, false, 1f));
-            Write("icon_fg.png", Paint(432, false, true, .72f)); // inside the adaptive safe zone
+            Write("icon_full.png", AppIconPaint.Png(AppIconPaint.Draw(1024, Variant, true, true, 1f)));
+            Write("icon_bg.png", AppIconPaint.Png(AppIconPaint.Draw(432, Variant, true, false, 1f)));
+            Write("icon_fg.png", AppIconPaint.Png(AppIconPaint.Draw(432, Variant, false, true, .64f))); // inside the adaptive safe zone
             AssetDatabase.Refresh();
             var full = Load("icon_full.png");
             var bg = Load("icon_bg.png");

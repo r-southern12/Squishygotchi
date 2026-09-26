@@ -39,7 +39,12 @@ namespace Squishy.EditorTools
             SceneLighting.ClearLamps();
             Post.ThumbMode(true);
 
+            SteamerModel.DefaultSkin = c.skins[0];
+            // The bun sitting in a small bamboo steamer, like the toy.
+            var tier = new SteamerModel(Node.Group(world, "tier"), 24).Group;
+            tier.localScale = Vector3.one * .33f;
             var pet = new SquishyModel(world, .5f);
+            pet.Pivot.localPosition = new Vector3(0, .06f, 0);
             pet.SetFinish(rules.Fav);
             pet.SetStage(GameRules.Life.Adult);
 
@@ -54,8 +59,9 @@ namespace Squishy.EditorTools
             var rt = new RenderTexture(S, S, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { antiAliasing = 8 };
             cam.targetTexture = rt;
 
-            float[] yaw = { 0, .35f, -.3f };
-            float[] squash = { 0, .12f, -.06f };
+            float[] yaw = { 0, .25f, -.2f };
+            float[] squash = { 0, .06f, -.04f };
+            string[] bun = { "#F6A9C4", "#FFF4E6", "#F6A9C4" };
             var tex = new Texture2D(S, S, TextureFormat.RGBA32, false, false);
             for (int v = 0; v < 3; v++)
             {
@@ -65,10 +71,12 @@ namespace Squishy.EditorTools
                 pet.Yaw.RotY(yaw[v]);
                 pet.EyeOpen = 1;
                 pet.Update(0, squash[v], false, 0);
+                pet.Mat.SetVector("_BaseColor", ThreeMat.Lin(bun[v]));
                 var bb = Node.LocalBounds(pet.Pivot, world);
+                bb.Encapsulate(Node.LocalBounds(tier, world));
                 Vector3 ctr = bb.center + new Vector3(0, bb.size.y * .02f, 0);
                 float r = Mathf.Max(bb.size.x, bb.size.y) * .5f;
-                var dir = new Vector3(0, .32f, 1).normalized;
+                var dir = new Vector3(0, .42f, 1).normalized;
                 var pos = ctr + dir * (r / Mathf.Tan(12 * Mathf.Deg2Rad) * 1.08f);
                 cam.transform.position = Space3.U(pos);
                 cam.transform.rotation = Quaternion.LookRotation(Space3.U(ctr) - Space3.U(pos), Vector3.up);
