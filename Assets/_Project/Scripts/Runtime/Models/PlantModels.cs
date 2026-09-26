@@ -132,26 +132,48 @@ namespace Squishy.Runtime.Models
             for (int i = 0; i < 6; i++) Leaf(t, new Vector3(0, .16f, 0), i * PI / 3 + .3f, .55f + (i % 2) * .35f, .34f, .12f, .012f, i % 2 == 0 ? a : b);
         }
 
+        /// <summary>Palms: a plump ringed trunk and chunky fronds that arch up and flop over, with a fruit bunch.</summary>
         private static void Palm(Transform t, bool coconut)
         {
-            Material bark = M(coconut ? "#9C7A55" : "#8A6A48"), bark2 = M(coconut ? "#B08C63" : "#A07C57"), frond = M(coconut ? "#5E9E52" : "#6E9A55");
-            float lean = coconut ? .22f : 0;
+            Material ring = M(coconut ? "#B08C63" : "#A07C57"), ring2 = M(coconut ? "#C9A57A" : "#B8936A");
+            Material frond = M(coconut ? "#5FA657" : "#72A85A"), frond2 = M(coconut ? "#78BC6A" : "#8CBE6E");
+            float lean = coconut ? .045f : 0;
             var p = Vector3.zero;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 7; i++)
             {
-                Stick(t, .038f - i * .002f, .075f, i % 2 == 0 ? bark : bark2, p.x, p.y, p.z, lean * (i / 6f));
-                p = Tip(.07f, lean * (i / 6f), 0, p);
+                float r = .052f - i * .003f;
+                Node.Mesh(t, Sph(r, 12, 8), i % 2 == 0 ? ring : ring2, p.x, p.y + r * .5f, p.z).Scale(1, .62f, 1);
+                p += new Vector3(-lean * i * .12f, r * .95f, 0); // a gentle curve for the coconut palm
             }
-            for (int i = 0; i < 8; i++) Leaf(t, p, i * PI / 4, 1.2f + (i % 2) * .25f, .26f, .07f, .01f, frond);
-            if (coconut) for (int i = 0; i < 3; i++) Blob(t, .03f, M("#7A5A3A"), p.x + Mathf.Cos(i * 2.1f) * .035f, p.y - .03f, p.z + Mathf.Sin(i * 2.1f) * .035f);
-            else for (int i = 0; i < 2; i++) Blob(t, .035f, M("#D98B3A"), p.x + (i == 0 ? .04f : -.04f), p.y - .05f, p.z, 1.4f);
+            var crown = p + new Vector3(0, .01f, 0);
+            Blob(t, .045f, frond, crown.x, crown.y, crown.z, .8f);
+            for (int i = 0; i < 7; i++)
+            {
+                // Two chunky segments per frond: out and up, then drooping over.
+                var m = i % 2 == 0 ? frond : frond2;
+                var first = Leaf(t, crown, i * PI * 2 / 7, .95f, .14f, .075f, .022f, m);
+                Leaf(first, new Vector3(0, .13f, 0), 0, .85f, .13f, .065f, .02f, m);
+            }
+            if (coconut)
+                for (int i = 0; i < 3; i++) Blob(t, .034f, M("#7A5A3A"), crown.x + Mathf.Cos(i * 2.1f) * .04f, crown.y - .045f, crown.z + Mathf.Sin(i * 2.1f) * .04f);
+            else
+                foreach (float sx in new[] { -1f, 1f })
+                    for (int k = 0; k < 5; k++)
+                        Blob(t, .017f, M(k % 2 == 0 ? "#E0913E" : "#C9772E"), crown.x + sx * (.045f + (k % 2) * .012f), crown.y - .04f - k * .016f, crown.z + (k % 3 - 1) * .012f);
         }
 
+        /// <summary>A soft, flame-shaped cypress made of stacked foliage puffs.</summary>
         private static void Cypress(Transform t)
         {
-            Node.Mesh(t, Cyl(.02f, .025f, .06f, 6), M("#6B4A36"), 0, .03f, 0);
-            Blob(t, .5f, M("#3F6B45"), 0, .33f, 0).Scale(.15f, .6f, .15f);
-            Blob(t, .5f, M("#4B7A50"), .02f, .4f, .02f).Scale(.11f, .42f, .11f);
+            Node.Mesh(t, Cyl(.022f, .026f, .06f, 6), M("#6B4A36"), 0, .03f, 0);
+            Material a = M("#3F6B45"), b = M("#4F7D52");
+            float[] ys = { .1f, .19f, .28f, .36f, .43f, .49f };
+            float[] rs = { .085f, .085f, .077f, .066f, .052f, .036f };
+            for (int i = 0; i < ys.Length; i++)
+            {
+                Blob(t, rs[i], i % 2 == 0 ? a : b, (i % 2 == 0 ? .008f : -.008f), ys[i], 0, 1.1f);
+                if (i < 4) Blob(t, rs[i] * .6f, i % 2 == 0 ? b : a, .05f * (i % 2 == 0 ? 1 : -1), ys[i] + .02f, .03f);
+            }
         }
 
         private static void Saguaro(Transform t)
@@ -245,19 +267,24 @@ namespace Squishy.Runtime.Models
                 Leaf(t, new Vector3(0, .12f + i * .055f, 0), i * 2.3f, .75f - i * .06f, .17f, .12f, .015f, i % 2 == 0 ? leaf : leaf2);
         }
 
+        /// <summary>A little jade tree: a stout trunk and branches, each ending in a tight rosette of plump leaves.</summary>
         private static void Jade(Transform t)
         {
-            Material stem = M("#7A6A4A"), leaf = M("#6FA37A"), tipM = M("#B8575A");
-            Stick(t, .022f, .14f, stem, 0, 0, 0, .25f);
-            Stick(t, .02f, .12f, stem, 0, .06f, 0, -.5f);
-            for (int i = 0; i < 14; i++)
+            Material stem = M("#8A7A55"), leaf = M("#6FA37A"), leaf2 = M("#82B68A"), blush = M("#C9787A");
+            Node.Mesh(t, Cyl(.03f, .04f, .1f, 8), stem, 0, .05f, 0);
+            var tips = new[] { (h: .12f, lean: .55f, yaw: .3f), (h: .11f, lean: .6f, yaw: 2.4f), (h: .1f, lean: .5f, yaw: 4.4f), (h: .13f, lean: .1f, yaw: 0f) };
+            foreach (var b in tips)
             {
-                float a = i * 2.4f, r = .06f + (i % 3) * .035f, y = .12f + (i % 4) * .035f;
-                var l = Blob(t, .5f, leaf, Mathf.Cos(a) * r, y, Mathf.Sin(a) * r);
-                l.localScale = new Vector3(.065f, .035f, .085f);
-                l.RotY(a);
+                var from = new Vector3(0, .09f, 0);
+                Stick(t, .018f, b.h, stem, from.x, from.y, from.z, b.lean, b.yaw);
+                var tip = Tip(b.h, b.lean, b.yaw, from);
+                for (int k = 0; k < 5; k++)
+                {
+                    var l = Leaf(t, tip, k * PI * 2 / 5 + b.yaw, 1.05f, .07f, .055f, .03f, k % 2 == 0 ? leaf : leaf2);
+                    if (k == 0) Blob(l, .008f, blush, 0, .068f, 0);
+                }
+                Blob(t, .03f, leaf2, tip.x, tip.y + .02f, tip.z, .8f);
             }
-            Blob(t, .012f, tipM, .08f, .2f, .02f);
         }
 
         private static void AirPlant(Transform t)
@@ -316,17 +343,17 @@ namespace Squishy.Runtime.Models
             }
         }
 
+        /// <summary>A chunky aloe: plump, rounded leaves in a rosette with soft speckles, and a new leaf in the middle.</summary>
         private static void Aloe(Transform t)
         {
-            Material a = M("#7FA88A"), b = M("#90B89A");
-            for (int i = 0; i < 9; i++)
+            Material a = M("#7FA88A"), b = M("#94BC9C"), dot = M("#E6EFE3");
+            for (int i = 0; i < 8; i++)
             {
-                var s = Node.Group(t, "blade", 0, .02f, 0);
-                s.RotY(i * .7f);
-                var tl = Node.Group(s, "tilt");
-                tl.RotX(.3f + (i % 3) * .18f);
-                Node.Mesh(tl, Cyl(0, .03f, .28f - (i % 3) * .04f, 6), i % 2 == 0 ? a : b, 0, .13f, 0).Scale(1, 1, .5f);
+                float len = .2f - (i % 2) * .03f;
+                var l = Leaf(t, new Vector3(0, .02f, 0), i * PI / 4 + (i % 2) * .3f, .55f + (i % 2) * .25f, len, .075f, .045f, i % 2 == 0 ? a : b);
+                for (int k = 0; k < 3; k++) Blob(l, .008f, dot, (k - 1) * .016f, len * (.35f + k * .15f), .02f);
             }
+            Leaf(t, new Vector3(0, .02f, 0), 0, .08f, .17f, .07f, .05f, b);
         }
 
         private static void Fern(Transform t)
