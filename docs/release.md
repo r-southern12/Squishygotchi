@@ -27,7 +27,7 @@ Everything in the game is built; these steps need your accounts. Numbers and ids
 - To go live: create a Unity LevelPlay (or AdMob) account set to **child-directed / non-personalised**, put the app ids in `adsGameIdAndroid` / `adsGameIdIos`, and ask for the SDK to be wired into `Ads.ShowRewarded` in `Store.cs`.
 
 ## Privacy policy (draft to host on a web page and link in both stores)
-Squishy Dumpling does not collect personal information. Your game is saved on your device only.
+Squishiotchi does not collect personal information. Your game is saved on your device only.
 Reminders are local notifications scheduled on your device. If you buy the full game, the purchase is
 handled by Google Play or the App Store; we receive no payment or personal details. There is no chat and
 no account. Contact: <your email>.

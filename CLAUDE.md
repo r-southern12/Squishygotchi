@@ -1,4 +1,4 @@
-# Squishy Dumpling (working title)
+# Squishiotchi
 
 A Tamagotchi-style mobile game: a squishy dumpling pet lives inside a 3D bamboo steamer room that the player furnishes. Players care for it, cook for it, decorate its room and open mystery steamers. Neglect can kill it.
 

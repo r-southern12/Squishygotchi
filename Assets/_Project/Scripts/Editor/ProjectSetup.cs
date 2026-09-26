@@ -87,7 +87,7 @@ namespace Squishy.EditorTools
         public static void ApplyPlayerSettings()
         {
             PlayerSettings.companyName = "SquishyDumpling";
-            PlayerSettings.productName = "Squishy Dumpling";
+            PlayerSettings.productName = "Squishiotchi";
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.allowedAutorotateToPortrait = true;
             PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;

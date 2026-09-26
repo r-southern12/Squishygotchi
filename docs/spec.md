@@ -1,4 +1,4 @@
-# Squishy Dumpling — Game Spec
+# Squishiotchi — Game Spec
 
 Exported 25 Sep 2026 from the design doc "Squishy Dumpling Pet — Game Concept". The design doc is the living version; update this file when it changes.
 

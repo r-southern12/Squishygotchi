@@ -42,12 +42,9 @@ namespace Squishy.Runtime.UI
                 var p = new Frame().Set(C("#FFFFFF", .85f), -1).Size(14, 14).Margin(0, 6, 0, 6).NoPick().In(steam);
                 _puffs.Add(p);
             }
-            var a = Label(_logo, "Squishy", "Gluten", 800, 60, "#C8674E");
+            var a = Label(_logo, "Squishiotchi", "Gluten", 800, 50, "#C8674E");
             a.style.textShadow = Shadow(4, "#FFF7EC");
-            a.style.rotate = new Rotate(-4);
-            var b = Label(_logo, "Dumpling", "Gluten", 800, 46, "#6F9A74").Margin(-18, 0, 0, 0);
-            b.style.textShadow = Shadow(4, "#FFF7EC");
-            b.style.rotate = new Rotate(3);
+            a.style.rotate = new Rotate(-3);
             Label(_logo, "a tiny home in a bamboo steamer", "Figtree", 700, 14, Muted).Margin(10, 0, 0, 0);
 
             _tapPill = new Frame().Set(C("#FFF7EC"), 99, new Shadow(0, 4, 0, 0, C("rgba(90,60,40,.22)"))).Pad(12, 26, 12, 26)
