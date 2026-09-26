@@ -25,7 +25,7 @@ namespace Squishy.Simulation.Game
     [Serializable] public class TierData { public string tier, rarity, color; }
     [Serializable] public class ToolData { public string name, color, rarity; public int price, maxDur; public bool basic; }
     [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; }
-    [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity, glow; public float metal, rough; }
+    [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity, glow; public string music, musicName; public float metal, rough; } // music: the track this steamer unlocks (Resources/Music)
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
@@ -65,7 +65,7 @@ namespace Squishy.Simulation.Game
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
         public int weeklyGoal, weeklySteamers;
         public bool adminTools;
-        public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos;
+        public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos, musicCredit;
     }
 
     [Serializable]

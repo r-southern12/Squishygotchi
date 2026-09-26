@@ -13,14 +13,14 @@ namespace Squishy.Runtime.Game
         private readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
         private AudioSource _src;
         private Hum _hum;
-        private AmbientMusic _music;
+        private MusicPlayer _music;
         public bool SoundOn;
 
-        /// <summary>Calm generative background music; plays only while sound is on.</summary>
+        /// <summary>Background music (a track per steamer skin); plays only while sound is on.</summary>
         public bool MusicOn { get { return _musicOn; } set { _musicOn = value; } }
         private bool _musicOn = false;
 
-        private void Update() { if (_music != null) _music.Volume = SoundOn && _musicOn ? .16f : 0f; }
+        private void Update() { if (_music != null) _music.Volume = SoundOn && _musicOn ? .35f : 0f; }
 
         private void Awake()
         {
@@ -32,9 +32,10 @@ namespace Squishy.Runtime.Game
             _hum = humGo.AddComponent<Hum>();
             var musicGo = new GameObject("Music");
             musicGo.transform.SetParent(transform);
-            musicGo.AddComponent<AudioSource>().playOnAwake = false;
-            _music = musicGo.AddComponent<AmbientMusic>();
+            _music = musicGo.AddComponent<MusicPlayer>();
         }
+
+        public void PlayMusic(string id) { _music.Play(id); }
 
         public void Tap() { Play("tap", c => Tone(c, 0, 660, 880, .09f, 'T', .12f)); }
         public void Hop() { Play("hop", c => Tone(c, 0, 420, 560, .06f, 'S', .05f)); }

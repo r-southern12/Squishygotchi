@@ -449,7 +449,7 @@ namespace Squishy.Runtime.Game
             {
                 meta = "Steamer skin · " + e.rarity;
                 note = e.own ? "Reskins your whole steamer." : "Not found yet. Tap to preview it.";
-                Act(e.own ? "Use this steamer" : "Preview", () => { homeWall.Skin(e.skin); if (e.own) { curSkin = e.skin; WriteSave(); } sfx.Snap(); });
+                Act(e.own ? "Use this steamer" : "Preview", () => { homeWall.Skin(e.skin); if (e.own) { curSkin = e.skin; UpdateMusic(); WriteSave(); } sfx.Snap(); });
             }
             else
             {

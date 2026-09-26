@@ -212,6 +212,17 @@ namespace Squishy.Tests
             for (int i = 0; i < c.recipes.Length; i++) Assert.AreEqual(c.recipes[i].starter, rules.Knows(i), c.recipes[i].name);
         }
 
+        [Test]
+        public void Each_Steamer_Skin_Unlocks_Its_Music()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 1));
+            foreach (var k in c.skins) Assert.IsFalse(string.IsNullOrEmpty(k.music), k.name + " has a track");
+            CollectionAssert.AreEqual(new[] { 0, 1 }, rules.UnlockedTracks(), "the starter steamers' tracks at first");
+            rules.AddOwned("skin:3");
+            CollectionAssert.AreEqual(new[] { 0, 1, 3 }, rules.UnlockedTracks());
+        }
+
         private sealed class MemoryStore : ISaveStore
         {
             public string Text;

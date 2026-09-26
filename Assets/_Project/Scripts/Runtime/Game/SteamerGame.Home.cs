@@ -32,6 +32,7 @@ namespace Squishy.Runtime.Game
             homeWall = new SteamerModel(room, Mathf.RoundToInt(60 * HR / 2.3f), HR);
             curSkin = C.skins[Mathf.Clamp(S.curSkin, 0, C.skins.Length - 1)];
             homeWall.Skin(curSkin);
+            UpdateMusic();
             homeSteam = new ParticlePool(70, ThreeGeo.Ico1(), SteamMat(), false, HomeLayer);
             fxPool = new ParticlePool(120, ThreeGeo.Ico1(), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, null, false, false), true, HomeLayer);
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);

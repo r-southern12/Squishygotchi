@@ -1520,35 +1520,45 @@
       "a": "#D6AE72",
       "b": "#CFA466",
       "t": "#A97E47",
-      "rarity": "Common"
+      "rarity": "Common",
+      "music": "temple",
+      "musicName": "The Temple"
     },
     {
       "name": "Red lacquer",
       "a": "#B8332E",
       "b": "#A62B27",
       "t": "#D8A94A",
-      "rarity": "Rare"
+      "rarity": "Rare",
+      "music": "channoyu",
+      "musicName": "Chan No Yu"
     },
     {
       "name": "Celadon",
       "a": "#9CC3B2",
       "b": "#8FB8A8",
       "t": "#5B7F72",
-      "rarity": "Rare"
+      "rarity": "Rare",
+      "music": "cherry",
+      "musicName": "Cherry Blossom Tree"
     },
     {
       "name": "Birch",
       "a": "#E7D8BD",
       "b": "#DCCBAE",
       "t": "#9C8566",
-      "rarity": "Rare"
+      "rarity": "Rare",
+      "music": "autumn",
+      "musicName": "Autumn"
     },
     {
       "name": "Sea glass",
       "a": "#A9D6D9",
       "b": "#9BCACE",
       "t": "#5E9EA3",
-      "rarity": "Epic"
+      "rarity": "Epic",
+      "music": "onsens",
+      "musicName": "Welcome to the Onsens"
     },
     {
       "name": "Gold",
@@ -1558,21 +1568,27 @@
       "rarity": "Legendary",
       "metal": 0.75,
       "rough": 0.28,
-      "glow": "#3D2A05"
+      "glow": "#3D2A05",
+      "music": "silkroad",
+      "musicName": "The Silk Road"
     },
     {
       "name": "Galaxy",
       "a": "#3B3180",
       "b": "#2E2668",
       "t": "#8BF3FF",
-      "rarity": "Legendary"
+      "rarity": "Legendary",
+      "music": "daydreaming",
+      "musicName": "Daydreaming"
     },
     {
       "name": "Candy stripe",
       "a": "#F7C3D3",
       "b": "#FFFFFF",
       "t": "#E86A92",
-      "rarity": "Epic"
+      "rarity": "Epic",
+      "music": "hotchocolate",
+      "musicName": "Hot Chocolate"
     }
   ],
   "toolSkins": [
@@ -2230,7 +2246,8 @@
     "visitHostCoins": 2,
     "dentRadius": 0.085,
     "flingHold": 0.45,
-    "flingSpeed": 2.4
+    "flingSpeed": 2.4,
+    "musicCredit": "Music by Redlight_Chill"
   },
   "cosmetics": [
     {

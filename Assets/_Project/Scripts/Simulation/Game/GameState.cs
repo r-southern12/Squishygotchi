@@ -35,7 +35,8 @@ namespace Squishy.Simulation.Game
         public int stageAwarded; // highest life stage whose prestige has been paid this life
         public bool weekClaimed;
         public List<string> tiersClaimed = new List<string>();
-        public bool soundOn = true, musicOn = false, hapticsOn = true, notificationsOn = true;
+        public bool soundOn = true, musicOn = true, hapticsOn = true, notificationsOn = true;
+        public string track = ""; // chosen music ("" follows the steamer in use)
 
         // Player profile: kept on this phone; the friend code is what friends will use to visit.
         public string playerName = "", avatar = "", friendCode = "";

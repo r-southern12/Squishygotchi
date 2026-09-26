@@ -29,7 +29,7 @@ namespace Squishy.Simulation.Save
                 data.state.recipeXP = null;
             }
             if (data.version < 6 && data.state != null) data.state.soundOn = true; // v6: sound was off by default (a browser-prototype habit); switch it on once
-            if (data.version < 7 && data.state != null) data.state.musicOn = false; // v7: the placeholder music is off until real music replaces it
+            if (data.version < 7 && data.state != null) data.state.musicOn = true; // v7: real music replaced the synth loop; switch it on once
             data.version = CurrentVersion;
         }
     }

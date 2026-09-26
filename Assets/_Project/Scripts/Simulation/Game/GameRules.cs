@@ -99,6 +99,15 @@ namespace Squishy.Simulation.Game
         public bool Owned(string key) { return _owned.Contains(key); }
         public void AddOwned(string key) { if (_owned.Add(key)) S.owned.Add(key); }
 
+        /// <summary>Steamer skins whose music you can play: the starter one plus every skin you own.</summary>
+        public List<int> UnlockedTracks()
+        {
+            var list = new List<int>();
+            for (int i = 0; i < C.skins.Length; i++)
+                if (!string.IsNullOrEmpty(C.skins[i].music) && (i == 0 || Owned("skin:" + i))) list.Add(i);
+            return list;
+        }
+
         public int SquishCount(int i) { foreach (var q in S.squishOwned) if (q.i == i) return q.n; return 0; }
 
         public void SetSquish(int i, int n)
@@ -408,7 +417,7 @@ namespace Squishy.Simulation.Game
                 card.dot = k.a;
                 card.isNew = !Owned(key);
                 AddOwned(key);
-                card.meta = card.isNew ? "Reskins your whole room · use it from the catalogue" : "Duplicate · +" + R.dupeSteamerSkinCoins + " coins";
+                card.meta = card.isNew ? "Reskins your whole room" + (string.IsNullOrEmpty(k.musicName) ? "" : " · new music: " + k.musicName) + " · use it from the catalogue" : "Duplicate · +" + R.dupeSteamerSkinCoins + " coins";
                 if (!card.isNew) card.delayedCoins = R.dupeSteamerSkinCoins;
             }
             else if (rw.type == "kit")
