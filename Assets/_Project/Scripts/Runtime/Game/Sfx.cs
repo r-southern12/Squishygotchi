@@ -46,6 +46,8 @@ namespace Squishy.Runtime.Game
         public void Pop() { Play("pop", c => { Noise(c, 0, .6f, 2400, 200, .5f, .8f); Tone(c, 0, 900, 180, .35f, 'T', .25f); Tone(c, .12f, 1200, 1600, .25f, 'S', .12f); }); }
         public void Land() { Play("land", c => { Tone(c, 0, 320, 110, .3f, 'S', .3f); Tone(c, .14f, 520, 780, .18f, 'S', .12f); }); }
         public void Squish() { Play("squish", c => Noise(c, 0, .3f, 700, 220, .35f, 2.5f)); }
+        /// <summary>The tactile toy: a soft, muffled foam press (quiet and slow, never a squelch).</summary>
+        public void Press() { Play("press", c => Noise(c, .02f, .5f, 320, 110, .09f, .9f)); }
         public void Kick() { Play("kick", c => { Tone(c, 0, 300, 160, .12f, 'T', .25f); Noise(c, 0, .06f, 900, 300, .15f, 1.2f); }); }
         public void Coin() { Play("coin", c => { Tone(c, 0, 990, 1320, .12f, 'T', .06f); Tone(c, .08f, 1320, 1760, .14f, 'T', .05f); }); }
         public void Sad() { Play("sad", c => { float[] f = { 520, 440, 370, 300 }; for (int i = 0; i < 4; i++) Tone(c, i * .26f, f[i], f[i] * .97f, .4f, 'S', .12f); }); }

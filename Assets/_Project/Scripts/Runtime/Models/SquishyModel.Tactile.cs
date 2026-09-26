@@ -130,11 +130,11 @@ namespace Squishy.Runtime.Models
                 float bowl = 0, bulge = 0;
                 foreach (var d in _dents)
                 {
-                    float rim = d.r * 1.6f;
+                    float rim = d.r * 2.2f;
                     float dx = b.x - d.p.x, dy = b.y - d.p.y, dz = b.z - d.p.z, dd = dx * dx + dy * dy + dz * dz;
                     if (dd >= rim * rim) continue;
                     if (dd < d.r * d.r) { float k = 1 - dd / (d.r * d.r); bowl += d.depth * k * k * k; } // smooth bowl, soft edges
-                    else bulge = Mathf.Max(bulge, d.depth * .1f * Mathf.Sin((Mathf.Sqrt(dd) - d.r) / (rim - d.r) * Mathf.PI)); // rim bulge
+                    else { float w = Mathf.Sin((Mathf.Sqrt(dd) - d.r) / (rim - d.r) * Mathf.PI); bulge = Mathf.Max(bulge, d.depth * .45f * w * w); } // the foam pushed aside swells up round the dent
                 }
                 if (bowl == 0 && bulge == 0) { _tWork[v] = b; continue; }
                 float sink = limit * (1 - Mathf.Exp(-bowl / limit));

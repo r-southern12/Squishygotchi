@@ -34,9 +34,9 @@ namespace Squishy.Runtime.Game
             drag.dent = pet.PressAt(hit, C.rules.dentRadius);
             if (ai.mode == "walk" || ai.mode == "chase") { ai.mode = "idle"; ai.path = null; }
             ai.idleT = Mathf.Max(ai.idleT, 3);
-            sfx.Squish();
-            Buzz(6);
-            SquishFx(world.InverseTransformPoint(hit), 4, .25f);
+            sfx.Press();
+            Buzz(4);
+            SquishFx(world.InverseTransformPoint(hit), 2, .2f);
             return true;
         }
 
@@ -51,9 +51,9 @@ namespace Squishy.Runtime.Game
             if (drag.dent != was)
             {
                 // Each new dent in a smear: a soft squish and a few motes.
-                if (Random.value < .5f) sfx.Squish();
-                Buzz(3);
-                SquishFx(world.InverseTransformPoint(hit), 2, .2f);
+                // A smear is quiet: the faintest tick and the odd mote.
+                Buzz(2);
+                if (Random.value < .3f) SquishFx(world.InverseTransformPoint(hit), 1, .15f);
             }
         }
 
