@@ -43,11 +43,6 @@ namespace Squishy.EditorTools
         public static void BuildAndroid()
         {
             AppIcon.Make();
-            // No Unity splash (optional on Unity 6 Personal): faster start and about 2.7 MB smaller.
-            PlayerSettings.SplashScreen.show = false;
-            PlayerSettings.SplashScreen.showUnityLogo = false;
-            var logo = (TextureImporter)AssetImporter.GetAtPath("Assets/_Project/Resources/UI/logo_round.png");
-            if (logo != null && (logo.mipmapEnabled || logo.maxTextureSize > 256)) { logo.mipmapEnabled = false; logo.maxTextureSize = 256; logo.SaveAndReimport(); } // UI art needs no mipmaps
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             EditorUserBuildSettings.buildAppBundle = false;
             // Keep test APKs small enough to send to a phone: strip unused engine code, compress tightly.
