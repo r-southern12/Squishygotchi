@@ -27,16 +27,28 @@ Everything in the game is built; these steps need your accounts. Numbers and ids
 - To go live: create a Unity LevelPlay (or AdMob) account set to **child-directed / non-personalised**, put the app ids in `adsGameIdAndroid` / `adsGameIdIos`, and ask for the SDK to be wired into `Ads.ShowRewarded` in `Store.cs`.
 
 ## Privacy policy (draft to host on a web page and link in both stores)
-Squishiotchi does not collect personal information. Your game is saved on your device only.
+Squishiotchi does not collect personal information. Your game is saved on your device. The name you type
+stays on your device. For friend visits the game signs in anonymously (a random ID, no email or password)
+and shares only your friend code and a snapshot of your squishy and room with players who enter your code.
 Reminders are local notifications scheduled on your device. If you buy the full game, the purchase is
-handled by Google Play or the App Store; we receive no payment or personal details. There is no chat and
-no account. Contact: <your email>.
+handled by Google Play or the App Store; we receive no payment or personal details. There is no chat.
+Contact: <your email>.
 
 ## Store listing starter text
 "Look after your own squishy dumpling in a cosy bamboo-steamer home. Feed it, play, bathe it and tuck it in;
 cook recipes, collect 24 room styles and open steamers for surprises. Odds are always shown. Free to try:
 one squishy's life or four weeks, then unlock the full game once. No ads in the full game."
 
-## Still open (need cloud services)
-- Cloud save and server time: needs a backend (e.g. Unity Cloud Save + Authentication, linked to your Unity
-  dashboard project). Until then saves are local and the clock guard stops winding the phone clock back.
+## Friends online: one-time setup (you)
+1. Sign in at https://cloud.unity.com with your Unity account and create a project called Squishiotchi.
+2. In the Unity editor: Edit > Project Settings > Services, pick your organisation and link this project to it
+   (this writes the project ID into ProjectSettings; commit that change).
+3. In the dashboard for that project, turn on **Authentication** (anonymous sign-in) and **Cloud Save**.
+4. Cloud Save > Player Data > Indexes: add two **Public** indexes, key `code` (string) and key `visitTo` (string).
+   These let friend codes be looked up and visits be found.
+5. The next build then shows Friends as online. Until then the Friends panel says friends aren't switched on,
+   and everything else plays normally.
+
+## Still open
+- Cloud save of your own game and server time: can use the same Unity project (Cloud Save + Authentication).
+  Until then saves are local and the clock guard stops winding the phone clock back.
