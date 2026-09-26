@@ -6,7 +6,7 @@ namespace Squishy.Simulation.Game
     // Plain content records, loaded from Resources/Content/game_content.json (JsonUtility-friendly: public fields).
     // Adding a style, recipe, finish or task is a data change only.
 
-    [Serializable] public class StyleData { public string id, name, shortName, group, pat; public string[] pal; public bool low, round; public int[] eventMonths; }
+    [Serializable] public class StyleData { public string id, name, shortName, group, pat, plant, plantName; public string[] pal; public bool low, round; public int[] eventMonths; }
 
     [Serializable]
     public class ItemTypeData
@@ -131,7 +131,7 @@ namespace Squishy.Simulation.Game
                 string key = a.id + ":" + s.id;
                 uint hv = Hash(key) % 100;
                 string rar = a.size > 0 ? "Epic" : hv < 70 ? "Common" : hv < 92 ? "Rare" : "Epic";
-                var it = new CatalogueItem { key = key, arch = a.id, style = s.id, rarity = rar, cat = a.cat, name = s.shortName + " " + a.name };
+                var it = new CatalogueItem { key = key, arch = a.id, style = s.id, rarity = rar, cat = a.cat, name = s.shortName + " " + (a.id == "plant" && !string.IsNullOrEmpty(s.plantName) ? s.plantName : a.name) };
                 Catalogue.Add(it);
                 _catByKey[key] = it;
             }

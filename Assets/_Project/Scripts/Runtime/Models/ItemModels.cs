@@ -124,10 +124,9 @@ namespace Squishy.Runtime.Models
                 {
                     Node.Mesh(g, Cyl(.15f, .12f, .22f, 12), A, 0, .11f, 0);
                     Node.Mesh(g, Cyl(.155f, .155f, .04f, 12), T, 0, .2f, 0);
+                    Node.Mesh(g, Cyl(.128f, .128f, .012f, 12), M("#5A3E2B"), 0, .221f, 0); // soil
                     var top = Node.Group(g, "top", 0, .22f, 0);
-                    Node.Mesh(top, RBox(.36f, .22f, .36f, .09f), M("#5F8566"), 0, .11f, 0);
-                    Node.Mesh(top, RBox(.26f, .2f, .26f, .08f), M("#8FAE7E"), 0, .29f, 0);
-                    Node.Mesh(top, RBox(.16f, .16f, .16f, .06f), M("#A7C08E"), 0, .44f, 0);
+                    PlantModels.Build(top, s.plant); // each style grows a plant from its part of the world
                     p.top = top;
                     break;
                 }

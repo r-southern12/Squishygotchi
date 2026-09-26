@@ -12,7 +12,9 @@
         "#D8A94A",
         "#F2E3C6"
       ],
-      "pat": "lattice"
+      "pat": "lattice",
+      "plant": "bamboo",
+      "plantName": "Lucky bamboo"
     },
     {
       "id": "tatami",
@@ -27,7 +29,9 @@
         "#F4EEDF"
       ],
       "pat": "shoji",
-      "low": true
+      "low": true,
+      "plant": "bonsai",
+      "plantName": "Bonsai pine"
     },
     {
       "id": "hanok",
@@ -42,7 +46,9 @@
         "#EFE6D2"
       ],
       "pat": "diamond",
-      "low": true
+      "low": true,
+      "plant": "maple",
+      "plantName": "Maple tree"
     },
     {
       "id": "blockprint",
@@ -56,7 +62,9 @@
         "#B5452F",
         "#F5E9D3"
       ],
-      "pat": "blockfloral"
+      "pat": "blockfloral",
+      "plant": "banana",
+      "plantName": "Banana plant"
     },
     {
       "id": "riad",
@@ -70,7 +78,9 @@
         "#C9A04A",
         "#F2E4CF"
       ],
-      "pat": "star"
+      "pat": "star",
+      "plant": "datepalm",
+      "plantName": "Date palm"
     },
     {
       "id": "persian",
@@ -84,7 +94,9 @@
         "#D4A64A",
         "#F1E4CC"
       ],
-      "pat": "medallion"
+      "pat": "medallion",
+      "plant": "cypress",
+      "plantName": "Cypress"
     },
     {
       "id": "talavera",
@@ -98,7 +110,9 @@
         "#3A6B3F",
         "#F6F0E3"
       ],
-      "pat": "talavera"
+      "pat": "talavera",
+      "plant": "saguaro",
+      "plantName": "Saguaro cactus"
     },
     {
       "id": "textile",
@@ -112,7 +126,9 @@
         "#9A3D24",
         "#EADCC2"
       ],
-      "pat": "mudcloth"
+      "pat": "mudcloth",
+      "plant": "snake",
+      "plantName": "Snake plant"
     },
     {
       "id": "aegean",
@@ -126,7 +142,9 @@
         "#7F8F4E",
         "#FAF7F0"
       ],
-      "pat": "waves"
+      "pat": "waves",
+      "plant": "olive",
+      "plantName": "Olive tree"
     },
     {
       "id": "nordic",
@@ -140,7 +158,9 @@
         "#4A4A48",
         "#F7F5F0"
       ],
-      "pat": "lines"
+      "pat": "lines",
+      "plant": "spruce",
+      "plantName": "Spruce"
     },
     {
       "id": "andean",
@@ -154,7 +174,9 @@
         "#2E8B6A",
         "#F3E7D3"
       ],
-      "pat": "stepped"
+      "pat": "stepped",
+      "plant": "fuchsia",
+      "plantName": "Fuchsia"
     },
     {
       "id": "folk",
@@ -168,7 +190,9 @@
         "#2F5E3A",
         "#FBF3E3"
       ],
-      "pat": "folkfloral"
+      "pat": "folkfloral",
+      "plant": "sunflower",
+      "plantName": "Sunflowers"
     },
     {
       "id": "cottage",
@@ -183,7 +207,9 @@
         "#FBF3E6"
       ],
       "pat": "gingham",
-      "round": true
+      "round": true,
+      "plant": "lavender",
+      "plantName": "Lavender"
     },
     {
       "id": "midcentury",
@@ -197,7 +223,9 @@
         "#2B2B2B",
         "#F0E6D2"
       ],
-      "pat": "atomic"
+      "pat": "atomic",
+      "plant": "fiddle",
+      "plantName": "Fiddle-leaf fig"
     },
     {
       "id": "minimal",
@@ -211,7 +239,9 @@
         "#3C3A37",
         "#FFFFFF"
       ],
-      "pat": "none"
+      "pat": "none",
+      "plant": "jade",
+      "plantName": "Jade plant"
     },
     {
       "id": "candy",
@@ -230,7 +260,9 @@
       "eventMonths": [
         2,
         3
-      ]
+      ],
+      "plant": "blossom",
+      "plantName": "Cherry blossom"
     },
     {
       "id": "seaside",
@@ -249,7 +281,9 @@
         6,
         7,
         8
-      ]
+      ],
+      "plant": "coconut",
+      "plantName": "Coconut palm"
     },
     {
       "id": "space",
@@ -267,7 +301,9 @@
       "eventMonths": [
         12,
         1
-      ]
+      ],
+      "plant": "airplant",
+      "plantName": "Air plant"
     },
     {
       "id": "spooky",
@@ -285,7 +321,9 @@
       "eventMonths": [
         10,
         11
-      ]
+      ],
+      "plant": "flytrap",
+      "plantName": "Venus flytrap"
     },
     {
       "id": "pixel",
@@ -299,7 +337,9 @@
         "#6C7AE0",
         "#D8DEE9"
       ],
-      "pat": "pixels"
+      "pat": "pixels",
+      "plant": "tulip",
+      "plantName": "Tulips"
     },
     {
       "id": "greenhouse",
@@ -313,7 +353,9 @@
         "#6B5B45",
         "#F2F4E8"
       ],
-      "pat": "leaves"
+      "pat": "leaves",
+      "plant": "monstera",
+      "plantName": "Monstera"
     },
     {
       "id": "bakery",
@@ -328,7 +370,9 @@
         "#FFF8EC"
       ],
       "pat": "checker",
-      "round": true
+      "round": true,
+      "plant": "lemon",
+      "plantName": "Lemon tree"
     },
     {
       "id": "diner",
@@ -342,7 +386,9 @@
         "#2B2B2B",
         "#FFFFFF"
       ],
-      "pat": "dinercheck"
+      "pat": "dinercheck",
+      "plant": "aloe",
+      "plantName": "Aloe vera"
     },
     {
       "id": "library",
@@ -356,7 +402,9 @@
         "#C9A44A",
         "#EFE2C8"
       ],
-      "pat": "plaid"
+      "pat": "plaid",
+      "plant": "fern",
+      "plantName": "Boston fern"
     }
   ],
   "types": [

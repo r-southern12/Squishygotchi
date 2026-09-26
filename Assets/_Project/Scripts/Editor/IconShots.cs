@@ -146,6 +146,38 @@ namespace Squishy.EditorTools
             var content = JsonUtility.FromJson<Squishy.Simulation.Game.GameContent>(File.ReadAllText("Assets/_Project/Resources/Content/game_content.json"));
             foreach (var sk in content.skins) if (sk.name == "Gold") wall.Skin(sk);
             Shot(cam, rt, tex, bb, flat, 42, 12f, 30, warm, "gold");
+            // Every style's plant on one sheet (6 x 4), rendered with the catalogue thumbnail camera.
+            const int T = 256;
+            var sheetRT = new RenderTexture(T, T, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            var sheet = new Texture2D(T * 6, T * 4, TextureFormat.RGBA32, false, false);
+            var fill = new Color32[T * 6 * T * 4];
+            for (int i = 0; i < fill.Length; i++) fill[i] = new Color32(247, 240, 228, 255);
+            sheet.SetPixels32(fill);
+            for (int i = 0; i < content.styles.Length; i++)
+            {
+                var th = Squishy.Runtime.Game.Thumbs.Get("plant:" + content.styles[i].id);
+                if (th == null) continue;
+                Graphics.Blit(th, sheetRT);
+                var prevA = RenderTexture.active;
+                RenderTexture.active = sheetRT;
+                var cell = new Texture2D(T, T, TextureFormat.RGBA32, false, false);
+                cell.ReadPixels(new Rect(0, 0, T, T), 0, 0);
+                RenderTexture.active = prevA;
+                var px = cell.GetPixels32();
+                int cx = (i % 6) * T, cy = (3 - i / 6) * T;
+                for (int y = 0; y < T; y++)
+                for (int x = 0; x < T; x++)
+                {
+                    var c = px[y * T + x];
+                    if (c.a < 8) continue;
+                    var d = sheet.GetPixel(cx + x, cy + y);
+                    float a = c.a / 255f;
+                    sheet.SetPixel(cx + x, cy + y, new Color(Mathf.Lerp(d.r, c.r / 255f, a), Mathf.Lerp(d.g, c.g / 255f, a), Mathf.Lerp(d.b, c.b / 255f, a), 1));
+                }
+            }
+            sheet.Apply();
+            Directory.CreateDirectory("Library/IconChecks");
+            File.WriteAllBytes("Library/IconChecks/plants.png", sheet.EncodeToPNG());
         }
 
         private static void Shot(Camera cam, RenderTexture rt, Texture2D tex, Bounds bb, Vector3 flat, float elev, float fill, float fov, float warm, string name)
@@ -169,8 +201,8 @@ namespace Squishy.EditorTools
             tex.ReadPixels(new Rect(0, 0, Size, Size), 0, 0);
             tex.Apply();
             RenderTexture.active = prev;
-            Directory.CreateDirectory("Temp/IconChecks");
-            File.WriteAllBytes("Temp/IconChecks/" + name + ".png", tex.EncodeToPNG()); // outside Assets: checks only
+            Directory.CreateDirectory("Library/IconChecks");
+            File.WriteAllBytes("Library/IconChecks/" + name + ".png", tex.EncodeToPNG()); // outside Assets: checks only
         }
 
         private static Transform FindPet()
