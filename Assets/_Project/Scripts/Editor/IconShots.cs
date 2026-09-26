@@ -15,7 +15,7 @@ namespace Squishy.EditorTools
     [InitializeOnLoad]
     public static class IconShots
     {
-        private const string Key = "Squishy.IconShots", Dir = "Assets/_Project/Art/Icon";
+        private const string Key = "Squishy.IconShots", Dir = "Library/IconChecks"; // renders for checking, kept out of Assets
         private const int Size = 1024;
 
         // name, elevation (deg), frame height as a multiple of the squishy's height, field of view

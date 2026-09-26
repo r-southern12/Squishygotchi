@@ -35,13 +35,16 @@ namespace Squishy.Runtime.UI
             _intro.style.backgroundSize = new BackgroundSize(Length.Percent(100), Length.Percent(100));
             _intro.RegisterCallback<PointerUpEvent>(e => { if (_introOut < 0) _introOut = 0; });
 
-            _logo = new VisualElement().Col(Align.Center).Abs(0, 70 + safeTop, 0).NoPick().In(_intro);
+            _logo = new VisualElement().Col(Align.Center).Abs(0, 34 + safeTop, 0).NoPick().In(_intro);
             var steam = new VisualElement().Row(Align.FlexEnd, Justify.Center).Size(null, 44).NoPick().In(_logo);
             for (int i = 0; i < 3; i++)
             {
                 var p = new Frame().Set(C("#FFFFFF", .85f), -1).Size(14, 14).Margin(0, 6, 0, 6).NoPick().In(steam);
                 _puffs.Add(p);
             }
+            // The app icon art (round version, used as supplied) above the name.
+            var art = Resources.Load<Texture2D>("UI/logo_round");
+            if (art != null) new Image { image = art, scaleMode = ScaleMode.ScaleToFit }.Size(170, 170).Margin(-10, 0, 4, 0).NoPick().In(_logo);
             var a = Label(_logo, "Squishiotchi", "Gluten", 800, 50, "#C8674E");
             a.style.textShadow = Shadow(4, "#FFF7EC");
             a.style.rotate = new Rotate(-3);
