@@ -20,10 +20,10 @@ namespace Squishy.Runtime.Game
             ui.SetPanelTitle("info", "Admin (testing)");
             var body = ui.PanelBody("info");
             Hud.Para(body, "Hidden test tools. Hold the coin counter to open. Speed: " + timeScale + "x · Day " + S.age + " · death clock " + Mathf.RoundToInt(S.deathClock / 60) + " min.");
+            Row(body, "Wallet", ("+500 coins", () => { Rules.AddCoins(500); UpdateSub(); OnAdmin(); }), ("+5000", () => { Rules.AddCoins(5000); UpdateSub(); OnAdmin(); }), ("+5 steamers", () => { Rules.SetSteamers(S.steamers + 5); OnAdmin(); }));
+            Row(body, "Skip time", ("+1 hour", () => Skip(1)), ("+6 hours", () => Skip(6)), ("+1 day", () => Skip(24)), ("+1 week", () => Skip(168)));
             Row(body, "Needs", ("Full", () => SetNeeds(1)), ("Half", () => SetNeeds(.5f)), ("Low", () => SetNeeds(.15f)), ("Empty", () => SetNeeds(0)));
-            Row(body, "Skip time", ("+1 hour", () => Skip(1)), ("+6 hours", () => Skip(6)), ("+1 day", () => Skip(24)));
             Row(body, "Speed", (timeScale > 1 ? "Normal" : "60x", () => { timeScale = timeScale > 1 ? 1 : 60; OnAdmin(); }), ("Kill now", () => { ui.ClosePanels(); if (!S.dead) Die(); }));
-            Row(body, "Wallet", ("+500 coins", () => { Rules.AddCoins(500); OnAdmin(); }), ("+5 steamers", () => { Rules.SetSteamers(S.steamers + 5); OnAdmin(); }));
             Row(body, "Squishy", ("Grow", Grow), ("Age +1 day", () => { S.age++; UpdateSub(); OnAdmin(); }));
             Row(body, "Friends", ("Test visit (my room)", TestVisit), ("Visit credit +1", () => { Rules.CreditVisit("test", DateTime.UtcNow.Ticks, 1); OnAdmin(); }));
             Row(body, "Life", ("Old age now", () => { ui.ClosePanels(); S.age = Mathf.CeilToInt(Rules.ExpectedLifespanDays()); }), ("+50 prestige", () => { S.prestige += 50; OnAdmin(); }));

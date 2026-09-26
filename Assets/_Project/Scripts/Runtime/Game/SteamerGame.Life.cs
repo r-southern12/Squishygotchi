@@ -168,6 +168,9 @@ namespace Squishy.Runtime.Game
         {
             ui.SetPanelTitle("info", "Settings");
             var body = ui.PanelBody("info");
+            // At the top: at the bottom of a long panel it sat outside the touchable area and taps never reached it.
+            if (C.rules.adminTools || Debug.isDebugBuild)
+                Hud.Button(body, "Admin tools (testing)", "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 40, 15, () => OnAdmin(), false, 3).Margin(0, 0, 8, 0);
             ProfileRow(body);
             Toggle(body, "Sound", S.soundOn, v => { S.soundOn = v; sfx.SoundOn = v; ui.SetSoundIcon(v); if (v) sfx.Tap(); else sfx.Hum(0); });
             Toggle(body, "Music", S.musicOn, v => { S.musicOn = v; sfx.MusicOn = v; });
@@ -176,8 +179,6 @@ namespace Squishy.Runtime.Game
             Hud.Para(body, S.premium ? "Full game unlocked. Thank you!" : "Free trial · " + (Rules.TrialOver() ? "ended" : Mathf.CeilToInt((float)Rules.TrialLeft().TotalDays) + " days left, or until your first squishy's life ends."));
             if (!S.premium) Hud.Button(body, "Unlock full game" + (store.Price != null ? " · " + store.Price : ""), "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => store.Buy(), false, 4);
             Hud.Button(body, "Restore purchase", "#EADCC6", "#CDB999", Hud.Ink, 14, 40, 15, () => store.Restore(), false, 3).Margin(8, 0, 0, 0);
-            if (C.rules.adminTools || Debug.isDebugBuild)
-                Hud.Button(body, "Admin tools (testing)", "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 40, 15, () => OnAdmin(), false, 3).Margin(8, 0, 0, 0);
             Hud.Para(body, "Odds are always shown on the steamer screen. No chat, no personal data collected.").Margin(10, 0, 0, 0);
             ui.OpenPanel("info");
             sfx.Tap();

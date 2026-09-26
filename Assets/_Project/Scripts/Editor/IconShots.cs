@@ -55,6 +55,22 @@ namespace Squishy.EditorTools
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
             if (f < 180) return; // let the room build, the squishy settle and thumbnails finish
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_ADMIN") == "1")
+            {
+                if (f < 120) return;
+                EditorApplication.update -= Tick;
+                var g = Squishy.Runtime.Game.SteamerGame.I;
+                try { g.OnSettings();
+                    UnityEngine.UIElements.VisualElement btn = null;
+                    foreach (var doc in Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsSortMode.None))
+                        UnityEngine.UIElements.UQueryExtensions.Query<UnityEngine.UIElements.Label>(doc.rootVisualElement).ForEach(l => { if (l.text == "Admin tools (testing)") btn = l.parent; });
+                    if (btn == null) Debug.LogError("IconShots: admin button not found");
+                    else { var c = btn.worldBound.center; var hit = btn.panel.Pick(c); Debug.Log("IconShots: admin button at " + btn.worldBound + " picks " + (hit == null ? "null" : hit.GetType().Name + " name=" + hit.name + " parentIsBtn=" + (hit == btn || hit.parent == btn)) + " panelBounds=" + btn.panel.visualTree.worldBound); }
+                    g.OnAdmin(); Debug.Log("IconShots: admin ok, mode=" + typeof(Squishy.Runtime.Game.SteamerGame).GetField("mode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(g)); }
+                catch (System.Exception e) { Debug.LogError("IconShots: admin threw " + e); }
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_VISIT") == "1")
             {
                 // Smoke test of a visit: start a test visit, photograph it, go home again, and report.
