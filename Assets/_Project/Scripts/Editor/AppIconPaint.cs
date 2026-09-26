@@ -35,10 +35,10 @@ namespace Squishy.EditorTools
             return png;
         }
 
-        private static Color Hex(string h, float a = 1) { var c = Canvas2D.Css(h); c.a = a; return c; }
+        internal static Color Hex(string h, float a = 1) { var c = Canvas2D.Css(h); c.a = a; return c; }
 
         /// <summary>Per-pixel painter over a unit-space box: fn(u, v) returns colour and coverage (2x2 supersampled).</summary>
-        private static void Shade(Canvas2D g, float S, float x0, float y0, float x1, float y1, Func<float, float, Color> fn)
+        internal static void Shade(Canvas2D g, float S, float x0, float y0, float x1, float y1, Func<float, float, Color> fn)
         {
             int ax = Mathf.Max(0, (int)(x0 * S) - 1), bx = Mathf.Min((int)S - 1, (int)(x1 * S) + 1);
             int ay = Mathf.Max(0, (int)(y0 * S) - 1), by = Mathf.Min((int)S - 1, (int)(y1 * S) + 1);
@@ -235,7 +235,7 @@ namespace Squishy.EditorTools
             foreach (var l in lobes) Ellipse(g, S, x + l.x * r, y + l.y * r, l.z * r * .97f, l.z * r * .97f, (a, b) => Hex("#FFFFFF", .97f));
         }
 
-        private static void DrawKnot(Canvas2D g, float S, float kx, float ky, Func<float, float> Ur, Color bun, Vector3 L, Vector3 H)
+        internal static void DrawKnot(Canvas2D g, float S, float kx, float ky, Func<float, float> Ur, Color bun, Vector3 L, Vector3 H)
         {
             Color Dome(float x, float y, float cx, float cy, float rx, float ry, float shade)
             {
@@ -256,15 +256,15 @@ namespace Squishy.EditorTools
                     var c = Dome(x, y, cx, cy, rx, ry, .7f);
                     return c * (.78f + .26f * Mathf.Sqrt(lobe));
                 });
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    float a0 = i * Mathf.PI / 5;
+                    float a0 = i * Mathf.PI / 4;
                     Vector2 prev = new Vector2(cx, cy - ry * .15f);
                     for (int s = 1; s <= 6; s++)
                     {
-                        float t = s / 6f, a = a0 + (1 - t) * 1.3f;
+                        float t = s / 6f, a = a0 + (1 - t) * .9f;
                         var p = new Vector2(cx + Mathf.Cos(a) * rx * t * .98f, cy - ry * .15f + Mathf.Sin(a) * ry * t * .98f);
-                        g.Line(prev.x * S, prev.y * S, p.x * S, p.y * S, bun * .64f, Ur(.005f) * (1.2f - t * .5f) * S);
+                        g.Line(prev.x * S, prev.y * S, p.x * S, p.y * S, bun * .66f, Ur(.0075f) * (1.2f - t * .5f) * S);
                         prev = p;
                     }
                 }
@@ -294,7 +294,7 @@ namespace Squishy.EditorTools
             }
         }
 
-        private static float Sq(float a) { return a * a; }
+        internal static float Sq(float a) { return a * a; }
 
         private static void Ellipse(Canvas2D g, float S, float cx, float cy, float rx, float ry, Func<float, float, Color> col)
         {
@@ -308,7 +308,7 @@ namespace Squishy.EditorTools
             });
         }
 
-        private static void Twinkle(Canvas2D g, float S, float x, float y, float r)
+        internal static void Twinkle(Canvas2D g, float S, float x, float y, float r)
         {
             var pts = new System.Collections.Generic.List<Vector2>();
             for (int i = 0; i < 8; i++)
