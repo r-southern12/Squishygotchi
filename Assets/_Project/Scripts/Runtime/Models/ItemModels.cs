@@ -90,9 +90,22 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, RBox(.46f, .2f, .02f, .01f), P, 0, .18f, .18f);
                     break;
                 case "tub":
-                    Node.Mesh(g, RBox(.56f, .24f, .44f, .09f), L, 0, .14f, 0);
-                    Node.Mesh(g, RBox(.58f, .07f, .46f, .03f), A, 0, .08f, 0);
-                    p.water = Node.Mesh(g, RBox(.46f, .03f, .34f, .015f), M("#8CC3D1", "#5FA7BB"), 0, .24f, 0, shadow: false);
+                    // An open tub (it was a solid block, so the water and the squishy were hidden): four soft walls
+                    // round a hollow, water just below the rim, foam and a rubber duck.
+                    Node.Mesh(g, RBox(.56f, .27f, .07f, .03f), L, 0, .135f, .185f);
+                    Node.Mesh(g, RBox(.56f, .27f, .07f, .03f), L, 0, .135f, -.185f);
+                    Node.Mesh(g, RBox(.07f, .27f, .36f, .03f), L, .245f, .135f, 0);
+                    Node.Mesh(g, RBox(.07f, .27f, .36f, .03f), L, -.245f, .135f, 0);
+                    Node.Mesh(g, RBox(.5f, .06f, .38f, .02f), L, 0, .03f, 0);
+                    Node.Mesh(g, RBox(.58f, .07f, .46f, .03f), A, 0, .05f, 0);
+                    p.water = Node.Mesh(g, RBox(.44f, .02f, .32f, .01f), M("#4FB8D8", "#2E8FB0"), 0, .185f, 0, shadow: false);
+                    var foam = M("#FFFFFF");
+                    foreach (var q in new[] { new Vector3(-.17f, .2f, -.11f), new Vector3(-.13f, .205f, -.13f), new Vector3(.17f, .2f, .1f), new Vector3(-.18f, .2f, .09f), new Vector3(.15f, .2f, -.12f), new Vector3(.12f, .205f, -.1f) })
+                        Node.Mesh(g, Sph(.035f, 8, 6), foam, q.x, q.y, q.z, shadow: false).Scale(1, .55f, 1);
+                    var duck = M("#F6D14B");
+                    Node.Mesh(g, Sph(.032f, 10, 8), duck, .15f, .215f, .09f, shadow: false).Scale(1.2f, .85f, 1);
+                    Node.Mesh(g, Sph(.022f, 10, 8), duck, .17f, .25f, .09f, shadow: false);
+                    Node.Mesh(g, Cyl(0, .01f, .025f, 6), M("#F08A3A"), .195f, .248f, .09f, shadow: false).RotZ(-PI / 2);
                     foreach (var q in new[] { new Vector2(-.22f, -.16f), new Vector2(.22f, -.16f), new Vector2(-.22f, .16f), new Vector2(.22f, .16f) })
                         Node.Mesh(g, Sph(.035f, 6, 5), T, q.x, .02f, q.y);
                     break;

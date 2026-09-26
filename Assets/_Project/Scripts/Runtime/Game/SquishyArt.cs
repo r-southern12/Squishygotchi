@@ -96,10 +96,11 @@ namespace Squishy.Runtime.Game
                 float diff = Mathf.Max(0, Vector3.Dot(n, L));
                 float shin = Mathf.Lerp(10, 70, gloss), spec = Mathf.Pow(Mathf.Max(0, Vector3.Dot(n, H)), shin) * Mathf.Lerp(.15f, .6f, gloss);
                 var c = Surface(f, baseC, x, y, cx, topY, rx, ryTop, galaxy);
-                if (f.map == "watermelon" && y > cy && r > .8f)
+                if (f.map == "watermelon")
                 {
-                    // Rind hugging the bottom edge: a pale band, then green with darker stripes.
-                    c = r < .86f ? Canvas2D.Css("#F1F5D6") : Frac((x - cx) / rx * 3.5f) < .5f ? Canvas2D.Css("#5DAE4E") : Canvas2D.Css("#3E8E41");
+                    // Rind as on the 3D squishy: a straight pale-green line just below the face, then solid green.
+                    float v = (y - topY) / ryTop;
+                    if (v > 1.27f) c = v < 1.33f ? Canvas2D.Css("#C9E48E") : Canvas2D.Css("#3E8E41");
                 }
                 if (holo)
                 {

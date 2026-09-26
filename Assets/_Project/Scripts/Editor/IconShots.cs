@@ -44,6 +44,8 @@ namespace Squishy.EditorTools
         }
 
         private static int _start = -1;
+        private static int _bathAt = -1, _inBath = -1;
+        private static Transform _tub;
         private static float _ground = float.MaxValue, _lastY = float.MaxValue;
 
         private static void Tick()
@@ -53,6 +55,41 @@ namespace Squishy.EditorTools
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
             if (f < 180) return; // let the room build, the squishy settle and thumbnails finish
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_BATH") == "1")
+            {
+                // Send the squishy to its bath and photograph it once it has been in the water a moment.
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var ai = typeof(Squishy.Runtime.Game.SteamerGame).GetField("ai", flags).GetValue(game);
+                string mode = (string)ai.GetType().GetField("mode").GetValue(ai);
+                if (_bathAt < 0)
+                {
+                    var items = (System.Collections.IList)typeof(Squishy.Runtime.Game.SteamerGame).GetField("items", flags).GetValue(game);
+                    foreach (var it in items)
+                        if ((string)it.GetType().GetProperty("arch").GetValue(it) == "tub")
+                        {
+                            typeof(Squishy.Runtime.Game.SteamerGame).GetMethod("UseItem", flags).Invoke(game, new object[] { it, true, null });
+                            _bathAt = f;
+                            _tub = ((Transform)it.GetType().GetField("g").GetValue(it));
+                        }
+                    if (_bathAt < 0) { Debug.LogError("no tub"); Finish(1); }
+                    return;
+                }
+                if (mode != "act") { _inBath = -1; return; }
+                if (_inBath < 0) _inBath = f;
+                if (f - _inBath < 90) return;
+                EditorApplication.update -= Tick;
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var bb = Bounds(_tub);
+                var flat = cam.transform.position - bb.center;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+                Shot(cam, rt, tex, bb, flat.normalized, 38, 2.4f, 30, Shader.GetGlobalFloat("_PostWarm"), "bath");
+                Finish(0);
+                return;
+            }
             // Wait for the squishy to be resting on the floor (not mid-hop).
             var pet = FindPet();
             if (pet != null)
@@ -187,6 +224,7 @@ namespace Squishy.EditorTools
                     model.Update(0, 0, false, 0);
                     Shot(cam, rt, tex, bb, flat, 14, 1.5f, 30, warm, "legendary_" + fin.name.Replace(" ", ""));
                 }
+            { var tubT = Squishy.Runtime.Game.Thumbs.Get("tub:aegean"); if (tubT != null) { var trt = new RenderTexture(tubT.width, tubT.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB); Graphics.Blit(tubT, trt); var pa = RenderTexture.active; RenderTexture.active = trt; var tt = new Texture2D(tubT.width, tubT.height, TextureFormat.RGBA32, false, false); tt.ReadPixels(new Rect(0, 0, tubT.width, tubT.height), 0, 0); RenderTexture.active = pa; Directory.CreateDirectory("Library/IconChecks"); File.WriteAllBytes("Library/IconChecks/tub.png", tt.EncodeToPNG()); } }
             // Every style's plant on one sheet (6 x 4), rendered with the catalogue thumbnail camera.
             const int T = 256;
             var sheetRT = new RenderTexture(T, T, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);

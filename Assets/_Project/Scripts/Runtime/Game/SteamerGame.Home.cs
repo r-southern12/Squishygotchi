@@ -912,8 +912,10 @@ namespace Squishy.Runtime.Game
             }
             else if (A.role == "bath" && it != null)
             {
-                lift = -pet.Scale * .35f;
-                extra = .05f * Mathf.Sin(t * 6);
+                // Floating in the water with its top half above the rim (it used to sink out of sight), bobbing gently.
+                float h = 1.46f * pet.Scale * pet.StageScale;
+                lift = .19f - ai.y - .2f * h + .012f * Mathf.Sin(t * 2.4f); // .19 = the water line; only the bottom fifth is under
+                extra = .04f * Mathf.Sin(t * 6);
                 if (Random.value < dt * 8) { var wp = ThreeWorld(it.parts.water); HPuff(new Vector3(wp.x + Rnd(-.18f, .18f), wp.y + .04f, wp.z + Rnd(-.12f, .12f)), new Vector3(0, Rnd(.4f, .9f), 0), Rnd(.03f, .06f), Rnd(.6f, 1), 1, .2f); }
             }
             else if (A.role == "shower" && it != null)
