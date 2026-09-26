@@ -300,7 +300,13 @@ namespace Squishy.Runtime.Game
             reward = Rules.RollReward();
             ClearPrize();
             newbie.Pivot.gameObject.SetActive(false);
-            if (reward.type == "sq") { newbie.SetFinish(C.finishes[reward.i]); ucam.half = .5f; }
+            if (reward.type == "sq")
+            {
+                // Like the toy: the squishy fills its steamer wall to wall, its dome rising above the rim.
+                newbie.SetFinish(C.finishes[reward.i]);
+                newbie.Scale = R * US * .9f * .92f / 1.16f;
+                ucam.half = 1.05f;
+            }
             else
             {
                 prize.gameObject.SetActive(true); // measure while visible (bounds skip hidden meshes)
@@ -341,8 +347,17 @@ namespace Squishy.Runtime.Game
             nbAir = true;
             nbSpin = 0;
             plate.gameObject.SetActive(reward.type == "food" || reward.type == "kit"); // the plate is for food only
-            if (reward.type == "sq") { newbie.Pivot.gameObject.SetActive(true); newbie.X = -.5f; newbie.V = 0; }
-            else prize.gameObject.SetActive(true);
+            if (reward.type == "sq")
+            {
+                // No launch: it was sitting in the steamer all along, and slowly rises back from squashed as the lid comes off.
+                newbie.Pivot.gameObject.SetActive(true);
+                nbAir = false;
+                nbY = 0;
+                Landed();
+                newbie.X = 1f;
+                return;
+            }
+            prize.gameObject.SetActive(true);
             sfx.Tap();
         }
 

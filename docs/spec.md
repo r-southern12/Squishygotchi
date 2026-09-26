@@ -77,6 +77,8 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 **Energised squishy (watching pays):** after it plays with something by itself it's energised for 60 s, slowly undulating with a few sparkles and a brief "Feeling bouncy · squish me!" bubble. Squish it in that minute for 1–5 coins; otherwise the wobble fades away over the last 20 s.
 
+**Tactile toy:** zoomed right in, touches press slow-rise dents into the squishy (hold deeper, drag to smear, memory-foam rise; jelly finishes rise quicker). Dents are a fixed size in the world, so a bigger squishy has more to squish. Zoomed out, holding on it squeezes it until it pings out from under your finger and bounces round the room. Rare and better squishies shed soft particles in their own style when squished or bouncing.
+
 **Face and mood:** the mouth is never fixed. Content: `:3` or a smile, with the odd open grin. Fun moments (toys, tasks, tips): grin with happy `^ ^` eyes. Squished: surprised "o" with `> <` eyes, then a smile. Eating: chomping. Low needs: flat mouth. Sad: frown. Asleep: a little "o".
 
 **Decline stages** (based on the lowest need)
@@ -282,7 +284,7 @@ No furniture is sold in the shop; furniture comes from steamers.
 - **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (40% chance to be a copy of your favourite, never for Legendary), tool skins, steamer skins.
 - **Legendary:** one of 6 legendary squishies, or a Gold / Galaxy steamer skin. Gold is metallic with a cream floor.
 
-**The reveal** happens on the counter of a softly blurred, gently animated professional kitchen: steamer drops in → hold anywhere to build steam (rattle, rim glow, haptic ticks) → lid blows off → prize lands on a display plate (the plate only for food) → a card shows what it is, whether it's new, and what it did → the opened steamer slides away and a fresh one slides in.
+**The reveal** happens on the counter of a softly blurred, gently animated professional kitchen: steamer drops in → hold anywhere to build steam (rattle, rim glow, haptic ticks) → lid blows off → a squishy fills its steamer wall to wall like the toy and slowly rises from squashed; other prizes launch and land (on a display plate only for food) → a card shows what it is, whether it's new, and what it did → the opened steamer slides away and a fresh one slides in.
 
 ## Catalogue and styles
 
