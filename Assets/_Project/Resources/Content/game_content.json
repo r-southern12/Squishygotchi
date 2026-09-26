@@ -2097,14 +2097,15 @@
     "squishPlayGain": 0.04,
     "squishPlayGainCritical": 0.02,
     "scrubGain": 0.012,
-    "selfPlayChance": 0.25,
-    "tipMin": 2,
+    "selfPlayChance": 0.45,
+    "tipMin": 1,
     "tipMax": 5,
     "stagePrestige": [
       10,
       15,
       20
-    ]
+    ],
+    "energySeconds": 60
   },
   "cosmetics": [
     {

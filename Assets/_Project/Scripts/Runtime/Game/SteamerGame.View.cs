@@ -161,19 +161,16 @@ namespace Squishy.Runtime.Game
             }
             if (S.dead) return;
             bool onPet = PetHit(p);
-            if (!S.tucked && ai.mode == "act" && ai.self && ai.act != null && !ai.act.tipped && ai.act.it != null && (onPet || ItemHit(p) == ai.act.it))
+            if (onPet && !S.tucked && energyT > 0)
             {
-                // Watching pays: catching it busy with something by itself (tap it or the thing it's using) earns a
-                // few coins, once per activity.
-                ai.act.tipped = true;
+                // Energised after playing by itself: a squish within the minute earns a little coin bonus.
+                energyT = 0;
                 int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
                 Rules.AddCoins(coins);
                 sfx.Coin();
                 Buzz(15);
                 Floater("+" + coins + " coins");
                 pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f);
-                ui.ShowBubble(string.IsNullOrEmpty(ai.act.act.need) ? "idle" : ai.act.act.need, ai.act.act.label + " (on its own)", false);
-                if (!onPet) return;
             }
             if (onPet)
             {

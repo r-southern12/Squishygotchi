@@ -330,7 +330,7 @@ namespace Squishy.Runtime.Game
             }
             // Busy by itself with something: say so, and that a tap now earns a tip (the passive-income interaction).
             if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label + (act.scrub ? " · rub me to scrub!" : ""), false);
-            else ui.ShowBubble("coin", act.label + " · tap me for coins!", false);
+            else ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, act.label + " (on its own)", false);
         }
 
         /// <summary>The squishy looks after itself, but only up to about half.</summary>
@@ -385,7 +385,17 @@ namespace Squishy.Runtime.Game
                     && !(i.a.size > 0 && Rules.FavSizeIdx < i.a.size));
                 if (fun.Count > 0) { UseItem(fun[Random.Range(0, fun.Count)], false); if (ai.act != null) return; }
             }
-            if (Random.value < .65f) Wander(); else ai.idleT = Rnd(2, 4);
+            if (Random.value < .7f) Wander(); else ai.idleT = Rnd(1.5f, 3);
+        }
+
+        /// <summary>Seconds left of the energised glow after it played with something by itself (runtime only).</summary>
+        private float energyT;
+
+        private void Energise()
+        {
+            energyT = C.rules.energySeconds;
+            ui.ShowBubble("coin", "Feeling bouncy · squish me!", false);
+            Later(3f, () => { if (ai.mode == "idle" && energyT > 0) ui.HideBubble(); });
         }
 
         private void FinishActivity()
@@ -393,13 +403,15 @@ namespace Squishy.Runtime.Game
             CleanupCook();
             EndToys();
             var a = ai.act;
+            bool energise = a != null && ai.self && a.it != null;
             if (a != null && !string.IsNullOrEmpty(a.act.need))
                 Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1) + (ai.self ? " (half)" : ""));
             ai.act = null;
             ai.target = null;
             ai.mode = "idle";
-            ai.idleT = Rnd(2.5f, 5);
+            ai.idleT = Rnd(1.5f, 3.5f);
             ui.HideBubble();
+            if (energise) Energise();
             if (ai.y > .02f) Wander();
             var sh = items.Find(i => i.arch == "shower");
             if (sh != null && sh.parts.curtain != null) sh.parts.openT = 1;
@@ -720,6 +732,13 @@ namespace Squishy.Runtime.Game
                 float k = ga.t;
                 pet.Scale = ga.from + (ga.to - ga.from) * (1 - Mathf.Pow(1 - k, 3)) + Mathf.Sin(k * Mathf.PI * 3) * (1 - k) * .01f;
                 growAnim = k >= 1 ? ((float, float, float)?)null : ga;
+            }
+            if (energyT > 0)
+            {
+                // Energised: a slow, visible undulation that fades away over the last twenty seconds.
+                energyT = sleeping || S.tucked ? 0 : energyT - dt;
+                extra += .08f * Mathf.Clamp01(energyT / 20f) * Mathf.Sin(time * 2.4f);
+                if (energyT > 20 && Random.value < dt * 1.5f) { var pp = PetWorld(); HPuff(new Vector3(pp.x + Rnd(-.15f, .15f), pp.y + pet.Scale * 1.1f, pp.z + Rnd(-.15f, .15f)), new Vector3(0, .4f, 0), .025f, .7f, 2, .2f); }
             }
             pet.Update(dt, extra, sleeping, droop);
             ApplyPetTransform(lift, sleeping);
