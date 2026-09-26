@@ -192,7 +192,7 @@ namespace Squishy.Runtime.Three
         }
 
         /// <summary>Uploads the canvas. sRGB for colour maps; linear for textures three.js left in linear encoding.</summary>
-        public Texture2D ToTexture(bool srgb, bool repeat, bool mipmaps, string name)
+        public Texture2D ToTexture(bool srgb, bool repeat, bool mipmaps, string name, bool readable = false)
         {
             var tex = new Texture2D(Width, Height, TextureFormat.RGBA32, mipmaps, !srgb) { name = name };
             var data = new Color32[_px.Length];
@@ -202,7 +202,7 @@ namespace Squishy.Runtime.Three
             tex.SetPixels32(data);
             tex.wrapMode = repeat ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
             tex.filterMode = FilterMode.Bilinear;
-            tex.Apply(mipmaps, true);
+            tex.Apply(mipmaps, !readable);
             return tex;
         }
 

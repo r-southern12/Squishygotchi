@@ -14,7 +14,7 @@ namespace Squishy.Runtime.Game
 {
     /// <summary>
     /// Cute, calm reminders while the app is closed, in the squishy's own voice with its picture (Android):
-    /// a need getting low, a need run out, fading before neglect kills, a new task, a gift steamer.
+    /// a picture of it with a thought bubble of what it wants (low, run out, fading). No tasks or gifts.
     /// Never between 9 pm and 8 am (moved to the morning) and never closer than 3 hours apart, except the
     /// "fading" warning. Scheduled on leaving the app, cleared on return. Nothing leaves the phone.
     /// Also keeps the Android home-screen widget's data up to date.
@@ -24,11 +24,11 @@ namespace Squishy.Runtime.Game
         private const float LowAt = .25f, FadeWarnSeconds = 6 * 3600, GapHours = 3;
         private const int QuietFrom = 21, QuietTo = 8;
         private static bool _ready;
+        private static int _nextId;
         public static bool Enabled = true;
         private static readonly Dictionary<string, string> Pictures = new Dictionary<string, string>();
 
-        private static readonly string[] LowTitle = { "my tummy's rumbling… 🍚", "will you play with me? 🎾", "I'm so sleepy… 💤", "I feel a bit grubby 🫧" };
-        private static readonly string[] NeedWord = { "food", "play", "sleep", "bath" };
+        private static readonly string[] NeedEmoji = { "🍚", "🎾", "💤", "🫧" };
 
         public static void Init()
         {
@@ -57,6 +57,17 @@ namespace Squishy.Runtime.Game
             NotificationCenter.CancelAllScheduledNotifications();
             NotificationCenter.CancelAllDeliveredNotifications();
 #endif
+#if UNITY_ANDROID && !UNITY_EDITOR
+            _nextId = 0;
+            try
+            {
+                using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
+                using (var n = new AndroidJavaClass("com.squishydumpling.widget.SquishyNotify"))
+                    n.CallStatic("cancelAll", activity);
+            }
+            catch (Exception) { }
+#endif
         }
 
         /// <summary>Renders the squishy's mood pictures (happy, droopy, sad) for the widget and notifications.</summary>
@@ -67,7 +78,85 @@ namespace Squishy.Runtime.Game
             var stage = rules.LifeStage();
             Save("happy", Thumbs.SquishyPng(f, stage, 0, 0, false));
             Save("droopy", Thumbs.SquishyPng(f, stage, .2f, .25f, false));
-            Save("sad", Thumbs.SquishyPng(f, stage, .7f, .35f, true));
+            var droopy = Thumbs.SquishyPng(f, stage, .2f, .25f, false);
+            var sad = Thumbs.SquishyPng(f, stage, .7f, .35f, true);
+            Save("sad", sad);
+            for (int k = 0; k < 4; k++)
+            {
+                Save("low" + k, Scene(droopy, k));
+                Save("empty" + k, Scene(sad, k));
+            }
+            Save("fade", Scene(sad, -1));
+        }
+
+        /// <summary>A little postcard: the squishy on the left, a thought bubble of what it wants on the right.</summary>
+        private static byte[] Scene(byte[] squishyPng, int need)
+        {
+            if (squishyPng == null) return null;
+            const int W = 512, H = 256;
+            var g = new Three.Canvas2D(W, H);
+            Color bubble = Three.Canvas2D.Css("#FFFFFF");
+            g.FillRect(0, 0, W, H, Three.Canvas2D.Css("#F7F0E4"));
+            g.FillCircle(262, 178, 9, bubble);
+            g.FillCircle(292, 148, 15, bubble);
+            g.FillCircle(384, 104, 80, bubble);
+            float cx = 384, cy = 104;
+            if (need == 0)
+            {
+                var bowl = new List<Vector2>();
+                for (int i = 0; i <= 16; i++) { float a = Mathf.PI * i / 16; bowl.Add(new Vector2(cx - 42 * Mathf.Cos(a), cy + 34 * Mathf.Sin(a))); }
+                g.FillEllipse(cx, cy, 40, 12, 0, Three.Canvas2D.Css("#F4EBDD"));
+                g.FillPolygon(bowl, Three.Canvas2D.Css("#C8674E"));
+                g.StrokeArc(cx - 12, cy - 22, 10, 0, Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4);
+                g.StrokeArc(cx + 12, cy - 30, 10, Mathf.PI, 2 * Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4);
+            }
+            else if (need == 1)
+            {
+                g.FillCircle(cx, cy, 38, Three.Canvas2D.Css("#6E9C9A"));
+                g.StrokeArc(cx - 52, cy, 40, -.9f, .9f, bubble, 5);
+                g.StrokeArc(cx + 52, cy, 40, Mathf.PI - .9f, Mathf.PI + .9f, bubble, 5);
+            }
+            else if (need == 2)
+            {
+                g.FillCircle(cx, cy, 38, Three.Canvas2D.Css("#8C7BB0"));
+                g.FillCircle(cx + 20, cy - 14, 32, bubble);
+                g.FillCircle(cx + 40, cy + 30, 5, Three.Canvas2D.Css("#D9A64A"));
+                g.FillCircle(cx - 44, cy - 40, 4, Three.Canvas2D.Css("#D9A64A"));
+            }
+            else if (need == 3)
+            {
+                var drop = Three.Canvas2D.Css("#7FB0C9");
+                g.FillCircle(cx, cy + 14, 30, drop);
+                g.FillPolygon(new[] { new Vector2(cx, cy - 44), new Vector2(cx - 27, cy + 4), new Vector2(cx + 27, cy + 4) }, drop);
+                g.FillCircle(cx - 10, cy + 8, 8, bubble);
+            }
+            else
+            {
+                var pink = Three.Canvas2D.Css("#E86A92");
+                g.FillCircle(cx - 17, cy - 10, 22, pink);
+                g.FillCircle(cx + 17, cy - 10, 22, pink);
+                g.FillPolygon(new[] { new Vector2(cx - 37, cy - 2), new Vector2(cx + 37, cy - 2), new Vector2(cx, cy + 40) }, pink);
+            }
+            var bg = g.ToTexture(true, false, false, "scene", true);
+            var sq = new Texture2D(2, 2);
+            sq.LoadImage(squishyPng);
+            var px = bg.GetPixels();
+            const int X0 = 8, Y0 = 4, S = 248;
+            for (int y = 0; y < S; y++)
+            for (int x = 0; x < S; x++)
+            {
+                Color c = sq.GetPixelBilinear((x + .5f) / S, (y + .5f) / S);
+                if (c.a <= 0) continue;
+                int i = (Y0 + y) * W + X0 + x;
+                Color d = px[i];
+                px[i] = new Color(Mathf.Lerp(d.r, c.r, c.a), Mathf.Lerp(d.g, c.g, c.a), Mathf.Lerp(d.b, c.b, c.a), 1);
+            }
+            bg.SetPixels(px);
+            bg.Apply();
+            var png = bg.EncodeToPNG();
+            UnityEngine.Object.Destroy(bg);
+            UnityEngine.Object.Destroy(sq);
+            return png;
         }
 
         private static void Save(string mood, byte[] png)
@@ -106,19 +195,15 @@ namespace Squishy.Runtime.Game
                     if (low > 600 && low < firstLow) { firstLow = low; first = k; }
                     if (empty < firstEmpty) { firstEmpty = empty; emptyK = k; }
                 }
-                if (first >= 0) plans.Add(new Plan { when = now.AddSeconds(firstLow), title = name + ": " + LowTitle[first], text = "Pop in when you can 💛", mood = "droopy" });
+                if (first >= 0) plans.Add(new Plan { when = now.AddSeconds(firstLow), title = name, text = NeedEmoji[first] + " …?", mood = "low" + first });
                 if (firstEmpty < double.MaxValue)
                 {
-                    plans.Add(new Plan { when = now.AddSeconds(Math.Max(600, firstEmpty)), title = name + " really misses you 🥺", text = "They'd love some " + NeedWord[emptyK] + ".", mood = "sad" });
+                    plans.Add(new Plan { when = now.AddSeconds(Math.Max(600, firstEmpty)), title = name, text = "🥺 " + NeedEmoji[emptyK], mood = "empty" + emptyK });
                     double fade = firstEmpty + Math.Max(0, rules.R.deathSeconds - s.deathClock) - FadeWarnSeconds;
-                    if (fade > 600) plans.Add(new Plan { when = now.AddSeconds(fade), title = name + " is fading…", text = "Please come back soon.", mood = "sad", urgent = true });
+                    if (fade > 600) plans.Add(new Plan { when = now.AddSeconds(fade), title = name, text = "💛 …", mood = "fade", urgent = true });
                 }
             }
-            TimeSpan? task = null;
-            foreach (var t in s.tasks)
-                if (!rules.TaskReady(t)) { var w = rules.TaskWait(t); if (!task.HasValue || w < task.Value) task = w; }
-            if (task.HasValue) plans.Add(new Plan { when = now.Add(task.Value), title = name + ": a new care task is here ✨", text = "Tasks earn coins and free steamers.", mood = "happy" });
-            if (!rules.GiftReady()) plans.Add(new Plan { when = now.Add(rules.GiftWait()), title = name + ": a gift steamer arrived! 🎁", text = "Come and open it.", mood = "happy" });
+            // Tasks and gifts never notify: only the squishy itself asking for care does.
 
             // Calm policy: quiet hours move to the morning; keep at least 3 hours between reminders.
             foreach (var p in plans) if (!p.urgent) p.when = OutOfQuietHours(p.when);
@@ -141,14 +226,19 @@ namespace Squishy.Runtime.Game
 
         private static void Send(Plan p)
         {
-#if UNITY_ANDROID
-            var n = new AndroidNotification { Title = p.title, Text = p.text, FireTime = p.when };
-            if (Pictures.TryGetValue(p.mood, out var pic))
+#if UNITY_ANDROID && !UNITY_EDITOR
+            // Native picture notification: the squishy's thought-bubble scene fills it (custom layout).
+            string pic;
+            Pictures.TryGetValue(p.mood, out pic);
+            long ms = new DateTimeOffset(p.when).ToUnixTimeMilliseconds();
+            try
             {
-                n.LargeIcon = pic;
-                n.BigPicture = new BigPictureStyle { Picture = pic, LargeIcon = pic, ShowWhenCollapsed = false };
+                using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
+                using (var n = new AndroidJavaClass("com.squishydumpling.widget.SquishyNotify"))
+                    n.CallStatic("schedule", activity, ++_nextId, ms, p.title, p.text, pic);
             }
-            AndroidNotificationCenter.SendNotification(n, "care");
+            catch (Exception e) { Debug.LogWarning("Notification failed: " + e.Message); }
 #elif UNITY_IOS
             var n = new Notification { Title = p.title, Text = p.text };
             NotificationCenter.ScheduleNotification(n, new NotificationDateTimeSchedule(p.when));

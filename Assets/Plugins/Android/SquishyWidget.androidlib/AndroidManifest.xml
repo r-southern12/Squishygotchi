@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <application>
     <receiver android:name="com.squishydumpling.widget.SquishyWidget" android:exported="false">
       <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/squishy_widget_info" />
     </receiver>
+    <receiver android:name="com.squishydumpling.widget.SquishyNotify" android:exported="false" />
   </application>
 </manifest>
