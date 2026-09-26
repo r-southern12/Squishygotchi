@@ -39,6 +39,7 @@ namespace Squishy.Runtime.Game
         public void OnSound(bool on)
         {
             sfx.SoundOn = on;
+            sfx.MusicOn = S.musicOn;
             S.soundOn = on;
             if (on) sfx.Tap(); else sfx.Hum(0);
         }

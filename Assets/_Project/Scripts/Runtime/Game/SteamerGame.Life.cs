@@ -26,6 +26,7 @@ namespace Squishy.Runtime.Game
             store = new Store(C.rules.fullUnlockProductId, () => { S.premium = true; WriteSave(); ui.HideMemo(); paywallShown = false; ui.ShowHud(true); Floater("Full game unlocked! Thank you!"); sfx.Chime(); });
             Ads.Init(C.rules.adsGameIdAndroid, C.rules.adsGameIdIos);
             sfx.SoundOn = S.soundOn;
+            sfx.MusicOn = S.musicOn;
             ui.SetSoundIcon(S.soundOn);
             Haptics.Enabled = S.hapticsOn;
             Notifier.Enabled = S.notificationsOn;
@@ -165,6 +166,7 @@ namespace Squishy.Runtime.Game
             ui.SetPanelTitle("info", "Settings");
             var body = ui.PanelBody("info");
             Toggle(body, "Sound", S.soundOn, v => { S.soundOn = v; sfx.SoundOn = v; ui.SetSoundIcon(v); if (v) sfx.Tap(); else sfx.Hum(0); });
+            Toggle(body, "Music", S.musicOn, v => { S.musicOn = v; sfx.MusicOn = v; });
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
             Toggle(body, "Reminders", S.notificationsOn, v => { S.notificationsOn = v; Notifier.Enabled = v; if (!v) Notifier.Clear(); });
             Hud.Para(body, S.premium ? "Full game unlocked. Thank you!" : "Free trial · " + (Rules.TrialOver() ? "ended" : Mathf.CeilToInt((float)Rules.TrialLeft().TotalDays) + " days left, or until your first squishy's life ends."));

@@ -59,7 +59,7 @@ namespace Squishy.Runtime.Game
         public string role;
         public ActivityData act;
         public RecipeData recipe;
-        public bool scrubbed;
+        public bool scrubbed, tipped;
     }
 
     /// <summary>The squishy's brain state (the prototype's `ai`).</summary>

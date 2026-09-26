@@ -33,7 +33,7 @@ namespace Squishy.Simulation.Game
         public int streak, weekTasks;
         public bool weekClaimed;
         public List<string> tiersClaimed = new List<string>();
-        public bool soundOn = false, hapticsOn = true, notificationsOn = true;
+        public bool soundOn = false, musicOn = true, hapticsOn = true, notificationsOn = true;
     }
 
     [Serializable]

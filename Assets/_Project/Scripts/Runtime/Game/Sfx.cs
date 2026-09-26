@@ -13,7 +13,14 @@ namespace Squishy.Runtime.Game
         private readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
         private AudioSource _src;
         private Hum _hum;
+        private AmbientMusic _music;
         public bool SoundOn;
+
+        /// <summary>Calm generative background music; plays only while sound is on.</summary>
+        public bool MusicOn { get { return _musicOn; } set { _musicOn = value; } }
+        private bool _musicOn = true;
+
+        private void Update() { if (_music != null) _music.Volume = SoundOn && _musicOn ? .16f : 0f; }
 
         private void Awake()
         {
@@ -23,20 +30,24 @@ namespace Squishy.Runtime.Game
             humGo.transform.SetParent(transform);
             humGo.AddComponent<AudioSource>().playOnAwake = false;
             _hum = humGo.AddComponent<Hum>();
+            var musicGo = new GameObject("Music");
+            musicGo.transform.SetParent(transform);
+            musicGo.AddComponent<AudioSource>().playOnAwake = false;
+            _music = musicGo.AddComponent<AmbientMusic>();
         }
 
         public void Tap() { Play("tap", c => Tone(c, 0, 660, 880, .09f, 'T', .12f)); }
         public void Hop() { Play("hop", c => Tone(c, 0, 420, 560, .06f, 'S', .05f)); }
         public void Lift() { Play("lift", c => Tone(c, 0, 500, 760, .12f, 'S', .12f)); }
         public void Drop() { Play("drop", c => { Tone(c, 0, 260, 140, .14f, 'S', .2f); Noise(c, 0, .08f, 500, 200, .12f, 1.2f); }); }
-        public void Snap() { Play("snap", c => Tone(c, 0, 1100, 1100, .04f, 'Q', .05f)); }
+        public void Snap() { Play("snap", c => Tone(c, 0, 1100, 1100, .04f, 'T', .05f)); }
         public void Thunk() { Play("thunk", c => { Tone(c, 0, 140, 60, .25f, 'S', .35f); Noise(c, 0, .15f, 400, 120, .25f, 1.2f); }); }
         public void Bonk() { Play("bonk", c => Tone(c, 0, 520, 300, .08f, 'T', .14f)); }
         public void Pop() { Play("pop", c => { Noise(c, 0, .6f, 2400, 200, .5f, .8f); Tone(c, 0, 900, 180, .35f, 'T', .25f); Tone(c, .12f, 1200, 1600, .25f, 'S', .12f); }); }
         public void Land() { Play("land", c => { Tone(c, 0, 320, 110, .3f, 'S', .3f); Tone(c, .14f, 520, 780, .18f, 'S', .12f); }); }
         public void Squish() { Play("squish", c => Noise(c, 0, .3f, 700, 220, .35f, 2.5f)); }
         public void Kick() { Play("kick", c => { Tone(c, 0, 300, 160, .12f, 'T', .25f); Noise(c, 0, .06f, 900, 300, .15f, 1.2f); }); }
-        public void Coin() { Play("coin", c => { Tone(c, 0, 990, 1320, .12f, 'Q', .06f); Tone(c, .08f, 1320, 1760, .14f, 'Q', .05f); }); }
+        public void Coin() { Play("coin", c => { Tone(c, 0, 990, 1320, .12f, 'T', .06f); Tone(c, .08f, 1320, 1760, .14f, 'T', .05f); }); }
         public void Sad() { Play("sad", c => { float[] f = { 520, 440, 370, 300 }; for (int i = 0; i < 4; i++) Tone(c, i * .26f, f[i], f[i] * .97f, .4f, 'S', .12f); }); }
         public void Chime() { Play("chime", c => { float[] f = { 660, 880, 1320 }; for (int i = 0; i < 3; i++) Tone(c, i * .09f, f[i], f[i], .35f, 'S', .1f); }); }
 
@@ -58,11 +69,25 @@ namespace Squishy.Runtime.Game
             {
                 var buf = new List<float>();
                 build(buf);
+                Soften(buf);
                 clip = AudioClip.Create(name, Mathf.Max(1, buf.Count), 1, Rate, false);
                 clip.SetData(buf.ToArray(), 0);
                 _clips[name] = clip;
             }
             _src.PlayOneShot(clip);
+        }
+
+        /// <summary>Gentler, roomier sound: quieter, a soft low-pass and a short three-tap echo.</summary>
+        private static void Soften(List<float> b)
+        {
+            int tail = Rate / 3;
+            for (int i = 0; i < tail; i++) b.Add(0);
+            float lp = 0;
+            for (int i = 0; i < b.Count; i++) { lp += .45f * (b[i] - lp); b[i] = lp * .7f; }
+            int[] taps = { Rate / 14, Rate / 9, Rate / 6 };
+            float[] gains = { .22f, .14f, .08f };
+            for (int i = b.Count - 1; i >= 0; i--)
+                for (int t = 0; t < 3; t++) if (i - taps[t] >= 0) b[i] += b[i - taps[t]] * gains[t];
         }
 
         private static void Ensure(List<float> b, int n) { while (b.Count < n) b.Add(0); }
@@ -83,7 +108,7 @@ namespace Squishy.Runtime.Game
                 switch (type)
                 {
                     case 'T': w = 1 - 4 * Mathf.Abs(p - .5f); w = -w; break;
-                    case 'Q': w = p < .5f ? 1 : -1; break;
+                    case 'T': w = p < .5f ? 1 : -1; break;
                     case 'W': w = 2 * p - 1; break;
                     default: w = Mathf.Sin(2 * Mathf.PI * p); break;
                 }

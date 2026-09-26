@@ -165,6 +165,15 @@ namespace Squishy.Runtime.Game
             if (PetHit(p))
             {
                 if (S.tucked) { Wake(); return; }
+                if (ai.mode == "act" && ai.self && ai.act != null && !ai.act.tipped && ai.act.it != null)
+                {
+                    // Watching pays: catching it busy with something by itself earns a few coins, once per activity.
+                    ai.act.tipped = true;
+                    int coins = Random.Range(2, 6);
+                    Rules.AddCoins(coins);
+                    sfx.Coin();
+                    Floater("+" + coins + " coins");
+                }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
                 drag.squish = true;
                 pet.Held = true;
