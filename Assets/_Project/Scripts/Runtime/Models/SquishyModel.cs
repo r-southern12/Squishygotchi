@@ -35,13 +35,30 @@ namespace Squishy.Runtime.Models
         {
             // Dumpling-toy look (user references, 26 Sep 2026): a wide dome whose top half is gathered into 12 puffy
             // lobes split by sharp creases, twisting into a smooth, slightly flattened crown (no knot or bump: user, 26 Sep 2026).
-            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.02f, .92f, d.y), top = Sstep(.93f, 1, d.y);
-            float lobe = Mathf.Pow(Mathf.Abs(Mathf.Sin(6 * (th + t * 1.25f))), .25f);
-            float r = 1.16f * (1 - .34f * t * t * (1 - lobe) * (1 - top * .6f)) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
-            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top, B, .14f), d.z * r);
+            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.34f, .9f, d.y), top = Sstep(.86f, 1, d.y);
+            // Creases stay on the crown (clear of the eyes and the rim) and fade just before the centre, so the
+            // mesh never pinches; a rounded crease profile keeps the shading smooth.
+            float c = Mathf.Cos(6 * (th + Twist(d.y))), groove = c * c;
+            groove = groove * groove * groove * t * (1 - top); // cos^6: a smooth rounded groove, no V-edge to alias
+            float r = 1.16f * (1 - .3f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
+            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .1f * groove, B, .14f), d.z * r);
         }
 
-        public static Mesh BaoMesh() { return ThreeGeo.Deformed("bao", 144, 56, v => ShapeAt(v.normalized)); }
+        private static float Twist(float y) { return Sstep(.34f, .9f, y) * 1.4f; }
+
+        /// <summary>
+        /// The bao mesh. Its grid is twisted along the swirl so every groove runs with the grid columns instead of
+        /// cutting across the rows (which left saw-tooth steps in the grooves); the surface is still ShapeAt.
+        /// </summary>
+        public static Mesh BaoMesh()
+        {
+            return ThreeGeo.Deformed("bao", 216, 84, v =>
+            {
+                var d = v.normalized;
+                float a = -Twist(d.y), cs = Mathf.Cos(a), sn = Mathf.Sin(a);
+                return ShapeAt(new Vector3(d.x * cs - d.z * sn, d.y, d.x * sn + d.z * cs));
+            });
+        }
 
         public SquishyModel(Transform parent, float scale)
         {
@@ -50,7 +67,7 @@ namespace Squishy.Runtime.Models
             Yaw = Node.Group(Pivot, "yaw");
             Mat = ThreeMat.Standard(Color.white, .4f);
             Mat.SetFloat("_ReceiveShadows", 0f);
-            Body = Node.Mesh(Yaw, BaoMesh(), Mat, 0, -B, 0, shadow: true, receive: true);
+            Body = Node.Mesh(Yaw, BaoMesh(), Mat, 0, -B, 0, shadow: true, receive: false); // no self-shadow: the pleat grooves would show shadow acne
             Pivot.localScale = Vector3.one * scale;
 
             // Solid ink beads (a glossy dark material reflected the sky and washed the face out); the white shines do the gloss.
