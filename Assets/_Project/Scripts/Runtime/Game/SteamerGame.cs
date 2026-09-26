@@ -255,6 +255,7 @@ namespace Squishy.Runtime.Game
         private void TaskEvent(string id, float n = 1)
         {
             if (S.dead) return;
+            if (id != "happy" && id != "squish") pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f); // fun moments show on its face
             bool fin = Rules.TaskEvent(id, n);
             if (fin) { Floater("Task done!"); sfx.Chime(); }
             ui.TaskDot(Rules.AnyTaskDone());

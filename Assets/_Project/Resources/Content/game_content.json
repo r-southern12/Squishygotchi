@@ -201,7 +201,10 @@
     "pLegendary":0.01,"pEpic":0.05,"pRare":0.18,"pityRare":10,"pityEpic":50,"favouriteChance":0.4,"pTwoLayers":0.15,"pThreeLayers":0.05,
     "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,"kitIngredients":2,"shopKitCooks":2,"shopKitPricePerIngredient":7,
     "steamerPrice":150,"snackPrice":5,"ingredientPrice":8,"newToolPrice":60,"minRepair":10,"tasksPerSteamer":3,"taskSetSteamers":2,"taskCooldownHours":3,
-    "tuckMinCondition":0.12,"lifespanMinDays":30,"lifespanMaxDays":60,"babyDays":3,"prestigeBase":50,"prestigePerQol":250,"sizePrestige":25,"trialDays":28,"giftHours":3,"streakWeekPrestige":15,"weeklyGoal":15,"weeklySteamers":3,"adminTools":true,"fullUnlockProductId":"full_unlock","adsGameIdAndroid":"","adsGameIdIos":"","squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012
+    "tuckMinCondition":0.12,"lifespanMinDays":30,"lifespanMaxDays":60,"babyDays":3,"prestigeBase":50,"prestigePerQol":250,"sizePrestige":25,"trialDays":28,"giftHours":3,"streakWeekPrestige":15,"weeklyGoal":15,"weeklySteamers":3,"adminTools":true,"fullUnlockProductId":"full_unlock","adsGameIdAndroid":"","adsGameIdIos":"","squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012,
+    "selfPlayChance": 0.25,
+    "tipMin": 2,
+    "tipMax": 5
   },
   "cosmetics": [
     {"id":"party_hat","name":"Party hat","slot":"hat","kind":"cone","color":"#E86A92","price":15},

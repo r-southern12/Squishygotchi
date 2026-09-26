@@ -74,15 +74,6 @@ namespace Squishy.Runtime.Game
             c.panGoal = null;
         }
 
-        public void ToggleView()
-        {
-            // Follow -> Close-up -> Whole room -> Follow.
-            camS.zoomT = camS.zoomT > .5f ? 0 : camS.zoomT < -.5f ? 1 : -1;
-            ui.SetViewIcon(camS.zoomT > .5f);
-            ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), camS.zoomT > .5f ? "Whole room" : camS.zoomT < -.5f ? "Close-up" : "Follow");
-            sfx.Tap();
-        }
-
         public void ZoomIn() { camS.ezT = Mathf.Clamp01(camS.ezT - .25f); if (sel != null) camS.panGoal = new Vector2(sel.tx, sel.tz); sfx.Tap(); }
         public void ZoomOut() { camS.ezT = Mathf.Clamp01(camS.ezT + .25f); if (camS.ezT >= 1) camS.panGoal = Vector2.zero; sfx.Tap(); }
 
@@ -169,18 +160,24 @@ namespace Squishy.Runtime.Game
                 return;
             }
             if (S.dead) return;
-            if (PetHit(p))
+            bool onPet = PetHit(p);
+            if (!S.tucked && ai.mode == "act" && ai.self && ai.act != null && !ai.act.tipped && ai.act.it != null && (onPet || ItemHit(p) == ai.act.it))
+            {
+                // Watching pays: catching it busy with something by itself (tap it or the thing it's using) earns a
+                // few coins, once per activity.
+                ai.act.tipped = true;
+                int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
+                Rules.AddCoins(coins);
+                sfx.Coin();
+                Buzz(15);
+                Floater("+" + coins + " coins");
+                pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f);
+                ui.ShowBubble(string.IsNullOrEmpty(ai.act.act.need) ? "idle" : ai.act.act.need, ai.act.act.label + " (on its own)", false);
+                if (!onPet) return;
+            }
+            if (onPet)
             {
                 if (S.tucked) { Wake(); return; }
-                if (ai.mode == "act" && ai.self && ai.act != null && !ai.act.tipped && ai.act.it != null)
-                {
-                    // Watching pays: catching it busy with something by itself earns a few coins, once per activity.
-                    ai.act.tipped = true;
-                    int coins = Random.Range(2, 6);
-                    Rules.AddCoins(coins);
-                    sfx.Coin();
-                    Floater("+" + coins + " coins");
-                }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
                 drag.squish = true;
                 pet.Held = true;
@@ -267,7 +264,12 @@ namespace Squishy.Runtime.Game
                 {
                     S.needs[Simulation.Game.Needs.Clean] = Mathf.Min(1, S.needs[Simulation.Game.Needs.Clean] + C.rules.scrubGain);
                     pet.V += .6f;
-                    if (ai.act != null) ai.act.scrubbed = true;
+                    if (ai.act != null && !ai.act.scrubbed)
+                    {
+                        // Counts the moment you scrub (not when the bath ends), so the task can't be lost if the bath is cut short.
+                        ai.act.scrubbed = true;
+                        TaskEvent("scrub");
+                    }
                     var pp = PetWorld();
                     HPuff(new Vector3(pp.x + Rnd(-.1f, .1f), pp.y + pet.Scale * .9f, pp.z + Rnd(-.1f, .1f)), new Vector3(Rnd(-.3f, .3f), .5f, Rnd(-.3f, .3f)), Rnd(.03f, .05f), .6f, 2, .2f);
                 }
@@ -323,6 +325,7 @@ namespace Squishy.Runtime.Game
             else if (drag.squish)
             {
                 pet.Held = false;
+                pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 1.4f); // a happy little smile after a squish
                 float gain = Condition() < .12f ? C.rules.squishPlayGainCritical : C.rules.squishPlayGain;
                 S.needs[Simulation.Game.Needs.Play] = Mathf.Min(1, S.needs[Simulation.Game.Needs.Play] + gain);
                 DrawNeeds();

@@ -33,6 +33,7 @@ namespace Squishy.Runtime.UI
             { "sound_off", new[] { FS("M4 9v6h4l5 4V5L8 9z", "currentColor", 2), S("M16 9l5 6M21 9l-5 6", "currentColor", 2) } },
             { "sound_on", new[] { FS("M4 9v6h4l5 4V5L8 9z", "currentColor", 2), S("M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12", "currentColor", 2) } },
             { "back", new[] { S("M14 6l-6 6 6 6", "currentColor", 2.4f) } },
+            { "friends", new[] { F(Circle(9, 8.5f, 3.4f), "#33261D"), F(Circle(16.5f, 9.5f, 2.8f), "#6E9C9A"), S("M3.2 19.5c.9-3.6 3.1-5.2 5.8-5.2s4.9 1.6 5.8 5.2", "#33261D", 2.1f), S("M14.6 14.6c2.9-.5 5.4 1 6.2 4.4", "#6E9C9A", 2.1f) } },
             { "view_room", new[] { S("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5", "#33261D", 2.2f) } },
             { "view_follow", new[] { S("M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5", "#33261D", 2.2f) } },
             { "tasks", new[] { F(RectPath(4, 3, 16, 18, 3), "#6F9A74"), S("M8 9l2 2 4-4M8 16h8", "#F7F0E4", 2) } },

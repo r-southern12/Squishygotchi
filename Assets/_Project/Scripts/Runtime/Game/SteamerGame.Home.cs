@@ -285,6 +285,7 @@ namespace Squishy.Runtime.Game
             ai.kicks = 0;
             ai.self = !user;
             ai.target = it;
+            if (System.Array.IndexOf(PlayRoles, role) >= 0 || role == "bounce") pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.4f);
             if (role == "play")
             {
                 ai.mode = "chase";
@@ -327,7 +328,9 @@ namespace Squishy.Runtime.Game
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, s.y, s.approach, it);
             }
-            ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, (recipe != null && role == "eat" ? recipe.name : act.label) + (user ? "" : " (on its own)"), false);
+            // Busy by itself with something: say so, and that a tap now earns a tip (the passive-income interaction).
+            if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label + (act.scrub ? " · rub me to scrub!" : ""), false);
+            else ui.ShowBubble("coin", act.label + " · tap me for coins!", false);
         }
 
         /// <summary>The squishy looks after itself, but only up to about half.</summary>
@@ -375,6 +378,13 @@ namespace Squishy.Runtime.Game
             if (S.needs[low] < .35f && Random.value < .8f) { SelfCare(low); return; }
             var plants = items.FindAll(i => i.arch == "plant" && i.st.wilt > .5f);
             if (plants.Count > 0 && Random.value < .3f) { UseItem(plants[0], false); return; }
+            if (Random.value < C.rules.selfPlayChance)
+            {
+                // Content and bored: it wanders off to play or lounge on its own (a chance to catch it and earn a tip).
+                var fun = items.FindAll(i => (System.Array.IndexOf(PlayRoles, i.a.role) >= 0 || i.a.role == "lounge" || i.a.role == "seat" || i.a.role == "bounce")
+                    && !(i.a.size > 0 && Rules.FavSizeIdx < i.a.size));
+                if (fun.Count > 0) { UseItem(fun[Random.Range(0, fun.Count)], false); if (ai.act != null) return; }
+            }
             if (Random.value < .65f) Wander(); else ai.idleT = Rnd(2, 4);
         }
 
@@ -498,7 +508,6 @@ namespace Squishy.Runtime.Game
                 }
                 if (A.role == "bed" && !items.Any(x => x.arch == "lamp" && x.st.lampOn)) TaskEvent("nap");
                 if (A.role == "tea") TaskEvent("tea");
-                if ((A.role == "bath" || A.role == "shower") && A.scrubbed) TaskEvent("scrub");
             }
             FinishActivity();
         }
@@ -634,6 +643,7 @@ namespace Squishy.Runtime.Game
 
         private void StepHome(float dt)
         {
+            pet.Chewing = false; // StepAct turns it on while eating
             if (S.dead || _dying) { pet.Update(dt, .35f, true, 1); ApplyPetTransform(0, true); AnimateFurniture(dt); return; }
             if (S.tucked)
             {
@@ -801,6 +811,7 @@ namespace Squishy.Runtime.Game
             float capN = cap;
             const float COOK = 2.4f;
             bool eating = A.role == "eat" && t > COOK;
+            if (eating || (A.role == "snack" && t > .4f)) pet.Chewing = true;
             if (A.recipe != null)
             {
                 int ri = System.Array.IndexOf(C.recipes, A.recipe);

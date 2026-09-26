@@ -197,7 +197,8 @@ namespace Squishy.Runtime.UI
             comfortLbl.style.textOverflow = TextOverflow.Ellipsis;
             comfortLbl.style.overflow = Overflow.Hidden;
             Tap(_comfort, () => _g.OnComfort());
-            IconBtn(row3, "view_room", 36, 18, -1, () => _g.ToggleView(), out _viewIcon);
+            // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
+            IconBtn(row3, "friends", 36, 20, -1, () => _g.OnFriends(), out _viewIcon);
             row3.Gap(6);
             var fpsBox = Chip(_top, 8).Pad(3, 8, 3, 8).Shown(false);
             fpsBox.style.alignSelf = Align.FlexStart;
@@ -484,7 +485,6 @@ namespace Squishy.Runtime.UI
         public void SetUndoEnabled(bool on) { Enable(_undo, on); }
         public void SetRotEnabled(bool on) { Enable(_rot, on); }
         public void SetPutAwayEnabled(bool on) { Enable(_putAway, on); }
-        public void SetViewIcon(bool whole) { Icons.Set(_viewIcon, whole ? "view_follow" : "view_room"); }
 
         public void SetCond(string text, string color)
         {
@@ -534,7 +534,7 @@ namespace Squishy.Runtime.UI
 
         public void ShowBubble(string icon, string text, bool warn)
         {
-            string name = icon == "hunger" ? "hunger_bubble" : icon == "play" ? "play_bubble" : icon == "rest" || icon == "clean" ? icon : "idle";
+            string name = icon == "hunger" ? "hunger_bubble" : icon == "play" ? "play_bubble" : icon == "rest" || icon == "clean" || icon == "coin" ? icon : "idle";
             Icons.Set(_bIcon, name);
             _bText.text = text;
             _bubble.Fill = C(warn ? "#FBE3DA" : "#FFF9EF");

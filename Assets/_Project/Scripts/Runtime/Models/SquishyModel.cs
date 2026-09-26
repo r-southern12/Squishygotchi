@@ -28,26 +28,23 @@ namespace Squishy.Runtime.Models
         private static float Smax(float a, float b, float k) { float h = Mathf.Max(k - Mathf.Abs(a - b), 0) / k; return Mathf.Max(a, b) + h * h * k * .25f; }
 
         /// <summary>
-        /// shapeAt: maps a unit direction onto the bao surface (flat bottom). The top swirl is stronger than the
-        /// prototype's (user request, 25 Sep 2026): deeper pleats that twist into a raised, pinched knot.
+        /// shapeAt: maps a unit direction onto the bao surface (flat bottom). Pleated like the reference toys.
         /// </summary>
         public static Vector3 ShapeAt(Vector3 d)
         {
-            // Dumpling-toy look (user references, 26 Sep 2026): a wide dome whose top half is gathered into 12 puffy
-            // lobes split by sharp creases, twisting into a smooth, slightly flattened crown (no knot or bump: user, 26 Sep 2026).
+            // Dumpling-toy look (user references, 26 Sep 2026): a wide dome with 10 soft folds fanning straight down from
+            // a smooth crown, with only a slight curl (the toys are pleated, not swirled). Folds stay clear of the eyes.
             float th = Mathf.Atan2(d.z, d.x), t = Sstep(.34f, .9f, d.y), top = Sstep(.86f, 1, d.y);
-            // Creases stay on the crown (clear of the eyes and the rim) and fade just before the centre, so the
-            // mesh never pinches; a rounded crease profile keeps the shading smooth.
-            float c = Mathf.Abs(Mathf.Cos(4 * (th + Twist(d.y))));
-            float groove = c * c * c * t * (1 - top); // 8 soft, rounded grooves (|cos|^3): no sharp edges
-            float r = 1.16f * (1 - .22f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
-            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .075f * groove, B, .14f), d.z * r);
+            float c = Mathf.Abs(Mathf.Cos(5 * (th + Twist(d.y))));
+            float groove = c * c * c * c * t * (1 - top); // rounded folds (|cos|^4): no sharp edges
+            float r = 1.16f * (1 - .2f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
+            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .07f * groove, B, .14f), d.z * r);
         }
 
-        private static float Twist(float y) { return Sstep(.34f, .9f, y) * 1.4f; }
+        private static float Twist(float y) { return Sstep(.34f, .9f, y) * .3f; }
 
         /// <summary>
-        /// The bao mesh. Its grid is twisted along the swirl so every groove runs with the grid columns instead of
+        /// The bao mesh. Its grid follows the folds' slight curl so every groove runs with the grid columns instead of
         /// cutting across the rows (which left saw-tooth steps in the grooves); the surface is still ShapeAt.
         /// </summary>
         public static Mesh BaoMesh()
@@ -91,19 +88,7 @@ namespace Squishy.Runtime.Models
                 Node.Mesh(e, ThreeGeo.Sph(.014f, 6, 5), ThreeMat.Basic(Color.white), .034f, -.03f, .085f, shadow: false).name = "shine2";
             }
 
-            // A tiny "w" mouth between the eyes: two little smile arcs side by side.
-            for (int k = 0; k < 2; k++)
-            {
-                var d = new Vector3(k == 0 ? -.035f : .035f, .03f, 1).normalized;
-                var p = ShapeAt(d);
-                var n = p - new Vector3(0, -.1f, 0);
-                n.y *= 1.3f;
-                n.Normalize();
-                var mouth = Node.Mesh(Body, ThreeGeo.Torus(.034f, .011f, 6, 12, Mathf.PI), eyeMat, 0, 0, 0, shadow: false, receive: true);
-                mouth.localPosition = p + n * -.004f;
-                mouth.localRotation = Quaternion.FromToRotation(Vector3.forward, n) * Quaternion.AngleAxis(180, Vector3.forward);
-                mouth.name = "mouth";
-            }
+            BuildFace(eyeMat);
 
             _blush = ThreeMat.Basic(ThreeMat.Lin("#FF9C8F"), .45f, ThreeMat.Blend.Alpha, depthWrite: false);
             for (int k = 0; k < 2; k++)
@@ -183,7 +168,9 @@ namespace Squishy.Runtime.Models
             float bl = Blink < .12f ? .1f : 1, squint = 1 - .8f * Mathf.Clamp01(x * 1.6f);
             float open = closed ? .08f : Mathf.Min(bl, squint) * (1 - droop * .45f);
             EyeOpen += (open - EyeOpen) * Mathf.Min(1, dt * 14);
-            foreach (var e in _eyes) e.localScale = new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f);
+            StepFace(dt, x, closed, droop);
+            bool beads = _eyeMode == EyeMode.Beads;
+            foreach (var e in _eyes) e.localScale = beads ? new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f) : Vector3.zero;
             if (Grey != _g)
             {
                 _g = Grey;

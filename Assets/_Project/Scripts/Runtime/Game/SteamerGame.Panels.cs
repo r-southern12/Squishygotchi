@@ -316,6 +316,8 @@ namespace Squishy.Runtime.Game
             return list;
         }
 
+        private bool ownedOnly;
+
         private void DrawCatalogue()
         {
             bool squishies = tab == "sq";
@@ -342,6 +344,13 @@ namespace Squishy.Runtime.Game
             if (tab == "sq") { ui.CatCount.text = "Your squishy tree"; DrawTree(grid); ui.Detail.Shown(selKey != null); return; }
             int own = list.Count(e => e.own);
             ui.CatCount.text = own + " of " + list.Count + (styled ? " skins" : "") + " found" + (tab == "furniture" && styleF == "all" ? " · " + C.styles.Length + " styles" : "");
+            // Owned-only filter: with hundreds of skins, finding your own things must be one tap.
+            var bar = new VisualElement().Row(Align.Center, Justify.FlexEnd).In(grid);
+            bar.style.marginBottom = 8;
+            Hud.Button(bar, ownedOnly ? "Owned only · on" : "Owned only · off", ownedOnly ? "#6F9A74" : "#EADCC6", ownedOnly ? "#4C7552" : "#CDB999",
+                ownedOnly ? Hud.Cream : Hud.Ink, 99, 32, 13, () => { ownedOnly = !ownedOnly; selKey = null; DrawCatalogue(); sfx.Tap(); }).Size(150, null);
+            if (ownedOnly) list = list.Where(e => e.own).ToList();
+            if (list.Count == 0) Hud.Para(grid, ownedOnly ? "Nothing owned here yet. Open steamers to find some!" : "Nothing here yet.", 13, "#6F5F52");
             VisualElement row = null;
             var cells = new Dictionary<string, Frame>();
             for (int n = 0; n < list.Count; n++)
