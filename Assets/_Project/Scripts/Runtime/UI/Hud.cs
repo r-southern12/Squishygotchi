@@ -30,6 +30,7 @@ namespace Squishy.Runtime.UI
         private Frame _prestige;
         private Frame _expandDot;
         private Label _prestigeLbl;
+        private Label _comfortLbl;
         private Label _giftLbl;
         private Label _name, _sub, _coins, _condTx, _hint, _mainLbl, _badge, _fps, _tiltLbl, _trayTitle, _oddsBtnLbl, _pityTx;
         private Frame _condDot, _comfort, _main, _taskDot, _bubble, _undo, _rot, _putAway, _snd;
@@ -189,13 +190,10 @@ namespace Squishy.Runtime.UI
             _prestige.Add(Icons.Make("star", 14, "#D9A64A"));
             _prestigeLbl = Label(_prestige, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
             Tap(_prestige, () => _g.OnPrestige());
-            _comfort = Chip(row3, -1).Pad(4, 10, 4, 10);
-            _comfort.style.flexGrow = 1;
-            _comfort.style.flexShrink = 1;
-            _comfort.style.overflow = Overflow.Hidden;
-            var comfortLbl = Label(_comfort, "Comfort 0", "Figtree", 700, 12, Muted);
-            comfortLbl.style.textOverflow = TextOverflow.Ellipsis;
-            comfortLbl.style.overflow = Overflow.Hidden;
+            _comfort = Chip(row3, -1).Row().Pad(4, 10, 4, 7);
+            _comfort.style.flexShrink = 0;
+            _comfort.Add(Icons.Make("comfort", 15, "#E8828F"));
+            _comfortLbl = Label(_comfort, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
             Tap(_comfort, () => _g.OnComfort());
             // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
             IconBtn(row3, "friends", 36, 20, -1, () => _g.OnFriends(), out _viewIcon);
@@ -208,7 +206,7 @@ namespace Squishy.Runtime.UI
             // ---- bottom ----
             _bottom = new VisualElement().Abs(0, null, 0, 0).Pad(0, 12, 20 + safeBottom, 12).Col(Align.Center).NoPick().In(Root);
             BuildTray(_bottom);
-            _hint = Label(_bottom, "Tap furniture to send Pinky there", "Gluten", 700, 16, "#FFF9EF");
+            _hint = Label(_bottom, "", "Gluten", 700, 16, "#FFF9EF");
             _hint.style.textShadow = Shadow(2, "rgba(70,40,25,.5)");
             _hint.style.unityTextAlign = TextAnchor.MiddleCenter;
             _hint.style.minHeight = 24;
@@ -216,18 +214,18 @@ namespace Squishy.Runtime.UI
             _hint.Wrap();
             var controls = new VisualElement().Row(Align.Center, Justify.Center).NoPick().In(_bottom);
             controls.style.width = Length.Percent(100);
-            Side(controls, "tasks", () => _g.OnTasks(), "home", out _);
+            Side(controls, "tasks", "Tasks", () => _g.OnTasks(), "home", out _);
             _taskDot = new Frame().Set(C("#C8412F"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
             controls[0].Add(_taskDot);
-            Side(controls, "shop", () => _g.OnShop(), "home", out _);
-            _undo = Side(controls, "undo", () => _g.Undo(), "edit", out _);
+            Side(controls, "shop", "Shop", () => _g.OnShop(), "home", out _);
+            _undo = Side(controls, "undo", "Undo", () => _g.Undo(), "edit", out _);
             Spacer(controls);
             BuildMain(controls);
-            Side(controls, "catalogue", () => _g.OnCatalogue(), "home", out _);
-            var editBtn = Side(controls, "edit", () => _g.EnterEdit(), "home", out _);
+            Side(controls, "catalogue", "Catalogue", () => _g.OnCatalogue(), "home", out _);
+            var editBtn = Side(controls, "edit", "Arrange", () => _g.EnterEdit(), "home", out _);
             _expandDot = new Frame().Set(C("#6F9A74"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
             editBtn.Add(_expandDot);
-            _rot = Side(controls, "rotate", () => _g.RotateSelected(), "edit", out _);
+            _rot = Side(controls, "rotate", "Turn", () => _g.RotateSelected(), "edit", out _);
             Spacer(controls);
             _bottom.Gap(9);
 
@@ -252,17 +250,30 @@ namespace Squishy.Runtime.UI
             SetRotEnabled(false);
         }
 
-        private Frame Side(VisualElement parent, string icon, Action onClick, string mode, out Glyph glyph)
+        /// <summary>A bottom-bar tile: a big icon over a short label, sharing the width with its neighbours.</summary>
+        private Frame Side(VisualElement parent, string icon, string label, Action onClick, string mode, out Glyph glyph)
         {
-            var b = Modal(IconBtn(parent, icon, 48, 23, 16, onClick, out glyph), mode);
-            b.Margin(0, 5, 0, 5);
-            return b;
+            var b = Modal(Chip(parent, 18), mode);
+            b.Col(Align.Center);
+            b.style.justifyContent = Justify.Center;
+            b.style.height = 64;
+            b.style.flexGrow = 1;
+            b.style.flexBasis = 0;
+            b.style.maxWidth = 84;
+            b.Margin(0, 4, 0, 4);
+            glyph = Icons.Make(icon, 27, Ink);
+            b.Add(glyph);
+            Label(b, label, "Figtree", 700, 11, Muted).Margin(3, 0, 0, 0);
+            return Tap(b, onClick);
         }
 
         private void Spacer(VisualElement parent)
         {
-            var s = Modal(new VisualElement().Size(48, 48).NoPick().In(parent), "unbox");
-            s.Margin(0, 5, 0, 5);
+            var s = Modal(new VisualElement().Size(null, 64).NoPick().In(parent), "unbox");
+            s.style.flexGrow = 1;
+            s.style.flexBasis = 0;
+            s.style.maxWidth = 84;
+            s.Margin(0, 4, 0, 4);
             s.style.visibility = Visibility.Hidden;
         }
 
@@ -483,7 +494,7 @@ namespace Squishy.Runtime.UI
         public void SetFps(string t) { _fps.text = t; }
         public void SetName(string n) { _name.text = n; }
         public void SetSub(string s) { _sub.text = s; }
-        public void SetComfort(string s) { ((Label)_comfort[0]).text = s; }
+        public void SetComfort(string s) { _comfortLbl.text = s; }
         public void SetTiltLabel(string s) { _tiltLbl.text = s; }
         public void SetUndoEnabled(bool on) { Enable(_undo, on); }
         public void SetRotEnabled(bool on) { Enable(_rot, on); }

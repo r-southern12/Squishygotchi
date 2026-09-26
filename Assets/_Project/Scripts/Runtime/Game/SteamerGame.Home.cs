@@ -137,7 +137,7 @@ namespace Squishy.Runtime.Game
         private void ComputeComfort()
         {
             comfort = Rules.Comfort(S.items, out setBonus);
-            ui.SetComfort("Comfort " + Mathf.RoundToInt(comfort) + (setBonus.Length > 0 ? " · " + setBonus + " set" : ""));
+            ui.SetComfort(Mathf.RoundToInt(comfort).ToString());
         }
 
         private void PlaceLamps()
@@ -566,7 +566,7 @@ namespace Squishy.Runtime.Game
             ai.idleT = 1.5f;
             pet.V += 3;
             Floater("Good morning!");
-            ui.SetHint("Tap furniture to send " + Rules.Fav.name + " there");
+            ui.SetHint("");
             sfx.Chime();
             WriteSave();
         }

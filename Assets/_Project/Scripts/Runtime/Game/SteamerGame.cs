@@ -279,7 +279,7 @@ namespace Squishy.Runtime.Game
             mode = m2;
             ui.HideBubble();
             ui.SetMode(m2);
-            if (m2 == "home") ui.SetHint("Tap furniture to send " + Rules.Fav.name + " there");
+            if (m2 == "home") ui.SetHint("");
             if (m2 == "edit") { ui.SetHint("Drag items anywhere"); DrawTray(); }
             ui.SetSteamers(S.steamers, m2 == "home");
         }
