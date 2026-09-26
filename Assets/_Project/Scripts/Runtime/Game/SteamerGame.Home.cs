@@ -330,7 +330,7 @@ namespace Squishy.Runtime.Game
             }
             // Busy by itself with something: say so, and that a tap now earns a tip (the passive-income interaction).
             if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label + (act.scrub ? " · rub me to scrub!" : ""), false);
-            else ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, act.label + " (on its own)", false);
+            else ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, act.label, false);
         }
 
         /// <summary>The squishy looks after itself, but only up to about half.</summary>
@@ -350,7 +350,7 @@ namespace Squishy.Runtime.Game
             ai.self = true;
             ai.spot = null;
             ai.target = null;
-            ui.ShowBubble(Needs.Names[need], label + " (on its own)", false);
+            ui.ShowBubble(Needs.Names[need], label, false);
         }
 
         private void Wander()
@@ -391,8 +391,24 @@ namespace Squishy.Runtime.Game
         /// <summary>Seconds left of the energised glow after it played with something by itself (runtime only).</summary>
         private float energyT;
 
-        private void Energise()
+        /// <summary>The energised bonus: 1-5 coins for a squish (or a tap on what it played with) within the minute.</summary>
+        private void TipCoins()
         {
+            energyT = 0;
+            energisedBy = null;
+            int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
+            Rules.AddCoins(coins);
+            sfx.Coin();
+            Buzz(15);
+            Floater("+" + coins + " coins");
+            pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f);
+        }
+
+        private Item energisedBy; // the thing it just played with: tapping it also pays the bonus
+
+        private void Energise(Item by)
+        {
+            energisedBy = by;
             energyT = C.rules.energySeconds;
             ui.ShowBubble("coin", "Feeling bouncy · squish me!", false);
             Later(3f, () => { if (ai.mode == "idle" && energyT > 0) ui.HideBubble(); });
@@ -411,7 +427,7 @@ namespace Squishy.Runtime.Game
             ai.mode = "idle";
             ai.idleT = Rnd(1.5f, 3.5f);
             ui.HideBubble();
-            if (energise) Energise();
+            if (energise) Energise(a.it);
             if (ai.y > .02f) Wander();
             var sh = items.Find(i => i.arch == "shower");
             if (sh != null && sh.parts.curtain != null) sh.parts.openT = 1;

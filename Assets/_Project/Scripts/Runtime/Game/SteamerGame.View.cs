@@ -161,17 +161,7 @@ namespace Squishy.Runtime.Game
             }
             if (S.dead) return;
             bool onPet = PetHit(p);
-            if (onPet && !S.tucked && energyT > 0)
-            {
-                // Energised after playing by itself: a squish within the minute earns a little coin bonus.
-                energyT = 0;
-                int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
-                Rules.AddCoins(coins);
-                sfx.Coin();
-                Buzz(15);
-                Floater("+" + coins + " coins");
-                pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f);
-            }
+            if (onPet && !S.tucked && energyT > 0) TipCoins();
             if (onPet)
             {
                 if (S.tucked) { Wake(); return; }
@@ -240,7 +230,21 @@ namespace Squishy.Runtime.Game
                 var it = drag.item;
                 float x = fp.Value.x + (drag.touch ? 0 : drag.ox), z = fp.Value.z + (drag.touch ? 0 : drag.oz);
                 float l = LimitFor(it), rr = Dist(x, z);
-                if (rr > l - .12f)
+                if (it.a.cat == "Wall")
+                {
+                    // Room dividers snap end-on to the steamer wall, pointing into the room, when brought near it.
+                    float snapR = FLOOR_R - HalfLength(it);
+                    if (rr > snapR - .15f)
+                    {
+                        x *= snapR / rr;
+                        z *= snapR / rr;
+                        if (!it.atWall) { it.atWall = true; sfx.Snap(); Buzz(6); }
+                        FaceCentreAt(it, x, z);
+                        it.ry += Mathf.PI / 2;
+                    }
+                    else it.atWall = false;
+                }
+                else if (rr > l - .12f)
                 {
                     x *= l / rr;
                     z *= l / rr;
@@ -357,6 +361,7 @@ namespace Squishy.Runtime.Game
                     it.bv = -7;
                     sfx.Tap();
                     Buzz(8);
+                    if (!visiting && energyT > 0 && it == energisedBy && ai.mode != "act") { TipCoins(); drag = null; return; } // tap what it played with
                     if (visiting && it.a.role != "plant") { Floater("Just visiting · their plants would love some water"); drag = null; return; }
                     if (it.a.role == "eat") OpenCook(it); else UseItem(it, true);
                 }
@@ -540,6 +545,16 @@ namespace Squishy.Runtime.Game
         }
 
         private float LimitFor(Item it) { return FLOOR_R - (it.a.circles != null && it.a.circles.Length > 0 ? .2f : it.a.r * .8f); }
+
+        /// <summary>Half an item's length along its own x axis (from its collision circles).</summary>
+        private static float HalfLength(Item it)
+        {
+            var c = it.a.circles;
+            if (c == null || c.Length < 3) return it.a.r;
+            float h = 0;
+            for (int i = 0; i + 2 < c.Length; i += 3) h = Mathf.Max(h, Mathf.Abs(c[i]) + c[i + 2]);
+            return h;
+        }
 
         private static void FaceCentreAt(Item it, float x, float z)
         {

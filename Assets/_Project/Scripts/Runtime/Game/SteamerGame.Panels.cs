@@ -123,7 +123,7 @@ namespace Squishy.Runtime.Game
             }
             float inc = Rules.HappyRate(comfort);
             Hud.Sec(body, "While Happy");
-            ui.Rec(body, null, "+" + inc.ToString("0.0") + " coins a minute", "Grows with Comfort (" + Mathf.RoundToInt(comfort) + "). Pauses when your squishy isn’t Happy.", null, null, false, null, true);
+            ui.Rec(body, null, "+" + Mathf.RoundToInt(inc * 60) + " coins an hour", "Grows with Comfort (" + Mathf.RoundToInt(comfort) + "). Pauses when your squishy isn’t Happy.", null, null, false, null, true);
             body.Gap(8);
         }
 
@@ -137,7 +137,7 @@ namespace Squishy.Runtime.Game
             int slow = Mathf.RoundToInt(Mathf.Min(C.rules.comfortSlowMax, comfort * C.rules.comfortSlowPerPoint) * 100);
             Big(body, Mathf.RoundToInt(comfort).ToString(), "From " + decor + " furnished pieces" + (setBonus.Length > 0 ? ", plus a " + setBonus + " set bonus (+3) for three pieces in one style" : "") + ". Wilted plants count less.");
             Hud.Para(body, "Needs drain " + slow + "% slower (up to 40%).");
-            Hud.Para(body, "While Happy you earn " + Rules.HappyRate(comfort).ToString("0.0") + " coins a minute.");
+            Hud.Para(body, "While Happy you earn about " + Mathf.RoundToInt(Rules.HappyRate(comfort) * 60) + " coins an hour.");
             Hud.Para(body, "Raise it with decor from steamers or the shop. Decor space grows when you expand the room or your squishy grows.");
             // Room progression at a glance.
             var cur = C.roomLevels[S.roomLv];

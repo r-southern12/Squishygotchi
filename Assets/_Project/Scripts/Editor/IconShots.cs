@@ -282,6 +282,41 @@ namespace Squishy.EditorTools
             sheet.Apply();
             Directory.CreateDirectory("Library/IconChecks");
             File.WriteAllBytes("Library/IconChecks/plants.png", sheet.EncodeToPNG());
+
+            {
+            // Every style's shelf on one sheet2 (6 x 4), rendered with the catalogue thumbnail camera.
+            const int T3 = 256;
+            var sheetRT2 = new RenderTexture(T3, T3, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            var sheet2 = new Texture2D(T3 * 6, T3 * 4, TextureFormat.RGBA32, false, false);
+            var fill2 = new Color32[T3 * 6 * T3 * 4];
+            for (int i = 0; i < fill2.Length; i++) fill2[i] = new Color32(247, 240, 228, 255);
+            sheet2.SetPixels32(fill2);
+            for (int i = 0; i < content.styles.Length; i++)
+            {
+                var th = Squishy.Runtime.Game.Thumbs.Get("shelf:" + content.styles[i].id);
+                if (th == null) continue;
+                Graphics.Blit(th, sheetRT2);
+                var prevA = RenderTexture.active;
+                RenderTexture.active = sheetRT2;
+                var cell = new Texture2D(T3, T3, TextureFormat.RGBA32, false, false);
+                cell.ReadPixels(new Rect(0, 0, T3, T3), 0, 0);
+                RenderTexture.active = prevA;
+                var px = cell.GetPixels32();
+                int cx = (i % 6) * T3, cy = (3 - i / 6) * T3;
+                for (int y = 0; y < T3; y++)
+                for (int x = 0; x < T3; x++)
+                {
+                    var c = px[y * T3 + x];
+                    if (c.a < 8) continue;
+                    var d = sheet2.GetPixel(cx + x, cy + y);
+                    float a = c.a / 255f;
+                    sheet2.SetPixel(cx + x, cy + y, new Color(Mathf.Lerp(d.r, c.r / 255f, a), Mathf.Lerp(d.g, c.g / 255f, a), Mathf.Lerp(d.b, c.b / 255f, a), 1));
+                }
+            }
+            sheet2.Apply();
+            Directory.CreateDirectory("Library/IconChecks");
+            File.WriteAllBytes("Library/IconChecks/shelves.png", sheet2.EncodeToPNG());
+            }
         }
 
         private static void Shot(Camera cam, RenderTexture rt, Texture2D tex, Bounds bb, Vector3 flat, float elev, float fill, float fov, float warm, string name)

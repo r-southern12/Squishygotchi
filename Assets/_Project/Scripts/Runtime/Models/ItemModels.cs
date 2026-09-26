@@ -144,13 +144,7 @@ namespace Squishy.Runtime.Models
                     break;
                 }
                 case "shelf":
-                    Node.Mesh(g, RBox(.46f, .8f, .22f, .04f), W, 0, .4f, 0);
-                    Node.Mesh(g, RBox(.4f, .02f, .18f, .01f), L, 0, .3f, .02f);
-                    Node.Mesh(g, RBox(.4f, .02f, .18f, .01f), L, 0, .56f, .02f);
-                    Node.Mesh(g, Cyl(.05f, .05f, .12f, 8), A, -.12f, .38f, .03f);
-                    Node.Mesh(g, Cyl(.05f, .05f, .12f, 8), S, .1f, .38f, .03f);
-                    Node.Mesh(g, Cyl(.05f, .05f, .12f, 8), T, -.08f, .64f, .03f);
-                    Node.Mesh(g, Cyl(.05f, .05f, .12f, 8), A, .12f, .64f, .03f);
+                    ShelfModels.Build(g, s); // open bookcase with things themed to the style
                     break;
                 case "wardrobe":
                     Node.Mesh(g, RBox(.52f, .9f, .3f, .05f), W, 0, .45f, 0);

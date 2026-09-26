@@ -6,7 +6,7 @@ namespace Squishy.Simulation.Game
     // Plain content records, loaded from Resources/Content/game_content.json (JsonUtility-friendly: public fields).
     // Adding a style, recipe, finish or task is a data change only.
 
-    [Serializable] public class StyleData { public string id, name, shortName, group, pat, plant, plantName; public string[] pal; public bool low, round; public int[] eventMonths; }
+    [Serializable] public class StyleData { public string id, name, shortName, group, pat, plant, plantName; public string[] pal, shelf; public bool low, round; public int[] eventMonths; }
 
     [Serializable]
     public class ItemTypeData

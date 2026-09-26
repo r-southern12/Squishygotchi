@@ -163,16 +163,31 @@ namespace Squishy.Runtime.Game
         /// <summary>Climb the ladder, pause on top, whoosh down the ramp, hop back round.</summary>
         private void StepSlide(Item it, float t, ref float lift, ref float extra)
         {
-            float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry), u = t % 2f;
+            // One run = climb the ladder, pause at the top, slide down, then hop back round the side (never through
+            // the slide). The activity lasts two runs.
+            const float Run = 2.4f;
+            float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry), u = t % Run;
             Vector2 foot = new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), top = new Vector2(it.tx - dx * .12f, it.tz - dz * .12f), end = new Vector2(it.tx + dx * .42f, it.tz + dz * .42f);
-            Vector2 pos;
-            if (u < .8f) { float k = u / .8f; pos = Vector2.Lerp(foot, top, k); ai.y = .47f * k; extra = .05f * Mathf.Sin(u * 30); }
-            else if (u < 1f) { pos = top; ai.y = .47f; }
-            else if (u < 1.5f) { float k = (u - 1f) / .5f; pos = Vector2.Lerp(top, end, k); ai.y = .47f * (1 - k); extra = -.1f; }
-            else { float k = (u - 1.5f) / .5f; pos = Vector2.Lerp(end, foot, k); ai.y = 0; lift = .12f * Mathf.Abs(Mathf.Sin(Mathf.PI * k * 2)); }
+            var side = new Vector2(it.tx + dz * .34f, it.tz - dx * .34f); // beside the slide, halfway along
+            Vector2 pos, look;
+            if (u < .8f) { float k = u / .8f; pos = Vector2.Lerp(foot, top, k); ai.y = .47f * k; extra = .05f * Mathf.Sin(u * 30); look = top - foot; }
+            else if (u < 1f) { pos = top; ai.y = .47f; look = end - top; }
+            else if (u < 1.5f) { float k = (u - 1f) / .5f; pos = Vector2.Lerp(top, end, k); ai.y = .47f * (1 - k); extra = -.1f; look = end - top; }
+            else
+            {
+                float k = (u - 1.5f) / (Run - 1.5f);
+                bool first = k < .5f;
+                var a = first ? end : side;
+                var b = first ? side : foot;
+                float kk = first ? k * 2 : (k - .5f) * 2;
+                pos = Vector2.Lerp(a, b, kk);
+                ai.y = 0;
+                lift = .12f * Mathf.Abs(Mathf.Sin(Mathf.PI * kk * 2));
+                look = b - a;
+            }
             ai.x = pos.x;
             ai.z = pos.y;
-            petYawY = Mathf.Atan2(dx, dz) + (u >= 1.5f ? Mathf.PI : 0);
+            petYawY = Mathf.Atan2(look.x, look.y);
         }
 
         private void ChaseTo(float x, float z, float dt, ref float lift)

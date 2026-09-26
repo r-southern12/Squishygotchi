@@ -14,7 +14,12 @@
       ],
       "pat": "lattice",
       "plant": "bamboo",
-      "plantName": "Lucky bamboo"
+      "plantName": "Lucky bamboo",
+      "shelf": [
+        "teapot",
+        "cups",
+        "jar"
+      ]
     },
     {
       "id": "tatami",
@@ -31,7 +36,12 @@
       "pat": "shoji",
       "low": true,
       "plant": "bonsai",
-      "plantName": "Bonsai pine"
+      "plantName": "Bonsai pine",
+      "shelf": [
+        "bonsai",
+        "bowl",
+        "cups"
+      ]
     },
     {
       "id": "hanok",
@@ -48,7 +58,12 @@
       "pat": "diamond",
       "low": true,
       "plant": "maple",
-      "plantName": "Maple tree"
+      "plantName": "Maple tree",
+      "shelf": [
+        "jar",
+        "bowl",
+        "books"
+      ]
     },
     {
       "id": "blockprint",
@@ -64,7 +79,12 @@
       ],
       "pat": "blockfloral",
       "plant": "banana",
-      "plantName": "Banana plant"
+      "plantName": "Banana plant",
+      "shelf": [
+        "jar",
+        "books",
+        "candle"
+      ]
     },
     {
       "id": "riad",
@@ -80,7 +100,12 @@
       ],
       "pat": "star",
       "plant": "datepalm",
-      "plantName": "Date palm"
+      "plantName": "Date palm",
+      "shelf": [
+        "lantern",
+        "teapot",
+        "bowl"
+      ]
     },
     {
       "id": "persian",
@@ -96,7 +121,12 @@
       ],
       "pat": "medallion",
       "plant": "cypress",
-      "plantName": "Cypress"
+      "plantName": "Cypress",
+      "shelf": [
+        "vase",
+        "books",
+        "bowl"
+      ]
     },
     {
       "id": "talavera",
@@ -112,7 +142,12 @@
       ],
       "pat": "talavera",
       "plant": "saguaro",
-      "plantName": "Saguaro cactus"
+      "plantName": "Saguaro cactus",
+      "shelf": [
+        "vase",
+        "bowl",
+        "plant"
+      ]
     },
     {
       "id": "textile",
@@ -128,7 +163,12 @@
       ],
       "pat": "mudcloth",
       "plant": "snake",
-      "plantName": "Snake plant"
+      "plantName": "Snake plant",
+      "shelf": [
+        "basket",
+        "vase",
+        "books"
+      ]
     },
     {
       "id": "aegean",
@@ -144,7 +184,12 @@
       ],
       "pat": "waves",
       "plant": "olive",
-      "plantName": "Olive tree"
+      "plantName": "Olive tree",
+      "shelf": [
+        "vase",
+        "shell",
+        "bowl"
+      ]
     },
     {
       "id": "nordic",
@@ -160,7 +205,12 @@
       ],
       "pat": "lines",
       "plant": "spruce",
-      "plantName": "Spruce"
+      "plantName": "Spruce",
+      "shelf": [
+        "candle",
+        "books",
+        "cups"
+      ]
     },
     {
       "id": "andean",
@@ -176,7 +226,12 @@
       ],
       "pat": "stepped",
       "plant": "fuchsia",
-      "plantName": "Fuchsia"
+      "plantName": "Fuchsia",
+      "shelf": [
+        "basket",
+        "bowl",
+        "vase"
+      ]
     },
     {
       "id": "folk",
@@ -192,7 +247,12 @@
       ],
       "pat": "folkfloral",
       "plant": "sunflower",
-      "plantName": "Sunflowers"
+      "plantName": "Sunflowers",
+      "shelf": [
+        "jar",
+        "cups",
+        "books"
+      ]
     },
     {
       "id": "cottage",
@@ -209,7 +269,12 @@
       "pat": "gingham",
       "round": true,
       "plant": "lavender",
-      "plantName": "Lavender"
+      "plantName": "Lavender",
+      "shelf": [
+        "jar",
+        "books",
+        "vase"
+      ]
     },
     {
       "id": "midcentury",
@@ -225,7 +290,12 @@
       ],
       "pat": "atomic",
       "plant": "fiddle",
-      "plantName": "Fiddle-leaf fig"
+      "plantName": "Fiddle-leaf fig",
+      "shelf": [
+        "vase",
+        "books",
+        "globe"
+      ]
     },
     {
       "id": "minimal",
@@ -241,7 +311,12 @@
       ],
       "pat": "none",
       "plant": "jade",
-      "plantName": "Jade plant"
+      "plantName": "Jade plant",
+      "shelf": [
+        "vase",
+        "books",
+        "cube"
+      ]
     },
     {
       "id": "candy",
@@ -262,7 +337,12 @@
         3
       ],
       "plant": "blossom",
-      "plantName": "Cherry blossom"
+      "plantName": "Cherry blossom",
+      "shelf": [
+        "jar",
+        "cupcake",
+        "books"
+      ]
     },
     {
       "id": "seaside",
@@ -283,7 +363,12 @@
         8
       ],
       "plant": "coconut",
-      "plantName": "Coconut palm"
+      "plantName": "Coconut palm",
+      "shelf": [
+        "shell",
+        "bottle",
+        "books"
+      ]
     },
     {
       "id": "space",
@@ -303,7 +388,12 @@
         1
       ],
       "plant": "airplant",
-      "plantName": "Air plant"
+      "plantName": "Air plant",
+      "shelf": [
+        "globe",
+        "cube",
+        "books"
+      ]
     },
     {
       "id": "spooky",
@@ -323,7 +413,12 @@
         11
       ],
       "plant": "flytrap",
-      "plantName": "Venus flytrap"
+      "plantName": "Venus flytrap",
+      "shelf": [
+        "candle",
+        "potion",
+        "books"
+      ]
     },
     {
       "id": "pixel",
@@ -339,7 +434,12 @@
       ],
       "pat": "pixels",
       "plant": "tulip",
-      "plantName": "Tulips"
+      "plantName": "Tulips",
+      "shelf": [
+        "cube",
+        "books",
+        "globe"
+      ]
     },
     {
       "id": "greenhouse",
@@ -355,7 +455,12 @@
       ],
       "pat": "leaves",
       "plant": "monstera",
-      "plantName": "Monstera"
+      "plantName": "Monstera",
+      "shelf": [
+        "plant",
+        "jar",
+        "basket"
+      ]
     },
     {
       "id": "bakery",
@@ -372,7 +477,12 @@
       "pat": "checker",
       "round": true,
       "plant": "lemon",
-      "plantName": "Lemon tree"
+      "plantName": "Lemon tree",
+      "shelf": [
+        "bread",
+        "jar",
+        "cupcake"
+      ]
     },
     {
       "id": "diner",
@@ -388,7 +498,12 @@
       ],
       "pat": "dinercheck",
       "plant": "aloe",
-      "plantName": "Aloe vera"
+      "plantName": "Aloe vera",
+      "shelf": [
+        "bottle",
+        "cups",
+        "jar"
+      ]
     },
     {
       "id": "library",
@@ -404,7 +519,12 @@
       ],
       "pat": "plaid",
       "plant": "fern",
-      "plantName": "Boston fern"
+      "plantName": "Boston fern",
+      "shelf": [
+        "books",
+        "books",
+        "globe"
+      ]
     }
   ],
   "types": [
@@ -1950,7 +2070,7 @@
       "role": "slide",
       "label": "Sliding",
       "need": "play",
-      "dur": 6,
+      "dur": 4.8,
       "rate": 0.035,
       "perch": 0.01
     },
