@@ -96,6 +96,7 @@ namespace Squishy.Runtime.Game
             if (S.dead) ResumeDead();
             Notifier.Init();
             Notifier.Clear();
+            GoOnline(); // friends: anonymous sign-in and sharing your room (fails soft offline)
             ui.ShowIntro(AfterIntro);
         }
 
@@ -160,6 +161,7 @@ namespace Squishy.Runtime.Game
             time += dt;
             frameN++;
             Perf(raw);
+            StepOnline(raw);
             if ((frameN & 31) == 0) Notifier.Retry(Rules, comfort);
             bool sheetOpen = ui.SheetOpen;
             if (sheetOpen) ui.PumpThumbs(2);
@@ -184,14 +186,14 @@ namespace Squishy.Runtime.Game
                 float sh = shake * shake * .16f;
                 cam.transform.position += Space3.U(Rnd(-sh, sh), Rnd(-sh, sh), 0);
             }
-            if (mode == "home" && ui.BubbleOn) { var p = ScreenOf(PetWorld() + Vector3.up * (pet.Scale * 1.6f + .08f)); ui.PlaceBubble(p); }
+            if ((mode == "home" || mode == "visit") && ui.BubbleOn) { var p = ScreenOf(PetWorld() + Vector3.up * (pet.Scale * 1.6f + .08f)); ui.PlaceBubble(p); }
 
             // Focus: keep the squishy and whatever it is using sharp.
             float f1, f2 = -1;
             if (mode != "unbox")
             {
                 f1 = ViewportY(PetWorld() + Vector3.up * (pet.Scale * .6f));
-                if (ai.target != null && mode == "home") f2 = ViewportY(ai.target.Pos + Vector3.up * .3f);
+                if (ai.target != null && (mode == "home" || mode == "visit")) f2 = ViewportY(ai.target.Pos + Vector3.up * .3f);
             }
             else if (ucam.kind == "closed") f1 = ViewportY(new Vector3(0, H * layers * US * .6f, 0));
             else f1 = ViewportY(new Vector3(0, TierY + ucam.half * .5f, 0));
@@ -312,6 +314,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Phones keep the game alive in the background, so time away is applied on every return, not just cold starts.</summary>
         private void OnApplicationPause(bool paused)
         {
+            if (paused && visiting) EndVisit(true); // never leave the app mid-visit: your own squishy comes back first
             if (paused) { ptrs.Clear(); drag = null; _pausedAt = System.DateTime.UtcNow; WriteSave(); Notifier.Schedule(Rules, comfort); return; }
             Notifier.Clear();
             if (!_pausedAt.HasValue) return;
@@ -322,6 +325,6 @@ namespace Squishy.Runtime.Game
             UpdateSub();
             if (S.dead && !wasDead) { S.dead = false; Die(); }
         }
-        private void OnApplicationQuit() { WriteSave(); Notifier.Schedule(Rules, comfort); }
+        private void OnApplicationQuit() { if (visiting) EndVisit(true); WriteSave(); Notifier.Schedule(Rules, comfort); }
     }
 }

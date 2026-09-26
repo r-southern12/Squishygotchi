@@ -38,6 +38,8 @@ namespace Squishy.Simulation.Game
 
         // Player profile: kept on this phone; the friend code is what friends will use to visit.
         public string playerName = "", avatar = "", friendCode = "";
+        public List<FriendData> friends = new List<FriendData>();
+        public List<VisitCredit> visitsCredited = new List<VisitCredit>();
         public bool welcomed;
     }
 
@@ -70,4 +72,15 @@ namespace Squishy.Simulation.Game
 
         public static int Index(string name) { return Array.IndexOf(Names, name); }
     }
+}
+
+namespace Squishy.Simulation.Game
+{
+    /// <summary>A friend you've visited: their cloud player id, code and what their squishy looked like last time.</summary>
+    [System.Serializable]
+    public class FriendData { public string code, id, avatar; public int finish; }
+
+    /// <summary>The latest visit from one friend that has already paid you coins.</summary>
+    [System.Serializable]
+    public class VisitCredit { public string id; public long at; }
 }

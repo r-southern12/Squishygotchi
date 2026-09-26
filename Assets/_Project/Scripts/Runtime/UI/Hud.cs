@@ -236,6 +236,7 @@ namespace Squishy.Runtime.UI
             BuildCards(safeBottom);
             BuildSheet(safeTop, safeBottom);
             BuildIntro(safeTop, safeBottom);
+            BuildVisit(safeBottom);
             _floaters = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
             _wipe = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
             _wipe.generateVisualContent += m =>
@@ -298,6 +299,7 @@ namespace Squishy.Runtime.UI
             _main.RegisterCallback<PointerDownEvent>(e =>
             {
                 e.StopPropagation();
+                if (_mode == "visit") return;
                 if (_mode == "home") { _g.OnMainHome(); return; }
                 if (_mode == "edit") { _g.OnMainDone(); return; }
                 _main.CapturePointer(e.pointerId);
@@ -423,6 +425,7 @@ namespace Squishy.Runtime.UI
         {
             _mode = mode;
             foreach (var (el, modes) in _modal) el.Shown(Array.IndexOf(modes, mode) >= 0);
+            _main.Shown(mode != "visit"); // no unboxing in a friend's steamer
             _mainLbl.text = mode == "unbox" ? "Hold" : mode == "edit" ? "Done" : "Unbox";
             _charge = 0;
             _ring.MarkDirtyRepaint();

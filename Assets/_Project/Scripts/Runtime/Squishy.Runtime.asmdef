@@ -10,7 +10,10 @@
         "Unity.Notifications.Unified",
         "Unity.Notifications.Android",
         "UnityEngine.Purchasing",
-        "UnityEngine.Purchasing.Stores"
+        "UnityEngine.Purchasing.Stores",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.CloudSave"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

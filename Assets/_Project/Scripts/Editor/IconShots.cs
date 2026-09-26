@@ -55,6 +55,31 @@ namespace Squishy.EditorTools
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
             if (f < 180) return; // let the room build, the squishy settle and thumbnails finish
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_VISIT") == "1")
+            {
+                // Smoke test of a visit: start a test visit, photograph it, go home again, and report.
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                bool vis = (bool)T.GetField("visiting", flags).GetValue(game);
+                if (_bathAt < 0) { T.GetMethod("TestVisit", flags).Invoke(game, null); _bathAt = f; return; }
+                if (!vis) { if (f - _bathAt > 600) { Debug.LogError("IconShots: visit never started"); Finish(1); } return; }
+                if (_inBath < 0) _inBath = f;
+                if (f - _inBath < 120) return;
+                EditorApplication.update -= Tick;
+                var vpet = FindPet();
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var flat = cam.transform.position - Bounds(vpet).center;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+                Shot(cam, rt, tex, Bounds(vpet), flat.normalized, 30, 6f, 30, Shader.GetGlobalFloat("_PostWarm"), "visit");
+                T.GetMethod("EndVisit", flags).Invoke(game, new object[] { true });
+                Debug.Log("IconShots: visit ok, back home = " + !(bool)T.GetField("visiting", flags).GetValue(game));
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_BATH") == "1")
             {
                 // Send the squishy to its bath and photograph it once it has been in the water a moment.

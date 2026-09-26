@@ -403,7 +403,7 @@ namespace Squishy.Runtime.Game
             CleanupCook();
             EndToys();
             var a = ai.act;
-            bool energise = a != null && ai.self && a.it != null;
+            bool energise = !visiting && a != null && ai.self && a.it != null;
             if (a != null && !string.IsNullOrEmpty(a.act.need))
                 Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1) + (ai.self ? " (half)" : ""));
             ai.act = null;
@@ -509,7 +509,7 @@ namespace Squishy.Runtime.Game
             var A = ai.act;
             if (A != null && !ai.self)
             {
-                if (A.role == "plant") { FloaterAt(A.it, "Watered · +comfort"); TaskEvent("water"); }
+                if (A.role == "plant") { FloaterAt(A.it, "Watered · +comfort"); if (visiting) VisitAct("water"); else TaskEvent("water"); }
                 if (A.role == "eat" && A.recipe != null && A.recipe.ing.Length > 0)
                 {
                     int i = System.Array.IndexOf(C.recipes, A.recipe), l0 = Rules.RecipeLvl(i);
@@ -671,14 +671,14 @@ namespace Squishy.Runtime.Game
             }
             float sdt = dt * timeScale;
             int age0 = S.age;
-            bool died = Rules.StepCare(sdt, comfort);
+            bool died = !visiting && Rules.StepCare(sdt, comfort); // a friend's squishy doesn't drain while you visit
             if (S.age != age0) UpdateSub();
             needT += dt;
             if (needT > .5f) { needT = 0; DrawNeeds(); if (Random.value < .2f) ComputeComfort(); }
             foreach (var it in items)
                 if (it.arch == "plant")
                 {
-                    it.st.wilt = Mathf.Min(1, it.st.wilt + sdt * C.rules.plantWiltRate);
+                    if (!visiting) it.st.wilt = Mathf.Min(1, it.st.wilt + sdt * C.rules.plantWiltRate);
                     it.parts.topWiltX = it.st.wilt * .35f;
                     ApplyPlantTop(it);
                 }

@@ -322,6 +322,7 @@ namespace Squishy.Runtime.Game
             else if (drag.squish)
             {
                 pet.Held = false;
+                if (visiting) VisitAct("pet");
                 pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 1.4f); // a happy little smile after a squish
                 float gain = Condition() < .12f ? C.rules.squishPlayGainCritical : C.rules.squishPlayGain;
                 S.needs[Simulation.Game.Needs.Play] = Mathf.Min(1, S.needs[Simulation.Game.Needs.Play] + gain);
@@ -356,6 +357,7 @@ namespace Squishy.Runtime.Game
                     it.bv = -7;
                     sfx.Tap();
                     Buzz(8);
+                    if (visiting && it.a.role != "plant") { Floater("Just visiting · their plants would love some water"); drag = null; return; }
                     if (it.a.role == "eat") OpenCook(it); else UseItem(it, true);
                 }
             }

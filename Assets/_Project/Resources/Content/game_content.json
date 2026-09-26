@@ -2105,7 +2105,9 @@
       15,
       20
     ],
-    "energySeconds": 60
+    "energySeconds": 60,
+    "visitCoins": 3,
+    "visitHostCoins": 2
   },
   "cosmetics": [
     {

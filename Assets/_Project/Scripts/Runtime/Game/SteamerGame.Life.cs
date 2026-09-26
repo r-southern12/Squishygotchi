@@ -62,12 +62,12 @@ namespace Squishy.Runtime.Game
             var st = Rules.LifeStage();
             if (st == shownStage) return;
             shownStage = st;
-            int grewUp = Rules.AwardStagePrestige();
+            int grewUp = visiting ? 0 : Rules.AwardStagePrestige();
             if (grewUp > 0) Later(1.2f, () => Floater(Rules.Fav.name + " is growing up well · +" + grewUp + " prestige"));
             pet.SetStage(st);
             pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck));
             UpdateSub();
-            Notifier.RefreshPictures(Rules); // widget and notification pictures follow the squishy
+            if (!visiting) Notifier.RefreshPictures(Rules); // widget and notification pictures follow your squishy
         }
 
         private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck)); Notifier.RefreshPictures(Rules); }

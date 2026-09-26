@@ -59,6 +59,7 @@ namespace Squishy.Simulation.Game
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
+        public int visitCoins, visitHostCoins; // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
         public int weeklyGoal, weeklySteamers;
