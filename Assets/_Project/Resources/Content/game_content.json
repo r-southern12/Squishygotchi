@@ -1,286 +1,2337 @@
 {
   "styles": [
-    {"id":"teahouse","name":"Cantonese Teahouse","shortName":"Teahouse","group":"World","pal":["#7A3B2A","#B8332E","#6FA58E","#D8A94A","#F2E3C6"],"pat":"lattice"},
-    {"id":"tatami","name":"Japanese Tatami","shortName":"Tatami","group":"World","pal":["#D9BF8F","#2F4A6E","#B7C48A","#3A302A","#F4EEDF"],"pat":"shoji","low":true},
-    {"id":"hanok","name":"Korean Hanok","shortName":"Hanok","group":"World","pal":["#C79A62","#8FB8A8","#F1EADB","#5B4636","#EFE6D2"],"pat":"diamond","low":true},
-    {"id":"blockprint","name":"Indian Block-print","shortName":"Block-print","group":"World","pal":["#8E5A35","#2E4E8C","#E8A93B","#B5452F","#F5E9D3"],"pat":"blockfloral"},
-    {"id":"riad","name":"Moroccan Riad","shortName":"Riad","group":"World","pal":["#8A5B3A","#1F7F86","#2D4E9E","#C9A04A","#F2E4CF"],"pat":"star"},
-    {"id":"persian","name":"Persian Garden","shortName":"Persian","group":"World","pal":["#6E3B2A","#9E2B35","#1F4F7A","#D4A64A","#F1E4CC"],"pat":"medallion"},
-    {"id":"talavera","name":"Mexican Talavera","shortName":"Talavera","group":"World","pal":["#B9643E","#2C4FA0","#F2C94C","#3A6B3F","#F6F0E3"],"pat":"talavera"},
-    {"id":"textile","name":"West African Textile","shortName":"Textile","group":"World","pal":["#5A3A26","#D19A2E","#2F3E6B","#9A3D24","#EADCC2"],"pat":"mudcloth"},
-    {"id":"aegean","name":"Mediterranean","shortName":"Aegean","group":"World","pal":["#C9A67A","#2F6FB0","#F4F1EA","#7F8F4E","#FAF7F0"],"pat":"waves"},
-    {"id":"nordic","name":"Scandinavian","shortName":"Nordic","group":"World","pal":["#D9C3A0","#D98E8E","#D8D8D2","#4A4A48","#F7F5F0"],"pat":"lines"},
-    {"id":"andean","name":"Andean Weave","shortName":"Andean","group":"World","pal":["#8B5E3C","#E0457B","#F2A03D","#2E8B6A","#F3E7D3"],"pat":"stepped"},
-    {"id":"folk","name":"Eastern European Folk","shortName":"Folk","group":"World","pal":["#B07A48","#C73A36","#F3E6C9","#2F5E3A","#FBF3E3"],"pat":"folkfloral"},
-    {"id":"cottage","name":"Cottagecore","shortName":"Cottage","group":"Mood","pal":["#B48A5E","#E3A0A8","#A9C39A","#7A6048","#FBF3E6"],"pat":"gingham","round":true},
-    {"id":"midcentury","name":"Mid-century","shortName":"Mid-century","group":"Mood","pal":["#A0642F","#E08A2E","#3F8A8C","#2B2B2B","#F0E6D2"],"pat":"atomic"},
-    {"id":"minimal","name":"Minimal","shortName":"Minimal","group":"Mood","pal":["#E6E1D8","#BDB6AA","#F4F2EE","#3C3A37","#FFFFFF"],"pat":"none"},
-    {"id":"candy","name":"Candy Shop","shortName":"Candy","group":"Mood","pal":["#F4B8C8","#8ED1C6","#FFF1A8","#E86A92","#FFF7FA"],"pat":"candy","round":true,"eventMonths":[2,3]},
-    {"id":"seaside","name":"Seaside","shortName":"Seaside","group":"Mood","pal":["#D8C29A","#3C8DBC","#9FD3E0","#E8765A","#F4FAFA"],"pat":"scales","eventMonths":[6,7,8]},
-    {"id":"space","name":"Star Station","shortName":"Star","group":"Mood","pal":["#3A3F5C","#7B6CF6","#2A2D45","#C9D1E8","#CBD2E6"],"pat":"stars","eventMonths":[12,1]},
-    {"id":"spooky","name":"Spooky Manor","shortName":"Spooky","group":"Mood","pal":["#3B2E3A","#E07B39","#5E4A74","#1E1A1F","#D9CFC0"],"pat":"moons","eventMonths":[10,11]},
-    {"id":"pixel","name":"Pixel Den","shortName":"Pixel","group":"Mood","pal":["#2E3440","#4DD9A5","#E0457B","#6C7AE0","#D8DEE9"],"pat":"pixels"},
-    {"id":"greenhouse","name":"Greenhouse","shortName":"Greenhouse","group":"Mood","pal":["#9C7A54","#5E9E5A","#D9E8C4","#6B5B45","#F2F4E8"],"pat":"leaves"},
-    {"id":"bakery","name":"Bakery","shortName":"Bakery","group":"Mood","pal":["#C89A64","#E8C27A","#F6E6CF","#8C5A3A","#FFF8EC"],"pat":"checker","round":true},
-    {"id":"diner","name":"Retro Diner","shortName":"Diner","group":"Mood","pal":["#E4E4E0","#D93A3A","#69C3C9","#2B2B2B","#FFFFFF"],"pat":"dinercheck"},
-    {"id":"library","name":"Cosy Library","shortName":"Library","group":"Mood","pal":["#5E3B24","#8C2F39","#3D5A40","#C9A44A","#EFE2C8"],"pat":"plaid"}
+    {
+      "id": "teahouse",
+      "name": "Cantonese Teahouse",
+      "shortName": "Teahouse",
+      "group": "World",
+      "pal": [
+        "#7A3B2A",
+        "#B8332E",
+        "#6FA58E",
+        "#D8A94A",
+        "#F2E3C6"
+      ],
+      "pat": "lattice"
+    },
+    {
+      "id": "tatami",
+      "name": "Japanese Tatami",
+      "shortName": "Tatami",
+      "group": "World",
+      "pal": [
+        "#D9BF8F",
+        "#2F4A6E",
+        "#B7C48A",
+        "#3A302A",
+        "#F4EEDF"
+      ],
+      "pat": "shoji",
+      "low": true
+    },
+    {
+      "id": "hanok",
+      "name": "Korean Hanok",
+      "shortName": "Hanok",
+      "group": "World",
+      "pal": [
+        "#C79A62",
+        "#8FB8A8",
+        "#F1EADB",
+        "#5B4636",
+        "#EFE6D2"
+      ],
+      "pat": "diamond",
+      "low": true
+    },
+    {
+      "id": "blockprint",
+      "name": "Indian Block-print",
+      "shortName": "Block-print",
+      "group": "World",
+      "pal": [
+        "#8E5A35",
+        "#2E4E8C",
+        "#E8A93B",
+        "#B5452F",
+        "#F5E9D3"
+      ],
+      "pat": "blockfloral"
+    },
+    {
+      "id": "riad",
+      "name": "Moroccan Riad",
+      "shortName": "Riad",
+      "group": "World",
+      "pal": [
+        "#8A5B3A",
+        "#1F7F86",
+        "#2D4E9E",
+        "#C9A04A",
+        "#F2E4CF"
+      ],
+      "pat": "star"
+    },
+    {
+      "id": "persian",
+      "name": "Persian Garden",
+      "shortName": "Persian",
+      "group": "World",
+      "pal": [
+        "#6E3B2A",
+        "#9E2B35",
+        "#1F4F7A",
+        "#D4A64A",
+        "#F1E4CC"
+      ],
+      "pat": "medallion"
+    },
+    {
+      "id": "talavera",
+      "name": "Mexican Talavera",
+      "shortName": "Talavera",
+      "group": "World",
+      "pal": [
+        "#B9643E",
+        "#2C4FA0",
+        "#F2C94C",
+        "#3A6B3F",
+        "#F6F0E3"
+      ],
+      "pat": "talavera"
+    },
+    {
+      "id": "textile",
+      "name": "West African Textile",
+      "shortName": "Textile",
+      "group": "World",
+      "pal": [
+        "#5A3A26",
+        "#D19A2E",
+        "#2F3E6B",
+        "#9A3D24",
+        "#EADCC2"
+      ],
+      "pat": "mudcloth"
+    },
+    {
+      "id": "aegean",
+      "name": "Mediterranean",
+      "shortName": "Aegean",
+      "group": "World",
+      "pal": [
+        "#C9A67A",
+        "#2F6FB0",
+        "#F4F1EA",
+        "#7F8F4E",
+        "#FAF7F0"
+      ],
+      "pat": "waves"
+    },
+    {
+      "id": "nordic",
+      "name": "Scandinavian",
+      "shortName": "Nordic",
+      "group": "World",
+      "pal": [
+        "#D9C3A0",
+        "#D98E8E",
+        "#D8D8D2",
+        "#4A4A48",
+        "#F7F5F0"
+      ],
+      "pat": "lines"
+    },
+    {
+      "id": "andean",
+      "name": "Andean Weave",
+      "shortName": "Andean",
+      "group": "World",
+      "pal": [
+        "#8B5E3C",
+        "#E0457B",
+        "#F2A03D",
+        "#2E8B6A",
+        "#F3E7D3"
+      ],
+      "pat": "stepped"
+    },
+    {
+      "id": "folk",
+      "name": "Eastern European Folk",
+      "shortName": "Folk",
+      "group": "World",
+      "pal": [
+        "#B07A48",
+        "#C73A36",
+        "#F3E6C9",
+        "#2F5E3A",
+        "#FBF3E3"
+      ],
+      "pat": "folkfloral"
+    },
+    {
+      "id": "cottage",
+      "name": "Cottagecore",
+      "shortName": "Cottage",
+      "group": "Mood",
+      "pal": [
+        "#B48A5E",
+        "#E3A0A8",
+        "#A9C39A",
+        "#7A6048",
+        "#FBF3E6"
+      ],
+      "pat": "gingham",
+      "round": true
+    },
+    {
+      "id": "midcentury",
+      "name": "Mid-century",
+      "shortName": "Mid-century",
+      "group": "Mood",
+      "pal": [
+        "#A0642F",
+        "#E08A2E",
+        "#3F8A8C",
+        "#2B2B2B",
+        "#F0E6D2"
+      ],
+      "pat": "atomic"
+    },
+    {
+      "id": "minimal",
+      "name": "Minimal",
+      "shortName": "Minimal",
+      "group": "Mood",
+      "pal": [
+        "#E6E1D8",
+        "#BDB6AA",
+        "#F4F2EE",
+        "#3C3A37",
+        "#FFFFFF"
+      ],
+      "pat": "none"
+    },
+    {
+      "id": "candy",
+      "name": "Candy Shop",
+      "shortName": "Candy",
+      "group": "Mood",
+      "pal": [
+        "#F4B8C8",
+        "#8ED1C6",
+        "#FFF1A8",
+        "#E86A92",
+        "#FFF7FA"
+      ],
+      "pat": "candy",
+      "round": true,
+      "eventMonths": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "seaside",
+      "name": "Seaside",
+      "shortName": "Seaside",
+      "group": "Mood",
+      "pal": [
+        "#D8C29A",
+        "#3C8DBC",
+        "#9FD3E0",
+        "#E8765A",
+        "#F4FAFA"
+      ],
+      "pat": "scales",
+      "eventMonths": [
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "space",
+      "name": "Star Station",
+      "shortName": "Star",
+      "group": "Mood",
+      "pal": [
+        "#3A3F5C",
+        "#7B6CF6",
+        "#2A2D45",
+        "#C9D1E8",
+        "#CBD2E6"
+      ],
+      "pat": "stars",
+      "eventMonths": [
+        12,
+        1
+      ]
+    },
+    {
+      "id": "spooky",
+      "name": "Spooky Manor",
+      "shortName": "Spooky",
+      "group": "Mood",
+      "pal": [
+        "#3B2E3A",
+        "#E07B39",
+        "#5E4A74",
+        "#1E1A1F",
+        "#D9CFC0"
+      ],
+      "pat": "moons",
+      "eventMonths": [
+        10,
+        11
+      ]
+    },
+    {
+      "id": "pixel",
+      "name": "Pixel Den",
+      "shortName": "Pixel",
+      "group": "Mood",
+      "pal": [
+        "#2E3440",
+        "#4DD9A5",
+        "#E0457B",
+        "#6C7AE0",
+        "#D8DEE9"
+      ],
+      "pat": "pixels"
+    },
+    {
+      "id": "greenhouse",
+      "name": "Greenhouse",
+      "shortName": "Greenhouse",
+      "group": "Mood",
+      "pal": [
+        "#9C7A54",
+        "#5E9E5A",
+        "#D9E8C4",
+        "#6B5B45",
+        "#F2F4E8"
+      ],
+      "pat": "leaves"
+    },
+    {
+      "id": "bakery",
+      "name": "Bakery",
+      "shortName": "Bakery",
+      "group": "Mood",
+      "pal": [
+        "#C89A64",
+        "#E8C27A",
+        "#F6E6CF",
+        "#8C5A3A",
+        "#FFF8EC"
+      ],
+      "pat": "checker",
+      "round": true
+    },
+    {
+      "id": "diner",
+      "name": "Retro Diner",
+      "shortName": "Diner",
+      "group": "Mood",
+      "pal": [
+        "#E4E4E0",
+        "#D93A3A",
+        "#69C3C9",
+        "#2B2B2B",
+        "#FFFFFF"
+      ],
+      "pat": "dinercheck"
+    },
+    {
+      "id": "library",
+      "name": "Cosy Library",
+      "shortName": "Library",
+      "group": "Mood",
+      "pal": [
+        "#5E3B24",
+        "#8C2F39",
+        "#3D5A40",
+        "#C9A44A",
+        "#EFE2C8"
+      ],
+      "pat": "plaid"
+    }
   ],
   "types": [
-    {"id":"bed","name":"Bed","cat":"Furniture","role":"bed","r":0.42,"circles":[-0.2,0,0.28,0.2,0,0.28],"face":"x","comfort":2,"max":1,"price":180},
-    {"id":"chair","name":"Stool","cat":"Furniture","role":"seat","r":0.17,"comfort":1,"max":2,"price":60},
-    {"id":"teatable","name":"Tea table","cat":"Station","role":"tea","r":0.36,"comfort":1,"max":1,"price":120},
-    {"id":"stove","name":"Stove","cat":"Station","role":"eat","r":0.33,"face":"z","comfort":0,"max":1,"price":200},
-    {"id":"fridge","name":"Pantry cupboard","cat":"Station","role":"snack","r":0.26,"face":"z","comfort":0,"max":1,"price":120},
-    {"id":"sink","name":"Sink","cat":"Station","role":"wash","r":0.28,"face":"z","comfort":0,"max":1,"price":120},
-    {"id":"tub","name":"Bathtub","cat":"Station","role":"bath","r":0.33,"comfort":1,"max":1,"price":200},
-    {"id":"shower","name":"Shower","cat":"Station","role":"shower","r":0.3,"face":"z","comfort":0,"max":1,"price":220},
-    {"id":"lamp","name":"Lamp","cat":"Decor","role":"lamp","r":0.14,"comfort":2,"price":80},
-    {"id":"plant","name":"Plant","cat":"Decor","role":"plant","r":0.2,"comfort":2,"price":60},
-    {"id":"shelf","name":"Shelf","cat":"Decor","role":"decor","r":0.24,"face":"z","comfort":2,"price":90},
-    {"id":"wardrobe","name":"Wardrobe","cat":"Decor","role":"decor","r":0.28,"face":"z","comfort":2,"price":140},
-    {"id":"cushion","name":"Floor cushion","cat":"Furniture","role":"lounge","r":0.2,"comfort":1,"price":50},
-    {"id":"rug","name":"Rug","cat":"Floor","role":"","r":0.62,"walk":true,"comfort":1,"price":70},
-    {"id":"wall","name":"Wall panel","cat":"Wall","role":"","r":0.2,"circles":[-0.42,0,0.16,0,0,0.16,0.42,0,0.16],"face":"z","comfort":0,"price":60},
-    {"id":"screen","name":"Folding screen","cat":"Wall","role":"","r":0.18,"circles":[-0.34,0,0.15,0,0,0.15,0.34,0,0.15],"face":"z","comfort":1,"price":90},
-    {"id":"ball","name":"Ball","cat":"Toy","role":"play","r":0.1,"comfort":0,"max":1,"slot":"toy","price":40},
-    {"id":"pomwand","name":"Pom-pom wand","cat":"Toy","role":"wand","r":0.12,"comfort":0,"max":1,"slot":"toy","price":60},
-    {"id":"bubbles","name":"Bubble wand","cat":"Toy","role":"bubbles","r":0.12,"comfort":0,"max":1,"slot":"toy","price":60},
-    {"id":"xylophone","name":"Toy xylophone","cat":"Toy","role":"music","r":0.26,"comfort":0,"max":1,"slot":"toy","price":80},
-    {"id":"slide","name":"Slide","cat":"Toy","role":"slide","r":0.34,"circles":[0,-0.2,0.2,0,0.18,0.2],"face":"z","comfort":0,"max":1,"slot":"toy","price":120},
-    {"id":"trampoline","name":"Trampoline","cat":"Toy","role":"bounce","r":0.36,"comfort":0,"size":2,"max":1,"price":300},
-    {"id":"beanbag","name":"Beanbag","cat":"Furniture","role":"lounge","r":0.36,"comfort":2,"size":3,"max":1,"price":260}
+    {
+      "id": "bed",
+      "name": "Bed",
+      "cat": "Furniture",
+      "role": "bed",
+      "r": 0.42,
+      "circles": [
+        -0.2,
+        0,
+        0.28,
+        0.2,
+        0,
+        0.28
+      ],
+      "face": "x",
+      "comfort": 2,
+      "max": 1,
+      "price": 180
+    },
+    {
+      "id": "chair",
+      "name": "Stool",
+      "cat": "Furniture",
+      "role": "seat",
+      "r": 0.17,
+      "comfort": 1,
+      "max": 2,
+      "price": 60
+    },
+    {
+      "id": "teatable",
+      "name": "Tea table",
+      "cat": "Station",
+      "role": "tea",
+      "r": 0.36,
+      "comfort": 1,
+      "max": 1,
+      "price": 120
+    },
+    {
+      "id": "stove",
+      "name": "Stove",
+      "cat": "Station",
+      "role": "eat",
+      "r": 0.33,
+      "face": "z",
+      "comfort": 0,
+      "max": 1,
+      "price": 200
+    },
+    {
+      "id": "fridge",
+      "name": "Pantry cupboard",
+      "cat": "Station",
+      "role": "snack",
+      "r": 0.26,
+      "face": "z",
+      "comfort": 0,
+      "max": 1,
+      "price": 120
+    },
+    {
+      "id": "sink",
+      "name": "Sink",
+      "cat": "Station",
+      "role": "wash",
+      "r": 0.28,
+      "face": "z",
+      "comfort": 0,
+      "max": 1,
+      "price": 120
+    },
+    {
+      "id": "tub",
+      "name": "Bathtub",
+      "cat": "Station",
+      "role": "bath",
+      "r": 0.33,
+      "comfort": 1,
+      "max": 1,
+      "price": 200
+    },
+    {
+      "id": "shower",
+      "name": "Shower",
+      "cat": "Station",
+      "role": "shower",
+      "r": 0.3,
+      "face": "z",
+      "comfort": 0,
+      "max": 1,
+      "price": 220
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp",
+      "cat": "Decor",
+      "role": "lamp",
+      "r": 0.14,
+      "comfort": 2,
+      "price": 80
+    },
+    {
+      "id": "plant",
+      "name": "Plant",
+      "cat": "Decor",
+      "role": "plant",
+      "r": 0.2,
+      "comfort": 2,
+      "price": 60
+    },
+    {
+      "id": "shelf",
+      "name": "Shelf",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.24,
+      "face": "z",
+      "comfort": 2,
+      "price": 90
+    },
+    {
+      "id": "wardrobe",
+      "name": "Wardrobe",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.28,
+      "face": "z",
+      "comfort": 2,
+      "price": 140
+    },
+    {
+      "id": "cushion",
+      "name": "Floor cushion",
+      "cat": "Furniture",
+      "role": "lounge",
+      "r": 0.2,
+      "comfort": 1,
+      "price": 50
+    },
+    {
+      "id": "rug",
+      "name": "Rug",
+      "cat": "Floor",
+      "role": "",
+      "r": 0.62,
+      "walk": true,
+      "comfort": 1,
+      "price": 70
+    },
+    {
+      "id": "wall",
+      "name": "Wall panel",
+      "cat": "Wall",
+      "role": "",
+      "r": 0.2,
+      "circles": [
+        -0.42,
+        0,
+        0.16,
+        0,
+        0,
+        0.16,
+        0.42,
+        0,
+        0.16
+      ],
+      "face": "z",
+      "comfort": 0,
+      "price": 60
+    },
+    {
+      "id": "screen",
+      "name": "Folding screen",
+      "cat": "Wall",
+      "role": "",
+      "r": 0.18,
+      "circles": [
+        -0.34,
+        0,
+        0.15,
+        0,
+        0,
+        0.15,
+        0.34,
+        0,
+        0.15
+      ],
+      "face": "z",
+      "comfort": 1,
+      "price": 90
+    },
+    {
+      "id": "ball",
+      "name": "Ball",
+      "cat": "Toy",
+      "role": "play",
+      "r": 0.1,
+      "comfort": 0,
+      "max": 1,
+      "slot": "toy",
+      "price": 40
+    },
+    {
+      "id": "pomwand",
+      "name": "Pom-pom wand",
+      "cat": "Toy",
+      "role": "wand",
+      "r": 0.12,
+      "comfort": 0,
+      "max": 1,
+      "slot": "toy",
+      "price": 60
+    },
+    {
+      "id": "bubbles",
+      "name": "Bubble wand",
+      "cat": "Toy",
+      "role": "bubbles",
+      "r": 0.12,
+      "comfort": 0,
+      "max": 1,
+      "slot": "toy",
+      "price": 60
+    },
+    {
+      "id": "xylophone",
+      "name": "Toy xylophone",
+      "cat": "Toy",
+      "role": "music",
+      "r": 0.26,
+      "comfort": 0,
+      "max": 1,
+      "slot": "toy",
+      "price": 80
+    },
+    {
+      "id": "slide",
+      "name": "Slide",
+      "cat": "Toy",
+      "role": "slide",
+      "r": 0.34,
+      "circles": [
+        0,
+        -0.2,
+        0.2,
+        0,
+        0.18,
+        0.2
+      ],
+      "face": "z",
+      "comfort": 0,
+      "max": 1,
+      "slot": "toy",
+      "price": 120
+    },
+    {
+      "id": "trampoline",
+      "name": "Trampoline",
+      "cat": "Toy",
+      "role": "bounce",
+      "r": 0.36,
+      "comfort": 0,
+      "size": 2,
+      "max": 1,
+      "price": 300
+    },
+    {
+      "id": "beanbag",
+      "name": "Beanbag",
+      "cat": "Furniture",
+      "role": "lounge",
+      "r": 0.36,
+      "comfort": 2,
+      "size": 3,
+      "max": 1,
+      "price": 260
+    }
   ],
-  "tomb": {"id":"tomb","name":"Tombstone","cat":"Keepsake","role":"mourn","r":0.16,"comfort":0},
+  "tomb": {
+    "id": "tomb",
+    "name": "Tombstone",
+    "cat": "Keepsake",
+    "role": "mourn",
+    "r": 0.16,
+    "comfort": 0
+  },
   "finishes": [
-    {"name":"Peach","tier":"Common","color":"#F5C3A0","rough":0.85},
-    {"name":"Butter","tier":"Common","color":"#F6DE8D","rough":0.85},
-    {"name":"Taro","tier":"Common","color":"#C9B3E0","rough":0.85},
-    {"name":"Matcha","tier":"Common","color":"#B5CF8E","rough":0.85},
-    {"name":"Sky","tier":"Common","color":"#A9D2EE","rough":0.85},
-    {"name":"Rose","tier":"Common","color":"#F2B1B8","rough":0.85},
-    {"name":"Cocoa","tier":"Common","color":"#B98A6B","rough":0.85},
-    {"name":"Snow","tier":"Common","color":"#F4F1EA","rough":0.85},
-    {"name":"Pinky","tier":"Glitter","color":"#F3A6BD","rough":0.38,"spark":["#FFFFFF","#FFE3EC","#FFE9B0"]},
-    {"name":"Gold Dust","tier":"Glitter","color":"#E8C46A","rough":0.35,"spark":["#FFFFFF","#FFF2C2"]},
-    {"name":"Frost","tier":"Glitter","color":"#D7DCE3","rough":0.3,"spark":["#FFFFFF","#DDEBFF"]},
-    {"name":"Lilac Fizz","tier":"Glitter","color":"#CDB2F0","rough":0.35,"spark":["#FFFFFF","#FFE3FA"]},
-    {"name":"Nebula","tier":"Galaxy","color":"#40379A","rough":0.3,"spark":["#8BF3FF","#FF8ADB","#FFD66B","#FFFFFF"]},
-    {"name":"Aurora","tier":"Galaxy","color":"#1F5E6E","rough":0.3,"spark":["#9BFFB8","#FF9BE6","#FFFFFF"]},
-    {"name":"Supernova","tier":"Galaxy","color":"#6E1F4F","rough":0.3,"spark":["#FFD66B","#FF7A59","#FFFFFF"]},
-    {"name":"Glowmint","tier":"UV","color":"#BFE6C6","rough":0.2,"glow":"#6BFF9E"},
-    {"name":"Glowlemon","tier":"UV","color":"#E9F29B","rough":0.2,"glow":"#E8FF4D"},
-    {"name":"Glowpink","tier":"UV","color":"#F7C3E6","rough":0.2,"glow":"#FF6BD5"},
-    {"name":"Opal","tier":"Holographic","color":"#E7E0F4","rough":0.2,"spark":["#9BE7FF","#FFB3E6","#FFF1A8","#B3FFD1"]},
-    {"name":"Prism","tier":"Holographic","color":"#D8ECF2","rough":0.2,"spark":["#FF9BB3","#9BD7FF","#C8FF9B","#FFE39B"]},
-    {"name":"Koi","tier":"Pattern","color":"#FFFFFF","rough":0.5,"map":"koi"},
-    {"name":"Strawberry","tier":"Pattern","color":"#FFFFFF","rough":0.5,"map":"straw"},
-    {"name":"Sesame","tier":"Pattern","color":"#FFFFFF","rough":0.6,"map":"sesame"},
-    {"name":"Golden Ticket","tier":"Legendary","color":"#D9B45A","rough":0.25,"metal":true,"spark":["#FFFFFF","#FFF2C2","#FFE08A"]}
+    {
+      "name": "Peach",
+      "tier": "Common",
+      "color": "#F5C3A0",
+      "rough": 0.85
+    },
+    {
+      "name": "Butter",
+      "tier": "Common",
+      "color": "#F6DE8D",
+      "rough": 0.85
+    },
+    {
+      "name": "Taro",
+      "tier": "Common",
+      "color": "#C9B3E0",
+      "rough": 0.85
+    },
+    {
+      "name": "Matcha",
+      "tier": "Common",
+      "color": "#B5CF8E",
+      "rough": 0.85
+    },
+    {
+      "name": "Sky",
+      "tier": "Common",
+      "color": "#A9D2EE",
+      "rough": 0.85
+    },
+    {
+      "name": "Rose",
+      "tier": "Common",
+      "color": "#F2B1B8",
+      "rough": 0.85
+    },
+    {
+      "name": "Cocoa",
+      "tier": "Common",
+      "color": "#B98A6B",
+      "rough": 0.85
+    },
+    {
+      "name": "Snow",
+      "tier": "Common",
+      "color": "#F4F1EA",
+      "rough": 0.85
+    },
+    {
+      "name": "Pinky",
+      "tier": "Glitter",
+      "color": "#F3A6BD",
+      "rough": 0.38,
+      "spark": [
+        "#FFFFFF",
+        "#FFE3EC",
+        "#FFE9B0"
+      ]
+    },
+    {
+      "name": "Gold Dust",
+      "tier": "Glitter",
+      "color": "#E8C46A",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#FFF2C2"
+      ]
+    },
+    {
+      "name": "Frost",
+      "tier": "Glitter",
+      "color": "#D7DCE3",
+      "rough": 0.3,
+      "spark": [
+        "#FFFFFF",
+        "#DDEBFF"
+      ]
+    },
+    {
+      "name": "Lilac Fizz",
+      "tier": "Glitter",
+      "color": "#CDB2F0",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#FFE3FA"
+      ]
+    },
+    {
+      "name": "Nebula",
+      "tier": "Galaxy",
+      "color": "#40379A",
+      "rough": 0.3,
+      "spark": [
+        "#8BF3FF",
+        "#FF8ADB",
+        "#FFD66B",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "name": "Aurora",
+      "tier": "Galaxy",
+      "color": "#1F5E6E",
+      "rough": 0.3,
+      "spark": [
+        "#9BFFB8",
+        "#FF9BE6",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "name": "Supernova",
+      "tier": "Galaxy",
+      "color": "#6E1F4F",
+      "rough": 0.3,
+      "spark": [
+        "#FFD66B",
+        "#FF7A59",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "name": "Glowmint",
+      "tier": "UV",
+      "color": "#BFE6C6",
+      "rough": 0.2,
+      "glow": "#6BFF9E"
+    },
+    {
+      "name": "Glowlemon",
+      "tier": "UV",
+      "color": "#E9F29B",
+      "rough": 0.2,
+      "glow": "#E8FF4D"
+    },
+    {
+      "name": "Glowpink",
+      "tier": "UV",
+      "color": "#F7C3E6",
+      "rough": 0.2,
+      "glow": "#FF6BD5"
+    },
+    {
+      "name": "Opal",
+      "tier": "Holographic",
+      "color": "#E7E0F4",
+      "rough": 0.2,
+      "spark": [
+        "#9BE7FF",
+        "#FFB3E6",
+        "#FFF1A8",
+        "#B3FFD1"
+      ]
+    },
+    {
+      "name": "Prism",
+      "tier": "Holographic",
+      "color": "#D8ECF2",
+      "rough": 0.2,
+      "spark": [
+        "#FF9BB3",
+        "#9BD7FF",
+        "#C8FF9B",
+        "#FFE39B"
+      ]
+    },
+    {
+      "name": "Koi",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "koi"
+    },
+    {
+      "name": "Strawberry",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "straw"
+    },
+    {
+      "name": "Sesame",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.6,
+      "map": "sesame"
+    },
+    {
+      "name": "Golden Ticket",
+      "tier": "Legendary",
+      "color": "#D9B45A",
+      "rough": 0.25,
+      "metal": true,
+      "spark": [
+        "#FFFFFF",
+        "#FFF2C2",
+        "#FFE08A"
+      ]
+    }
   ],
   "tiers": [
-    {"tier":"Common","rarity":"Common","color":"#D8C7AE"},
-    {"tier":"Glitter","rarity":"Rare","color":"#F3A6BD"},
-    {"tier":"Pattern","rarity":"Rare","color":"#E7A77F"},
-    {"tier":"Galaxy","rarity":"Epic","color":"#5145B8"},
-    {"tier":"UV","rarity":"Epic","color":"#9BE36B"},
-    {"tier":"Holographic","rarity":"Epic","color":"#B9A6F0"},
-    {"tier":"Legendary","rarity":"Legendary","color":"#D9B45A"}
+    {
+      "tier": "Common",
+      "rarity": "Common",
+      "color": "#D8C7AE"
+    },
+    {
+      "tier": "Glitter",
+      "rarity": "Rare",
+      "color": "#F3A6BD"
+    },
+    {
+      "tier": "Pattern",
+      "rarity": "Rare",
+      "color": "#E7A77F"
+    },
+    {
+      "tier": "Galaxy",
+      "rarity": "Epic",
+      "color": "#5145B8"
+    },
+    {
+      "tier": "UV",
+      "rarity": "Epic",
+      "color": "#9BE36B"
+    },
+    {
+      "tier": "Holographic",
+      "rarity": "Epic",
+      "color": "#B9A6F0"
+    },
+    {
+      "tier": "Legendary",
+      "rarity": "Legendary",
+      "color": "#D9B45A"
+    }
   ],
   "tools": [
-    {"name":"Spatula","color":"#C08A57","rarity":"Common","price":60,"maxDur":18,"basic":true},
-    {"name":"Cleaver","color":"#9AA3AB","rarity":"Rare","price":150,"maxDur":30},
-    {"name":"Fork set","color":"#C9C9C9","rarity":"Common","price":60,"maxDur":18,"basic":true},
-    {"name":"Wok","color":"#3B2A20","rarity":"Rare","price":150,"maxDur":30},
-    {"name":"Rolling pin","color":"#D6AE72","rarity":"Rare","price":150,"maxDur":30},
-    {"name":"Mini steamer","color":"#D6AE72","rarity":"Rare","price":150,"maxDur":30},
-    {"name":"Ladle","color":"#9AA3AB","rarity":"Common","price":60,"maxDur":18,"basic":true},
-    {"name":"Chopsticks","color":"#8A5D3B","rarity":"Common","price":60,"maxDur":18,"basic":true}
+    {
+      "name": "Spatula",
+      "color": "#C08A57",
+      "rarity": "Common",
+      "price": 60,
+      "maxDur": 18,
+      "basic": true
+    },
+    {
+      "name": "Cleaver",
+      "color": "#9AA3AB",
+      "rarity": "Rare",
+      "price": 150,
+      "maxDur": 30
+    },
+    {
+      "name": "Fork set",
+      "color": "#C9C9C9",
+      "rarity": "Common",
+      "price": 60,
+      "maxDur": 18,
+      "basic": true
+    },
+    {
+      "name": "Wok",
+      "color": "#3B2A20",
+      "rarity": "Rare",
+      "price": 150,
+      "maxDur": 30
+    },
+    {
+      "name": "Rolling pin",
+      "color": "#D6AE72",
+      "rarity": "Rare",
+      "price": 150,
+      "maxDur": 30
+    },
+    {
+      "name": "Mini steamer",
+      "color": "#D6AE72",
+      "rarity": "Rare",
+      "price": 150,
+      "maxDur": 30
+    },
+    {
+      "name": "Ladle",
+      "color": "#9AA3AB",
+      "rarity": "Common",
+      "price": 60,
+      "maxDur": 18,
+      "basic": true
+    },
+    {
+      "name": "Chopsticks",
+      "color": "#8A5D3B",
+      "rarity": "Common",
+      "price": 60,
+      "maxDur": 18,
+      "basic": true
+    }
   ],
   "pantry": [
-    {"name":"Flour","color":"#F4EFE4","rarity":"Common","basic":true},
-    {"name":"Cabbage","color":"#A7C97E","rarity":"Common","basic":true},
-    {"name":"Scallion","color":"#7DBA5E","rarity":"Common","basic":true},
-    {"name":"Ginger","color":"#E1B96A","rarity":"Common"},
-    {"name":"Mushroom","color":"#A0724E","rarity":"Common"},
-    {"name":"Prawn","color":"#F08A6A","rarity":"Rare"},
-    {"name":"Tofu","color":"#F5EEDC","rarity":"Common","basic":true},
-    {"name":"Egg","color":"#F7EBD0","rarity":"Common","basic":true},
-    {"name":"Sesame","color":"#E9D9B0","rarity":"Common"},
-    {"name":"Carrot","color":"#EE8A3A","rarity":"Common","basic":true},
-    {"name":"Bok choy","color":"#6FAE5A","rarity":"Common"},
-    {"name":"Chili","color":"#D8412F","rarity":"Rare"}
+    {
+      "name": "Flour",
+      "shape": "bag",
+      "color": "#F4EFE4",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Cabbage",
+      "shape": "head",
+      "color": "#A7C97E",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Chives",
+      "shape": "stalks",
+      "color": "#7DBA5E",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Ginger",
+      "shape": "knobs",
+      "color": "#E1B96A",
+      "rarity": "Common"
+    },
+    {
+      "name": "Mushroom",
+      "shape": "cap",
+      "color": "#A0724E",
+      "rarity": "Common"
+    },
+    {
+      "name": "Prawn",
+      "shape": "prawn",
+      "color": "#F08A6A",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Tofu",
+      "shape": "block",
+      "color": "#F5EEDC",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Egg",
+      "shape": "egg",
+      "color": "#F7EBD0",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Black sesame",
+      "shape": "pot",
+      "color": "#3A302C",
+      "rarity": "Common"
+    },
+    {
+      "name": "Pork",
+      "shape": "meat",
+      "color": "#E8A09A",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Bok choy",
+      "shape": "leafy",
+      "color": "#6FAE5A",
+      "rarity": "Common"
+    },
+    {
+      "name": "Chili",
+      "shape": "chili",
+      "color": "#D8412F",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Red bean paste",
+      "shape": "pot",
+      "color": "#8E3B2E",
+      "rarity": "Common"
+    },
+    {
+      "name": "Lotus seeds",
+      "shape": "beans",
+      "color": "#EAD7A8",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Soy sauce",
+      "shape": "bottle",
+      "color": "#3B2418",
+      "rarity": "Common",
+      "basic": true
+    },
+    {
+      "name": "Potato",
+      "shape": "egg",
+      "color": "#C9A36B",
+      "rarity": "Common"
+    },
+    {
+      "name": "Cheese",
+      "shape": "wedge",
+      "color": "#F2C94C",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Kimchi",
+      "shape": "pot",
+      "color": "#D9573B",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Sugar",
+      "shape": "bag",
+      "color": "#FFFFFF",
+      "rarity": "Common",
+      "basic": true
+    }
   ],
   "skins": [
-    {"name":"Bamboo","a":"#D6AE72","b":"#CFA466","t":"#A97E47","rarity":"Common"},
-    {"name":"Red lacquer","a":"#B8332E","b":"#A62B27","t":"#D8A94A","rarity":"Rare"},
-    {"name":"Celadon","a":"#9CC3B2","b":"#8FB8A8","t":"#5B7F72","rarity":"Rare"},
-    {"name":"Birch","a":"#E7D8BD","b":"#DCCBAE","t":"#9C8566","rarity":"Rare"},
-    {"name":"Sea glass","a":"#A9D6D9","b":"#9BCACE","t":"#5E9EA3","rarity":"Epic"},
-    {"name":"Gold","a":"#E2BE5E","b":"#D4AF4C","t":"#9C7A24","rarity":"Legendary"},
-    {"name":"Galaxy","a":"#3B3180","b":"#2E2668","t":"#8BF3FF","rarity":"Legendary"},
-    {"name":"Candy stripe","a":"#F7C3D3","b":"#FFFFFF","t":"#E86A92","rarity":"Epic"}
+    {
+      "name": "Bamboo",
+      "a": "#D6AE72",
+      "b": "#CFA466",
+      "t": "#A97E47",
+      "rarity": "Common"
+    },
+    {
+      "name": "Red lacquer",
+      "a": "#B8332E",
+      "b": "#A62B27",
+      "t": "#D8A94A",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Celadon",
+      "a": "#9CC3B2",
+      "b": "#8FB8A8",
+      "t": "#5B7F72",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Birch",
+      "a": "#E7D8BD",
+      "b": "#DCCBAE",
+      "t": "#9C8566",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Sea glass",
+      "a": "#A9D6D9",
+      "b": "#9BCACE",
+      "t": "#5E9EA3",
+      "rarity": "Epic"
+    },
+    {
+      "name": "Gold",
+      "a": "#F2C94C",
+      "b": "#E0B03C",
+      "t": "#A87A1E",
+      "rarity": "Legendary",
+      "metal": 0.75,
+      "rough": 0.28,
+      "glow": "#3D2A05"
+    },
+    {
+      "name": "Galaxy",
+      "a": "#3B3180",
+      "b": "#2E2668",
+      "t": "#8BF3FF",
+      "rarity": "Legendary"
+    },
+    {
+      "name": "Candy stripe",
+      "a": "#F7C3D3",
+      "b": "#FFFFFF",
+      "t": "#E86A92",
+      "rarity": "Epic"
+    }
   ],
   "toolSkins": [
-    {"name":"Classic","col":"","rarity":"Common"},
-    {"name":"Copper","col":"#C8784A","rarity":"Common"},
-    {"name":"Jade","col":"#6FA58E","rarity":"Rare"},
-    {"name":"Candy","col":"#F4B8C8","rarity":"Rare"},
-    {"name":"Gold","col":"#D9B45A","rarity":"Epic"}
+    {
+      "name": "Classic",
+      "col": "",
+      "rarity": "Common"
+    },
+    {
+      "name": "Copper",
+      "col": "#C8784A",
+      "rarity": "Common"
+    },
+    {
+      "name": "Jade",
+      "col": "#6FA58E",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Candy",
+      "col": "#F4B8C8",
+      "rarity": "Rare"
+    },
+    {
+      "name": "Gold",
+      "col": "#D9B45A",
+      "rarity": "Epic"
+    }
   ],
   "recipes": [
-    {"name":"Plain congee","ing":[],"tools":[],"lvl":1,"hunger":0.6,"cap":0.6,"col":"#F4EFE4"},
-    {"name":"Scallion buns","ing":[0,2],"tools":[5],"lvl":1,"hunger":0.4,"col":"#F4EFE4"},
-    {"name":"Mushroom omelette","ing":[7,4],"tools":[0],"lvl":1,"hunger":0.4,"bonusNeed":"play","bonus":0.1,"col":"#F2D56B"},
-    {"name":"Ginger soup","ing":[3,9,2],"tools":[6],"lvl":2,"hunger":0.35,"bonusNeed":"rest","bonus":0.2,"col":"#E8B45A"},
-    {"name":"Sesame balls","ing":[0,8],"tools":[3],"lvl":2,"hunger":0.3,"bonusNeed":"play","bonus":0.2,"col":"#D9A64A"},
-    {"name":"Veg dumplings","ing":[0,1,4],"tools":[4,5],"lvl":2,"hunger":0.55,"bonusNeed":"rest","bonus":0.1,"col":"#EDE6D6"},
-    {"name":"Tofu stir-fry","ing":[6,10,11],"tools":[3,0],"lvl":3,"hunger":0.55,"bonusNeed":"play","bonus":0.15,"col":"#E7C27A"},
-    {"name":"Prawn har gow","ing":[0,5,2],"tools":[4,5,1],"lvl":3,"hunger":0.7,"bonusNeed":"clean","bonus":0.1,"col":"#F6D5C8"},
-    {"name":"Chili wontons","ing":[0,5,11],"tools":[1,4,7],"lvl":4,"hunger":0.65,"bonusNeed":"play","bonus":0.25,"col":"#E0674A"},
-    {"name":"Steamed egg custard","ing":[7],"tools":[5],"lvl":1,"hunger":0.35,"bonusNeed":"rest","bonus":0.15,"col":"#F7E3A0"},
-    {"name":"Sesame tofu","ing":[6,8],"tools":[0],"lvl":1,"hunger":0.4,"bonusNeed":"clean","bonus":0.1,"col":"#E9D9B0"},
-    {"name":"Egg fried rice","ing":[7,2,9],"tools":[3],"lvl":2,"hunger":0.5,"bonusNeed":"play","bonus":0.1,"col":"#F2D56B"},
-    {"name":"Ginger greens","ing":[10,3],"tools":[3],"lvl":2,"hunger":0.3,"bonusNeed":"clean","bonus":0.15,"col":"#6FAE5A"},
-    {"name":"Carrot cake squares","ing":[0,9],"tools":[4,1],"lvl":3,"hunger":0.5,"bonusNeed":"play","bonus":0.15,"col":"#EE8A3A"},
-    {"name":"Mushroom noodle soup","ing":[0,4,2],"tools":[4,6],"lvl":3,"hunger":0.6,"bonusNeed":"rest","bonus":0.15,"col":"#C9A27A"}
+    {
+      "name": "Plain congee",
+      "ing": [],
+      "tools": [],
+      "lvl": 1,
+      "hunger": 0.6,
+      "col": "#F4EFE4",
+      "note": "Rice porridge: not a filling, just a hug in a bowl. Always free.",
+      "cap": 0.6,
+      "starter": true
+    },
+    {
+      "name": "Char siu pork",
+      "ing": [
+        9,
+        14,
+        18
+      ],
+      "tools": [
+        3
+      ],
+      "lvl": 2,
+      "hunger": 0.65,
+      "col": "#B5452E",
+      "note": "Sticky-sweet BBQ pork, the filling of a char siu bao. Your squishy doesn’t ask questions."
+    },
+    {
+      "name": "Pork & chive stir-fry",
+      "ing": [
+        9,
+        2
+      ],
+      "tools": [
+        3
+      ],
+      "lvl": 1,
+      "hunger": 0.45,
+      "col": "#C98A6A",
+      "note": "The classic jiaozi filling, minus the jiaozi.",
+      "starter": true
+    },
+    {
+      "name": "Pork & cabbage mince",
+      "ing": [
+        9,
+        1,
+        3
+      ],
+      "tools": [
+        1
+      ],
+      "lvl": 2,
+      "hunger": 0.5,
+      "col": "#D9B08A",
+      "note": "Finely chopped gyoza filling. It’s a bit awkward, really."
+    },
+    {
+      "name": "Garlic prawns",
+      "ing": [
+        5,
+        3,
+        2
+      ],
+      "tools": [
+        3
+      ],
+      "lvl": 3,
+      "hunger": 0.5,
+      "col": "#F08A6A",
+      "note": "What hides inside a har gow: pink, plump and suspicious.",
+      "bonusNeed": "play",
+      "bonus": 0.1
+    },
+    {
+      "name": "Golden custard",
+      "ing": [
+        7,
+        18
+      ],
+      "tools": [
+        5
+      ],
+      "lvl": 1,
+      "hunger": 0.4,
+      "col": "#F2C94C",
+      "note": "Lava custard straight out of a liu sha bao. Oozy.",
+      "bonusNeed": "rest",
+      "bonus": 0.08,
+      "starter": true
+    },
+    {
+      "name": "Red bean soup",
+      "ing": [
+        12,
+        18
+      ],
+      "tools": [
+        6
+      ],
+      "lvl": 1,
+      "hunger": 0.4,
+      "col": "#8E3B2E",
+      "note": "Sweet dou sha, usually hiding inside a bun.",
+      "bonusNeed": "rest",
+      "bonus": 0.08
+    },
+    {
+      "name": "Lotus seed pudding",
+      "ing": [
+        13,
+        18
+      ],
+      "tools": [
+        5
+      ],
+      "lvl": 3,
+      "hunger": 0.45,
+      "col": "#EAD7A8",
+      "note": "Silky lotus paste from a lian rong bao. Very fancy.",
+      "bonusNeed": "rest",
+      "bonus": 0.12
+    },
+    {
+      "name": "Soup dumpling broth",
+      "ing": [
+        9,
+        3,
+        2
+      ],
+      "tools": [
+        6
+      ],
+      "lvl": 2,
+      "hunger": 0.45,
+      "col": "#E9C98A",
+      "note": "The soup inside a xiao long bao, without the burnt tongue.",
+      "bonusNeed": "rest",
+      "bonus": 0.1
+    },
+    {
+      "name": "Siu mai meatballs",
+      "ing": [
+        9,
+        5,
+        4
+      ],
+      "tools": [
+        1,
+        5
+      ],
+      "lvl": 3,
+      "hunger": 0.6,
+      "col": "#E3A07E",
+      "note": "Pork, prawn and mushroom: the siu mai trio, set free."
+    },
+    {
+      "name": "Kimchi tofu stew",
+      "ing": [
+        17,
+        6,
+        9
+      ],
+      "tools": [
+        6
+      ],
+      "lvl": 3,
+      "hunger": 0.55,
+      "col": "#D9573B",
+      "note": "Mandu filling that ran away and became a stew.",
+      "bonusNeed": "play",
+      "bonus": 0.1
+    },
+    {
+      "name": "Cheesy potato mash",
+      "ing": [
+        15,
+        16
+      ],
+      "tools": [
+        2
+      ],
+      "lvl": 2,
+      "hunger": 0.55,
+      "col": "#F2D56B",
+      "note": "Pierogi filling. Dumplings are one big family.",
+      "bonusNeed": "play",
+      "bonus": 0.08
+    },
+    {
+      "name": "Black sesame soup",
+      "ing": [
+        8,
+        18
+      ],
+      "tools": [
+        6
+      ],
+      "lvl": 2,
+      "hunger": 0.4,
+      "col": "#3A302C",
+      "note": "Tangyuan filling melted into soup. Dark, sweet and glossy.",
+      "bonusNeed": "rest",
+      "bonus": 0.1
+    },
+    {
+      "name": "Mushroom & bok choy",
+      "ing": [
+        4,
+        10,
+        6
+      ],
+      "tools": [
+        3
+      ],
+      "lvl": 1,
+      "hunger": 0.45,
+      "col": "#6FAE5A",
+      "note": "A veggie dumpling filling. Green, good, gone.",
+      "starter": true
+    },
+    {
+      "name": "Chili pork",
+      "ing": [
+        9,
+        11,
+        14
+      ],
+      "tools": [
+        3,
+        1
+      ],
+      "lvl": 4,
+      "hunger": 0.65,
+      "col": "#C8412F",
+      "note": "The inside of a chili oil wonton, turned right up.",
+      "bonusNeed": "play",
+      "bonus": 0.12
+    },
+    {
+      "name": "Egg & chive scramble",
+      "ing": [
+        7,
+        2
+      ],
+      "tools": [
+        0
+      ],
+      "lvl": 1,
+      "hunger": 0.4,
+      "col": "#F2D56B",
+      "note": "The veggie jiaozi favourite. Fluffy.",
+      "starter": true
+    },
+    {
+      "name": "Mystery dumplings",
+      "ing": [
+        0,
+        9,
+        1,
+        2
+      ],
+      "tools": [
+        4,
+        5
+      ],
+      "lvl": 4,
+      "hunger": 0.8,
+      "col": "#F4EFE4",
+      "note": "Wrapping it all up. Best not to think about it.",
+      "bonusNeed": "play",
+      "bonus": 0.15
+    }
   ],
   "snacks": [
-    {"name":"Rice cracker","color":"#E9C98A"},
-    {"name":"Apple slices","color":"#E8505B"},
-    {"name":"Mochi bite","color":"#F4E1E8"}
+    {
+      "name": "Rice cracker",
+      "color": "#E9C98A",
+      "shape": "crackers"
+    },
+    {
+      "name": "Apple slices",
+      "color": "#E8505B",
+      "shape": "slices"
+    },
+    {
+      "name": "Mochi bite",
+      "color": "#F4E1E8",
+      "shape": "ball"
+    },
+    {
+      "name": "Egg tart",
+      "color": "#F6D365",
+      "shape": "tart"
+    },
+    {
+      "name": "Sesame ball",
+      "color": "#D9A25E",
+      "shape": "ball"
+    }
   ],
   "sizes": [
-    {"name":"Mini","s":0.1,"at":1,"decor":0},
-    {"name":"Standard","s":0.15,"at":3,"decor":1},
-    {"name":"Jumbo","s":0.21,"at":6,"decor":2},
-    {"name":"Giant","s":0.29,"at":12,"decor":3},
-    {"name":"Super Mega","s":0.4,"at":25,"decor":4}
+    {
+      "name": "Mini",
+      "s": 0.1,
+      "at": 1,
+      "decor": 0
+    },
+    {
+      "name": "Standard",
+      "s": 0.15,
+      "at": 3,
+      "decor": 1
+    },
+    {
+      "name": "Jumbo",
+      "s": 0.21,
+      "at": 6,
+      "decor": 2
+    },
+    {
+      "name": "Giant",
+      "s": 0.29,
+      "at": 12,
+      "decor": 3
+    },
+    {
+      "name": "Super Mega",
+      "s": 0.4,
+      "at": 25,
+      "decor": 4
+    }
   ],
   "roomLevels": [
-    {"r":1.75,"slots":4},
-    {"r":2.05,"slots":6},
-    {"r":2.35,"slots":9,"need":5,"cost":400},
-    {"r":2.65,"slots":12,"need":10,"cost":1000}
+    {
+      "r": 1.75,
+      "slots": 4
+    },
+    {
+      "r": 2.05,
+      "slots": 6
+    },
+    {
+      "r": 2.35,
+      "slots": 9,
+      "need": 5,
+      "cost": 400
+    },
+    {
+      "r": 2.65,
+      "slots": 12,
+      "need": 10,
+      "cost": 1000
+    }
   ],
   "activities": [
-    {"role":"bed","label":"Napping","need":"rest","dur":7,"rate":0.14,"perch":0.3,"sleep":true},
-    {"role":"lounge","label":"Lounging","need":"rest","dur":5,"rate":0.08,"perch":0.12},
-    {"role":"seat","label":"Sitting","dur":2.5,"perch":0.27},
-    {"role":"tea","label":"Tea time","need":"rest","also":"hunger","dur":4.5,"rate":0.1,"front":0.2,"toward":true,"needSeat":true},
-    {"role":"eat","label":"Eating","need":"hunger","dur":5.5,"rate":0.18,"front":0.22},
-    {"role":"snack","label":"Snacking","need":"hunger","dur":2.5,"rate":0.06,"front":0.18,"cap":0.6},
-    {"role":"wash","label":"Quick wash","need":"clean","dur":2.5,"rate":0.12,"front":0.18,"cap":0.65},
-    {"role":"bath","label":"Bath time","need":"clean","dur":5,"rate":0.14,"perch":0.06,"scrub":true},
-    {"role":"shower","label":"Shower","need":"clean","dur":4.5,"rate":0.18,"inside":true,"scrub":true},
-    {"role":"play","label":"Playing","need":"play"},
-    {"role":"wand","label":"Pom-pom chase","need":"play","dur":9,"rate":0.02,"front":0.2},
-    {"role":"bubbles","label":"Bubble time","need":"play","dur":10,"rate":0.01,"front":0.2},
-    {"role":"music","label":"Music time","need":"play","dur":6,"rate":0.03,"front":0.18,"toward":true},
-    {"role":"slide","label":"Sliding","need":"play","dur":6,"rate":0.035,"perch":0.01},
-    {"role":"bounce","label":"Bouncing","need":"play","dur":4,"rate":0.2,"perch":0.2},
-    {"role":"plant","label":"Watering","dur":2.2,"front":0.15,"toward":true},
-    {"role":"lamp","label":"Lights","dur":1,"front":0.12,"toward":true},
-    {"role":"mourn","label":"Remembering","dur":3,"front":0.18,"toward":true}
+    {
+      "role": "bed",
+      "label": "Napping",
+      "need": "rest",
+      "dur": 7,
+      "rate": 0.14,
+      "perch": 0.3,
+      "sleep": true
+    },
+    {
+      "role": "lounge",
+      "label": "Lounging",
+      "need": "rest",
+      "dur": 5,
+      "rate": 0.08,
+      "perch": 0.12
+    },
+    {
+      "role": "seat",
+      "label": "Sitting",
+      "dur": 2.5,
+      "perch": 0.27
+    },
+    {
+      "role": "tea",
+      "label": "Tea time",
+      "need": "rest",
+      "also": "hunger",
+      "dur": 4.5,
+      "rate": 0.1,
+      "front": 0.2,
+      "toward": true,
+      "needSeat": true
+    },
+    {
+      "role": "eat",
+      "label": "Eating",
+      "need": "hunger",
+      "dur": 5.5,
+      "rate": 0.18,
+      "front": 0.22
+    },
+    {
+      "role": "snack",
+      "label": "Snacking",
+      "need": "hunger",
+      "dur": 2.5,
+      "rate": 0.06,
+      "front": 0.18,
+      "cap": 0.6
+    },
+    {
+      "role": "wash",
+      "label": "Quick wash",
+      "need": "clean",
+      "dur": 2.5,
+      "rate": 0.12,
+      "front": 0.18,
+      "cap": 0.65
+    },
+    {
+      "role": "bath",
+      "label": "Bath time",
+      "need": "clean",
+      "dur": 5,
+      "rate": 0.14,
+      "perch": 0.06,
+      "scrub": true
+    },
+    {
+      "role": "shower",
+      "label": "Shower",
+      "need": "clean",
+      "dur": 4.5,
+      "rate": 0.18,
+      "inside": true,
+      "scrub": true
+    },
+    {
+      "role": "play",
+      "label": "Playing",
+      "need": "play"
+    },
+    {
+      "role": "wand",
+      "label": "Pom-pom chase",
+      "need": "play",
+      "dur": 9,
+      "rate": 0.02,
+      "front": 0.2
+    },
+    {
+      "role": "bubbles",
+      "label": "Bubble time",
+      "need": "play",
+      "dur": 10,
+      "rate": 0.01,
+      "front": 0.2
+    },
+    {
+      "role": "music",
+      "label": "Music time",
+      "need": "play",
+      "dur": 6,
+      "rate": 0.03,
+      "front": 0.18,
+      "toward": true
+    },
+    {
+      "role": "slide",
+      "label": "Sliding",
+      "need": "play",
+      "dur": 6,
+      "rate": 0.035,
+      "perch": 0.01
+    },
+    {
+      "role": "bounce",
+      "label": "Bouncing",
+      "need": "play",
+      "dur": 4,
+      "rate": 0.2,
+      "perch": 0.2
+    },
+    {
+      "role": "plant",
+      "label": "Watering",
+      "dur": 2.2,
+      "front": 0.15,
+      "toward": true
+    },
+    {
+      "role": "lamp",
+      "label": "Lights",
+      "dur": 1,
+      "front": 0.12,
+      "toward": true
+    },
+    {
+      "role": "mourn",
+      "label": "Remembering",
+      "dur": 3,
+      "front": 0.18,
+      "toward": true
+    }
   ],
   "tasks": [
-    {"id":"cook","text":"Cook a recipe (not congee)","goal":1,"coins":40},
-    {"id":"scrub","text":"Scrub your squishy in the bath or shower","goal":1,"coins":30},
-    {"id":"kick","text":"Play fetch: 5 kicks","goal":5,"coins":30},
-    {"id":"nap","text":"Nap with the lights off","goal":1,"coins":30},
-    {"id":"happy","text":"Stay Happy for 3 minutes","goal":180,"coins":50,"time":true},
-    {"id":"water","text":"Water a plant","goal":1,"coins":15},
-    {"id":"squish","text":"Squish 10 times","goal":10,"coins":20},
-    {"id":"tea","text":"Have tea time","goal":1,"coins":25},
-    {"id":"snack","text":"Give a snack","goal":1,"coins":15}
+    {
+      "id": "cook",
+      "text": "Cook a recipe (not congee)",
+      "goal": 1,
+      "coins": 40
+    },
+    {
+      "id": "scrub",
+      "text": "Scrub your squishy in the bath or shower",
+      "goal": 1,
+      "coins": 30
+    },
+    {
+      "id": "kick",
+      "text": "Play fetch: 5 kicks",
+      "goal": 5,
+      "coins": 30
+    },
+    {
+      "id": "nap",
+      "text": "Nap with the lights off",
+      "goal": 1,
+      "coins": 30
+    },
+    {
+      "id": "happy",
+      "text": "Stay Happy for 3 minutes",
+      "goal": 180,
+      "coins": 50,
+      "time": true
+    },
+    {
+      "id": "water",
+      "text": "Water a plant",
+      "goal": 1,
+      "coins": 15
+    },
+    {
+      "id": "squish",
+      "text": "Squish 10 times",
+      "goal": 10,
+      "coins": 20
+    },
+    {
+      "id": "tea",
+      "text": "Have tea time",
+      "goal": 1,
+      "coins": 25
+    },
+    {
+      "id": "snack",
+      "text": "Give a snack",
+      "goal": 1,
+      "coins": 15
+    }
   ],
   "rules": {
-    "decayHunger":0.0000278,"decayPlay":0.0000347,"decayRest":0.0000198,"decayClean":0.0000154,
-    "comfortSlowPerPoint":0.02,"comfortSlowMax":0.4,"setBonus":3,"setCount":3,"plantWiltRate":0.0000058,
-    "deathSeconds":43200,"dayLength":86400,"selfCareCap":0.5,
-    "happyBase":1,"happyComfortDivisor":20,
-    "pLegendary":0.01,"pEpic":0.05,"pRare":0.18,"pityRare":10,"pityEpic":50,"favouriteChance":0.4,"pTwoLayers":0.15,"pThreeLayers":0.05,
-    "dupeItemCoins":20,"dupeToolSkinCoins":15,"dupeSteamerSkinCoins":30,"dupeToolCoins":10,"foodPerDrop":2,"kitIngredients":2,"shopKitCooks":2,"shopKitPricePerIngredient":7,
-    "steamerPrice":150,"snackPrice":5,"ingredientPrice":8,"newToolPrice":60,"minRepair":10,"tasksPerSteamer":3,"taskSetSteamers":2,"taskCooldownHours":3,
-    "tuckMinCondition":0.12,"lifespanMinDays":30,"lifespanMaxDays":60,"babyDays":3,"prestigeBase":50,"prestigePerQol":250,"sizePrestige":25,"trialDays":28,"giftHours":3,"streakWeekPrestige":15,"weeklyGoal":15,"weeklySteamers":3,"adminTools":true,"fullUnlockProductId":"full_unlock","adsGameIdAndroid":"","adsGameIdIos":"","squishPlayGain":0.04,"squishPlayGainCritical":0.02,"scrubGain":0.012,
+    "decayHunger": 0.0000278,
+    "decayPlay": 0.0000347,
+    "decayRest": 0.0000198,
+    "decayClean": 0.0000154,
+    "comfortSlowPerPoint": 0.02,
+    "comfortSlowMax": 0.4,
+    "setBonus": 3,
+    "setCount": 3,
+    "plantWiltRate": 0.0000058,
+    "deathSeconds": 43200,
+    "dayLength": 86400,
+    "selfCareCap": 0.5,
+    "happyBase": 1,
+    "happyComfortDivisor": 20,
+    "pLegendary": 0.01,
+    "pEpic": 0.05,
+    "pRare": 0.18,
+    "pityRare": 10,
+    "pityEpic": 50,
+    "favouriteChance": 0.4,
+    "pTwoLayers": 0.15,
+    "pThreeLayers": 0.05,
+    "dupeItemCoins": 20,
+    "dupeToolSkinCoins": 15,
+    "dupeSteamerSkinCoins": 30,
+    "dupeToolCoins": 10,
+    "foodPerDrop": 2,
+    "kitIngredients": 2,
+    "shopKitCooks": 2,
+    "shopKitPricePerIngredient": 7,
+    "steamerPrice": 150,
+    "snackPrice": 3,
+    "ingredientPrice": 8,
+    "newToolPrice": 60,
+    "minRepair": 10,
+    "tasksPerSteamer": 3,
+    "taskSetSteamers": 2,
+    "taskCooldownHours": 3,
+    "tuckMinCondition": 0.12,
+    "lifespanMinDays": 30,
+    "lifespanMaxDays": 60,
+    "babyDays": 3,
+    "prestigeBase": 50,
+    "prestigePerQol": 250,
+    "sizePrestige": 25,
+    "trialDays": 28,
+    "giftHours": 3,
+    "streakWeekPrestige": 15,
+    "weeklyGoal": 15,
+    "weeklySteamers": 3,
+    "adminTools": true,
+    "fullUnlockProductId": "full_unlock",
+    "adsGameIdAndroid": "",
+    "adsGameIdIos": "",
+    "squishPlayGain": 0.04,
+    "squishPlayGainCritical": 0.02,
+    "scrubGain": 0.012,
     "selfPlayChance": 0.25,
     "tipMin": 2,
     "tipMax": 5
   },
   "cosmetics": [
-    {"id":"party_hat","name":"Party hat","slot":"hat","kind":"cone","color":"#E86A92","price":15},
-    {"id":"party_hat_teal","name":"Teal party hat","slot":"hat","kind":"cone","color":"#6E9C9A","price":15},
-    {"id":"flower_crown","name":"Flower crown","slot":"hat","kind":"flowers","color":"#F3A6BD","price":30},
-    {"id":"daisy_crown","name":"Daisy crown","slot":"hat","kind":"flowers","color":"#FFFFFF","price":30},
-    {"id":"beret","name":"Beret","slot":"hat","kind":"beret","color":"#C8674E","price":20},
-    {"id":"beret_navy","name":"Navy beret","slot":"hat","kind":"beret","color":"#2F4A6E","price":20},
-    {"id":"chef_hat","name":"Chef hat","slot":"hat","kind":"chef","color":"#FFFFFF","price":35},
-    {"id":"bow","name":"Lilac bow","slot":"hat","kind":"bow","color":"#8C7BB0","price":15},
-    {"id":"bow_red","name":"Red bow","slot":"hat","kind":"bow","color":"#D8412F","price":15},
-    {"id":"beanie","name":"Mint beanie","slot":"hat","kind":"beanie","color":"#6FA58E","price":20},
-    {"id":"beanie_mustard","name":"Mustard beanie","slot":"hat","kind":"beanie","color":"#D9A64A","price":20},
-    {"id":"top_hat","name":"Top hat","slot":"hat","kind":"tophat","color":"#3B2A20","price":50},
-    {"id":"sun_hat","name":"Sun hat","slot":"hat","kind":"sunhat","color":"#E7D8BD","price":35},
-    {"id":"straw_hat","name":"Straw hat","slot":"hat","kind":"sunhat","color":"#E1B96A","price":35},
-    {"id":"cap","name":"Cap","slot":"hat","kind":"cap","color":"#3C8DBC","price":20},
-    {"id":"cat_ears","name":"Cat ears","slot":"hat","kind":"ears_cat","color":"#F4B8C8","price":40},
-    {"id":"bunny_ears","name":"Bunny ears","slot":"hat","kind":"ears_bunny","color":"#FFFFFF","price":40},
-    {"id":"bear_ears","name":"Bear ears","slot":"hat","kind":"ears_bear","color":"#A0724E","price":40},
-    {"id":"sprout","name":"Leaf sprout","slot":"hat","kind":"sprout","color":"#7DBA5E","price":15},
-    {"id":"cherry_clip","name":"Cherry clip","slot":"hat","kind":"cherry","color":"#D8412F","price":15},
-    {"id":"bamboo_hat","name":"Bamboo hat","slot":"hat","kind":"conical","color":"#D6AE72","price":40},
-    {"id":"wizard_hat","name":"Wizard hat","slot":"hat","kind":"wizard","color":"#5145B8","price":60},
-    {"id":"pirate_hat","name":"Pirate hat","slot":"hat","kind":"pirate","color":"#2B2B2B","price":55},
-    {"id":"tiara","name":"Tiara","slot":"hat","kind":"tiara","color":"#E7E0F4","price":100},
-    {"id":"halo","name":"Halo","slot":"hat","kind":"halo","color":"#FFE08A","price":120},
-    {"id":"gold_crown","name":"Gold crown","slot":"hat","kind":"crown","color":"#D9B45A","price":150},
-    {"id":"round_glasses","name":"Round glasses","slot":"face","kind":"round","color":"#3B2A20","price":15},
-    {"id":"star_glasses","name":"Star glasses","slot":"face","kind":"star","color":"#D9A64A","price":30},
-    {"id":"heart_glasses","name":"Heart glasses","slot":"face","kind":"heart","color":"#E86A92","price":30},
-    {"id":"square_glasses","name":"Square glasses","slot":"face","kind":"square","color":"#8C5A2A","price":20},
-    {"id":"sunglasses","name":"Sunglasses","slot":"face","kind":"shades","color":"#1E1A1F","price":35},
-    {"id":"monocle","name":"Monocle","slot":"face","kind":"monocle","color":"#D9B45A","price":45},
-    {"id":"thick_glasses","name":"Thick-rim glasses","slot":"face","kind":"thick","color":"#33261D","price":20},
-    {"id":"freckles","name":"Freckles","slot":"face","kind":"freckles","color":"#C8674E","price":15},
-    {"id":"moustache","name":"Moustache","slot":"face","kind":"moustache","color":"#5A3A26","price":25},
-    {"id":"scarf","name":"Red scarf","slot":"neck","kind":"scarf","color":"#C8674E","price":25},
-    {"id":"scarf_green","name":"Green scarf","slot":"neck","kind":"scarf","color":"#6FA58E","price":25},
-    {"id":"bowtie","name":"Bow tie","slot":"neck","kind":"bowtie","color":"#D8412F","price":20},
-    {"id":"pearls","name":"Pearl necklace","slot":"neck","kind":"pearls","color":"#F4F1EA","price":50},
-    {"id":"bandana","name":"Bandana","slot":"neck","kind":"bandana","color":"#3C8DBC","price":20},
-    {"id":"bell_collar","name":"Bell collar","slot":"neck","kind":"bell","color":"#D9A64A","price":30},
-    {"id":"lei","name":"Flower lei","slot":"neck","kind":"lei","color":"#F2A03D","price":40}
+    {
+      "id": "party_hat",
+      "name": "Party hat",
+      "slot": "hat",
+      "kind": "cone",
+      "color": "#E86A92",
+      "price": 15
+    },
+    {
+      "id": "party_hat_teal",
+      "name": "Teal party hat",
+      "slot": "hat",
+      "kind": "cone",
+      "color": "#6E9C9A",
+      "price": 15
+    },
+    {
+      "id": "flower_crown",
+      "name": "Flower crown",
+      "slot": "hat",
+      "kind": "flowers",
+      "color": "#F3A6BD",
+      "price": 30
+    },
+    {
+      "id": "daisy_crown",
+      "name": "Daisy crown",
+      "slot": "hat",
+      "kind": "flowers",
+      "color": "#FFFFFF",
+      "price": 30
+    },
+    {
+      "id": "beret",
+      "name": "Beret",
+      "slot": "hat",
+      "kind": "beret",
+      "color": "#C8674E",
+      "price": 20
+    },
+    {
+      "id": "beret_navy",
+      "name": "Navy beret",
+      "slot": "hat",
+      "kind": "beret",
+      "color": "#2F4A6E",
+      "price": 20
+    },
+    {
+      "id": "chef_hat",
+      "name": "Chef hat",
+      "slot": "hat",
+      "kind": "chef",
+      "color": "#FFFFFF",
+      "price": 35
+    },
+    {
+      "id": "bow",
+      "name": "Lilac bow",
+      "slot": "hat",
+      "kind": "bow",
+      "color": "#8C7BB0",
+      "price": 15
+    },
+    {
+      "id": "bow_red",
+      "name": "Red bow",
+      "slot": "hat",
+      "kind": "bow",
+      "color": "#D8412F",
+      "price": 15
+    },
+    {
+      "id": "beanie",
+      "name": "Mint beanie",
+      "slot": "hat",
+      "kind": "beanie",
+      "color": "#6FA58E",
+      "price": 20
+    },
+    {
+      "id": "beanie_mustard",
+      "name": "Mustard beanie",
+      "slot": "hat",
+      "kind": "beanie",
+      "color": "#D9A64A",
+      "price": 20
+    },
+    {
+      "id": "top_hat",
+      "name": "Top hat",
+      "slot": "hat",
+      "kind": "tophat",
+      "color": "#3B2A20",
+      "price": 50
+    },
+    {
+      "id": "sun_hat",
+      "name": "Sun hat",
+      "slot": "hat",
+      "kind": "sunhat",
+      "color": "#E7D8BD",
+      "price": 35
+    },
+    {
+      "id": "straw_hat",
+      "name": "Straw hat",
+      "slot": "hat",
+      "kind": "sunhat",
+      "color": "#E1B96A",
+      "price": 35
+    },
+    {
+      "id": "cap",
+      "name": "Cap",
+      "slot": "hat",
+      "kind": "cap",
+      "color": "#3C8DBC",
+      "price": 20
+    },
+    {
+      "id": "cat_ears",
+      "name": "Cat ears",
+      "slot": "hat",
+      "kind": "ears_cat",
+      "color": "#F4B8C8",
+      "price": 40
+    },
+    {
+      "id": "bunny_ears",
+      "name": "Bunny ears",
+      "slot": "hat",
+      "kind": "ears_bunny",
+      "color": "#FFFFFF",
+      "price": 40
+    },
+    {
+      "id": "bear_ears",
+      "name": "Bear ears",
+      "slot": "hat",
+      "kind": "ears_bear",
+      "color": "#A0724E",
+      "price": 40
+    },
+    {
+      "id": "sprout",
+      "name": "Leaf sprout",
+      "slot": "hat",
+      "kind": "sprout",
+      "color": "#7DBA5E",
+      "price": 15
+    },
+    {
+      "id": "cherry_clip",
+      "name": "Cherry clip",
+      "slot": "hat",
+      "kind": "cherry",
+      "color": "#D8412F",
+      "price": 15
+    },
+    {
+      "id": "bamboo_hat",
+      "name": "Bamboo hat",
+      "slot": "hat",
+      "kind": "conical",
+      "color": "#D6AE72",
+      "price": 40
+    },
+    {
+      "id": "wizard_hat",
+      "name": "Wizard hat",
+      "slot": "hat",
+      "kind": "wizard",
+      "color": "#5145B8",
+      "price": 60
+    },
+    {
+      "id": "pirate_hat",
+      "name": "Pirate hat",
+      "slot": "hat",
+      "kind": "pirate",
+      "color": "#2B2B2B",
+      "price": 55
+    },
+    {
+      "id": "tiara",
+      "name": "Tiara",
+      "slot": "hat",
+      "kind": "tiara",
+      "color": "#E7E0F4",
+      "price": 100
+    },
+    {
+      "id": "halo",
+      "name": "Halo",
+      "slot": "hat",
+      "kind": "halo",
+      "color": "#FFE08A",
+      "price": 120
+    },
+    {
+      "id": "gold_crown",
+      "name": "Gold crown",
+      "slot": "hat",
+      "kind": "crown",
+      "color": "#D9B45A",
+      "price": 150
+    },
+    {
+      "id": "round_glasses",
+      "name": "Round glasses",
+      "slot": "face",
+      "kind": "round",
+      "color": "#3B2A20",
+      "price": 15
+    },
+    {
+      "id": "star_glasses",
+      "name": "Star glasses",
+      "slot": "face",
+      "kind": "star",
+      "color": "#D9A64A",
+      "price": 30
+    },
+    {
+      "id": "heart_glasses",
+      "name": "Heart glasses",
+      "slot": "face",
+      "kind": "heart",
+      "color": "#E86A92",
+      "price": 30
+    },
+    {
+      "id": "square_glasses",
+      "name": "Square glasses",
+      "slot": "face",
+      "kind": "square",
+      "color": "#8C5A2A",
+      "price": 20
+    },
+    {
+      "id": "sunglasses",
+      "name": "Sunglasses",
+      "slot": "face",
+      "kind": "shades",
+      "color": "#1E1A1F",
+      "price": 35
+    },
+    {
+      "id": "monocle",
+      "name": "Monocle",
+      "slot": "face",
+      "kind": "monocle",
+      "color": "#D9B45A",
+      "price": 45
+    },
+    {
+      "id": "thick_glasses",
+      "name": "Thick-rim glasses",
+      "slot": "face",
+      "kind": "thick",
+      "color": "#33261D",
+      "price": 20
+    },
+    {
+      "id": "freckles",
+      "name": "Freckles",
+      "slot": "face",
+      "kind": "freckles",
+      "color": "#C8674E",
+      "price": 15
+    },
+    {
+      "id": "moustache",
+      "name": "Moustache",
+      "slot": "face",
+      "kind": "moustache",
+      "color": "#5A3A26",
+      "price": 25
+    },
+    {
+      "id": "scarf",
+      "name": "Red scarf",
+      "slot": "neck",
+      "kind": "scarf",
+      "color": "#C8674E",
+      "price": 25
+    },
+    {
+      "id": "scarf_green",
+      "name": "Green scarf",
+      "slot": "neck",
+      "kind": "scarf",
+      "color": "#6FA58E",
+      "price": 25
+    },
+    {
+      "id": "bowtie",
+      "name": "Bow tie",
+      "slot": "neck",
+      "kind": "bowtie",
+      "color": "#D8412F",
+      "price": 20
+    },
+    {
+      "id": "pearls",
+      "name": "Pearl necklace",
+      "slot": "neck",
+      "kind": "pearls",
+      "color": "#F4F1EA",
+      "price": 50
+    },
+    {
+      "id": "bandana",
+      "name": "Bandana",
+      "slot": "neck",
+      "kind": "bandana",
+      "color": "#3C8DBC",
+      "price": 20
+    },
+    {
+      "id": "bell_collar",
+      "name": "Bell collar",
+      "slot": "neck",
+      "kind": "bell",
+      "color": "#D9A64A",
+      "price": 30
+    },
+    {
+      "id": "lei",
+      "name": "Flower lei",
+      "slot": "neck",
+      "kind": "lei",
+      "color": "#F2A03D",
+      "price": 40
+    }
   ],
   "tierRewards": [
-    {"tier":"Common","steamers":2,"prestige":5},
-    {"tier":"Glitter","steamers":3,"prestige":10},
-    {"tier":"Pattern","steamers":3,"prestige":10},
-    {"tier":"Galaxy","steamers":4,"prestige":15},
-    {"tier":"UV","steamers":4,"prestige":15},
-    {"tier":"Holographic","steamers":4,"prestige":15},
-    {"tier":"Legendary","steamers":5,"prestige":25}
+    {
+      "tier": "Common",
+      "steamers": 2,
+      "prestige": 5
+    },
+    {
+      "tier": "Glitter",
+      "steamers": 3,
+      "prestige": 10
+    },
+    {
+      "tier": "Pattern",
+      "steamers": 3,
+      "prestige": 10
+    },
+    {
+      "tier": "Galaxy",
+      "steamers": 4,
+      "prestige": 15
+    },
+    {
+      "tier": "UV",
+      "steamers": 4,
+      "prestige": 15
+    },
+    {
+      "tier": "Holographic",
+      "steamers": 4,
+      "prestige": 15
+    },
+    {
+      "tier": "Legendary",
+      "steamers": 5,
+      "prestige": 25
+    }
   ],
   "starter": {
-    "coins":248,"steamers":3,"favourite":8,"roomLevel":1,"age":3,
-    "needs":[0.74,0.62,0.8,0.72],
-    "owned":["bed:cottage","chair:teahouse","teatable:teahouse","stove:nordic","fridge:blockprint","sink:aegean","tub:aegean","lamp:midcentury","plant:greenhouse","shelf:teahouse","rug:persian","ball:candy","pomwand:candy","bubbles:aegean","xylophone:folk","slide:cottage","cushion:blockprint","wall:tatami","tool:0","tool:3","tool:5","food:0","food:1","food:2","food:4","food:6","food:7","skin:0","skin:1"],
-    "squishies":[{"i":8,"n":1},{"i":0,"n":1},{"i":4,"n":1},{"i":12,"n":1}],
-    "pantry":[3,2,2,0,2,0,1,1,0,0,0,0],
-    "snacks":[3,2,0],
-    "roomScale":0.87,
-    "room":[
-      {"key":"rug:persian","x":0,"z":0.25,"ry":0},
-      {"key":"bed:cottage","x":1.25,"z":-0.4,"ry":-0.55},
-      {"key":"teatable:teahouse","x":-1.05,"z":-0.8,"ry":0},
-      {"key":"chair:teahouse","x":-1.62,"z":-0.35,"ry":0},
-      {"key":"stove:nordic","x":0.5,"z":-1.6,"ry":0},
-      {"key":"fridge:blockprint","x":1.25,"z":-1.3,"ry":0},
-      {"key":"tub:aegean","x":1.35,"z":0.9,"ry":-0.3},
-      {"key":"lamp:midcentury","x":-0.2,"z":-1.85,"ry":0},
-      {"key":"plant:greenhouse","x":-1.72,"z":0.45,"ry":0},
-      {"key":"shelf:teahouse","x":-1.35,"z":1.2,"ry":0},
-      {"key":"cushion:blockprint","x":-0.6,"z":0.95,"ry":0},
-      {"key":"ball:candy","x":0.45,"z":0.95,"ry":0}
+    "coins": 248,
+    "steamers": 3,
+    "favourite": 8,
+    "roomLevel": 1,
+    "age": 3,
+    "needs": [
+      0.74,
+      0.62,
+      0.8,
+      0.72
     ],
-    "storage":["wall:tatami","pomwand:candy","bubbles:aegean","xylophone:folk","slide:cottage"]
+    "owned": [
+      "bed:cottage",
+      "chair:teahouse",
+      "teatable:teahouse",
+      "stove:nordic",
+      "fridge:blockprint",
+      "sink:aegean",
+      "tub:aegean",
+      "lamp:midcentury",
+      "plant:greenhouse",
+      "shelf:teahouse",
+      "rug:persian",
+      "ball:candy",
+      "pomwand:candy",
+      "bubbles:aegean",
+      "xylophone:folk",
+      "slide:cottage",
+      "cushion:blockprint",
+      "wall:tatami",
+      "tool:0",
+      "tool:3",
+      "tool:5",
+      "skin:0",
+      "skin:1",
+      "food:0",
+      "food:1",
+      "food:2",
+      "food:3",
+      "food:4",
+      "food:6",
+      "food:7",
+      "food:9",
+      "food:10",
+      "food:14",
+      "food:18"
+    ],
+    "squishies": [
+      {
+        "i": 8,
+        "n": 1
+      },
+      {
+        "i": 0,
+        "n": 1
+      },
+      {
+        "i": 4,
+        "n": 1
+      },
+      {
+        "i": 12,
+        "n": 1
+      }
+    ],
+    "pantry": [
+      3,
+      2,
+      2,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      2,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      2
+    ],
+    "snacks": [
+      3,
+      2,
+      0,
+      1,
+      0
+    ],
+    "roomScale": 0.87,
+    "room": [
+      {
+        "key": "rug:persian",
+        "x": 0,
+        "z": 0.25,
+        "ry": 0
+      },
+      {
+        "key": "bed:cottage",
+        "x": 1.25,
+        "z": -0.4,
+        "ry": -0.55
+      },
+      {
+        "key": "teatable:teahouse",
+        "x": -1.05,
+        "z": -0.8,
+        "ry": 0
+      },
+      {
+        "key": "chair:teahouse",
+        "x": -1.62,
+        "z": -0.35,
+        "ry": 0
+      },
+      {
+        "key": "stove:nordic",
+        "x": 0.5,
+        "z": -1.6,
+        "ry": 0
+      },
+      {
+        "key": "fridge:blockprint",
+        "x": 1.25,
+        "z": -1.3,
+        "ry": 0
+      },
+      {
+        "key": "tub:aegean",
+        "x": 1.35,
+        "z": 0.9,
+        "ry": -0.3
+      },
+      {
+        "key": "lamp:midcentury",
+        "x": -0.2,
+        "z": -1.85,
+        "ry": 0
+      },
+      {
+        "key": "plant:greenhouse",
+        "x": -1.72,
+        "z": 0.45,
+        "ry": 0
+      },
+      {
+        "key": "shelf:teahouse",
+        "x": -1.35,
+        "z": 1.2,
+        "ry": 0
+      },
+      {
+        "key": "cushion:blockprint",
+        "x": -0.6,
+        "z": 0.95,
+        "ry": 0
+      },
+      {
+        "key": "ball:candy",
+        "x": 0.45,
+        "z": 0.95,
+        "ry": 0
+      }
+    ],
+    "storage": [
+      "wall:tatami",
+      "pomwand:candy",
+      "bubbles:aegean",
+      "xylophone:folk",
+      "slide:cottage"
+    ]
   }
 }

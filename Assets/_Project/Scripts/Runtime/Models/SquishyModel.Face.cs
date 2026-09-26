@@ -60,11 +60,11 @@ namespace Squishy.Runtime.Models
             Node.Mesh(smile, ThreeGeo.Torus(.05f, .012f, 6, 16, Mathf.PI), ink, 0, .012f, 0, shadow: false).localRotation = flip;
 
             var grin = Part(Mouth.Grin); // open, laughing
-            Node.Mesh(grin, ThreeGeo.Sph(.05f, 14, 10), ink, 0, -.006f, 0, shadow: false).localScale = new Vector3(1.2f, .85f, .3f);
-            Node.Mesh(grin, ThreeGeo.Sph(.03f, 10, 8), tongue, 0, -.024f, .008f, shadow: false).localScale = new Vector3(1.2f, .6f, .3f);
+            Node.Mesh(grin, ThreeGeo.Sph(.065f, 14, 10), ink, 0, -.01f, 0, shadow: false).localScale = new Vector3(1.2f, .85f, .3f);
+            Node.Mesh(grin, ThreeGeo.Sph(.038f, 10, 8), tongue, 0, -.032f, .01f, shadow: false).localScale = new Vector3(1.2f, .6f, .3f);
 
             var oh = Part(Mouth.Oh);
-            Node.Mesh(oh, ThreeGeo.Sph(.03f, 12, 10), ink, 0, -.008f, 0, shadow: false).localScale = new Vector3(.9f, 1.15f, .3f);
+            Node.Mesh(oh, ThreeGeo.Sph(.045f, 12, 10), ink, 0, -.012f, 0, shadow: false).localScale = new Vector3(.9f, 1.15f, .3f);
 
             var flat = Part(Mouth.Flat);
             Node.Mesh(flat, ThreeGeo.Cyl(.011f, .011f, .07f, 8), ink, 0, -.005f, 0, shadow: false).localRotation = Quaternion.AngleAxis(90, Vector3.forward);
@@ -85,22 +85,22 @@ namespace Squishy.Runtime.Models
                 var sq = Node.Group(Body, "eyeSqueeze");
                 sq.localPosition = ep;
                 sq.localRotation = eq;
-                float tip = -sx * .03f, end = sx * .03f;
+                float tip = -sx * .055f, end = sx * .055f;
                 foreach (float s in new[] { 1f, -1f })
                 {
                     Vector2 a = new Vector2(tip, 0), b = new Vector2(end, s * .034f), mid = (a + b) / 2, dv = b - a;
-                    var arm = Node.Mesh(sq, ThreeGeo.Cyl(.014f, .014f, dv.magnitude, 8), ink, mid.x, mid.y, 0, shadow: false);
+                    var arm = Node.Mesh(sq, ThreeGeo.Cyl(.02f, .02f, dv.magnitude, 8), ink, mid.x, mid.y, 0, shadow: false);
                     arm.localRotation = Quaternion.AngleAxis(Mathf.Atan2(dv.y, dv.x) * Mathf.Rad2Deg - 90, Vector3.forward);
-                    Node.Mesh(sq, ThreeGeo.Sph(.014f, 8, 6), ink, b.x, b.y, 0, shadow: false);
+                    Node.Mesh(sq, ThreeGeo.Sph(.02f, 8, 6), ink, b.x, b.y, 0, shadow: false);
                 }
-                Node.Mesh(sq, ThreeGeo.Sph(.014f, 8, 6), ink, tip, 0, 0, shadow: false);
+                Node.Mesh(sq, ThreeGeo.Sph(.02f, 8, 6), ink, tip, 0, 0, shadow: false);
                 sq.gameObject.SetActive(false);
                 _squeeze[k] = sq.gameObject;
 
                 var hp = Node.Group(Body, "eyeHappy");
                 hp.localPosition = ep;
                 hp.localRotation = eq;
-                Node.Mesh(hp, ThreeGeo.Torus(.045f, .014f, 6, 14, Mathf.PI), ink, 0, -.015f, 0, shadow: false);
+                Node.Mesh(hp, ThreeGeo.Torus(.07f, .02f, 6, 16, Mathf.PI), ink, 0, -.03f, 0, shadow: false);
                 hp.gameObject.SetActive(false);
                 _happy[k] = hp.gameObject;
             }

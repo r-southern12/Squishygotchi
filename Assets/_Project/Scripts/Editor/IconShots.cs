@@ -117,10 +117,60 @@ namespace Squishy.EditorTools
                 RenderTexture.active = prev;
                 File.WriteAllBytes(System.IO.Path.Combine(Dir, "shot_" + s.name + ".png"), tex.EncodeToPNG());
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_EXTRA") == "1") Extras(bb, cam, flat, rt, tex, warm);
             cam.transform.position = pos0;
             cam.transform.rotation = rot0;
             cam.fieldOfView = fov0;
             Debug.Log("IconShots: wrote " + Shots.Length + " shots");
+        }
+
+        /// <summary>Checks for the face expressions and the gold steamer skin (ICONSHOTS_EXTRA=1).</summary>
+        private static void Extras(Bounds bb, Camera cam, Vector3 flat, RenderTexture rt, Texture2D tex, float warm)
+        {
+            var game = Squishy.Runtime.Game.SteamerGame.I;
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            var model = (Squishy.Runtime.Models.SquishyModel)typeof(Squishy.Runtime.Game.SteamerGame).GetField("pet", flags).GetValue(game);
+            foreach (Squishy.Runtime.Models.SquishyModel.Mouth m in System.Enum.GetValues(typeof(Squishy.Runtime.Models.SquishyModel.Mouth)))
+            {
+                model.Held = false;
+                model.Express(m, 5);
+                model.Update(0, 0, false, 0);
+                Shot(cam, rt, tex, bb, flat, 8, 1.5f, 30, warm, "face_" + m);
+            }
+            model.Held = true;
+            model.Update(0, 0, false, 0);
+            Shot(cam, rt, tex, bb, flat, 8, 1.5f, 30, warm, "face_Squished");
+            model.Held = false;
+            model.Update(0, 0, false, 0);
+            var wall = (Squishy.Runtime.Models.SteamerModel)typeof(Squishy.Runtime.Game.SteamerGame).GetField("homeWall", flags).GetValue(game);
+            var content = JsonUtility.FromJson<Squishy.Simulation.Game.GameContent>(File.ReadAllText("Assets/_Project/Resources/Content/game_content.json"));
+            foreach (var sk in content.skins) if (sk.name == "Gold") wall.Skin(sk);
+            Shot(cam, rt, tex, bb, flat, 42, 12f, 30, warm, "gold");
+        }
+
+        private static void Shot(Camera cam, RenderTexture rt, Texture2D tex, Bounds bb, Vector3 flat, float elev, float fill, float fov, float warm, string name)
+        {
+            cam.fieldOfView = fov;
+            float h = bb.size.y * fill, dist = h * .5f / Mathf.Tan(fov * .5f * Mathf.Deg2Rad);
+            var dir = Quaternion.AngleAxis(-elev, Vector3.Cross(Vector3.up, flat)) * flat;
+            var target = bb.center + Vector3.up * bb.size.y * (fill > 4 ? 0 : .08f);
+            cam.transform.position = target + dir.normalized * dist;
+            cam.transform.rotation = Quaternion.LookRotation(target - cam.transform.position, Vector3.up);
+            var prevT = cam.targetTexture;
+            float aspect = cam.aspect;
+            cam.targetTexture = rt;
+            cam.aspect = 1;
+            Post.Set(cam.WorldToViewportPoint(bb.center).y, fill > 4 ? .16f : .13f, warm, 0);
+            cam.Render();
+            cam.targetTexture = prevT;
+            cam.aspect = aspect;
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+            tex.ReadPixels(new Rect(0, 0, Size, Size), 0, 0);
+            tex.Apply();
+            RenderTexture.active = prev;
+            Directory.CreateDirectory("Temp/IconChecks");
+            File.WriteAllBytes("Temp/IconChecks/" + name + ".png", tex.EncodeToPNG()); // outside Assets: checks only
         }
 
         private static Transform FindPet()

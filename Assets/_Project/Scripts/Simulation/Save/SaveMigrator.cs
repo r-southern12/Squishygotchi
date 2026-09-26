@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -22,6 +22,11 @@ namespace Squishy.Simulation.Save
                     if (!data.state.owned.Contains(k)) data.state.owned.Add(k);
                     if (!data.state.storage.Contains(k) && !data.state.items.Exists(p => p.key == k)) data.state.storage.Add(k);
                 }
+            }
+            if (data.version < 5 && data.state != null)
+            {
+                // v5 replaces the recipe list with dumpling-filling dishes: old mastery no longer matches any recipe.
+                data.state.recipeXP = null;
             }
             data.version = CurrentVersion;
         }

@@ -56,6 +56,8 @@ namespace Squishy.Simulation.Game
                 state.toolDur = Fit(state.toolDur, content.tools.Length);
                 for (int i = old; i < content.tools.Length; i++) state.toolDur[i] = content.tools[i].maxDur;
             }
+            // Starter recipes are always known; the rest are learned from kitchen kits.
+            for (int i = 0; i < content.recipes.Length; i++) if (content.recipes[i].starter) AddOwned(RecipeKey(i));
         }
 
         public RulesData R { get { return C.rules; } }
@@ -220,6 +222,10 @@ namespace Squishy.Simulation.Game
         public string ToolKey(int i) { return "tool:" + i; }
         public int ToolsOwned() { int n = 0; for (int i = 0; i < C.tools.Length; i++) if (Owned(ToolKey(i))) n++; return n; }
         public int KitchenLvl() { int n = ToolsOwned(); return 1 + (n >= 2 ? 1 : 0) + (n >= 4 ? 1 : 0) + (n >= 6 ? 1 : 0); }
+        public string RecipeKey(int i) { return "recipe:" + i; }
+        public bool Knows(int i) { return Owned(RecipeKey(i)); }
+        public int KnownRecipes() { int n = 0; for (int i = 0; i < C.recipes.Length; i++) if (Knows(i)) n++; return n; }
+
         public int RecipeLvl(int i) { return Math.Min(5, 1 + S.recipeXP[i] / 3); }
 
         public List<string> MissingFor(RecipeData rc)
@@ -312,6 +318,9 @@ namespace Squishy.Simulation.Game
             var o = new List<int>();
             for (int k = 0; k < C.recipes.Length; k++)
                 if (C.recipes[k].tools.Length > 0 && (rar != "Common" || C.recipes[k].lvl <= 2)) o.Add(k);
+            // Steamers are how you learn recipes: favour ones you don't know yet.
+            var unknown = o.FindAll(k => !Knows(k));
+            if (unknown.Count > 0 && Random() < .75) o = unknown;
             return new Reward { type = "kit", i = Pick(o), rar = rar };
         }
 
@@ -411,6 +420,7 @@ namespace Squishy.Simulation.Game
                 int lv0 = KitchenLvl();
                 var parts = new List<string>();
                 bool anyNew = false;
+                if (!Knows(rw.i)) { AddOwned(RecipeKey(rw.i)); anyNew = true; parts.Add("New recipe!"); }
                 foreach (var t in rc.tools)
                 {
                     bool isNewTool = !Owned(ToolKey(t));

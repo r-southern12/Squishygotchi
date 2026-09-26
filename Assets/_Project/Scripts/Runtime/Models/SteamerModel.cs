@@ -80,12 +80,29 @@ namespace Squishy.Runtime.Models
 
         public void Skin(SteamerSkinData sk)
         {
+            // Metal skins (Gold) switch the wall parts to the glossy shading so they read as metal, not yellow paint.
+            foreach (var m in _slatMats) Finish(m, sk, .5f); // half-metal slats stay bright in the room's shade
+            Finish(_capMat, sk, 1);
+            Finish(_bandMat, sk, 1);
             for (int i = 0; i < _n; i++)
                 _slatMats[i].SetVector("_BaseColor", OffsetHsl(i % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f));
             _capMat.SetVector("_BaseColor", Lin(sk.a));
             _bandMat.SetVector("_BaseColor", Lin(sk.t));
             // The woven base takes the skin's tones, lifted towards cream so the floor stays light.
-            Floor(Mix(sk.a, "#F2E7D2", .25f), Mix(sk.b, "#F2E7D2", .4f), sk.t);
+            float lift = sk.metal > 0 ? .6f : 0; // metal skins keep a cream floor: gold walls, not a yellow room
+            Floor(Mix(sk.a, "#F2E7D2", .25f + lift), Mix(sk.b, "#F2E7D2", .4f + lift * .8f), sk.t);
+        }
+
+        private static void Finish(Material m, SteamerSkinData sk, float amount)
+        {
+            if (sk.metal > 0)
+            {
+                m.EnableKeyword("_STANDARD");
+                m.SetFloat("_Metalness", sk.metal * amount);
+                m.SetFloat("_Roughness", (sk.rough > 0 ? sk.rough : .3f) + (1 - amount) * .2f);
+            }
+            else m.DisableKeyword("_STANDARD");
+            m.SetVector("_EmissionColor", string.IsNullOrEmpty(sk.glow) ? Color.black : Lin(sk.glow));
         }
 
         /// <summary>Repaints the woven floor (also used by the style preview).</summary>

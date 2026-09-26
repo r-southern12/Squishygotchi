@@ -164,8 +164,12 @@ namespace Squishy.Tests
             var c = Content();
             var rules = new GameRules(c, GameRules.NewState(c, 1));
             Assert.IsEmpty(rules.MissingFor(c.recipes[0]), "congee is always free");
-            Assert.IsEmpty(rules.MissingFor(c.recipes[1]), "scallion buns: flour, scallion, mini steamer");
-            CollectionAssert.Contains(rules.MissingFor(c.recipes[8]), "Kitchen Lv 4");
+            Assert.IsEmpty(rules.MissingFor(c.recipes[2]), "pork & chive stir-fry: pork, chives, wok (all in the starter kitchen)");
+            CollectionAssert.Contains(rules.MissingFor(c.recipes[16]), "Kitchen Lv 4");
+            // Only starter recipes are known at first; the rest come from kitchen kits.
+            Assert.IsTrue(rules.Knows(0) && rules.Knows(2));
+            Assert.IsFalse(rules.Knows(1), "char siu pork is learned from a kit");
+            for (int i = 0; i < c.recipes.Length; i++) Assert.AreEqual(c.recipes[i].starter, rules.Knows(i), c.recipes[i].name);
         }
 
         private sealed class MemoryStore : ISaveStore

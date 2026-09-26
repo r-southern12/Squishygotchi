@@ -59,6 +59,7 @@ namespace Squishy.Runtime.Game
             ui.SetPanelSub("cook", "Kitchen level " + Rules.KitchenLvl() + " of 4 · " + Rules.ToolsOwned() + " of " + C.tools.Length + " tools");
             for (int i = 0; i < C.recipes.Length; i++)
             {
+                if (!Rules.Knows(i)) continue; // only recipes you've learned (starters, or from kitchen kits)
                 var rc = C.recipes[i];
                 var miss = Rules.MissingFor(rc);
                 int lv = Rules.RecipeLvl(i);
@@ -71,6 +72,7 @@ namespace Squishy.Runtime.Game
                     + (lv < 5 && rc.ing.Length > 0 ? " · " + (3 - S.recipeXP[i] % 3) + " more to level up" : "");
                 var fxl = Css.Label(extra, fx, "Figtree", 600, 11, "#5F7F62");
                 fxl.Wrap();
+                if (!string.IsNullOrEmpty(rc.note)) { var nl = Css.Label(extra, rc.note, "Figtree", 400, 11, "#7A6656"); nl.Wrap(); nl.style.unityFontStyleAndWeight = FontStyle.Italic; }
                 var req = new VisualElement().Row().In(extra);
                 req.style.flexWrap = Wrap.Wrap;
                 if (rc.ing.Length == 0 && rc.tools.Length == 0) Hud.ReqChip(req, "Always free", false);
@@ -84,6 +86,8 @@ namespace Squishy.Runtime.Game
                 var rcc = rc;
                 var row = ui.Rec(list, "dish:" + i, rc.name, null, "Cook", () => { CloseCook(); UseItem(cookStoveOpen, true, rcc); sfx.Tap(); }, miss.Count > 0, extra);
             }
+            int left = C.recipes.Length - Rules.KnownRecipes();
+            if (left > 0) Hud.Para(list, left + " more recipe" + (left == 1 ? "" : "s") + " to discover · kitchen kits in steamers teach new ones", 12, "#6F5F52");
             list.Gap(8);
             ui.OpenPanel("cook");
         }
@@ -201,7 +205,7 @@ namespace Squishy.Runtime.Game
             for (int i = 0; i < C.recipes.Length; i++)
             {
                 var rc = C.recipes[i];
-                if (!Rules.ShopKit(rc)) continue;
+                if (!Rules.Knows(i) || !Rules.ShopKit(rc)) continue;
                 int price = Rules.ShopKitPrice(rc);
                 string contents = string.Join(", ", rc.ing.Select(k => R.shopKitCooks + " " + C.pantry[k].name));
                 ui.Rec(body, "dish:" + i, rc.name + " kit", "Ingredients for " + R.shopKitCooks + " cooks · " + contents, price.ToString(), () => { if (Rules.BuyKit(rc)) { sfx.Coin(); OpenShop(); } else sfx.Bonk(); }, S.coins < price);
@@ -300,7 +304,7 @@ namespace Squishy.Runtime.Game
         {
             var list = new List<Entry>();
             if (tab == "sq") { for (int i = 0; i < C.finishes.Length; i++) list.Add(new Entry { key = "sq:" + i, name = C.finishes[i].name, rarity = C.FinishRarity(C.finishes[i]), own = Rules.SquishCount(i) > 0, i = i }); return list; }
-            if (tab == "recipes") { for (int i = 0; i < C.recipes.Length; i++) list.Add(new Entry { key = "dish:" + i, name = C.recipes[i].name, rarity = "Lv " + C.recipes[i].lvl, own = Rules.MissingFor(C.recipes[i]).Count == 0, i = i }); return list; }
+            if (tab == "recipes") { for (int i = 0; i < C.recipes.Length; i++) if (Rules.Knows(i)) list.Add(new Entry { key = "dish:" + i, name = C.recipes[i].name, rarity = "Lv " + C.recipes[i].lvl, own = Rules.MissingFor(C.recipes[i]).Count == 0, i = i }); return list; }
             if (tab == "tools") { for (int i = 0; i < C.tools.Length; i++) list.Add(new Entry { key = "tool:" + i, name = C.tools[i].name, rarity = C.tools[i].rarity, own = Rules.Owned("tool:" + i), i = i }); return list; }
             if (tab == "pantry")
             {
@@ -344,6 +348,7 @@ namespace Squishy.Runtime.Game
             if (tab == "sq") { ui.CatCount.text = "Your squishy tree"; DrawTree(grid); ui.Detail.Shown(selKey != null); return; }
             int own = list.Count(e => e.own);
             ui.CatCount.text = own + " of " + list.Count + (styled ? " skins" : "") + " found" + (tab == "furniture" && styleF == "all" ? " · " + C.styles.Length + " styles" : "");
+            if (tab == "recipes") ui.CatCount.text = Rules.KnownRecipes() + " of " + C.recipes.Length + " recipes discovered";
             // Owned-only filter: with hundreds of skins, finding your own things must be one tap.
             var bar = new VisualElement().Row(Align.Center, Justify.FlexEnd).In(grid);
             bar.style.marginBottom = 8;
@@ -441,6 +446,7 @@ namespace Squishy.Runtime.Game
                 meta = "Recipe · Kitchen Lv " + rc.lvl;
                 var needs = rc.ing.Select(i => C.pantry[i].name).Concat(rc.tools.Select(i => C.tools[i].name)).ToList();
                 note = "Needs " + (needs.Count > 0 ? string.Join(", ", needs) : "nothing") + ". " + (miss.Count > 0 ? "Missing: " + string.Join(", ", miss) + "." : "Ready to cook at the stove.");
+                if (!string.IsNullOrEmpty(rc.note)) note = rc.note + " " + note;
             }
             else if (kind == "skin")
             {

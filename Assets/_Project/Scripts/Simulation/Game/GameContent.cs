@@ -24,11 +24,11 @@ namespace Squishy.Simulation.Game
     [Serializable] public class FinishData { public string name, tier, color, glow, map; public float rough; public string[] spark; public bool metal; }
     [Serializable] public class TierData { public string tier, rarity, color; }
     [Serializable] public class ToolData { public string name, color, rarity; public int price, maxDur; public bool basic; }
-    [Serializable] public class IngredientData { public string name, color, rarity; public bool basic; }
-    [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity; }
+    [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; }
+    [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity, glow; public float metal, rough; }
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
-    [Serializable] public class RecipeData { public string name, bonusNeed, col; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; }
-    [Serializable] public class SnackData { public string name, color; }
+    [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
+    [Serializable] public class SnackData { public string name, color, shape; }
     [Serializable] public class SizeData { public string name; public float s; public int at, decor; }
     [Serializable] public class RoomLevelData { public float r; public int slots, need, cost; }
 
