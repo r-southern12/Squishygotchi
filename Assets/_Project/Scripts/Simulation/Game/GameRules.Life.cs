@@ -35,6 +35,23 @@ namespace Squishy.Simulation.Game
         /// <summary>What this life would earn at old age if care stays as it has been.</summary>
         public int ProjectedPrestige() { return (int)Math.Round(R.prestigeBase + R.prestigePerQol * QualityOfLife()); }
 
+        /// <summary>
+        /// Growing up well: a little prestige on reaching each new life stage, scaled by the care given so far. Most
+        /// prestige still comes at the end of a full life. Returns what was paid (0 if nothing new).
+        /// </summary>
+        public int AwardStagePrestige()
+        {
+            int reached = (int)LifeStage(), award = 0;
+            if (R.stagePrestige == null) return 0;
+            while (S.stageAwarded < reached && S.stageAwarded < R.stagePrestige.Length)
+            {
+                award += (int)Math.Round(R.stagePrestige[S.stageAwarded] * QualityOfLife());
+                S.stageAwarded++;
+            }
+            S.prestige += award;
+            return award;
+        }
+
         public bool ReachedOldAge() { return !S.dead && S.age >= ExpectedLifespanDays(); }
 
         /// <summary>Ends this life. Old age earns prestige from quality of life; neglect earns none.</summary>
@@ -63,6 +80,7 @@ namespace Squishy.Simulation.Game
             S.qolTime = 0;
             S.tucked = false;
             for (int k = 0; k < 4; k++) S.needs[k] = .75f;
+            S.stageAwarded = 0;
         }
 
         /// <summary>Total prestige earned and average quality of life across finished lives (the lifetime tally).</summary>
@@ -135,7 +153,7 @@ namespace Squishy.Simulation.Game
             {
                 S.streak = last == today.AddDays(-1) ? S.streak + 1 : 1;
                 S.lastTaskDay = today.Ticks;
-                if (S.streak % 7 == 0) { SetSteamers(S.steamers + 2); S.prestige += R.streakWeekPrestige; msg = S.streak + "-day streak! +2 steamers, +" + R.streakWeekPrestige + " prestige"; }
+                if (S.streak % 7 == 0) { SetSteamers(S.steamers + 2); msg = S.streak + "-day streak! +2 steamers"; }
                 else if (S.streak % 7 == 3) { SetSteamers(S.steamers + 1); msg = "3-day streak! +1 steamer"; }
             }
             var week = WeekStart(today);

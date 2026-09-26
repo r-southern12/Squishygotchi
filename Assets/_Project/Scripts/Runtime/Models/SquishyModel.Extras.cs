@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Squishy.Runtime.Three;
 using Squishy.Simulation.Game;
 using UnityEngine;
@@ -71,6 +72,8 @@ namespace Squishy.Runtime.Models
             foreach (var t in new[] { _hat, _face, _neck }) if (t != null) Node.SetLayer(t, layer);
         }
 
+        private const float HatScale = 1.7f;
+
         private Transform Hat(CosmeticData c)
         {
             var g = Node.Group(Body, c.id);
@@ -106,9 +109,9 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Sph(.045f, 8, 6), cream, 0, .05f, .14f, shadow: false);
                     break;
                 case "beanie":
-                    Node.Mesh(g, Sph(.3f, 16, 10), col, 0, -.02f, 0, shadow: false).Scale(1, .7f, 1);
-                    Node.Mesh(g, Torus(.28f, .04f, 6, 24), col, 0, -.1f, 0, shadow: false).RotX(Mathf.PI / 2);
-                    Node.Mesh(g, Sph(.08f, 10, 8), cream, 0, .2f, 0, shadow: false);
+                    Node.Mesh(g, Sph(.44f, 18, 12), col, 0, -.1f, 0, shadow: false).Scale(1, .62f, 1);
+                    Node.Mesh(g, Torus(.42f, .065f, 8, 28), col, 0, -.2f, 0, shadow: false).RotX(Mathf.PI / 2);
+                    Node.Mesh(g, Sph(.11f, 12, 9), cream, 0, .2f, 0, shadow: false);
                     break;
                 case "tophat":
                     Node.Mesh(g, Cyl(.34f, .34f, .03f, 20), col, 0, 0, 0, shadow: false);
@@ -121,9 +124,9 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Cyl(.225f, .225f, .05f, 18), M("#E86A92"), 0, .05f, 0, shadow: false);
                     break;
                 case "cap":
-                    Node.Mesh(g, Sph(.28f, 16, 10), col, 0, -.02f, 0, shadow: false).Scale(1, .6f, 1);
-                    Node.Mesh(g, RBox(.3f, .025f, .22f, .01f), col, 0, -.06f, .3f, shadow: false);
-                    Node.Mesh(g, Sph(.03f, 8, 6), cream, 0, .15f, 0, shadow: false);
+                    Node.Mesh(g, Sph(.42f, 18, 12), col, 0, -.1f, 0, shadow: false).Scale(1, .58f, 1);
+                    Node.Mesh(g, RBox(.42f, .035f, .3f, .015f), col, 0, -.15f, .42f, shadow: false).RotX(-.12f);
+                    Node.Mesh(g, Sph(.045f, 8, 6), cream, 0, .15f, 0, shadow: false);
                     break;
                 case "ears_cat":
                 case "ears_bunny":
@@ -131,11 +134,12 @@ namespace Squishy.Runtime.Models
                     for (int k = 0; k < 2; k++)
                     {
                         float sx = k == 0 ? -1 : 1;
-                        var e = Node.Group(g, "ear", sx * .3f, -.12f, 0);
+                        var e = Node.Group(g, "ear", sx * .27f, -.04f, 0);
                         if (c.kind == "ears_cat")
                         {
-                            Node.Mesh(e, Cyl(.01f, .13f, .22f, 4), col, 0, .1f, 0, shadow: false);
-                            e.RotZ(-sx * .35f);
+                            Node.Mesh(e, Cyl(.015f, .15f, .24f, 4), col, 0, .1f, 0, shadow: false);
+                            Node.Mesh(e, Cyl(.01f, .08f, .15f, 4), M("#F3A6BD"), 0, .08f, .045f, shadow: false);
+                            e.RotZ(-sx * .3f);
                         }
                         else if (c.kind == "ears_bunny")
                         {
@@ -145,8 +149,8 @@ namespace Squishy.Runtime.Models
                         }
                         else
                         {
-                            Node.Mesh(e, Sph(.11f, 10, 8), col, 0, .06f, 0, shadow: false).Scale(1, 1, .6f);
-                            Node.Mesh(e, Sph(.06f, 8, 6), M("#E7C9A8"), 0, .06f, .05f, shadow: false).Scale(1, 1, .4f);
+                            Node.Mesh(e, Sph(.14f, 12, 9), col, 0, .09f, 0, shadow: false).Scale(1, 1, .65f);
+                            Node.Mesh(e, Sph(.08f, 10, 8), M("#E7C9A8"), 0, .09f, .06f, shadow: false).Scale(1, 1, .45f);
                         }
                     }
                     break;
@@ -174,12 +178,22 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Sph(.05f, 8, 6), cream, 0, .1f, .22f, shadow: false);
                     break;
                 case "tiara":
-                    Node.Mesh(g, Torus(.26f, .02f, 5, 24, Mathf.PI), col, 0, -.05f, .02f, shadow: false).RotX(-.3f);
-                    for (int i = 0; i < 5; i++) Node.Mesh(g, Cyl(.005f, .035f, .09f, 4), col, -.16f + i * .08f, .05f + (i == 2 ? .04f : 0), .2f, shadow: false);
-                    Node.Mesh(g, Sph(.035f, 8, 6), M("#9BE7FF", "#9BE7FF"), 0, .12f, .21f, shadow: false);
+                    for (int i = 0; i <= 6; i++)
+                    {
+                        float a = (i / 6f - .5f) * 2.1f, x = Mathf.Sin(a) * .34f, z = Mathf.Cos(a) * .34f;
+                        Node.Mesh(g, Sph(.04f, 8, 6), gold, x, -.04f, z, shadow: false);
+                        if (i < 6)
+                        {
+                            float a2 = ((i + .5f) / 6f - .5f) * 2.1f;
+                            Node.Rot(Node.Mesh(g, Cyl(.03f, .03f, .13f, 6), gold, Mathf.Sin(a2) * .34f, -.04f, Mathf.Cos(a2) * .34f, shadow: false), 0, a2, Mathf.PI / 2); // lies along the arc
+                        }
+                        float h = i == 3 ? .24f : i % 2 == 1 ? .16f : .1f;
+                        Node.Mesh(g, Cyl(0, .05f, h, 6), col, x, -.03f + h / 2, z, shadow: false);
+                    }
+                    Node.Mesh(g, Sph(.06f, 10, 8), M("#F48FB1", "#F48FB1"), 0, .05f, .36f, shadow: false);
                     break;
                 case "halo":
-                    Node.Mesh(g, Torus(.26f, .03f, 6, 28), M(c.color, c.color), 0, .22f, 0, shadow: false).RotX(Mathf.PI / 2);
+                    Node.Mesh(g, Torus(.26f, .035f, 8, 28), M(c.color, c.color), 0, .3f, -.03f, shadow: false).RotX(Mathf.PI / 2 - .45f);
                     break;
                 default: // crown
                     Node.Mesh(g, Cyl(.24f, .24f, .12f, 20), col, 0, .04f, 0, shadow: false);
@@ -191,6 +205,7 @@ namespace Squishy.Runtime.Models
                     }
                     break;
             }
+            g.localScale = Vector3.one * HatScale; // hats were modelled at a quarter of the width: too small on the wide dome
             return g;
         }
 
@@ -200,8 +215,8 @@ namespace Squishy.Runtime.Models
             var mat = M(c.color);
             if (c.kind == "moustache")
             {
-                var p = ShapeAt(new Vector3(0, .1f, 1).normalized);
-                for (int k = 0; k < 2; k++) Node.Mesh(g, Sph(.08f, 10, 8), mat, k == 0 ? -.07f : .07f, p.y, p.z + .02f, shadow: false).Scale(1.3f, .45f, .5f).RotZ(k == 0 ? .25f : -.25f);
+                var p = ShapeAt(new Vector3(0, .075f, 1).normalized);
+                for (int k = 0; k < 2; k++) Node.Mesh(g, Sph(.1f, 10, 8), mat, k == 0 ? -.09f : .09f, p.y, p.z + .02f, shadow: false).Scale(1.35f, .45f, .5f).RotZ(k == 0 ? .25f : -.25f);
                 return g;
             }
             if (c.kind == "freckles")
@@ -217,48 +232,101 @@ namespace Squishy.Runtime.Models
                 }
                 return g;
             }
-            var centres = new Vector3[2];
-            float rimR = c.kind == "star" ? .18f : c.kind == "square" ? .17f : .16f; // lenses clearly bigger than the eyes
+            // Glasses are one rigid, chunky pair worn across the face (user, 26 Sep 2026: cuter, properly sized, not
+            // pinned to the eyes): two big frames that wrap slightly round the bun, a curved bridge and little arms.
+            float faceY = .1f, lensX = .36f, lensR = c.kind == "thick" ? .21f : .2f, tube = c.kind == "thick" ? .038f : .026f;
+            var tint = ThreeMat.Basic(ThreeMat.Lin(c.kind == "shades" ? "#2A2D45" : "#E8F4FF"), c.kind == "shades" ? .92f : .22f, ThreeMat.Blend.Alpha, depthWrite: false);
+            var lensCentres = new Vector3[2];
             for (int k = 0; k < 2; k++)
             {
+                float sx = k == 0 ? -1 : 1;
                 if (c.kind == "monocle" && k == 0) continue;
-                var p = ShapeAt(new Vector3((k == 0 ? -1 : 1) * .36f, .1f, .93f).normalized);
+                var p = ShapeAt(new Vector3(sx * lensX, faceY, .93f).normalized);
                 var n = (p - new Vector3(0, -.1f, 0)).normalized;
-                Mesh rimMesh = c.kind == "star" ? Torus(.18f, .024f, 4, 5) : c.kind == "heart" ? Torus(.16f, .024f, 4, 6)
-                    : c.kind == "square" ? Torus(.17f, .022f, 4, 4) : c.kind == "thick" ? Torus(.16f, .034f, 6, 20) : Torus(.16f, .018f, 6, 20);
-                var rim = Node.Mesh(g, rimMesh, mat, 0, 0, 0, shadow: false);
-                rim.localPosition = p + n * .065f;
-                centres[k] = rim.localPosition;
-                float spin = c.kind == "star" ? 18 : c.kind == "square" ? 45 : c.kind == "heart" ? 30 : 0;
-                rim.localRotation = Quaternion.FromToRotation(Vector3.forward, n) * Quaternion.AngleAxis(spin, Vector3.forward);
-                if (c.kind == "shades")
-                {
-                    var lens = Node.Mesh(g, Circle(.16f, 16), M("#2A2D45"), 0, 0, 0, shadow: false);
-                    lens.localPosition = p + n * .07f;
-                    lens.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
-                }
+                var lens = Node.Group(g, "lens");
+                lens.localPosition = p + n * .07f;
+                // Face mostly forward, turned a little with the bun's curve.
+                lens.localRotation = Quaternion.FromToRotation(Vector3.forward, Vector3.Lerp(Vector3.forward, new Vector3(n.x, 0, n.z).normalized, .45f).normalized);
+                lensCentres[k] = lens.localPosition;
+                Outline(lens, LensShape(c.kind, lensR), tube, mat);
+                if (c.kind == "round" || c.kind == "thick" || c.kind == "shades" || c.kind == "monocle")
+                    Node.Mesh(lens, Circle(lensR * .96f, 24), tint, 0, 0, -.002f, shadow: false);
+                // An arm back along the side of the head.
+                var arm0 = new Vector3(sx * lensR, lensR * .25f, 0);
+                var armGo = Node.Mesh(lens, Cyl(tube * .7f, tube * .7f, .22f, 6), mat, arm0.x + sx * .02f, arm0.y, -.1f, shadow: false);
+                armGo.localRotation = Quaternion.AngleAxis(90, Vector3.right) * Quaternion.AngleAxis(sx * -20, Vector3.forward);
                 if (c.kind == "monocle")
                 {
-                    var top = p + n * .05f + new Vector3(.12f, -.02f, 0);
-                    Node.Mesh(g, Cyl(.004f, .004f, .3f, 4), mat, top.x + .02f, top.y - .15f, top.z - .05f, shadow: false).RotZ(.2f);
+                    // A little chain hanging from the monocle.
+                    Vector3 prev = new Vector3(-lensR * .7f, -lensR * .7f, 0);
+                    for (int s = 1; s <= 6; s++)
+                    {
+                        var q = new Vector3(-lensR * .7f - s * .02f, -lensR * .7f - s * .045f - Mathf.Sin(s / 6f * Mathf.PI) * .02f, -.01f * s);
+                        var link = Node.Mesh(lens, Sph(.012f, 6, 5), M("#D9B45A"), q.x, q.y, q.z, shadow: false);
+                        prev = q;
+                    }
                     return g;
                 }
             }
-            // The bridge spans rim to rim, curving over the face (a straight bar sank into the bun's bulge).
-            Vector3 dir = (centres[1] - centres[0]).normalized, a = centres[0] + dir * rimR * .92f, b = centres[1] - dir * rimR * .92f;
-            Vector3 prev = a;
-            for (int s = 1; s <= 6; s++)
+            // A cute arched bridge between the frames.
+            Vector3 l0 = lensCentres[0] + new Vector3(lensR * .92f, lensR * .15f, 0), l1 = lensCentres[1] - new Vector3(lensR * .92f, -lensR * .15f, 0);
+            var mid = (l0 + l1) / 2 + new Vector3(0, .035f, .03f);
+            Vector3 last = l0;
+            for (int s = 1; s <= 8; s++)
             {
-                var q = Vector3.Lerp(a, b, s / 6f);
-                var sd = (q - new Vector3(0, -.1f, 0)).normalized;
-                var sp = ShapeAt(new Vector3(sd.x, sd.y, Mathf.Max(.2f, sd.z)).normalized);
-                var sn = (sp - new Vector3(0, -.1f, 0)).normalized;
-                q = s == 6 ? b : new Vector3(q.x, q.y + .02f * Mathf.Sin(s / 6f * Mathf.PI), Mathf.Max(q.z, (sp + sn * .06f).z));
-                var seg = Node.Mesh(g, Cyl(.013f, .013f, Vector3.Distance(prev, q) + .008f, 6), mat, (prev.x + q.x) / 2, (prev.y + q.y) / 2, (prev.z + q.z) / 2, shadow: false);
-                seg.localRotation = Quaternion.FromToRotation(Vector3.up, q - prev);
-                prev = q;
+                float u = s / 8f;
+                var q = (1 - u) * (1 - u) * l0 + 2 * (1 - u) * u * mid + u * u * l1;
+                var seg = Node.Mesh(g, Cyl(tube * .8f, tube * .8f, Vector3.Distance(last, q) + .004f, 6), mat, (last.x + q.x) / 2, (last.y + q.y) / 2, (last.z + q.z) / 2, shadow: false);
+                seg.localRotation = Quaternion.FromToRotation(Vector3.up, q - last);
+                last = q;
             }
             return g;
+        }
+
+        /// <summary>The outline of one frame in its own plane (x right, y up), by glasses style.</summary>
+        private static List<Vector2> LensShape(string kind, float r)
+        {
+            var pts = new List<Vector2>();
+            if (kind == "heart")
+            {
+                for (int i = 0; i < 28; i++)
+                {
+                    float t = i / 28f * Mathf.PI * 2;
+                    float x = 16 * Mathf.Pow(Mathf.Sin(t), 3), y = 13 * Mathf.Cos(t) - 5 * Mathf.Cos(2 * t) - 2 * Mathf.Cos(3 * t) - Mathf.Cos(4 * t);
+                    pts.Add(new Vector2(x, y + 2.5f) * (r / 15.5f));
+                }
+            }
+            else if (kind == "star")
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    float a = Mathf.PI / 2 + i * Mathf.PI / 5, rr = i % 2 == 0 ? r * 1.12f : r * .55f;
+                    pts.Add(new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * rr);
+                }
+            }
+            else if (kind == "square")
+            {
+                float h = r * .9f, cr = r * .35f;
+                for (int q = 0; q < 4; q++)
+                {
+                    float cx = q == 0 || q == 3 ? h - cr : -(h - cr), cy = q < 2 ? h - cr : -(h - cr), a0 = q * Mathf.PI / 2;
+                    for (int s = 0; s <= 4; s++) { float a = a0 + s / 4f * Mathf.PI / 2; pts.Add(new Vector2(cx + Mathf.Cos(a) * cr, cy + Mathf.Sin(a) * cr)); }
+                }
+            }
+            else for (int i = 0; i < 28; i++) { float a = i / 28f * Mathf.PI * 2; pts.Add(new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r); }
+            return pts;
+        }
+
+        /// <summary>A chunky closed frame: rounded tube segments with ball joints.</summary>
+        private static void Outline(Transform parent, List<Vector2> pts, float tube, Material mat)
+        {
+            for (int i = 0; i < pts.Count; i++)
+            {
+                Vector3 a = pts[i], b = pts[(i + 1) % pts.Count];
+                var seg = Node.Mesh(parent, Cyl(tube, tube, Vector3.Distance(a, b), 6), mat, (a.x + b.x) / 2, (a.y + b.y) / 2, 0, shadow: false);
+                seg.localRotation = Quaternion.FromToRotation(Vector3.up, b - a);
+                Node.Mesh(parent, Sph(tube, 6, 5), mat, a.x, a.y, 0, shadow: false);
+            }
         }
 
         /// <summary>Neck pieces sit in a band just below the face.</summary>
@@ -275,14 +343,14 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, RBox(.14f, .3f, .05f, .03f), mat, .18f, front.y - .15f, front.z + .02f, shadow: false).RotZ(-.15f);
                     break;
                 case "bowtie":
-                    for (int k = 0; k < 2; k++) Node.Mesh(g, Cyl(.01f, .09f, .14f, 4), mat, k == 0 ? -.07f : .07f, front.y, front.z + .04f, shadow: false).RotZ(k == 0 ? -Mathf.PI / 2 : Mathf.PI / 2);
-                    Node.Mesh(g, Sph(.04f, 8, 6), mat, 0, front.y, front.z + .06f, shadow: false);
+                    for (int k = 0; k < 2; k++) Node.Mesh(g, Cyl(.015f, .13f, .2f, 4), mat, k == 0 ? -.1f : .1f, front.y, front.z + .06f, shadow: false).RotZ(k == 0 ? -Mathf.PI / 2 : Mathf.PI / 2);
+                    Node.Mesh(g, Sph(.06f, 10, 8), mat, 0, front.y, front.z + .09f, shadow: false);
                     break;
                 case "pearls":
                     for (int i = 0; i < 26; i++)
                     {
                         float a = i / 26f * Mathf.PI * 2;
-                        Node.Mesh(g, Sph(.035f, 8, 6), mat, Mathf.Cos(a) * r, front.y - .02f, Mathf.Sin(a) * r, shadow: false);
+                        Node.Mesh(g, Sph(.052f, 10, 8), mat, Mathf.Cos(a) * r * 1.01f, front.y - .02f, Mathf.Sin(a) * r * 1.01f, shadow: false);
                     }
                     break;
                 case "bandana":
@@ -290,14 +358,21 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Cyl(.01f, .2f, .22f, 3), mat, 0, front.y - .1f, front.z - .02f, shadow: false).RotX(-Mathf.PI / 2 + .3f);
                     break;
                 case "bell":
-                    Node.Mesh(g, Torus(r * .98f, .035f, 6, 32), M("#C8412F"), 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2);
-                    Node.Mesh(g, Sph(.07f, 10, 8), mat, 0, front.y - .07f, front.z + .04f, shadow: false);
+                    Node.Mesh(g, Torus(r * .99f, .055f, 8, 36), M("#C8412F"), 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2);
+                    Node.Mesh(g, Sph(.1f, 12, 10), mat, 0, front.y - .1f, front.z + .08f, shadow: false);
+                    Node.Mesh(g, Cyl(.012f, .012f, .08f, 6), M("#6B4A1E"), 0, front.y - .14f, front.z + .17f, shadow: false).RotZ(Mathf.PI / 2);
+                    Node.Mesh(g, Sph(.02f, 6, 5), M("#6B4A1E"), 0, front.y - .17f, front.z + .16f, shadow: false);
                     break;
                 default: // lei
-                    for (int i = 0; i < 16; i++)
+                    for (int i = 0; i < 18; i++)
                     {
-                        float a = i / 16f * Mathf.PI * 2;
-                        Node.Mesh(g, Sph(.065f, 8, 6), M(i % 3 == 0 ? "#F3A6BD" : i % 3 == 1 ? c.color : "#FFF1A8"), Mathf.Cos(a) * r, front.y - .02f, Mathf.Sin(a) * r, shadow: false);
+                        // Little five-petal flowers round the neck, each facing outwards.
+                        float a = i / 18f * Mathf.PI * 2;
+                        var fl = Node.Group(g, "flower", Mathf.Cos(a) * r * 1.02f, front.y - .02f, Mathf.Sin(a) * r * 1.02f);
+                        fl.localRotation = Quaternion.FromToRotation(Vector3.forward, new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)));
+                        var pm = M(i % 3 == 0 ? "#F3A6BD" : i % 3 == 1 ? c.color : "#FFF1A8");
+                        for (int k = 0; k < 5; k++) { float pa = k * Mathf.PI * 2 / 5; Node.Mesh(fl, Sph(.045f, 8, 6), pm, Mathf.Cos(pa) * .05f, Mathf.Sin(pa) * .05f, 0, shadow: false).Scale(1, 1, .5f); }
+                        Node.Mesh(fl, Sph(.03f, 8, 6), M("#F2C230"), 0, 0, .015f, shadow: false);
                     }
                     break;
             }

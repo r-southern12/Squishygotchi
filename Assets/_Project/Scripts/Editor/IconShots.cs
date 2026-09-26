@@ -146,6 +146,30 @@ namespace Squishy.EditorTools
             var content = JsonUtility.FromJson<Squishy.Simulation.Game.GameContent>(File.ReadAllText("Assets/_Project/Resources/Content/game_content.json"));
             foreach (var sk in content.skins) if (sk.name == "Gold") wall.Skin(sk);
             Shot(cam, rt, tex, bb, flat, 42, 12f, 30, warm, "gold");
+            // Every prestige accessory on the squishy, on one sheet (7 across), for checking.
+            {
+                const int C7 = 7, T2 = 256;
+                int rows = (content.cosmetics.Length + C7 - 1) / C7;
+                var small = new RenderTexture(T2, T2, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                var cos2 = new Texture2D(T2 * C7, T2 * rows, TextureFormat.RGBA32, false, false);
+                model.SetFinish(content.finishes[8]);
+                for (int i = 0; i < content.cosmetics.Length; i++)
+                {
+                    var cd = content.cosmetics[i];
+                    model.SetCosmetics(cd.slot == "hat" ? cd : null, cd.slot == "face" ? cd : null, cd.slot == "neck" ? cd : null);
+                    model.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);
+                    model.Update(0, 0, false, 0);
+                    Shot(cam, rt, tex, bb, flat, 12, 1.05f, 30, warm, "_cell");
+                    Graphics.Blit(rt, small);
+                    var pa = RenderTexture.active;
+                    RenderTexture.active = small;
+                    cos2.ReadPixels(new Rect(0, 0, T2, T2), (i % C7) * T2, (rows - 1 - i / C7) * T2);
+                    RenderTexture.active = pa;
+                }
+                cos2.Apply();
+                File.WriteAllBytes("Library/IconChecks/cosmetics.png", cos2.EncodeToPNG());
+                model.SetCosmetics(null, null, null);
+            }
             // Glasses (each style) and every legendary squishy, close up.
             model.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);
             foreach (var cos in content.cosmetics)

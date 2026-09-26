@@ -1873,10 +1873,8 @@
     "babyDays": 3,
     "prestigeBase": 50,
     "prestigePerQol": 250,
-    "sizePrestige": 25,
     "trialDays": 28,
     "giftHours": 3,
-    "streakWeekPrestige": 15,
     "weeklyGoal": 15,
     "weeklySteamers": 3,
     "adminTools": true,
@@ -1888,7 +1886,12 @@
     "scrubGain": 0.012,
     "selfPlayChance": 0.25,
     "tipMin": 2,
-    "tipMax": 5
+    "tipMax": 5,
+    "stagePrestige": [
+      10,
+      15,
+      20
+    ]
   },
   "cosmetics": [
     {
@@ -2232,37 +2235,37 @@
     {
       "tier": "Common",
       "steamers": 2,
-      "prestige": 5
+      "prestige": 0
     },
     {
       "tier": "Glitter",
       "steamers": 3,
-      "prestige": 10
+      "prestige": 0
     },
     {
       "tier": "Pattern",
       "steamers": 3,
-      "prestige": 10
+      "prestige": 0
     },
     {
       "tier": "Galaxy",
       "steamers": 4,
-      "prestige": 15
+      "prestige": 0
     },
     {
       "tier": "UV",
       "steamers": 4,
-      "prestige": 15
+      "prestige": 0
     },
     {
       "tier": "Holographic",
       "steamers": 4,
-      "prestige": 15
+      "prestige": 0
     },
     {
       "tier": "Legendary",
       "steamers": 5,
-      "prestige": 25
+      "prestige": 0
     }
   ],
   "starter": {

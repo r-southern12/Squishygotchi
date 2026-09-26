@@ -20,6 +20,21 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Growing_Up_Pays_A_Little_Prestige_Once_Per_Stage_Scaled_By_Care()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 3));
+            rules.S.prestige = 0;
+            rules.S.qolSum = 1; rules.S.qolTime = 2; // quality of life 50%
+            Assert.AreEqual(0, rules.AwardStagePrestige(), "a baby has earned nothing yet");
+            rules.S.age = (int)c.rules.babyDays + 1; // now young
+            Assert.AreEqual((int)System.Math.Round(c.rules.stagePrestige[0] * .5), rules.AwardStagePrestige());
+            Assert.AreEqual(0, rules.AwardStagePrestige(), "each stage pays once");
+            rules.StartLife(rules.S.favIdx);
+            Assert.AreEqual(0, rules.S.stageAwarded, "a new life starts again");
+        }
+
+        [Test]
         public void Profile_Name_Is_Trimmed_And_Friend_Code_Is_Stable()
         {
             var c = Content();

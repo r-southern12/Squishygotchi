@@ -31,6 +31,7 @@ namespace Squishy.Simulation.Game
         public bool premium;
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;
+        public int stageAwarded; // highest life stage whose prestige has been paid this life
         public bool weekClaimed;
         public List<string> tiersClaimed = new List<string>();
         public bool soundOn = false, musicOn = true, hapticsOn = true, notificationsOn = true;

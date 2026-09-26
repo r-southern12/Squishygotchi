@@ -62,6 +62,8 @@ namespace Squishy.Runtime.Game
             var st = Rules.LifeStage();
             if (st == shownStage) return;
             shownStage = st;
+            int grewUp = Rules.AwardStagePrestige();
+            if (grewUp > 0) Later(1.2f, () => Floater(Rules.Fav.name + " is growing up well · +" + grewUp + " prestige"));
             pet.SetStage(st);
             pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck));
             UpdateSub();
@@ -75,9 +77,9 @@ namespace Squishy.Runtime.Game
         {
             ui.SetPanelTitle("info", "Prestige");
             var body = ui.PanelBody("info");
-            Big(body, S.prestige + " prestige", "Spend it on accessories in the shop.");
+            Big(body, S.prestige + " prestige", "Earned mostly when a squishy lives a full life, and a little each time it grows up well. Spend it on accessories in the shop.");
             Hud.Para(body, Rules.Fav.name + "'s life so far: day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + ", quality of life " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "%. If it keeps living like this, it will earn about " + Rules.ProjectedPrestige() + " prestige at old age. Better care means a longer life and more prestige.");
-            Hud.Para(body, "Also earned by: growing a size (+" + C.rules.sizePrestige + "), a 7-day care streak (+" + C.rules.streakWeekPrestige + "), and completing a tier in your squishy tree.");
+            Hud.Para(body, "A little is also earned each time it grows into a new life stage (young, adult, elder), more the better it has been looked after.");
             ui.OpenPanel("info");
             sfx.Tap();
         }
