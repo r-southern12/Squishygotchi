@@ -38,8 +38,8 @@ namespace Squishy.Runtime.Models
             float th = Mathf.Atan2(d.z, d.x), t = Sstep(.34f, .9f, d.y), top = Sstep(.86f, 1, d.y);
             // Creases stay on the crown (clear of the eyes and the rim) and fade just before the centre, so the
             // mesh never pinches; a rounded crease profile keeps the shading smooth.
-            float c = Mathf.Cos(6 * (th + Twist(d.y))), groove = c * c;
-            groove = groove * groove * groove * t * (1 - top); // cos^6: a smooth rounded groove, no V-edge to alias
+            float c = Mathf.Abs(Mathf.Cos(4 * (th + Twist(d.y))));
+            float groove = c * c * c * t * (1 - top); // 8 soft, rounded grooves (|cos|^3): no sharp edges
             float r = 1.16f * (1 - .22f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
             return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .075f * groove, B, .14f), d.z * r);
         }
