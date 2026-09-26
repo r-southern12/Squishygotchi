@@ -91,7 +91,8 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 **Life, death and generations**
 
 - **Lifespan** is 30–60 days, longer the better its average quality of life. Life stages show in its look: **Baby** (first 3 days: smaller, paler, bigger eyes, a cowlick curl), **Young**, **Adult**, **Elder** (softly faded, fluffy white brows, slower bounce).
-- **Old age:** it drifts off for good, leaves a golden keepsake, and earns prestige: 50 + 250 × quality of life (up to 300).
+- **Each squishy has its own life.** Making another squishy the favourite puts the current one's life (age, quality of life, stage prestige) aside and resumes the other's, or starts it as a baby. Needs belong to the room, so swapping never escapes neglect.
+- **Old age:** it drifts off for good, leaves a golden keepsake, and earns prestige: 50 + 250 × quality of life (up to 300). A **baby of the same type** then starts a new life, keeping its copies and size.
 - **Neglect** (a need at zero for 12 h): it dies and leaves a tombstone. No prestige.
 - **Growing up well:** on reaching Young, Adult and Elder it earns a little prestige (up to 10, 15, 20) scaled by care so far. Most prestige comes at the end.
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.

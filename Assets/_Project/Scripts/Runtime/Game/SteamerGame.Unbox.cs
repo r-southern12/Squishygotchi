@@ -307,7 +307,7 @@ namespace Squishy.Runtime.Game
                 var holder = Node.Group(prize, "holder");
                 Transform obj;
                 if (reward.type == "item") { var a = reward.key.Split(':'); obj = ItemModels.Build(C, a[0], a[1], holder, new ItemParts()); }
-                else if (reward.type == "skin") { obj = Node.Group(holder, "steamer"); new SteamerModel(obj, 28).Skin(C.skins[reward.i]); }
+                else if (reward.type == "skin") { obj = Node.Group(holder, "steamer"); new SteamerModel(obj, 60).Skin(C.skins[reward.i]); } // as many slats as the room, so it reads as a steamer, not a fence
                 else if (reward.type == "tskin") obj = KitchenModels.Tool(C, S, reward.i, reward.j, holder);
                 else if (reward.type == "tool") obj = KitchenModels.Tool(C, S, reward.i, null, holder);
                 else if (reward.type == "kit")

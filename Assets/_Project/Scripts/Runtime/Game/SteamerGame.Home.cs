@@ -622,12 +622,19 @@ namespace Squishy.Runtime.Game
 
         public void NextSquishy()
         {
+            var opts = S.squishOwned.Select(q => q.i).Where(i => i != S.favIdx).ToList();
+            BeginLife(opts.Count > 0 ? opts[0] : 0, false);
+        }
+
+        /// <summary>After a full life: a baby of the same type (the collection keeps its copies and size).</summary>
+        public void NewBaby() { BeginLife(S.favIdx, true); }
+
+        private void BeginLife(int next, bool keepCopy)
+        {
             if (Rules.TrialOver()) { ui.HideMemo(); ShowPaywall(); return; }
             ui.HideMemo();
             ui.ShowHud(true);
-            var opts = S.squishOwned.Select(q => q.i).Where(i => i != S.favIdx).ToList();
-            int next = opts.Count > 0 ? opts[0] : 0;
-            Rules.StartLife(next);
+            Rules.StartLife(next, keepCopy);
             SetPet(next);
             shownStage = (GameRules.Life)(-1);
             ApplyLook();
@@ -642,7 +649,7 @@ namespace Squishy.Runtime.Game
             ai.mode = "idle";
             ai.idleT = 2;
             ai.act = null;
-            Floater("Welcome, " + C.finishes[next].name + "!");
+            Floater(keepCopy ? "A new baby " + C.finishes[next].name + "!" : "Welcome, " + C.finishes[next].name + "!");
             sfx.Chime();
         }
 

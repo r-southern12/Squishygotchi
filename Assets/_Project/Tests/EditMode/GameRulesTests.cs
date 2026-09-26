@@ -35,6 +35,31 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Each_Squishy_Keeps_Its_Own_Life_And_A_Full_Life_Ends_In_A_Baby()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 5));
+            var s = rules.S;
+            int a = s.favIdx, b = s.squishOwned.Find(q => q.i != a).i;
+            s.age = 20;
+            rules.SwapFavourite(b);
+            Assert.AreEqual(b, s.favIdx);
+            Assert.AreEqual(1, s.age, "a squishy that has never lived starts as a baby");
+            s.age = 4;
+            rules.SwapFavourite(a);
+            Assert.AreEqual(20, s.age, "swapping back resumes its own age");
+            rules.SwapFavourite(b);
+            Assert.AreEqual(4, s.age);
+            int copies = rules.SquishCount(b);
+            rules.EndLife(true, "Old age");
+            rules.StartLife(b, true);
+            Assert.AreEqual(b, s.favIdx);
+            Assert.AreEqual(1, s.age, "the baby starts a new life");
+            Assert.AreEqual(copies, rules.SquishCount(b), "a full life keeps its copies");
+            Assert.IsFalse(s.dead);
+        }
+
+        [Test]
         public void Profile_Name_Is_Trimmed_And_Friend_Code_Is_Stable()
         {
             var c = Content();

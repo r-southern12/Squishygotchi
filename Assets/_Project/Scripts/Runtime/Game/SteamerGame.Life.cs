@@ -119,10 +119,11 @@ namespace Squishy.Runtime.Game
             bool old = rec.cause == "Old age";
             string title = old ? rec.name + " lived a full life" : rec.name + " has passed away";
             string meta = old
-                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · +" + rec.prestige + " prestige. Its keepsake stays in the room, and all your things carry over to your next squishy."
+                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · +" + rec.prestige + " prestige. Its keepsake stays in the room, and a baby " + rec.name + " is ready to start a new life."
                 : rec.cause + " for too long. Its tombstone stays in the room, and all your things carry over to your next squishy.";
             ui.ShowHud(false);
-            ui.ShowDialog(title, meta, old ? "#D9B45A" : "#A9A39C", ("Choose next squishy", "#6F9A74", "#4C7552", Hud.Cream, (Action)NextSquishy));
+            if (old) ui.ShowDialog(title, meta, "#D9B45A", ("Meet the new baby", "#6F9A74", "#4C7552", Hud.Cream, (Action)NewBaby));
+            else ui.ShowDialog(title, meta, "#A9A39C", ("Choose next squishy", "#6F9A74", "#4C7552", Hud.Cream, (Action)NextSquishy));
             WriteSave();
         }
 

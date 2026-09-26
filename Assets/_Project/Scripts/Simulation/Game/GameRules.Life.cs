@@ -67,10 +67,12 @@ namespace Squishy.Simulation.Game
         }
 
         /// <summary>Starts the next squishy's life (the favourite changes; the room and belongings carry over).</summary>
-        public void StartLife(int next)
+        /// <param name="keepCopy">A full life ends with a baby of the same type: the collection keeps its copies (and size).</param>
+        public void StartLife(int next, bool keepCopy = false)
         {
-            RemoveSquish(S.favIdx);
+            if (!keepCopy) RemoveSquish(S.favIdx);
             if (SquishCount(next) == 0) SetSquish(next, 1);
+            S.lifeOf.RemoveAll(l => l.i == next || l.i == S.favIdx); // a fresh life for the newcomer; the old one is over
             S.favIdx = next;
             S.dead = false;
             S.deathClock = 0;
@@ -81,6 +83,27 @@ namespace Squishy.Simulation.Game
             S.tucked = false;
             for (int k = 0; k < 4; k++) S.needs[k] = .75f;
             S.stageAwarded = 0;
+        }
+
+        /// <summary>
+        /// Makes another squishy the favourite. Each type keeps its own life (age, quality of life, stage
+        /// prestige): the current one's is put aside and the other's resumes, or begins as a baby. Needs belong to
+        /// the room, so swapping never escapes neglect.
+        /// </summary>
+        public void SwapFavourite(int next)
+        {
+            if (next == S.favIdx || SquishCount(next) == 0) return;
+            S.lifeOf.RemoveAll(l => l.i == S.favIdx);
+            S.lifeOf.Add(new LifeState { i = S.favIdx, age = S.age, dayT = S.dayT, qolSum = S.qolSum, qolTime = S.qolTime, stageAwarded = S.stageAwarded });
+            var mine = S.lifeOf.Find(l => l.i == next);
+            if (mine != null) S.lifeOf.Remove(mine);
+            else mine = new LifeState { i = next, age = 1 };
+            S.favIdx = next;
+            S.age = Math.Max(1, mine.age);
+            S.dayT = mine.dayT;
+            S.qolSum = mine.qolSum;
+            S.qolTime = mine.qolTime;
+            S.stageAwarded = mine.stageAwarded;
         }
 
         /// <summary>Total prestige earned and average quality of life across finished lives (the lifetime tally).</summary>

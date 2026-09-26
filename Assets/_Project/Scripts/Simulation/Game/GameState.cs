@@ -24,6 +24,7 @@ namespace Squishy.Simulation.Game
 
         // Life cycle and meta progression.
         public float qolSum, qolTime;
+        public List<LifeState> lifeOf = new List<LifeState>(); // each squishy type's own life while it isn't the favourite
         public int prestige;
         public List<LifeRecord> lives = new List<LifeRecord>();
         public List<string> cosmetics = new List<string>();
@@ -83,4 +84,11 @@ namespace Squishy.Simulation.Game
     /// <summary>The latest visit from one friend that has already paid you coins.</summary>
     [System.Serializable]
     public class VisitCredit { public string id; public long at; }
+}
+
+namespace Squishy.Simulation.Game
+{
+    /// <summary>A squishy type's own life, kept while another squishy is the favourite.</summary>
+    [System.Serializable]
+    public class LifeState { public int i, age, stageAwarded; public float dayT, qolSum, qolTime; }
 }
