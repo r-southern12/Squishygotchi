@@ -33,6 +33,7 @@ namespace Squishy.Runtime.Game
             curSkin = C.skins[Mathf.Clamp(S.curSkin, 0, C.skins.Length - 1)];
             homeWall.Skin(curSkin);
             homeSteam = new ParticlePool(70, ThreeGeo.Ico1(), SteamMat(), false, HomeLayer);
+            fxPool = new ParticlePool(120, ThreeGeo.Ico1(), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, null, false, false), true, HomeLayer);
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);
             foreach (var st in S.items) AddItem(st);
             pet = new SquishyModel(room, .1f);
@@ -730,6 +731,7 @@ namespace Squishy.Runtime.Game
             if (mode == "edit" || pet.Held) { }
             else if (ai.mode == "idle")
             {
+                if (pet.Dented) ai.idleT = Mathf.Max(ai.idleT, .5f); // stays put while you squish it
                 ai.idleT -= dt;
                 if (ai.idleT <= 0) Autonomous();
                 var cp = Space3.U(cam.transform.position);
@@ -744,6 +746,7 @@ namespace Squishy.Runtime.Game
                 }
             }
             else if (ai.mode == "walk" || ai.mode == "chase") StepWalk(dt, slowMove, droop, hopH, ref lift, ref extra);
+            else if (ai.mode == "fling") StepFling(dt, ref lift, ref extra);
             else if (ai.mode == "act") StepAct(dt, ref extra, ref lift);
             StepBalls(dt);
             float rr = Dist(ai.x, ai.z);

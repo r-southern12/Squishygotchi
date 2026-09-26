@@ -141,6 +141,7 @@ namespace Squishy.Runtime.Models
             Mat.SetTexture("_BaseMap", string.IsNullOrEmpty(f.map) ? Texture2D.whiteTexture : Textures.FinishMap(f.map));
             Mat.SetVector("_EmissionColor", string.IsNullOrEmpty(f.glow) ? Color.black : ThreeMat.Lin(f.glow) * .25f);
             K = f.tier == "UV" ? 40 : f.tier == "Common" ? 5 : 12;
+            RiseTime = f.tier == "UV" ? 1f : f.tier == "Common" ? 3f : f.tier == "Holographic" ? 1.6f : 2.4f; // foam rises slowly, jelly quickly
             C = f.tier == "UV" ? 3 : f.tier == "Common" ? 5 : 4.5f;
             bool spark = f.spark != null && f.spark.Length > 0;
             _sparkles.enabled = spark;
@@ -169,6 +170,7 @@ namespace Squishy.Runtime.Models
             float open = closed ? .08f : Mathf.Min(bl, squint) * (1 - droop * .45f);
             EyeOpen += (open - EyeOpen) * Mathf.Min(1, dt * 14);
             StepFace(dt, x, closed, droop);
+            StepTactile(dt);
             bool beads = _eyeMode == EyeMode.Beads;
             foreach (var e in _eyes) e.localScale = beads ? new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f) : Vector3.zero;
             if (Grey != _g)

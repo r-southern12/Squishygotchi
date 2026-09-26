@@ -232,6 +232,14 @@ namespace Squishy.EditorTools
                 File.WriteAllBytes("Library/IconChecks/cosmetics.png", cos2.EncodeToPNG());
                 model.SetCosmetics(null, null, null);
             }
+            // Tactile dents: three held presses on the pink squishy.
+            model.SetFinish(content.finishes[8]);
+            model.SetCosmetics(null, null, null);
+            foreach (var dir in new[] { new Vector3(-.35f, .55f, .75f), new Vector3(.3f, .7f, .6f), new Vector3(.05f, .92f, .35f) })
+                model.PressAt(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(dir.normalized)), .055f);
+            for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
+            Shot(cam, rt, tex, bb, flat, 22, 1.25f, 30, warm, "dents");
+
             // Glasses (each style) and every legendary squishy, close up.
             model.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);
             foreach (var cos in content.cosmetics)

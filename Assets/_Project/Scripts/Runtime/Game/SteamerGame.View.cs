@@ -166,7 +166,9 @@ namespace Squishy.Runtime.Game
             {
                 if (S.tucked) { Wake(); return; }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
+                if (CloseUp && BeginTactile(p)) return;
                 drag.squish = true;
+                drag.t0 = Time.realtimeSinceStartup;
                 pet.Held = true;
                 sfx.Squish();
                 Buzz(12);
@@ -221,6 +223,7 @@ namespace Squishy.Runtime.Game
                 }
                 return;
             }
+            if (drag != null && drag.tactile) { MoveTactile(p); return; }
             if (drag == null || drag.squish) return;
             if (!drag.moved && Vector2.Distance(p, drag.start) > 6) drag.moved = true;
             if (drag.item != null)
@@ -305,6 +308,8 @@ namespace Squishy.Runtime.Game
             if (mode == "unbox") { HoldEnd(); return; }
             if (drag == null) return;
             if (ptrs.Count > 0 && drag.item != null) return;
+            if (drag.tactile) { EndTactile(); drag = null; return; }
+            if (drag.squish && drag.flung) { drag = null; return; }
             if (drag.wand) { wandFinger = null; drag = null; return; }
             if (drag.item != null)
             {
@@ -326,12 +331,12 @@ namespace Squishy.Runtime.Game
             else if (drag.squish)
             {
                 pet.Held = false;
+                SquishFx(PetWorld() + Vector3.up * pet.Scale * .6f, 5, .35f);
                 if (visiting) VisitAct("pet");
                 pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 1.4f); // a happy little smile after a squish
                 float gain = Condition() < .12f ? C.rules.squishPlayGainCritical : C.rules.squishPlayGain;
                 S.needs[Simulation.Game.Needs.Play] = Mathf.Min(1, S.needs[Simulation.Game.Needs.Play] + gain);
                 DrawNeeds();
-                Floater("+Play");
                 TaskEvent("squish");
             }
             else if (drag.ball != null)

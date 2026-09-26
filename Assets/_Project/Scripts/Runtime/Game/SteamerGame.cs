@@ -177,6 +177,8 @@ namespace Squishy.Runtime.Game
                 HomeCamera(dt);
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
+                fxPool?.Update(dt, false, cam);
+                CheckFlingHold();
                 cam.backgroundColor = ThreeMat.Hex("#CFB38C");
                 cam.cullingMask = 1 << HomeLayer;
             }

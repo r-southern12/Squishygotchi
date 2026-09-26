@@ -2227,7 +2227,10 @@
     ],
     "energySeconds": 60,
     "visitCoins": 3,
-    "visitHostCoins": 2
+    "visitHostCoins": 2,
+    "dentRadius": 0.055,
+    "flingHold": 0.45,
+    "flingSpeed": 2.4
   },
   "cosmetics": [
     {
