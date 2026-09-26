@@ -23,6 +23,14 @@ namespace Squishy.EditorTools
             var sheet = new Canvas2D(S * 3 + Gap * 4, S + Gap * 2);
             sheet.FillRect(0, 0, sheet.Width, sheet.Height, Canvas2D.Css("#FFFFFF"));
             for (int v = 0; v < 3; v++) Draw(sheet, Gap + v * (S + Gap), Gap, S, v);
+            for (int v = 0; v < 3; v++)
+            {
+                var one = new Canvas2D(S, S);
+                Draw(one, 0, 0, S, v);
+                var ot = one.ToTexture(true, false, false, "icon", true);
+                File.WriteAllBytes(Path.Combine(Dir, "icon_flat_" + v + ".png"), ot.EncodeToPNG());
+                Object.DestroyImmediate(ot);
+            }
             var t = sheet.ToTexture(true, false, false, "sheet", true);
             File.WriteAllBytes(Path.Combine(Dir, "icon_variants.png"), t.EncodeToPNG());
             Object.DestroyImmediate(t);

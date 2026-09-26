@@ -180,6 +180,13 @@ namespace Squishy.Runtime.Three
             }
         }
 
+        /// <summary>Blends one pixel (x, y top-down) at the given coverage; ignores out-of-range pixels.</summary>
+        public void Set(int x, int y, Color col, float coverage)
+        {
+            if (x < 0 || y < 0 || x >= Width || y >= Height) return;
+            Blend(x, y, col, coverage);
+        }
+
         private void Blend(int x, int y, Color src, float coverage)
         {
             int i = y * Width + x;
