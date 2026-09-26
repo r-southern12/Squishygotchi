@@ -956,6 +956,219 @@
         "#BDE8FF",
         "#FFF3A8"
       ]
+    },
+    {
+      "name": "Mint",
+      "tier": "Common",
+      "color": "#BFE8D5",
+      "rough": 0.85
+    },
+    {
+      "name": "Lemon",
+      "tier": "Common",
+      "color": "#F3E36B",
+      "rough": 0.85
+    },
+    {
+      "name": "Coral",
+      "tier": "Common",
+      "color": "#F4A08A",
+      "rough": 0.85
+    },
+    {
+      "name": "Sage",
+      "tier": "Common",
+      "color": "#A9C4A0",
+      "rough": 0.85
+    },
+    {
+      "name": "Caramel",
+      "tier": "Common",
+      "color": "#D4A06A",
+      "rough": 0.85
+    },
+    {
+      "name": "Blueberry",
+      "tier": "Common",
+      "color": "#8FA3DE",
+      "rough": 0.85
+    },
+    {
+      "name": "Charcoal",
+      "tier": "Common",
+      "color": "#5A5560",
+      "rough": 0.85
+    },
+    {
+      "name": "Pumpkin",
+      "tier": "Common",
+      "color": "#F2A65A",
+      "rough": 0.85
+    },
+    {
+      "name": "Bubblegum",
+      "tier": "Common",
+      "color": "#F7A1CF",
+      "rough": 0.85
+    },
+    {
+      "name": "Cherry",
+      "tier": "Common",
+      "color": "#E8606E",
+      "rough": 0.85
+    },
+    {
+      "name": "Latte",
+      "tier": "Common",
+      "color": "#D8BFA0",
+      "rough": 0.85
+    },
+    {
+      "name": "Mint Fizz",
+      "tier": "Glitter",
+      "color": "#B9E6D3",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#DFFFF0"
+      ]
+    },
+    {
+      "name": "Peach Fizz",
+      "tier": "Glitter",
+      "color": "#F6C3A6",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#FFE6D2"
+      ]
+    },
+    {
+      "name": "Ocean Sparkle",
+      "tier": "Glitter",
+      "color": "#8CC8E8",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#C9F4FF"
+      ]
+    },
+    {
+      "name": "Rainbow Fizz",
+      "tier": "Glitter",
+      "color": "#F3F0FA",
+      "rough": 0.35,
+      "spark": [
+        "#FF9BB3",
+        "#9BD7FF",
+        "#C8FF9B",
+        "#FFE39B",
+        "#D6B3FF"
+      ]
+    },
+    {
+      "name": "Midnight Glitter",
+      "tier": "Glitter",
+      "color": "#3C3F6B",
+      "rough": 0.35,
+      "spark": [
+        "#FFFFFF",
+        "#C9D1FF"
+      ]
+    },
+    {
+      "name": "Polka Dot",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "polka"
+    },
+    {
+      "name": "Candy Stripe",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "stripes"
+    },
+    {
+      "name": "Watermelon",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "watermelon"
+    },
+    {
+      "name": "Sprinkles",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "sprinkles"
+    },
+    {
+      "name": "Kiwi",
+      "tier": "Pattern",
+      "color": "#FFFFFF",
+      "rough": 0.5,
+      "map": "kiwi"
+    },
+    {
+      "name": "Stardust",
+      "tier": "Galaxy",
+      "color": "#6B2F6E",
+      "rough": 0.3,
+      "spark": [
+        "#FF9BD9",
+        "#FFD66B",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "name": "Deep Sea",
+      "tier": "Galaxy",
+      "color": "#0F3B4A",
+      "rough": 0.3,
+      "spark": [
+        "#7FFFE0",
+        "#9BFFB8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "name": "Glowberry",
+      "tier": "UV",
+      "color": "#D9C6F2",
+      "rough": 0.2,
+      "glow": "#B86BFF"
+    },
+    {
+      "name": "Glowtangerine",
+      "tier": "UV",
+      "color": "#FAD2B0",
+      "rough": 0.2,
+      "glow": "#FF9A3D"
+    },
+    {
+      "name": "Pearl",
+      "tier": "Holographic",
+      "color": "#F4EFEA",
+      "rough": 0.2,
+      "spark": [
+        "#FFE3F1",
+        "#E3F2FF",
+        "#FFFBE0"
+      ]
+    },
+    {
+      "name": "Oil Slick",
+      "tier": "Holographic",
+      "color": "#3A3D4A",
+      "rough": 0.2,
+      "spark": [
+        "#8BF3FF",
+        "#FF8ADB",
+        "#C8FF9B",
+        "#FFD66B"
+      ]
     }
   ],
   "tiers": [

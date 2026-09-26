@@ -92,11 +92,11 @@ namespace Squishy.Runtime.Game
             _pending = false;
             var f = rules.Fav;
             // Painted, icon-style portraits of this squishy type (a camera render came back blank on phones).
-            bool baby = rules.LifeStage() == GameRules.Life.Baby;
-            Save("happy", SquishyArt.Png(f, SquishyArt.Mood.Happy, baby));
-            var droopy = SquishyArt.Png(f, SquishyArt.Mood.Droopy, baby);
+            var stage = rules.LifeStage();
+            Save("happy", SquishyArt.Png(f, SquishyArt.Mood.Happy, stage));
+            var droopy = SquishyArt.Png(f, SquishyArt.Mood.Droopy, stage);
             Save("droopy", droopy);
-            var sad = SquishyArt.Png(f, SquishyArt.Mood.Sad, baby);
+            var sad = SquishyArt.Png(f, SquishyArt.Mood.Sad, stage);
             Save("sad", sad);
             for (int k = 0; k < 4; k++)
             {

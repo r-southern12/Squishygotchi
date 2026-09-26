@@ -18,25 +18,29 @@ namespace Squishy.Runtime.Game
         private static float Sq(float a) { return a * a; }
         private static float Sstep(float a, float b, float x) { x = Mathf.Clamp01((x - a) / (b - a)); return x * x * (3 - 2 * x); }
 
-        public static byte[] Png(FinishData f, Mood mood, bool baby, int size = 256)
+        public static byte[] Png(FinishData f, Mood mood, GameRules.Life stage, int size = 256)
         {
-            var t = Paint(f, mood, baby, size);
+            var t = Paint(f, mood, stage, size);
             var png = t.EncodeToPNG();
             UnityEngine.Object.Destroy(t);
             return png;
         }
 
         /// <summary>A readable texture, transparent around the squishy.</summary>
-        public static Texture2D Paint(FinishData f, Mood mood, bool baby, int size = 256)
+        public static Texture2D Paint(FinishData f, Mood mood, GameRules.Life stage, int size = 256)
         {
+            bool baby = stage == GameRules.Life.Baby, elder = stage == GameRules.Life.Elder;
             var g = new Canvas2D(size, size);
             float S = size;
             var rng = new System.Random((f.name ?? "").GetHashCode());
             string tier = f.tier ?? "";
             bool galaxy = tier == "Galaxy", holo = tier == "Holographic", glitter = f.spark != null && f.spark.Length > 0;
-            float k = baby ? .86f : 1f;
+            float k = baby ? .86f : elder ? .97f : 1f;
             float cx = .5f, cy = .58f, rx = .41f * k, ryTop = .36f * k, ryBot = .22f * k, gloss = 1 - f.rough;
             Color baseC = Canvas2D.Css(string.IsNullOrEmpty(f.color) ? "#F3A6BD" : f.color);
+            // Life stage tint, as in the game: babies paler, elders softly faded.
+            if (baby) baseC = Color.Lerp(baseC, Color.white, .22f);
+            if (elder) baseC = Color.Lerp(baseC, Canvas2D.Css("#D8CFC2"), .25f);
             if (mood == Mood.Sad) baseC = Color.Lerp(baseC, new Color(.62f, .6f, .58f), .38f);
             Color glowC = string.IsNullOrEmpty(f.glow) ? Color.clear : Canvas2D.Css(f.glow);
             var L = new Vector3(-.45f, -.62f, .64f).normalized;
@@ -125,36 +129,52 @@ namespace Squishy.Runtime.Game
                     Twinkle(g, S, sx, sy, (.022f + p.z * .018f) * k, SparkCol(f, i));
                 }
 
-            // Face.
-            float ex = rx * .33f, ey = cy + ryBot * .15f, er = rx * .12f;
+            // Face: eyes, brows and mouth change with mood; babies have bigger eyes, elders soft white brows.
+            float ex = rx * .33f, ey = cy + ryBot * .15f, er = rx * .12f * (baby ? 1.2f : 1f);
             var ink = Canvas2D.Css("#1C1418");
             var blush = Canvas2D.Css("#FF8A9A");
+            var browCol = elder ? Canvas2D.Css("#F4EEE4") : ink;
+            float browW = elder ? er * .5f : er * .22f;
             foreach (float sx in new[] { -1f, 1f })
             {
                 float px = cx + sx * ex;
-                Soft(g, S, px + sx * rx * .23f, ey + rx * .13f, rx * .13f, rx * .075f, new Color(blush.r, blush.g, blush.b, mood == Mood.Sad ? .35f : .7f));
-                if (mood == Mood.Droopy)
-                {
-                    // Sleepy half-closed eyes.
-                    Ellipse(g, S, px, ey + er * .35f, er, er * .55f, ink);
-                    Ellipse(g, S, px + er * .3f, ey + er * .2f, er * .22f, er * .18f, Color.white);
-                    Arc(g, S, px, ey - er * .1f, er * 1.05f, Mathf.PI * 1.05f, Mathf.PI * 1.95f, ink, er * .22f);
-                }
-                else
+                Soft(g, S, px + sx * rx * .23f, ey + rx * .13f, rx * .13f, rx * .075f, new Color(blush.r, blush.g, blush.b, mood == Mood.Sad ? .35f : elder ? .85f : .7f));
+                if (mood == Mood.Happy)
                 {
                     Ellipse(g, S, px, ey, er * .88f, er, ink);
                     Ellipse(g, S, px + er * .3f, ey - er * .38f, er * .34f, er * .34f, Color.white);
                     Ellipse(g, S, px - er * .32f, ey + er * .4f, er * .14f, er * .14f, new Color(1, 1, 1, .85f));
+                    if (elder) Line(g, S, px - er * .8f, ey - er * 1.6f, px + er * .8f, ey - er * 1.6f, browCol, browW);
+                }
+                else
+                {
+                    // Worried: brows lifted towards the middle, eyes glancing down.
+                    bool sad = mood == Mood.Sad;
+                    float lift = sad ? .55f : .35f;
+                    Line(g, S, px + sx * er * .9f, ey - er * 1.35f, px - sx * er * .55f, ey - er * (1.35f + lift), browCol, browW);
+                    Ellipse(g, S, px, ey + er * .05f, er * .88f, er * (sad ? 1.05f : .95f), ink);
+                    Ellipse(g, S, px + er * .28f, ey + er * (sad ? -.3f : .02f), er * (sad ? .38f : .28f), er * (sad ? .38f : .28f), Color.white);
+                    Ellipse(g, S, px - er * .3f, ey + er * .5f, er * .12f, er * .12f, new Color(1, 1, 1, .85f));
+                    if (sad) Arc(g, S, px, ey + er * .05f, er * .72f, Mathf.PI * .2f, Mathf.PI * .8f, Canvas2D.Css("#9CCFF2"), er * .16f); // watery
                 }
             }
             if (mood == Mood.Sad)
             {
                 // A tear and a little frown.
-                float tx = cx + ex + er * .6f, ty = ey + er * 1.3f;
+                float tx = cx + ex + er * .7f, ty = ey + er * 1.45f;
                 Ellipse(g, S, tx, ty, er * .32f, er * .45f, Canvas2D.Css("#8FD3FF"));
-                Arc(g, S, cx, ey + rx * .2f, rx * .08f, Mathf.PI * 1.15f, Mathf.PI * 1.85f, ink, er * .2f);
+                Arc(g, S, cx, ey + rx * .2f, rx * .075f, Mathf.PI * 1.15f, Mathf.PI * 1.85f, ink, er * .2f);
             }
-            else if (mood == Mood.Droopy) Line(g, S, cx - rx * .06f, ey + rx * .13f, cx + rx * .06f, ey + rx * .13f, ink, er * .2f);
+            else if (mood == Mood.Droopy)
+            {
+                // A small wobbly mouth.
+                float my = ey + rx * .12f, w = rx * .07f;
+                for (int i = 0; i < 8; i++)
+                {
+                    float a = i / 8f, b = (i + 1) / 8f;
+                    Line(g, S, cx - w + 2 * w * a, my + Mathf.Sin(a * Mathf.PI * 2) * rx * .012f, cx - w + 2 * w * b, my + Mathf.Sin(b * Mathf.PI * 2) * rx * .012f, ink, er * .18f);
+                }
+            }
             else
                 foreach (float sx in new[] { -1f, 1f }) Arc(g, S, cx + sx * rx * .045f, ey + rx * .09f, rx * .045f, 0, Mathf.PI, ink, er * .2f);
 
@@ -183,6 +203,42 @@ namespace Squishy.Runtime.Game
                     if (v < .28f + .06f * Mathf.Sin(u * 18)) return Canvas2D.Css("#8CC56A");
                     float gx = Mathf.Repeat(u * 7 + (Mathf.Floor(v * 6) % 2) * .5f, 1), gy = Mathf.Repeat(v * 6, 1);
                     return Sq((gx - .5f) / .12f) + Sq((gy - .5f) / .2f) < 1 ? Canvas2D.Css("#FFE9A6") : Canvas2D.Css("#E8505B");
+                case "polka":
+                {
+                    float gu = u * 3.2f + 10, gv = v * 3.2f + 10;
+                    int iv = Mathf.FloorToInt(gv);
+                    float fu = Frac(gu + (iv % 2) * .5f) - .5f, fv = Frac(gv) - .5f;
+                    return fu * fu + fv * fv < .075f ? Canvas2D.Css("#FFFFFF") : Canvas2D.Css("#F7A8C6");
+                }
+                case "stripes":
+                    return Frac((u * 1.6f + v * .9f) * 1.5f) < .5f ? Canvas2D.Css("#E8505B") : Canvas2D.Css("#FFFFFF");
+                case "watermelon":
+                {
+                    if (v > 1.33f) return Canvas2D.Css("#3E8E41");
+                    if (v > 1.22f) return Canvas2D.Css("#B7E08A");
+                    float gu = u * 4 + 10, gv = v * 4 + 10;
+                    int iv = Mathf.FloorToInt(gv);
+                    float fu = Frac(gu + (iv % 2) * .5f) - .5f, fv = Frac(gv) - .5f;
+                    return Sq(fu / .07f) + Sq(fv / .13f) < 1 ? Canvas2D.Css("#2B2320") : Canvas2D.Css("#F26A7A");
+                }
+                case "sprinkles":
+                {
+                    float gu = u * 6 + 20, gv = v * 6 + 20;
+                    int iu = Mathf.FloorToInt(gu), iv = Mathf.FloorToInt(gv);
+                    float h1 = Frac(Mathf.Sin(iu * 12.9898f + iv * 78.233f) * 43758.55f), h2 = Frac(h1 * 91.7f), a = h2 * 3.14f;
+                    float du = gu - iu - .5f, dv = gv - iv - .5f;
+                    float ru = du * Mathf.Cos(a) + dv * Mathf.Sin(a), rv = -du * Mathf.Sin(a) + dv * Mathf.Cos(a);
+                    string[] cols = { "#F48FB1", "#7FC8F8", "#F9D94A", "#8FD18A", "#B79CF2", "#FFFFFF" };
+                    return Mathf.Abs(ru) < .28f && Mathf.Abs(rv) < .07f ? Canvas2D.Css(cols[(int)(h1 * 6) % 6]) : Canvas2D.Css("#F6D7B0");
+                }
+                case "kiwi":
+                {
+                    float dd = Mathf.Sqrt(u * u * .8f + v * v * 1.4f);
+                    if (dd < .3f) return Canvas2D.Css("#E9F2C8");
+                    float ang = Mathf.Atan2(v, u) * 7;
+                    if (dd > .36f && dd < .5f && Frac(ang / 6.2832f * 3) < .25f && Frac(dd * 10) < .6f) return Canvas2D.Css("#2B2320");
+                    return Canvas2D.Css("#8DBF4A");
+                }
                 case "sesame":
                 {
                     // One seed per grid cell, jittered by a hash, so it's cheap per pixel.

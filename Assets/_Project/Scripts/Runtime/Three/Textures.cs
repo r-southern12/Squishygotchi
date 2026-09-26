@@ -189,6 +189,48 @@ namespace Squishy.Runtime.Three
                 var dark = Canvas2D.Css("#2B2320");
                 for (int k = 0; k < 220; k++) { g.Save(); g.Translate(Rnd(0, 256), 20 + Rnd(0, 80)); g.Rotate(Rnd(0, 6)); g.FillEllipse(0, 0, 3, 1.5f, 0, dark); g.Restore(); }
             }
+            else if (kind == "polka")
+            {
+                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#F7A8C6"));
+                for (int row = 0; row < 7; row++)
+                    for (int x = (row % 2) * 16; x < 256 + 16; x += 32) g.FillCircle(x % 256, 9 + row * 19, 6.5f, Canvas2D.Css("#FFFFFF"));
+            }
+            else if (kind == "stripes")
+            {
+                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#FFFFFF"));
+                var red = Canvas2D.Css("#E8505B");
+                for (int i = -2; i < 10; i++)
+                    g.FillPolygon(new[] { new Vector2(i * 32, 0), new Vector2(i * 32 + 16, 0), new Vector2(i * 32 + 16 + 40, 128), new Vector2(i * 32 + 40, 128) }, red);
+            }
+            else if (kind == "watermelon")
+            {
+                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#F26A7A"));
+                // The rind sits just below the face so it shows round the base (the bun's underside is hidden).
+                g.FillRect(0, 64, 256, 5, Canvas2D.Css("#B7E08A"));
+                g.FillRect(0, 69, 256, 59, Canvas2D.Css("#3E8E41"));
+                var seed = Canvas2D.Css("#2B2320");
+                for (int y = 10; y < 58; y += 12) for (int x = ((y / 12) % 2) * 10; x < 256; x += 20) g.FillEllipse(x, y, 1.3f, 2.4f, .3f, seed);
+            }
+            else if (kind == "sprinkles")
+            {
+                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#F6D7B0"));
+                string[] cols = { "#F48FB1", "#7FC8F8", "#F9D94A", "#8FD18A", "#B79CF2", "#FFFFFF" };
+                for (int k = 0; k < 260; k++)
+                {
+                    g.Save();
+                    g.Translate(Rnd(0, 256), Rnd(4, 124));
+                    g.Rotate(Rnd(0, 6.28f));
+                    g.FillRect(-4, -1.3f, 8, 2.6f, Canvas2D.Css(cols[k % cols.Length]));
+                    g.Restore();
+                }
+            }
+            else if (kind == "kiwi")
+            {
+                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#8DBF4A"));
+                g.FillRect(0, 0, 256, 18, Canvas2D.Css("#E9F2C8"));
+                var seed = Canvas2D.Css("#2B2320");
+                for (int x = 0; x < 256; x += 9) g.FillEllipse(x + (x / 9 % 2) * 3, 24 + (x / 9 % 3) * 3, 1.4f, 3, 0, seed);
+            }
             else if (kind == "glitter")
             {
                 // Fine silver glitter (the icon squishy): bright specks over a slightly dimmed base, multiplied by the colour.

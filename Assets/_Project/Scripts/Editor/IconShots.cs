@@ -181,7 +181,7 @@ namespace Squishy.EditorTools
                 }
             model.SetCosmetics(null, null, null);
             foreach (var fin in content.finishes)
-                if (fin.tier == "Legendary")
+                if (fin.tier == "Legendary" || fin.tier == "Pattern")
                 {
                     model.SetFinish(fin);
                     model.Update(0, 0, false, 0);
