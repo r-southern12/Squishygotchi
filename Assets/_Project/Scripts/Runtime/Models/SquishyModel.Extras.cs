@@ -63,7 +63,7 @@ namespace Squishy.Runtime.Models
         /// <summary>Wears the equipped accessories: one hat, one face piece, one neck piece.</summary>
         public void SetCosmetics(CosmeticData hat, CosmeticData face, CosmeticData neck = null)
         {
-            foreach (var t in new[] { _hat, _face, _neck }) if (t != null) Node.Destroy(t);
+            foreach (var t in new[] { _hat, _face, _neck }) if (t != null) { t.gameObject.SetActive(false); Node.Destroy(t); } // hidden now: Destroy waits for the frame end
             _hat = hat != null ? Hat(hat) : null;
             _face = face != null ? Face(face) : null;
             _neck = neck != null ? Neck(neck) : null;
@@ -217,21 +217,24 @@ namespace Squishy.Runtime.Models
                 }
                 return g;
             }
+            var centres = new Vector3[2];
+            float rimR = c.kind == "star" ? .18f : c.kind == "square" ? .17f : .16f; // lenses clearly bigger than the eyes
             for (int k = 0; k < 2; k++)
             {
                 if (c.kind == "monocle" && k == 0) continue;
                 var p = ShapeAt(new Vector3((k == 0 ? -1 : 1) * .36f, .1f, .93f).normalized);
                 var n = (p - new Vector3(0, -.1f, 0)).normalized;
-                Mesh rimMesh = c.kind == "star" ? Torus(.13f, .022f, 4, 5) : c.kind == "heart" ? Torus(.12f, .022f, 4, 6)
-                    : c.kind == "square" ? Torus(.13f, .02f, 4, 4) : c.kind == "thick" ? Torus(.12f, .032f, 6, 20) : Torus(.12f, .016f, 6, 20);
+                Mesh rimMesh = c.kind == "star" ? Torus(.18f, .024f, 4, 5) : c.kind == "heart" ? Torus(.16f, .024f, 4, 6)
+                    : c.kind == "square" ? Torus(.17f, .022f, 4, 4) : c.kind == "thick" ? Torus(.16f, .034f, 6, 20) : Torus(.16f, .018f, 6, 20);
                 var rim = Node.Mesh(g, rimMesh, mat, 0, 0, 0, shadow: false);
-                rim.localPosition = p + n * .05f;
+                rim.localPosition = p + n * .065f;
+                centres[k] = rim.localPosition;
                 float spin = c.kind == "star" ? 18 : c.kind == "square" ? 45 : c.kind == "heart" ? 30 : 0;
                 rim.localRotation = Quaternion.FromToRotation(Vector3.forward, n) * Quaternion.AngleAxis(spin, Vector3.forward);
                 if (c.kind == "shades")
                 {
-                    var lens = Node.Mesh(g, Circle(.12f, 16), M("#2A2D45"), 0, 0, 0, shadow: false);
-                    lens.localPosition = p + n * .055f;
+                    var lens = Node.Mesh(g, Circle(.16f, 16), M("#2A2D45"), 0, 0, 0, shadow: false);
+                    lens.localPosition = p + n * .07f;
                     lens.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
                 }
                 if (c.kind == "monocle")
@@ -241,8 +244,20 @@ namespace Squishy.Runtime.Models
                     return g;
                 }
             }
-            var bridge = ShapeAt(new Vector3(0, .12f, 1).normalized);
-            Node.Mesh(g, Cyl(.012f, .012f, .16f, 5), mat, bridge.x, bridge.y + .02f, bridge.z + .05f, shadow: false).RotZ(Mathf.PI / 2);
+            // The bridge spans rim to rim, curving over the face (a straight bar sank into the bun's bulge).
+            Vector3 dir = (centres[1] - centres[0]).normalized, a = centres[0] + dir * rimR * .92f, b = centres[1] - dir * rimR * .92f;
+            Vector3 prev = a;
+            for (int s = 1; s <= 6; s++)
+            {
+                var q = Vector3.Lerp(a, b, s / 6f);
+                var sd = (q - new Vector3(0, -.1f, 0)).normalized;
+                var sp = ShapeAt(new Vector3(sd.x, sd.y, Mathf.Max(.2f, sd.z)).normalized);
+                var sn = (sp - new Vector3(0, -.1f, 0)).normalized;
+                q = s == 6 ? b : new Vector3(q.x, q.y + .02f * Mathf.Sin(s / 6f * Mathf.PI), Mathf.Max(q.z, (sp + sn * .06f).z));
+                var seg = Node.Mesh(g, Cyl(.013f, .013f, Vector3.Distance(prev, q) + .008f, 6), mat, (prev.x + q.x) / 2, (prev.y + q.y) / 2, (prev.z + q.z) / 2, shadow: false);
+                seg.localRotation = Quaternion.FromToRotation(Vector3.up, q - prev);
+                prev = q;
+            }
             return g;
         }
 

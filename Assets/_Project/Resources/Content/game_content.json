@@ -896,6 +896,66 @@
         "#FFF2C2",
         "#FFE08A"
       ]
+    },
+    {
+      "name": "Violet Sparkle",
+      "tier": "Legendary",
+      "color": "#C09AF8",
+      "rough": 0.3,
+      "spark": [
+        "#FFFFFF",
+        "#EDE4FF",
+        "#D2CCE6",
+        "#FFFFFF"
+      ],
+      "map": "glitter"
+    },
+    {
+      "name": "Rose Gold",
+      "tier": "Legendary",
+      "color": "#E8A89A",
+      "rough": 0.25,
+      "metal": true,
+      "spark": [
+        "#FFFFFF",
+        "#FFE1D6"
+      ]
+    },
+    {
+      "name": "Moonbeam",
+      "tier": "Legendary",
+      "color": "#E6EDFF",
+      "rough": 0.15,
+      "glow": "#9CC8FF",
+      "spark": [
+        "#FFFFFF",
+        "#CFE3FF"
+      ]
+    },
+    {
+      "name": "Cosmic Pearl",
+      "tier": "Legendary",
+      "color": "#2E2F66",
+      "rough": 0.18,
+      "glow": "#5C5CFF",
+      "spark": [
+        "#FFFFFF",
+        "#FFD66B",
+        "#8BF3FF",
+        "#FF8ADB"
+      ]
+    },
+    {
+      "name": "Candy Floss",
+      "tier": "Legendary",
+      "color": "#F9C6E0",
+      "rough": 0.25,
+      "glow": "#FF9BD9",
+      "spark": [
+        "#FFFFFF",
+        "#BDE8FF",
+        "#FFF3A8"
+      ]
     }
   ],
   "tiers": [

@@ -270,7 +270,7 @@ namespace Squishy.Simulation.Game
         {
             string rar = RollRarity();
             double r = Random();
-            if (rar == "Legendary") return Random() < .5 ? new Reward { type = "sq", i = C.finishes.Length - 1, rar = rar } : Skin(rar);
+            if (rar == "Legendary") return Random() < .5 ? Sq(rar) : Skin(rar); // any legendary squishy, not just the last one listed
             if (rar == "Common")
             {
                 if (r < .52) return Item(rar);
@@ -300,7 +300,7 @@ namespace Squishy.Simulation.Game
 
         private Reward Sq(string rar)
         {
-            if (Random() < R.favouriteChance) return new Reward { type = "sq", i = S.favIdx, rar = rar };
+            if (rar != "Legendary" && Random() < R.favouriteChance) return new Reward { type = "sq", i = S.favIdx, rar = rar };
             var o = new List<int>();
             for (int k = 0; k < C.finishes.Length; k++) if (C.FinishRarity(C.finishes[k]) == rar) o.Add(k);
             return new Reward { type = "sq", i = o.Count > 0 ? Pick(o) : S.favIdx, rar = rar };

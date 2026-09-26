@@ -168,7 +168,7 @@ namespace Squishy.Runtime.Three
         public static Texture2D FinishMap(string kind)
         {
             if (Cache.TryGetValue("fin" + kind, out var cached)) return cached;
-            var g = new Canvas2D(256, 128);
+            var g = kind == "glitter" ? new Canvas2D(1024, 512) : new Canvas2D(256, 128); // glitter needs fine grain
             if (kind == "koi")
             {
                 g.FillRect(0, 0, 256, 128, Canvas2D.Css("#FBF6EE"));
@@ -188,6 +188,13 @@ namespace Squishy.Runtime.Three
                 g.FillRect(0, 0, 256, 128, Canvas2D.Css("#FAF3E6"));
                 var dark = Canvas2D.Css("#2B2320");
                 for (int k = 0; k < 220; k++) { g.Save(); g.Translate(Rnd(0, 256), 20 + Rnd(0, 80)); g.Rotate(Rnd(0, 6)); g.FillEllipse(0, 0, 3, 1.5f, 0, dark); g.Restore(); }
+            }
+            else if (kind == "glitter")
+            {
+                // Fine silver glitter (the icon squishy): bright specks over a slightly dimmed base, multiplied by the colour.
+                g.FillRect(0, 0, 1024, 512, Canvas2D.Css("#D2CEDB"));
+                for (int k = 0; k < 16000; k++) g.FillCircle(Rnd(0, 1024), Rnd(0, 512), Rnd(.6f, 1.4f), Canvas2D.Css(k % 3 == 0 ? "#F2EEFF" : "#FFFFFF"));
+                for (int k = 0; k < 4000; k++) g.FillCircle(Rnd(0, 1024), Rnd(0, 512), Rnd(.5f, 1f), Canvas2D.Css("#AFA8C0"));
             }
             return Cache["fin" + kind] = g.ToTexture(true, false, true, "Finish " + kind);
         }

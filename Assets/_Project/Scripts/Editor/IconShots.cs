@@ -146,6 +146,23 @@ namespace Squishy.EditorTools
             var content = JsonUtility.FromJson<Squishy.Simulation.Game.GameContent>(File.ReadAllText("Assets/_Project/Resources/Content/game_content.json"));
             foreach (var sk in content.skins) if (sk.name == "Gold") wall.Skin(sk);
             Shot(cam, rt, tex, bb, flat, 42, 12f, 30, warm, "gold");
+            // Glasses (each style) and every legendary squishy, close up.
+            model.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);
+            foreach (var cos in content.cosmetics)
+                if (cos.slot == "face" && cos.kind != "freckles" && cos.kind != "moustache")
+                {
+                    model.SetCosmetics(null, cos, null);
+                    model.Update(0, 0, false, 0);
+                    Shot(cam, rt, tex, bb, flat, 8, 1.4f, 30, warm, "glasses_" + cos.kind);
+                }
+            model.SetCosmetics(null, null, null);
+            foreach (var fin in content.finishes)
+                if (fin.tier == "Legendary")
+                {
+                    model.SetFinish(fin);
+                    model.Update(0, 0, false, 0);
+                    Shot(cam, rt, tex, bb, flat, 14, 1.5f, 30, warm, "legendary_" + fin.name.Replace(" ", ""));
+                }
             // Every style's plant on one sheet (6 x 4), rendered with the catalogue thumbnail camera.
             const int T = 256;
             var sheetRT = new RenderTexture(T, T, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
