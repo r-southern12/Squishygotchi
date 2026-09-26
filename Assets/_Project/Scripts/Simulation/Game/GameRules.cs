@@ -253,6 +253,13 @@ namespace Squishy.Simulation.Game
             return rar;
         }
 
+        /// <summary>How many tiers (prizes) the next steamer has: usually 1, sometimes 2 or 3.</summary>
+        public int RollLayers()
+        {
+            double r = Random();
+            return r < R.pThreeLayers ? 3 : r < R.pThreeLayers + R.pTwoLayers ? 2 : 1;
+        }
+
         public Reward RollReward()
         {
             string rar = RollRarity();

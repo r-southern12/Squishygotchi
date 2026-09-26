@@ -29,7 +29,13 @@ namespace Squishy.Runtime.Game
         private bool lidOn;
         private float nbY, nbVy, nbSpin, prizeRotY, newbieYaw;
         private bool nbAir;
-        private static readonly Vector3 LidRest = new Vector3(0, H + .02f, 0);
+        // Stacked steamers: 1 to 3 tiers, one prize each; "layer" is the tier being opened (0 = bottom).
+        private int layers = 1, layer;
+        private readonly Transform[] tiers = new Transform[3];
+        private float liftT = -1;
+        private Vector3 LidRest { get { return new Vector3(0, H * layers + .02f, 0); } }
+        /// <summary>Floor height (world) of the tier being opened.</summary>
+        private float TierY { get { return (Y0 + H * layer) * US; } }
         private static readonly string[] Conf = { "#C8674E", "#D9A64A", "#8FAE7E", "#6E9C9A", "#E8A796", "#EFE2C9", "#FFFFFF" };
 
         private void BuildUnbox()
@@ -56,8 +62,11 @@ namespace Squishy.Runtime.Game
             ub.localScale = Vector3.one * US;
             box = Node.Group(ub, "box");
             new SteamerModel(box, 60);
+            tiers[0] = box;
+            for (int k = 1; k < 3; k++) { tiers[k] = Node.Group(box, "tier" + k, 0, H * k, 0); new SteamerModel(tiers[k], 60); tiers[k].gameObject.SetActive(false); }
             rimMat = ThreeMat.Basic(ThreeMat.Lin("#FFB14D"), 0, ThreeMat.Blend.Additive, depthWrite: false);
             rimGlow = Node.Mesh(box, ThreeGeo.Torus(R + .03f, .1f, 6, 56), rimMat, 0, H + .05f, 0, shadow: false);
+            rimGlow.name = "rimGlow";
             rimGlow.RotX(Mathf.PI / 2);
             lid = SteamerModel.Lid(ub);
             lid.gameObject.SetActive(false);
@@ -91,7 +100,7 @@ namespace Squishy.Runtime.Game
         private void UPose(string kind, out Vector3 p, out Vector3 t)
         {
             float half = kind == "closed" ? R * US * 1.7f : ucam.half, d = FitDist(half), el = (kind == "closed" ? 38 : 50) * Mathf.Deg2Rad;
-            t = new Vector3(0, kind == "closed" ? .7f * US : Y0 * US + ucam.half * .5f, 0);
+            t = new Vector3(0, kind == "closed" ? (.7f + H * (layers - 1) * .5f) * US : TierY + ucam.half * .5f, 0);
             p = new Vector3(0, Mathf.Sin(el) * d, Mathf.Cos(el) * d) + t;
         }
 
@@ -130,6 +139,7 @@ namespace Squishy.Runtime.Game
 
         public void GoHome()
         {
+            if (ustate == "card" && layer > 0) ClaimRemainingLayers();
             WipeTo(() =>
             {
                 ui.HideCard();
@@ -155,6 +165,7 @@ namespace Squishy.Runtime.Game
 
         private void DropLid()
         {
+            SetLayers(Rules.RollLayers());
             ustate = "lidIn";
             ust = 0;
             ui.ShowHud(true);
@@ -191,6 +202,56 @@ namespace Squishy.Runtime.Game
             ui.SetPity("Rare or better within " + (C.rules.pityRare - S.sinceRare) + " · Epic or better within " + (C.rules.pityEpic - S.sinceEpic), "Odds · Rare in " + (C.rules.pityRare - S.sinceRare));
         }
 
+        private void SetLayers(int n)
+        {
+            layers = n;
+            layer = n - 1;
+            for (int k = 0; k < 3; k++) if (tiers[k] != null) { tiers[k].gameObject.SetActive(k < n); tiers[k].localPosition = new Vector3(0, H * k, 0); }
+            var rim = box.Find("rimGlow");
+            if (rim != null) rim.localPosition = new Vector3(0, H * n + .05f, 0);
+        }
+
+        /// <summary>After a layer's card: the emptied top tier lifts away and the next prize pops from the tier below.</summary>
+        private void NextLayer()
+        {
+            ui.HideCard();
+            raysOn = 0;
+            ClearPrize();
+            plate.gameObject.SetActive(false);
+            newbie.Pivot.gameObject.SetActive(false);
+            prize.gameObject.SetActive(false);
+            sfx.Lift();
+            liftT = 0;
+            for (int i = 0; i < 14; i++)
+            {
+                float a = i / 14f * Mathf.PI * 2;
+                UPuffL(new Vector3(Mathf.Cos(a) * (R + .1f), H * layer + .1f, Mathf.Sin(a) * (R + .1f)), new Vector3(Mathf.Cos(a) * 1.6f, 1.2f, Mathf.Sin(a) * 1.6f), Rnd(.2f, .3f), Rnd(.6f, .9f), 2, .6f);
+            }
+            layer--;
+            ui.ShowHud(false);
+            PreparePrize();
+            ustate = "pop";
+            ust = 0;
+            UMove("reveal", reduce ? .3f : .9f);
+        }
+
+        private void StepLift(float dt)
+        {
+            liftT += dt;
+            var t = tiers[layer + 1];
+            if (t == null) { liftT = -1; return; }
+            t.localPosition = new Vector3(0, H * (layer + 1) + liftT * liftT * 14, 0);
+            if (liftT > 1.1f) { t.gameObject.SetActive(false); t.localPosition = new Vector3(0, H * (layer + 1), 0); liftT = -1; }
+        }
+
+        /// <summary>Leaving mid-stack keeps every prize: the unopened layers are added straight to the collection.</summary>
+        private void ClaimRemainingLayers()
+        {
+            var names = new System.Collections.Generic.List<string>();
+            for (; layer > 0; layer--) { var c = Rules.Claim(Rules.RollReward()); names.Add(c.name); if (c.delayedCoins > 0) Rules.AddCoins(c.delayedCoins); if (c.kitchenChanged) DecorateStoves(); }
+            Later(.8f, () => Floater("Also in the stack: " + string.Join(", ", names)));
+        }
+
         private void ClearPrize() { foreach (Transform c in prize) Node.Destroy(c); }
 
         public void HoldStart()
@@ -219,15 +280,23 @@ namespace Squishy.Runtime.Game
             for (int i = 0; i < 40; i++)
             {
                 float a = Rnd(0, Mathf.PI * 2), sp = Rnd(2, 6);
-                UPuffL(new Vector3(Mathf.Cos(a) * Rnd(0, R * .8f), H + .3f, Mathf.Sin(a) * Rnd(0, R * .8f)), new Vector3(Mathf.Cos(a) * sp, Rnd(2, 7), Mathf.Sin(a) * sp), Rnd(.3f, .6f), Rnd(.9f, 1.5f), 1.8f, .6f);
+                UPuffL(new Vector3(Mathf.Cos(a) * Rnd(0, R * .8f), H * layers + .3f, Mathf.Sin(a) * Rnd(0, R * .8f)), new Vector3(Mathf.Cos(a) * sp, Rnd(2, 7), Mathf.Sin(a) * sp), Rnd(.3f, .6f), Rnd(.9f, 1.5f), 1.8f, .6f);
             }
             for (int i = 0; i < 80; i++)
             {
                 float a = Rnd(0, Mathf.PI * 2), sp = Rnd(1.5f, 4.5f);
-                confetti.Spawn(new Vector3(Rnd(-.2f, .2f), (H + .5f) * US, Rnd(-.2f, .2f)), new Vector3(Mathf.Cos(a) * sp * .55f, Rnd(3.4f, 6), Mathf.Sin(a) * sp * .55f), 1, Rnd(2.2f, 3), 1.1f, -5, .01f,
+                confetti.Spawn(new Vector3(Rnd(-.2f, .2f), (H * layers + .5f) * US, Rnd(-.2f, .2f)), new Vector3(Mathf.Cos(a) * sp * .55f, Rnd(3.4f, 6), Mathf.Sin(a) * sp * .55f), 1, Rnd(2.2f, 3), 1.1f, -5, .01f,
                     new Vector3(Rnd(0, 6), Rnd(0, 6), Rnd(0, 6)), new Vector3(Rnd(-10, 10), Rnd(-10, 10), Rnd(-10, 10)), ThreeMat.Lin(Conf[i % Conf.Length]));
             }
             Rules.SetSteamers(S.steamers - 1);
+            PreparePrize();
+            UMove("reveal", reduce ? .3f : 1.4f);
+            WriteSave();
+        }
+
+        /// <summary>Rolls this layer's prize and builds its display model (hidden until it launches).</summary>
+        private void PreparePrize()
+        {
             reward = Rules.RollReward();
             ClearPrize();
             newbie.Pivot.gameObject.SetActive(false);
@@ -261,8 +330,6 @@ namespace Squishy.Runtime.Game
                 prize.gameObject.SetActive(false);
                 ucam.half = .55f;
             }
-            UMove("reveal", reduce ? .3f : 1.4f);
-            WriteSave();
         }
 
         private void Launch()
@@ -293,7 +360,7 @@ namespace Squishy.Runtime.Game
             for (int i = 0; i < 12; i++)
             {
                 float a = i / 12f * Mathf.PI * 2;
-                UPuff(new Vector3(Mathf.Cos(a) * .28f, Y0 * US + .05f, Mathf.Sin(a) * .28f), new Vector3(Mathf.Cos(a) * 1.3f, .25f, Mathf.Sin(a) * 1.3f), Rnd(.05f, .09f), Rnd(.4f, .6f), 3.5f, .3f);
+                UPuff(new Vector3(Mathf.Cos(a) * .28f, TierY + .05f, Mathf.Sin(a) * .28f), new Vector3(Mathf.Cos(a) * 1.3f, .25f, Mathf.Sin(a) * 1.3f), Rnd(.05f, .09f), Rnd(.4f, .6f), 3.5f, .3f);
             }
         }
 
@@ -307,12 +374,13 @@ namespace Squishy.Runtime.Game
             if (card.delayedCoins > 0) { int n = card.delayedCoins; Later(.4f, () => AddCoins(n)); }
             if (card.grewTo >= 0) grewTo = card.grewTo;
             if (card.kitchenChanged) DecorateStoves();
-            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, S.steamers > 0 ? "Unbox again (" + S.steamers + ")" : "Get steamers");
+            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, layer > 0 ? "Next layer (" + layer + " left)" : S.steamers > 0 ? "Unbox again (" + S.steamers + ")" : "Get steamers");
             WriteSave();
         }
 
         public void CardAgain()
         {
+            if (layer > 0) { NextLayer(); return; }
             if (S.steamers <= 0) { GoHome(); Later(.5f, OpenShop); return; }
             // Clear the last prize straight away so it never shows inside the next steamer.
             ClearPrize();
@@ -328,6 +396,7 @@ namespace Squishy.Runtime.Game
 
         private void StepUnbox(float dt)
         {
+            if (liftT >= 0) StepLift(dt);
             ust += dt;
             StepKitchen(dt);
             if (ustate == "swap") StepSwap();
@@ -368,7 +437,7 @@ namespace Squishy.Runtime.Game
                 for (int i = 0; i < n; i++)
                 {
                     float a = Rnd(0, Mathf.PI * 2);
-                    UPuffL(new Vector3(Mathf.Cos(a) * (R + .1f), H + .25f + Rnd(0, .2f), Mathf.Sin(a) * (R + .1f)),
+                    UPuffL(new Vector3(Mathf.Cos(a) * (R + .1f), H * layers + .25f + Rnd(0, .2f), Mathf.Sin(a) * (R + .1f)),
                         new Vector3(Mathf.Cos(a) * Rnd(.3f, 1.2f) * (1 + charge * 2), Rnd(1, 2.5f) + charge * 3, Mathf.Sin(a) * Rnd(.3f, 1.2f) * (1 + charge * 2)), Rnd(.16f, .28f) + charge * .25f, Rnd(.8f, 1.2f), 1.2f, .9f);
                 }
                 if (charge >= 1) Pop();
@@ -396,9 +465,9 @@ namespace Squishy.Runtime.Game
             else { prizeRotY = nbAir ? spin : prizeRotY + dt * .6f; prize.RotY(prizeRotY); }
             if (ustate == "landed" && ust > .7f) ShowCard();
             newbie.Update(dt, 0, false);
-            plate.localPosition = new Vector3(0, Y0 * US + .01f, 0);
-            newbie.Pivot.localPosition = new Vector3(0, Y0 * US + .05f + Mathf.Max(0, nbY), 0);
-            prize.localPosition = new Vector3(0, Y0 * US + .01f + Mathf.Max(0, nbY), 0);
+            plate.localPosition = new Vector3(0, TierY + .01f, 0);
+            newbie.Pivot.localPosition = new Vector3(0, TierY + .05f + Mathf.Max(0, nbY), 0);
+            prize.localPosition = new Vector3(0, TierY + .01f + Mathf.Max(0, nbY), 0);
             float tgt = raysOn > 0 ? .8f : 0;
             float op = raysMat.GetVector("_BaseColor").w;
             op += (tgt - op) * Mathf.Min(1, dt * 4);
@@ -407,7 +476,7 @@ namespace Squishy.Runtime.Game
             if (op > .01f)
             {
                 // Face the camera, sit .8 behind the centre, spin, and scale with the reveal.
-                var centre = new Vector3(0, Y0 * US + ucam.half * .5f, 0);
+                var centre = new Vector3(0, TierY + ucam.half * .5f, 0);
                 var camP = Space3.U(cam.transform.position);
                 var toCam = (camP - centre).normalized;
                 rays.localPosition = centre - toCam * .8f;

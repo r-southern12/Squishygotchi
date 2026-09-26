@@ -72,7 +72,7 @@ namespace Squishy.Runtime.UI
                 Label(tr, pct, "Figtree", 700, 14);
             }
             Para(ob, "Rare or better is guaranteed at least once every 10 steamers, and Epic or better once every 50.", 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
-            Para(ob, "Inside: furniture about 50%, kitchen kits (tools and ingredients) 28%, squishies 12%, tool skins 5%, rare ingredients 3%, steamer skins 1%. A squishy has a 40% chance to be a copy of your favourite, which helps it grow.", 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
+            Para(ob, "Some steamers are stacked: 2 layers (15%) or 3 layers (5%), each with its own prize at these odds. Inside: furniture about 50%, kitchen kits (tools and ingredients) 28%, squishies 12%, tool skins 5%, rare ingredients 3%, steamer skins 1%. A squishy has a 40% chance to be a copy of your favourite, which helps it grow.", 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
         }
 
         public VisualElement PanelBody(string id) { var b = _panelBody[id]; b.Clear(); return b.contentContainer; }

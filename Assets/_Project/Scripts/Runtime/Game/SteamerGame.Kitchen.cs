@@ -114,6 +114,7 @@ namespace Squishy.Runtime.Game
         /// <summary>After a reveal: the opened steamer slides away and a fresh lidded one slides in.</summary>
         private void StartSwap()
         {
+            SetLayers(Rules.RollLayers());
             ustate = "swap";
             ust = 0;
             ui.ShowHud(true);

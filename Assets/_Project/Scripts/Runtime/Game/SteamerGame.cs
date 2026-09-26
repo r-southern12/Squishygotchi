@@ -191,8 +191,8 @@ namespace Squishy.Runtime.Game
                 f1 = ViewportY(PetWorld() + Vector3.up * (pet.Scale * .6f));
                 if (ai.target != null && mode == "home") f2 = ViewportY(ai.target.Pos + Vector3.up * .3f);
             }
-            else if (ucam.kind == "closed") f1 = ViewportY(new Vector3(0, H * US * .6f, 0));
-            else f1 = ViewportY(new Vector3(0, Y0 * US + ucam.half * .5f, 0));
+            else if (ucam.kind == "closed") f1 = ViewportY(new Vector3(0, H * layers * US * .6f, 0));
+            else f1 = ViewportY(new Vector3(0, TierY + ucam.half * .5f, 0));
             float focus = f1, band = mode == "edit" ? .6f : (mode == "unbox" && ucam.kind != "closed") ? .3f : .13f; // narrower reveal band keeps the kitchen soft
             if (f2 >= 0) { focus = (f1 + f2) / 2; band = Mathf.Max(band, Mathf.Abs(f1 - f2) / 2 + .08f); }
             focusS += (focus - focusS) * Mathf.Min(1, dt * 5);

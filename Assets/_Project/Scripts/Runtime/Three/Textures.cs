@@ -231,39 +231,32 @@ namespace Squishy.Runtime.Three
         /// </summary>
         public static Texture2D Weave(string a, string b, string gap)
         {
-            // A real steamer base: thin flat bamboo strips in an open over-under lattice, small square gaps
-            // showing the darker frame beneath, grain along each strip and a shadow where a strip dips under.
-            string key = "weave2" + a + b + gap;
+            // A real steamer base (25 Sep 2026, from the user's photos): parallel flat bamboo slats with rows of
+            // long rounded slots between them, staggered row to row, a highlight on each slat edge and faint grain.
+            string key = "slats" + a + b + gap;
             if (Cache.TryGetValue(key, out var cached)) return cached;
-            const int N = 512, P = 32, W = 24, E = (P - W) / 2;
+            const int N = 512, P = 64, SlatW = 46, SlotLen = 92, Bridge = 36, Period = SlotLen + Bridge;
             var g = new Canvas2D(N, N);
             Color ca = Canvas2D.Css(a), cb = Canvas2D.Css(b), cg = Canvas2D.Css(gap);
-            Color hole = Color.Lerp(cg, Color.black, .35f), shade = new Color(cg.r * .6f, cg.g * .6f, cg.b * .6f, .45f), grain = new Color(cg.r, cg.g, cg.b, .16f), hi = new Color(1, 1, 1, .22f);
-            g.FillRect(0, 0, N, N, hole);
-            int n = N / P;
-            System.Func<int, Color> tone = i => Color.Lerp(ca, cb, ((i * 37) % 5) / 5f);
-            // Horizontal strips (full length), then vertical ones drawn over the gaps and where they cross on top.
-            for (int j = 0; j < n; j++) Strip(g, 0, j * P + E, N, W, true, tone(j), grain, hi);
-            for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+            Color hole = Color.Lerp(cg, Color.black, .45f), shade = new Color(cg.r * .7f, cg.g * .7f, cg.b * .7f, .35f), grain = new Color(cg.r, cg.g, cg.b, .12f), hi = new Color(1, 1, 1, .28f);
+            for (int j = 0; j < N / P; j++)
             {
-                float x = i * P + E;
-                bool vOnTop = (i + j) % 2 == 1;
-                // The stretch over the gap below row j is always visible.
-                Strip(g, x, j * P + E + W, W, P - W, false, tone(i + 7), grain, hi);
-                if (vOnTop)
+                float y = j * P;
+                var slat = Color.Lerp(ca, cb, ((j * 37) % 5) / 5f);
+                g.FillRect(0, y, N, P, slat);                      // slat plus the bridges between slots
+                g.FillRect(0, y + 2, N, 3, hi);                    // rounded top edge catching the light
+                g.FillRect(0, y + SlatW - 4, N, 3, shade);          // lower edge in shade
+                for (int k = 0; k < 4; k++) g.FillRect(0, y + 9 + k * 9 + (j % 3), N, 1, grain);
+                // The slot row under this slat, staggered by half a period on alternate rows.
+                float sy = y + SlatW, sh = P - SlatW, r = sh / 2f, off = (j % 2) * Period / 2f;
+                for (float x = -Period + off; x < N + Period; x += Period)
                 {
-                    Strip(g, x, j * P + E, W, W, false, tone(i + 7), grain, hi);
-                    g.FillRect(x - 3, j * P + E, 3, W, shade); // the horizontal strip dips under
-                    g.FillRect(x + W, j * P + E, 3, W, shade);
-                }
-                else
-                {
-                    g.FillRect(x, j * P + E - 3, W, 3, shade); // the vertical strip dips under
-                    g.FillRect(x, j * P + E + W, W, 3, shade);
+                    g.FillRect(x + r, sy, SlotLen - 2 * r, sh, hole);
+                    g.FillCircle(x + r, sy + r, r, hole);
+                    g.FillCircle(x + SlotLen - r, sy + r, r, hole);
                 }
             }
-            return Cache[key] = g.ToTexture(true, true, true, "Weave");
+            return Cache[key] = g.ToTexture(true, true, true, "Slats");
         }
 
         private static void Strip(Canvas2D g, float x, float y, float w, float h, bool across, Color c, Color grain, Color hi)

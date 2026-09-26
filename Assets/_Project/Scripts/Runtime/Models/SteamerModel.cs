@@ -33,7 +33,7 @@ namespace Squishy.Runtime.Models
             Group = Node.Group(parent, "Steamer");
             Node.Mesh(Group, Cyl(R + .02f, R + .02f, .14f, 48), M("#A97E47"), 0, .07f, 0);
             Liner = Lambert(Color.white);
-            Liner.SetTextureScale("_BaseMap", new Vector2(1.6f, 1.6f));
+            Liner.SetTextureScale("_BaseMap", new Vector2(2.4f, 2.4f));
             Node.Mesh(Group, Cyl(R * .9f, R * .9f, .05f, 48), Liner, 0, .165f, 0);
 
             _capMat = Lambert(Lin("#D6AE72"));
