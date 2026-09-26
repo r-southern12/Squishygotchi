@@ -8,7 +8,7 @@ namespace Squishy.Runtime.Models
     /// real dent into the surface where it touches, holding presses deeper, dragging smears it into a trail, and on
     /// release each dent slowly rises back like memory foam (jelly finishes come back quicker). Dents have a fixed
     /// size in the world, so a bigger squishy has more surface to play with and holds more dents at once.
-    /// Normals are bent analytically (no mesh-wide recalculation, so no seams).
+    /// Normals are recalculated and shared across the seam, so dents shade truly with no crease.
     /// </summary>
     public sealed partial class SquishyModel
     {
@@ -17,8 +17,11 @@ namespace Squishy.Runtime.Models
         private readonly List<Dent> _dents = new List<Dent>();
         private int _nextDent = 1;
         private Mesh _tMesh;
-        private Vector3[] _tBase, _tNorm, _tWork, _tWorkN;
+        private Vector3[] _tBase, _tNorm, _tWork;
+        private int[] _tRep; // the first vertex at the same spot (seam and pole duplicates)
+        private static readonly Vector3 Core = new Vector3(0, .15f, 0); // dents push toward here
         private bool _tDirty;
+        private float _tSquash; // how much held presses squeeze the whole body
 
         /// <summary>Seconds for a released dent to mostly rise back (from the finish: foam slow, jelly quick).</summary>
         public float RiseTime = 2.4f;
@@ -39,7 +42,14 @@ namespace Squishy.Runtime.Models
             _tBase = _tMesh.vertices;
             _tNorm = _tMesh.normals;
             _tWork = new Vector3[_tBase.Length];
-            _tWorkN = new Vector3[_tBase.Length];
+            _tRep = new int[_tBase.Length];
+            var first = new Dictionary<Vector3Int, int>();
+            for (int i = 0; i < _tBase.Length; i++)
+            {
+                var k = new Vector3Int(Mathf.RoundToInt(_tBase[i].x * 2000), Mathf.RoundToInt(_tBase[i].y * 2000), Mathf.RoundToInt(_tBase[i].z * 2000));
+                if (!first.TryGetValue(k, out int f)) first[k] = f = i;
+                _tRep[i] = f;
+            }
         }
 
         private Dent Add(Vector3 local, float r, float depth)
@@ -50,7 +60,7 @@ namespace Squishy.Runtime.Models
                 int i = _dents.FindIndex(x => !x.held);
                 _dents.RemoveAt(i >= 0 ? i : 0);
             }
-            var d = new Dent { id = _nextDent++, p = local, r = r, depth = depth, max = r * .36f, held = true };
+            var d = new Dent { id = _nextDent++, p = local, r = r, depth = depth, max = r * .7f, held = true };
             _dents.Add(d);
             return d;
         }
@@ -60,7 +70,7 @@ namespace Squishy.Runtime.Models
         {
             EnsureTactileMesh();
             float s = Mathf.Max(.01f, Scale * StageScale);
-            return Add(Body.InverseTransformPoint(world), Mathf.Clamp(worldRadius / s, .12f, .38f), 0).id;
+            return Add(Body.InverseTransformPoint(world), Mathf.Clamp(worldRadius / s, .2f, .55f), 0).id;
         }
 
         /// <summary>Slides a held press to a new world point. Returns the id to keep using (a smear leaves a trail).</summary>
@@ -83,6 +93,10 @@ namespace Squishy.Runtime.Models
         /// <summary>Pressing deepens held dents; released ones rise back slowly. Rebuilds the mesh when anything moved.</summary>
         private void StepTactile(float dt)
         {
+            // The toy squashes a lot: holding presses sink the body as well as denting it.
+            float target = 0;
+            foreach (var d in _dents) if (d.held) target += d.depth / Mathf.Max(.01f, d.r);
+            _tSquash += (Mathf.Min(.45f, target * .5f) - _tSquash) * Mathf.Min(1, dt * (target > 0 ? 6 : 2.3f / Mathf.Max(.2f, RiseTime)));
             if (_dents.Count == 0 && !_tDirty) return;
             for (int i = _dents.Count - 1; i >= 0; i--)
             {
@@ -105,42 +119,34 @@ namespace Squishy.Runtime.Models
                 if (_tDirty) { _tMesh.vertices = _tBase; _tMesh.normals = _tNorm; _tMesh.RecalculateBounds(); _tDirty = false; }
                 return;
             }
-            System.Array.Copy(_tBase, _tWork, _tBase.Length);
-            System.Array.Copy(_tNorm, _tWorkN, _tNorm.Length);
-            foreach (var d in _dents)
+            // Pushed toward the body's centre (a smooth direction; the pleats' normals swing across each groove and
+            // crossed neighbours into creases). Overlapping bowls add up but saturate softly, so there's no seam.
+            float limit = 0;
+            foreach (var d in _dents) limit = Mathf.Max(limit, d.max);
+            limit = Mathf.Max(limit, .01f);
+            for (int v = 0; v < _tBase.Length; v++)
             {
-                float r2 = d.r * d.r, rim = d.r * 1.7f, rim2 = rim * rim;
-                for (int v = 0; v < _tBase.Length; v++)
+                var b = _tBase[v];
+                float bowl = 0, bulge = 0;
+                foreach (var d in _dents)
                 {
-                    var b = _tBase[v];
+                    float rim = d.r * 1.6f;
                     float dx = b.x - d.p.x, dy = b.y - d.p.y, dz = b.z - d.p.z, dd = dx * dx + dy * dy + dz * dz;
-                    if (dd >= rim2 || dd < 1e-8f) continue;
-                    float dist = Mathf.Sqrt(dd), push, slope;
-                    if (dd < r2)
-                    {
-                        // A smooth bowl: (1 - s^2)^2, steepest part of its wall facing the dent's centre.
-                        float s = dist / d.r, k = 1 - s * s;
-                        push = -d.depth * k * k;
-                        slope = d.depth * 4 * s * k / d.r;
-                    }
-                    else
-                    {
-                        // A soft bulge round the rim, as the squish pushes the foam aside.
-                        float k = (dist - d.r) / (rim - d.r);
-                        push = d.depth * .12f * Mathf.Sin(k * Mathf.PI);
-                        slope = -d.depth * .12f * Mathf.PI * Mathf.Cos(k * Mathf.PI) / (rim - d.r);
-                    }
-                    var n = _tNorm[v];
-                    _tWork[v] += n * push;
-                    // Bend the normal: tilt it towards the dent's centre along the surface by the wall's slope.
-                    var away = new Vector3(dx, dy, dz) / dist;
-                    var tangent = away - n * Vector3.Dot(away, n);
-                    _tWorkN[v] -= tangent * (slope * .6f); // gentler than the true slope: soft, not streaky
+                    if (dd >= rim * rim) continue;
+                    if (dd < d.r * d.r) { float k = 1 - dd / (d.r * d.r); bowl += d.depth * k * k * k; } // smooth bowl, soft edges
+                    else bulge = Mathf.Max(bulge, d.depth * .1f * Mathf.Sin((Mathf.Sqrt(dd) - d.r) / (rim - d.r) * Mathf.PI)); // rim bulge
                 }
+                if (bowl == 0 && bulge == 0) { _tWork[v] = b; continue; }
+                float sink = limit * (1 - Mathf.Exp(-bowl / limit));
+                float push = bulge * (1 - sink / limit) - sink;
+                _tWork[v] = b + (b - Core).normalized * push;
             }
-            for (int v = 0; v < _tWorkN.Length; v++) _tWorkN[v].Normalize();
             _tMesh.vertices = _tWork;
-            _tMesh.normals = _tWorkN;
+            _tMesh.RecalculateNormals();
+            var n = _tMesh.normals;
+            for (int v = 0; v < n.Length; v++) if (_tRep[v] != v) n[_tRep[v]] += n[v];
+            for (int v = 0; v < n.Length; v++) n[v] = n[_tRep[v]].normalized;
+            _tMesh.normals = n;
             _tMesh.RecalculateBounds();
             _tDirty = true;
         }

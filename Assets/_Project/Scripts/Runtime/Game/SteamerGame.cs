@@ -110,6 +110,7 @@ namespace Squishy.Runtime.Game
 
             cam = Camera.main;
             if (cam == null) cam = new GameObject("Main Camera") { tag = "MainCamera" }.AddComponent<Camera>();
+            if (FindAnyObjectByType<AudioListener>() == null) cam.gameObject.AddComponent<AudioListener>(); // without one nothing is heard (no sound at all before this)
             cam.fieldOfView = 32;
             cam.nearClipPlane = .2f;
             cam.farClipPlane = 80;
@@ -177,7 +178,7 @@ namespace Squishy.Runtime.Game
                 HomeCamera(dt);
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
-                fxPool?.Update(dt, false, cam);
+                fxPool?.Update(dt, true, cam); // sized motes that swell in and fade out (the other mode ignores size)
                 CheckFlingHold();
                 cam.backgroundColor = ThreeMat.Hex("#CFB38C");
                 cam.cullingMask = 1 << HomeLayer;

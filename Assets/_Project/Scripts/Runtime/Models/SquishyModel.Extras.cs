@@ -18,6 +18,21 @@ namespace Squishy.Runtime.Models
         private float _eyeW = 1;
         private GameRules.Life _stage = GameRules.Life.Young;
         private Transform _cowlick, _brows, _hat, _face, _neck;
+        private Transform _cowSpring;
+        private float _cowA, _cowV, _cowB, _cowBV, _prevSquash;
+
+        /// <summary>The cowlick's spring: jolts from squashing and bouncing make it wobble, then settle.</summary>
+        private void StepCowlick(float dt, float squash)
+        {
+            if (_cowSpring == null || !_cowlick.gameObject.activeSelf || dt <= 0) { _prevSquash = squash; return; }
+            float jolt = (squash - _prevSquash) / dt;
+            _prevSquash = squash;
+            _cowV += (-90 * _cowA - 7 * _cowV + jolt * 2.2f) * dt;
+            _cowA += _cowV * dt;
+            _cowBV += (-70 * _cowB - 6 * _cowBV + jolt * .9f * Mathf.Sin(Time.time * 3)) * dt;
+            _cowB += _cowBV * dt;
+            Node.Rot(_cowSpring, Mathf.Clamp(_cowA, -.9f, .9f), 0, Mathf.Clamp(_cowB, -.7f, .7f));
+        }
         private static readonly Color Pale = Color.white, Faded = Lin("#D8CFC2");
 
         public GameRules.Life Stage { get { return _stage; } }
@@ -39,8 +54,11 @@ namespace Squishy.Runtime.Models
             {
                 // A little curl on top for babies.
                 _cowlick = Node.Group(Body, "cowlick");
-                _cowlick.localPosition = ShapeAt(Vector3.up) + new Vector3(0, .02f, 0);
-                Node.Mesh(_cowlick, Torus(.07f, .022f, 6, 16, Mathf.PI * 1.5f), Mat, 0, .06f, 0, shadow: false, receive: true).RotY(Mathf.PI / 2);
+                // A proper curl you can see (it was a few pixels wide), on a spring so it bobs as the squishy bounces.
+                _cowlick.localPosition = ShapeAt(Vector3.up) + new Vector3(0, -.03f, 0);
+                _cowSpring = Node.Group(_cowlick, "spring");
+                Node.Mesh(_cowSpring, Cyl(.05f, .075f, .2f, 10), Mat, 0, .09f, 0, shadow: false, receive: true);
+                Node.Mesh(_cowSpring, Torus(.14f, .055f, 8, 20, Mathf.PI * 1.5f), Mat, .06f, .3f, 0, shadow: false, receive: true);
                 // Soft eyebrows for elders.
                 _brows = Node.Group(Body, "brows");
                 var browMat = M("#EDE6DA");
@@ -54,6 +72,8 @@ namespace Squishy.Runtime.Models
                     b.localRotation = Quaternion.FromToRotation(Vector3.forward, n) * Quaternion.AngleAxis(sx * -12, Vector3.forward);
                 }
             }
+            Node.SetLayer(_cowlick, Body.gameObject.layer); // made after the room set its layer: the camera never drew it
+            Node.SetLayer(_brows, Body.gameObject.layer);
             _cowlick.gameObject.SetActive(stage == GameRules.Life.Baby);
             _brows.gameObject.SetActive(stage == GameRules.Life.Elder);
             _eyeW = stage == GameRules.Life.Baby ? 1.2f : 1f; // bigger eyes for babies

@@ -178,6 +178,7 @@ namespace Squishy.Runtime.Game
             var f = pet.Fin;
             string rar = C.FinishRarity(f), tier = f.tier ?? "";
             if (rar == "Common") return;
+            n = Mathf.Max(1, n / 2); // a gentle shimmer, never a shower
             for (int i = 0; i < n; i++)
             {
                 Color col;

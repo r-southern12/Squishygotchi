@@ -235,10 +235,20 @@ namespace Squishy.EditorTools
             // Tactile dents: three held presses on the pink squishy.
             model.SetFinish(content.finishes[8]);
             model.SetCosmetics(null, null, null);
+            var held = new System.Collections.Generic.List<int>();
             foreach (var dir in new[] { new Vector3(-.35f, .55f, .75f), new Vector3(.3f, .7f, .6f), new Vector3(.05f, .92f, .35f) })
-                model.PressAt(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(dir.normalized)), .055f);
+                held.Add(model.PressAt(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(dir.normalized)), .055f));
             for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
             Shot(cam, rt, tex, bb, flat, 22, 1.25f, 30, warm, "dents");
+            foreach (int id in held) model.Release(id);
+            for (int i = 0; i < 80; i++) model.Update(.05f, 0, false, 0); // let the dents rise
+            model.SetStage(Squishy.Simulation.Game.GameRules.Life.Baby);
+            model.Update(.05f, 0, false, 0);
+            Shot(cam, rt, tex, bb, flat, 10, 1.25f, 30, warm, "baby");
+            var side = Quaternion.AngleAxis(-55, Vector3.up) * flat;
+            model.SetStage(Squishy.Simulation.Game.GameRules.Life.Adult);
+            model.Update(.05f, 0, false, 0);
+            Shot(cam, rt, tex, bb, side, 4, 1.25f, 30, warm, "leftside");
 
             // Glasses (each style) and every legendary squishy, close up.
             model.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);

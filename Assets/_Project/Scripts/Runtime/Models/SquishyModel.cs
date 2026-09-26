@@ -49,12 +49,37 @@ namespace Squishy.Runtime.Models
         /// </summary>
         public static Mesh BaoMesh()
         {
-            return ThreeGeo.Deformed("bao", 216, 84, v =>
+            var m = ThreeGeo.Deformed("bao", 216, 84, v =>
             {
                 var d = v.normalized;
                 float a = -Twist(d.y), cs = Mathf.Cos(a), sn = Mathf.Sin(a);
                 return ShapeAt(new Vector3(d.x * cs - d.z * sn, d.y, d.x * sn + d.z * cs));
             });
+            if (!_welded) { WeldNormals(m); _welded = true; }
+            return m;
+        }
+
+        private static bool _welded;
+
+        /// <summary>
+        /// Vertices duplicated along the wrap-around seam and at the poles got different normals, which showed as a crease
+        /// (the "deformity" low on one side). Coincident vertices now share one averaged normal.
+        /// </summary>
+        private static void WeldNormals(Mesh m)
+        {
+            var v = m.vertices;
+            var n = m.normals;
+            var sum = new System.Collections.Generic.Dictionary<Vector3Int, Vector3>();
+            var keys = new Vector3Int[v.Length];
+            for (int i = 0; i < v.Length; i++)
+            {
+                var k = new Vector3Int(Mathf.RoundToInt(v[i].x * 2000), Mathf.RoundToInt(v[i].y * 2000), Mathf.RoundToInt(v[i].z * 2000));
+                keys[i] = k;
+                sum.TryGetValue(k, out var s);
+                sum[k] = s + n[i];
+            }
+            for (int i = 0; i < v.Length; i++) n[i] = sum[keys[i]].normalized;
+            m.normals = n;
         }
 
         public SquishyModel(Transform parent, float scale)
@@ -161,7 +186,7 @@ namespace Squishy.Runtime.Models
             float k = Held ? 120 : K * StageBounce, c = Held ? 2 * Mathf.Sqrt(120) * .9f : C;
             V += (k * ((Held ? 1 : 0) - X) - c * V) * dt;
             X += V * dt;
-            float x = Mathf.Clamp(X + extraSquash + droop * .3f, -.45f, 1);
+            float x = Mathf.Clamp(X + extraSquash + droop * .3f + _tSquash, -.45f, 1); // _tSquash: held tactile presses squeeze the whole body
             float sc = Scale * StageScale;
             Pivot.localScale = new Vector3(sc * (1 + .3f * x), sc * (1 - .42f * x), sc * (1 + .3f * x));
             Blink -= dt;
@@ -171,6 +196,7 @@ namespace Squishy.Runtime.Models
             EyeOpen += (open - EyeOpen) * Mathf.Min(1, dt * 14);
             StepFace(dt, x, closed, droop);
             StepTactile(dt);
+            StepCowlick(dt, x);
             bool beads = _eyeMode == EyeMode.Beads;
             foreach (var e in _eyes) e.localScale = beads ? new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f) : Vector3.zero;
             if (Grey != _g)
