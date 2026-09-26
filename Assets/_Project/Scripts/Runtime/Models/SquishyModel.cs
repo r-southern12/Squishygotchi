@@ -34,14 +34,14 @@ namespace Squishy.Runtime.Models
         public static Vector3 ShapeAt(Vector3 d)
         {
             // Dumpling-toy look (user references, 26 Sep 2026): a wide dome whose top half is gathered into 12 puffy
-            // lobes split by sharp creases, twisting slightly into a small rounded knot.
-            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.12f, .95f, d.y), top = Sstep(.9f, 1, d.y);
-            float lobe = Mathf.Sqrt(Mathf.Abs(Mathf.Sin(6 * (th + t * .75f))));
-            float r = 1.16f * (1 - .085f * t * (1 - lobe) * (1 - top)) * (1 - .32f * Sstep(.66f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
-            return new Vector3(d.x * r, Smax(d.y * .8f + .05f * Sstep(.9f, 1, d.y) + .09f * top * top, B, .14f), d.z * r);
+            // lobes split by sharp creases, twisting into a smooth, slightly flattened crown (no knot or bump: user, 26 Sep 2026).
+            float th = Mathf.Atan2(d.z, d.x), t = Sstep(.02f, .92f, d.y), top = Sstep(.93f, 1, d.y);
+            float lobe = Mathf.Pow(Mathf.Abs(Mathf.Sin(6 * (th + t * 1.25f))), .25f);
+            float r = 1.16f * (1 - .34f * t * t * (1 - lobe) * (1 - top * .6f)) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
+            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top, B, .14f), d.z * r);
         }
 
-        public static Mesh BaoMesh() { return ThreeGeo.Deformed("bao", 40, 28, v => ShapeAt(v.normalized)); }
+        public static Mesh BaoMesh() { return ThreeGeo.Deformed("bao", 144, 56, v => ShapeAt(v.normalized)); }
 
         public SquishyModel(Transform parent, float scale)
         {
@@ -53,8 +53,8 @@ namespace Squishy.Runtime.Models
             Body = Node.Mesh(Yaw, BaoMesh(), Mat, 0, -B, 0, shadow: true, receive: true);
             Pivot.localScale = Vector3.one * scale;
 
-            var eyeMat = ThreeMat.Standard(ThreeMat.Lin("#2B1D18"), .25f);
-            eyeMat.SetFloat("_ReceiveShadows", 0f);
+            // Solid ink beads (a glossy dark material reflected the sky and washed the face out); the white shines do the gloss.
+            var eyeMat = ThreeMat.Basic(ThreeMat.Lin("#140E12"));
             for (int k = 0; k < 2; k++)
             {
                 float sx = k == 0 ? -1 : 1;
