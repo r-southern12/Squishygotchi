@@ -96,6 +96,11 @@ namespace Squishy.Runtime.Game
                 float diff = Mathf.Max(0, Vector3.Dot(n, L));
                 float shin = Mathf.Lerp(10, 70, gloss), spec = Mathf.Pow(Mathf.Max(0, Vector3.Dot(n, H)), shin) * Mathf.Lerp(.15f, .6f, gloss);
                 var c = Surface(f, baseC, x, y, cx, topY, rx, ryTop, galaxy);
+                if (f.map == "watermelon" && y > cy && r > .8f)
+                {
+                    // Rind hugging the bottom edge: a pale band, then green with darker stripes.
+                    c = r < .86f ? Canvas2D.Css("#F1F5D6") : Frac((x - cx) / rx * 3.5f) < .5f ? Canvas2D.Css("#5DAE4E") : Canvas2D.Css("#3E8E41");
+                }
                 if (holo)
                 {
                     float hue = Mathf.Repeat(nx * .45f + ny * .35f + .5f, 1);
@@ -211,15 +216,19 @@ namespace Squishy.Runtime.Game
                     return fu * fu + fv * fv < .075f ? Canvas2D.Css("#FFFFFF") : Canvas2D.Css("#F7A8C6");
                 }
                 case "stripes":
-                    return Frac((u * 1.6f + v * .9f) * 1.5f) < .5f ? Canvas2D.Css("#E8505B") : Canvas2D.Css("#FFFFFF");
+                {
+                    // Peppermint-style bands fanning down from the top, lined up with the pleats.
+                    float kx = u, ky = (y - (topY + .02f)) / ryTop, dist = Mathf.Sqrt(kx * kx + ky * ky);
+                    float phi = Mathf.Atan2(kx, ky * 1.25f) + dist * .2f;
+                    return Frac(phi * 5.2f / Mathf.PI) < .5f ? Canvas2D.Css("#F6A3BE") : Canvas2D.Css("#FFF4EE");
+                }
                 case "watermelon":
                 {
-                    if (v > 1.33f) return Canvas2D.Css("#3E8E41");
-                    if (v > 1.22f) return Canvas2D.Css("#B7E08A");
+                    if (Mathf.Abs(u) < .62f && v > .8f && v < 1.3f) return Canvas2D.Css("#FF8E9E"); // no seeds on the face
                     float gu = u * 4 + 10, gv = v * 4 + 10;
                     int iv = Mathf.FloorToInt(gv);
                     float fu = Frac(gu + (iv % 2) * .5f) - .5f, fv = Frac(gv) - .5f;
-                    return Sq(fu / .07f) + Sq(fv / .13f) < 1 ? Canvas2D.Css("#2B2320") : Canvas2D.Css("#F26A7A");
+                    return Sq(fu / .06f) + Sq(fv / .11f) < 1 ? Canvas2D.Css("#3B2A2A") : Canvas2D.Css("#FF8E9E");
                 }
                 case "sprinkles":
                 {

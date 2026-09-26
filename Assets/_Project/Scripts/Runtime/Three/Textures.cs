@@ -197,10 +197,9 @@ namespace Squishy.Runtime.Three
             }
             else if (kind == "stripes")
             {
-                g.FillRect(0, 0, 256, 128, Canvas2D.Css("#FFFFFF"));
-                var red = Canvas2D.Css("#E8505B");
-                for (int i = -2; i < 10; i++)
-                    g.FillPolygon(new[] { new Vector2(i * 32, 0), new Vector2(i * 32 + 16, 0), new Vector2(i * 32 + 16 + 40, 128), new Vector2(i * 32 + 40, 128) }, red);
+                // Soft pink and cream bands running down from the top with a slight curl (they meet at the crown).
+                Color pink = Canvas2D.Css("#F6A3BE"), cream = Canvas2D.Css("#FFF4EE");
+                g.FillShader((x, y) => (x + y * .25f) % 32f < 16f ? pink : cream);
             }
             else if (kind == "watermelon")
             {

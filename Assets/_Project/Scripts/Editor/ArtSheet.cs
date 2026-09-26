@@ -22,6 +22,10 @@ namespace Squishy.EditorTools
             int n = c.finishes.Length;
             Sheet("Library/IconChecks/art_types.png", 8, (n + 7) / 8, 160, i => i < n ? SquishyArt.Paint(c.finishes[i], SquishyArt.Mood.Happy, GameRules.Life.Adult, 160) : null);
 
+            // The two reworked patterns in each mood.
+            var redo = new[] { System.Array.Find(c.finishes, f => f.name == "Candy Stripe"), System.Array.Find(c.finishes, f => f.name == "Watermelon") };
+            Sheet("Library/IconChecks/art_redo.png", 3, 2, 240, i => SquishyArt.Paint(redo[i / 3], (SquishyArt.Mood)(i % 3), GameRules.Life.Adult, 240));
+
             // Rows: each mood for Pinky, then for Violet Sparkle; columns: baby, young, adult, elder.
             var pinky = c.finishes[8];
             var violet = System.Array.Find(c.finishes, f => f.name == "Violet Sparkle") ?? pinky;
