@@ -131,6 +131,9 @@ namespace Squishy.Runtime.Game
 
         public void CanvasDown(int id, Vector2 p, bool touch)
         {
+            // A lost pointer-up (notification shade, system gesture, app switch) must never leave a stale finger
+            // behind: with one stuck entry every new touch looked like a pinch and nothing in the room could be tapped.
+            if (!touch || Input.touchCount <= 1) { ptrs.Clear(); drag = null; }
             ptrs[id] = new Pointer { pos = p, t = Time.realtimeSinceStartup };
             if (mode == "unbox") { HoldStart(); return; }
             if (ptrs.Count == 2)

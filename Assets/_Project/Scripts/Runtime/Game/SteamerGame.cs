@@ -311,7 +311,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Phones keep the game alive in the background, so time away is applied on every return, not just cold starts.</summary>
         private void OnApplicationPause(bool paused)
         {
-            if (paused) { _pausedAt = System.DateTime.UtcNow; WriteSave(); Notifier.Schedule(Rules, comfort); return; }
+            if (paused) { ptrs.Clear(); drag = null; _pausedAt = System.DateTime.UtcNow; WriteSave(); Notifier.Schedule(Rules, comfort); return; }
             Notifier.Clear();
             if (!_pausedAt.HasValue) return;
             bool wasDead = S.dead;

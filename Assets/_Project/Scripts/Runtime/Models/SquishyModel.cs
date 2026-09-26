@@ -40,8 +40,8 @@ namespace Squishy.Runtime.Models
             // mesh never pinches; a rounded crease profile keeps the shading smooth.
             float c = Mathf.Cos(6 * (th + Twist(d.y))), groove = c * c;
             groove = groove * groove * groove * t * (1 - top); // cos^6: a smooth rounded groove, no V-edge to alias
-            float r = 1.16f * (1 - .3f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
-            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .1f * groove, B, .14f), d.z * r);
+            float r = 1.16f * (1 - .22f * groove) * (1 - .06f * Sstep(.6f, 1, d.y)) * (1 + .05f * Sstep(-.1f, -.7f, d.y));
+            return new Vector3(d.x * r, Smax(d.y * .86f - .03f * top - .075f * groove, B, .14f), d.z * r);
         }
 
         private static float Twist(float y) { return Sstep(.34f, .9f, y) * 1.4f; }
@@ -67,7 +67,7 @@ namespace Squishy.Runtime.Models
             Yaw = Node.Group(Pivot, "yaw");
             Mat = ThreeMat.Standard(Color.white, .4f);
             Mat.SetFloat("_ReceiveShadows", 0f);
-            Body = Node.Mesh(Yaw, BaoMesh(), Mat, 0, -B, 0, shadow: true, receive: false); // no self-shadow: the pleat grooves would show shadow acne
+            Body = Node.Mesh(Yaw, BaoMesh(), Mat, 0, -B, 0, shadow: true, receive: true); // Mat itself has receive-shadows off (a copied material would miss the finish colour)
             Pivot.localScale = Vector3.one * scale;
 
             // Solid ink beads (a glossy dark material reflected the sky and washed the face out); the white shines do the gloss.
