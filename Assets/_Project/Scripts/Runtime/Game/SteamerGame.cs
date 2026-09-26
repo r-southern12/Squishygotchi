@@ -96,6 +96,7 @@ namespace Squishy.Runtime.Game
             if (S.dead) ResumeDead();
             Notifier.Init();
             Notifier.Clear();
+            ui.ShowIntro(AfterIntro);
         }
 
         private void SetupRendering()
@@ -159,6 +160,7 @@ namespace Squishy.Runtime.Game
             time += dt;
             frameN++;
             Perf(raw);
+            if ((frameN & 31) == 0) Notifier.Retry(Rules, comfort);
             bool sheetOpen = ui.SheetOpen;
             if (sheetOpen) ui.PumpThumbs(2);
             Post.Sparkles(time, baseDpr * quality);

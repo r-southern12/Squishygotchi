@@ -234,6 +234,7 @@ namespace Squishy.Runtime.UI
             BuildPanels(safeBottom);
             BuildCards(safeBottom);
             BuildSheet(safeTop, safeBottom);
+            BuildIntro(safeTop, safeBottom);
             _floaters = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
             _wipe = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
             _wipe.generateVisualContent += m =>
@@ -599,6 +600,7 @@ namespace Squishy.Runtime.UI
         public void Update(float dt)
         {
             Tw.Update(dt);
+            StepIntro(dt);
         }
     }
 }

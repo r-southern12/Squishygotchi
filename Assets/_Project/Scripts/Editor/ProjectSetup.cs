@@ -42,6 +42,7 @@ namespace Squishy.EditorTools
         [MenuItem("Squishy/Build/Android APK")]
         public static void BuildAndroid()
         {
+            AppIcon.Make();
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
             EditorUserBuildSettings.buildAppBundle = false;
             // Keep test APKs small enough to send to a phone: strip unused engine code, compress tightly.

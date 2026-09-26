@@ -70,15 +70,31 @@ namespace Squishy.Runtime.Game
 #endif
         }
 
-        /// <summary>Renders the squishy's mood pictures (happy, droopy, sad) for the widget and notifications.</summary>
+        private static bool _pending;
+
+        /// <summary>Renders the pictures once the thumbnail camera exists, then refreshes the widget.</summary>
+        public static void Retry(GameRules rules, float comfort)
+        {
+            if (!_pending || !Thumbs.Ready) return;
+            RenderPictures(rules);
+            PushWidget(rules, comfort);
+        }
+
+        /// <summary>Asks for the mood pictures (widget) and thought-bubble scenes (notifications) to be re-rendered.</summary>
         public static void RefreshPictures(GameRules rules)
         {
             if (!Application.isMobilePlatform) return;
+            _pending = true; // rendered from the game loop (a render during start-up comes back blank)
+        }
+
+        private static void RenderPictures(GameRules rules)
+        {
+            _pending = false;
             var f = rules.Fav;
             var stage = rules.LifeStage();
             Save("happy", Thumbs.SquishyPng(f, stage, 0, 0, false));
-            Save("droopy", Thumbs.SquishyPng(f, stage, .2f, .25f, false));
             var droopy = Thumbs.SquishyPng(f, stage, .2f, .25f, false);
+            Save("droopy", droopy);
             var sad = Thumbs.SquishyPng(f, stage, .7f, .35f, true);
             Save("sad", sad);
             for (int k = 0; k < 4; k++)
@@ -172,6 +188,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Schedules the reminders from the current state, predicting drain the same way GameRules does.</summary>
         public static void Schedule(GameRules rules, float comfort)
         {
+            if (_pending && Thumbs.Ready) RenderPictures(rules);
             PushWidget(rules, comfort);
             if (!_ready) return;
             Clear();

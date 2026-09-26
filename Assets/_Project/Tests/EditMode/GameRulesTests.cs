@@ -20,6 +20,20 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Profile_Name_Is_Trimmed_And_Friend_Code_Is_Stable()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 7));
+            Assert.AreEqual("Keeper", rules.SetProfile("   ", "#C8674E"));
+            Assert.AreEqual(GameRules.NameMax, rules.SetProfile("An extremely long player name", null).Length);
+            string code = rules.S.friendCode;
+            StringAssert.IsMatch("^[A-Z2-9]{4}-[A-Z2-9]{4}$", code);
+            Assert.AreEqual(code, rules.EnsureFriendCode());
+            Assert.IsTrue(rules.S.welcomed);
+            Assert.AreEqual("#C8674E", rules.S.avatar);
+        }
+
+        [Test]
         public void Gacha_10000_Opens_Match_Published_Rates_And_Pity()
         {
             var c = Content();

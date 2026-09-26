@@ -165,6 +165,7 @@ namespace Squishy.Runtime.Game
         {
             ui.SetPanelTitle("info", "Settings");
             var body = ui.PanelBody("info");
+            ProfileRow(body);
             Toggle(body, "Sound", S.soundOn, v => { S.soundOn = v; sfx.SoundOn = v; ui.SetSoundIcon(v); if (v) sfx.Tap(); else sfx.Hum(0); });
             Toggle(body, "Music", S.musicOn, v => { S.musicOn = v; sfx.MusicOn = v; });
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
@@ -175,6 +176,39 @@ namespace Squishy.Runtime.Game
             Hud.Para(body, "Odds are always shown on the steamer screen. No chat, no personal data collected.").Margin(10, 0, 0, 0);
             ui.OpenPanel("info");
             sfx.Tap();
+        }
+
+        // ---------------- title screen and profile ----------------
+
+        private void AfterIntro()
+        {
+            sfx.Chime();
+            if (!S.welcomed) EditProfile(false);
+        }
+
+        private void EditProfile(bool edit)
+        {
+            ui.ClosePanels();
+            ui.ShowWelcome(edit, S.playerName, S.avatar, Rules.EnsureFriendCode(), (name, color) =>
+            {
+                string n = Rules.SetProfile(name, color);
+                WriteSave();
+                sfx.Chime();
+                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), edit ? "Saved!" : "Hi, " + n + "!");
+            });
+        }
+
+        /// <summary>Settings header: avatar, name and friend code, with Edit.</summary>
+        private void ProfileRow(VisualElement body)
+        {
+            var row = new VisualElement().Row(Align.Center).In(body);
+            row.style.marginBottom = 12;
+            Hud.Avatar(row, S.playerName, S.avatar, 44);
+            var col = new VisualElement().Col(Align.FlexStart).Margin(0, 0, 0, 10).In(row);
+            col.style.flexGrow = 1;
+            Css.Label(col, string.IsNullOrEmpty(S.playerName) ? "Keeper" : S.playerName, "Gluten", 800, 18);
+            Css.Label(col, "Friend code " + Rules.EnsureFriendCode() + " 00b7 saved on this phone", "Figtree", 400, 12, Hud.Muted);
+            Hud.Button(row, "Edit", "#EADCC6", "#CDB999", Hud.Ink, 12, 36, 14, () => EditProfile(true)).Size(64, null);
         }
 
         private void Toggle(VisualElement body, string label, bool on, Action<bool> set)

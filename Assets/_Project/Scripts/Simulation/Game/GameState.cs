@@ -34,6 +34,10 @@ namespace Squishy.Simulation.Game
         public bool weekClaimed;
         public List<string> tiersClaimed = new List<string>();
         public bool soundOn = false, musicOn = true, hapticsOn = true, notificationsOn = true;
+
+        // Player profile: kept on this phone; the friend code is what friends will use to visit.
+        public string playerName = "", avatar = "", friendCode = "";
+        public bool welcomed;
     }
 
     [Serializable]

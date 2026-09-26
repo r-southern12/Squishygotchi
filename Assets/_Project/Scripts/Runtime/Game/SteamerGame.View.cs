@@ -36,6 +36,7 @@ namespace Squishy.Runtime.Game
         {
             var c = camS;
             if (drag == null || !drag.moved || drag.item != null || drag.ball != null || drag.scrub) { c.yawV *= Mathf.Pow(.02f, dt); c.yaw += c.yawV; }
+            if (ui.IntroOn) c.yaw += dt * .14f; // the title screen slowly turns the room
             c.zoom += (c.zoomT - c.zoom) * Mathf.Min(1, dt * 4);
             c.edit += ((mode == "edit" ? 1 : 0) - c.edit) * Mathf.Min(1, dt * 4);
             c.ez += (c.ezT - c.ez) * Mathf.Min(1, dt * 6);

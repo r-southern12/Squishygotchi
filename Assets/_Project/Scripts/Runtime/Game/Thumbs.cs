@@ -25,6 +25,8 @@ namespace Squishy.Runtime.Game
         private static RenderTexture _rt;
         private static SquishyModel _pet;
 
+        public static bool Ready { get { return _cam != null; } }
+
         public static void Init(SteamerGame game, GameContent c, GameRules rules, Transform world, Light key)
         {
             _game = game;
