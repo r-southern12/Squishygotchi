@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 6;
+        public const int CurrentVersion = 7;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -29,6 +29,7 @@ namespace Squishy.Simulation.Save
                 data.state.recipeXP = null;
             }
             if (data.version < 6 && data.state != null) data.state.soundOn = true; // v6: sound was off by default (a browser-prototype habit); switch it on once
+            if (data.version < 7 && data.state != null) data.state.musicOn = false; // v7: the placeholder music is off until real music replaces it
             data.version = CurrentVersion;
         }
     }

@@ -18,7 +18,7 @@ namespace Squishy.Runtime.Game
 
         /// <summary>Calm generative background music; plays only while sound is on.</summary>
         public bool MusicOn { get { return _musicOn; } set { _musicOn = value; } }
-        private bool _musicOn = true;
+        private bool _musicOn = false;
 
         private void Update() { if (_music != null) _music.Volume = SoundOn && _musicOn ? .16f : 0f; }
 
