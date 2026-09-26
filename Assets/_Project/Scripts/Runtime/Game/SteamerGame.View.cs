@@ -48,13 +48,14 @@ namespace Squishy.Runtime.Game
                 c.panT.z += (c.panGoal.Value.y - c.panT.z) * k2;
                 if (Dist(c.panGoal.Value.x - c.panT.x, c.panGoal.Value.y - c.panT.z) < .01f) c.panGoal = null;
             }
-            float z = c.zoom, e = c.edit;
-            float hx = ai.x * (1 - z), hz = ai.z * (1 - z), hy = (Y0 + pet.Scale + ai.y) * (1 - z) + .3f * z;
+            // zoom: -1 close-up on the squishy, 0 follow (the prototype's default), 1 whole room.
+            float z = Mathf.Max(0, c.zoom), close = Mathf.Max(0, -c.zoom), e = c.edit;
+            float hx = ai.x * (1 - z), hz = ai.z * (1 - z), hy = (Y0 + pet.Scale * (1 - .35f * close) + ai.y) * (1 - z) + .3f * z;
             float tx = hx + (c.panT.x - hx) * e, tz = hz + (c.panT.z - hz) * e, ty = hy + (.25f - hy) * e;
             float kk = Mathf.Min(1, dt * (e > .5f ? 12 : 3));
             c.target += new Vector3((tx - c.target.x) * kk, (ty - c.target.y) * kk, (tz - c.target.z) * kk);
             float near = .45f + pet.Scale * 2.4f;
-            float dH = FitDist(near + (HR * 1.12f - near) * z), dE = FitDist(.7f + (HR * 1.12f - .7f) * c.ez), elH = 42 + 14 * z + c.htilt;
+            float dH = FitDist((near + (HR * 1.12f - near) * z) * (1 - .55f * close)), dE = FitDist(.7f + (HR * 1.12f - .7f) * c.ez), elH = 42 + 14 * z - 14 * close + c.htilt;
             float d = dH + (dE - dH) * e, el = (elH + (c.tilt - elH) * e) * Mathf.Deg2Rad;
             var pos = new Vector3(c.target.x + Mathf.Sin(c.yaw) * Mathf.Cos(el) * d, c.target.y + Mathf.Sin(el) * d, c.target.z + Mathf.Cos(c.yaw) * Mathf.Cos(el) * d);
             PlaceCamera(pos, c.target);
@@ -74,8 +75,10 @@ namespace Squishy.Runtime.Game
 
         public void ToggleView()
         {
-            camS.zoomT = camS.zoomT > .5f ? 0 : 1;
+            // Follow -> Close-up -> Whole room -> Follow.
+            camS.zoomT = camS.zoomT > .5f ? 0 : camS.zoomT < -.5f ? 1 : -1;
             ui.SetViewIcon(camS.zoomT > .5f);
+            ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), camS.zoomT > .5f ? "Whole room" : camS.zoomT < -.5f ? "Close-up" : "Follow");
             sfx.Tap();
         }
 
@@ -226,7 +229,7 @@ namespace Squishy.Runtime.Game
                         if (camS.mid.HasValue) PanBy(mid.x - camS.mid.Value.x, mid.y - camS.mid.Value.y);
                         camS.mid = mid;
                     }
-                    else camS.zoomT = Mathf.Clamp01(zoom0 - (d - pinch0) / 220);
+                    else camS.zoomT = Mathf.Clamp(zoom0 - (d - pinch0) / 220, -1, 1);
                 }
                 return;
             }
@@ -369,7 +372,7 @@ namespace Squishy.Runtime.Game
                 }
                 return;
             }
-            camS.zoomT = Mathf.Clamp01(camS.zoomT + deltaY * .0015f);
+            camS.zoomT = Mathf.Clamp(camS.zoomT + deltaY * .0015f, -1, 1);
         }
 
         // ---------------- arrange ----------------

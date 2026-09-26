@@ -49,6 +49,8 @@ namespace Squishy.Runtime.Game
         public void Kick() { Play("kick", c => { Tone(c, 0, 300, 160, .12f, 'T', .25f); Noise(c, 0, .06f, 900, 300, .15f, 1.2f); }); }
         public void Coin() { Play("coin", c => { Tone(c, 0, 990, 1320, .12f, 'T', .06f); Tone(c, .08f, 1320, 1760, .14f, 'T', .05f); }); }
         public void Sad() { Play("sad", c => { float[] f = { 520, 440, 370, 300 }; for (int i = 0; i < 4; i++) Tone(c, i * .26f, f[i], f[i] * .97f, .4f, 'S', .12f); }); }
+        public void Cook() { Play("pot", c => Noise(c, 0, .3f, 900, 300, .2f, 1.5f)); }
+
         public void Chime() { Play("chime", c => { float[] f = { 660, 880, 1320 }; for (int i = 0; i < 3; i++) Tone(c, i * .09f, f[i], f[i], .35f, 'S', .1f); }); }
 
         /// <summary>A xylophone note (a major pentatonic run, one clip per bar).</summary>
@@ -65,6 +67,9 @@ namespace Squishy.Runtime.Game
         private void Play(string name, System.Action<List<float>> build)
         {
             if (!SoundOn) return;
+            // Recorded CC0 foley (Kenney, Resources/Audio) where we have it, gently varied; synthesised otherwise.
+            var rec = Resources.Load<AudioClip>("Audio/" + name);
+            if (rec != null) { _src.pitch = Random.Range(.94f, 1.06f); _src.PlayOneShot(rec, .6f); return; }
             if (!_clips.TryGetValue(name, out var clip))
             {
                 var buf = new List<float>();

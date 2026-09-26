@@ -443,6 +443,7 @@ namespace Squishy.Runtime.Game
                     }
                 }
                 Floater("Cooking " + rc.name);
+                sfx.Cook();
                 var pan = A.it.parts.pan;
                 cookTi = rc.tools.Length > 0 ? rc.tools[0] : -1;
                 cookTool = cookTi >= 0 ? KitchenModels.Tool(C, S, cookTi, null, A.it.g) : null;
