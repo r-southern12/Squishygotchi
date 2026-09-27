@@ -6,7 +6,8 @@ namespace Squishy.Runtime.Game
 {
     [Serializable] public sealed class SoundEvent { public string id, name; public float vol, len; public bool loop; public string[] options; }
     [Serializable] public sealed class SliceCount { public string clip; public int n; }
-    [Serializable] public sealed class SoundTable { public string[] clips; public SliceCount[] slices; public SoundEvent[] events; }
+    [Serializable] public sealed class MusicTrack { public string id, name, style; }
+    [Serializable] public sealed class SoundTable { public string[] clips; public SliceCount[] slices; public SoundEvent[] events; public MusicTrack[] music; }
 
     /// <summary>
     /// Recorded sound clips (Resources/Sfx) and which one plays for each sound event (Resources/Content/sounds.json,
@@ -28,6 +29,11 @@ namespace Squishy.Runtime.Game
             foreach (var e in Table.events) _events[e.id] = e;
             foreach (var s in Table.slices) _slices[s.clip] = s.n;
         }
+
+        /// <summary>The track a steamer skin plays: the Sound Lab pick ("music:<skin>"), else the content default.</summary>
+        public string MusicFor(int skin, string fallback) { return _picks.TryGetValue("music:" + skin, out var p) && !string.IsNullOrEmpty(p.clip) ? p.clip : fallback; }
+
+        public MusicTrack Track(string id) { if (Table.music != null) foreach (var t in Table.music) if (t.id == id) return t; return null; }
 
         public SoundEvent Event(string id) { _events.TryGetValue(id, out var e); return e; }
 

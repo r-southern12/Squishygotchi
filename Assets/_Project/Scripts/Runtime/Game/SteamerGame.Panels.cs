@@ -34,7 +34,7 @@ namespace Squishy.Runtime.Game
         public void OnShop() { OpenShop(); sfx.Tap(); }
         public void OnTasks() { DrawTasks(); ui.OpenPanel("tasks"); sfx.Tap(); }
         public void OnOdds() { UpdatePity(); ui.OpenPanel("odds"); }
-        public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); }
+        public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); if (id == "info") UpdateMusic(); } // leaving the Sound Lab: back to this steamer's track
 
         public void OnSound(bool on)
         {

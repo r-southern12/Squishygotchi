@@ -2,3 +2,8 @@ Music by Redlight_Chill (Cristiano Leone), "Cozy Game / Lofi Music Collection"
 https://cristiano-leone-ost.itch.io/freeloficozy
 Free for commercial use with credit ("Music by Redlight_Chill"). Downloaded 27 Sep 2026.
 Converted to 80 kbps mono MP3 for the game.
+
+Candidate tracks from Pixabay Music (https://pixabay.com/music/), Pixabay Content License: free for commercial
+use, no attribution required. Downloaded 27 Sep 2026. Artists: leberch, The_Mountain, alex-morgan, Tunetank,
+AtlasAudio, Alex_Jauk, ViacheslavStarostin, MFCC, RainStreetCat, kaazoom, andriig, andriih, Nala_Subrada, abdipr,
+ckotty3 (see Resources/Content/sounds.json "music" for each track).

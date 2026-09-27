@@ -316,5 +316,162 @@
         "water_drop_pop"
       ]
     }
+  ],
+  "music": [
+    {
+      "id": "temple",
+      "name": "The Temple",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "channoyu",
+      "name": "Chan No Yu",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "cherry",
+      "name": "Cherry Blossom Tree",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "autumn",
+      "name": "Autumn",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "onsens",
+      "name": "Welcome to the Onsens",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "silkroad",
+      "name": "The Silk Road",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "daydreaming",
+      "name": "Daydreaming",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "hotchocolate",
+      "name": "Hot Chocolate",
+      "style": "lofi (Redlight_Chill)"
+    },
+    {
+      "id": "piano_soft_a",
+      "name": "Soft Piano A",
+      "style": "piano (leberch)"
+    },
+    {
+      "id": "piano_soft_b",
+      "name": "Soft Piano B",
+      "style": "piano (leberch)"
+    },
+    {
+      "id": "piano_soft_c",
+      "name": "Soft Piano C",
+      "style": "piano (leberch)"
+    },
+    {
+      "id": "gentle",
+      "name": "Gentle",
+      "style": "piano (The_Mountain)"
+    },
+    {
+      "id": "lullaby_dream",
+      "name": "Lullaby Dream",
+      "style": "lullaby (alex-morgan)"
+    },
+    {
+      "id": "music_box",
+      "name": "Music Box Lullaby",
+      "style": "music box (Tunetank)"
+    },
+    {
+      "id": "kalimba_a",
+      "name": "Kalimba A",
+      "style": "kalimba (leberch)"
+    },
+    {
+      "id": "kalimba_b",
+      "name": "Kalimba B",
+      "style": "kalimba (AtlasAudio)"
+    },
+    {
+      "id": "kalimba_song",
+      "name": "Kalimba Song",
+      "style": "kalimba (Alex_Jauk)"
+    },
+    {
+      "id": "ukulele_a",
+      "name": "Ukulele",
+      "style": "ukulele (AtlasAudio)"
+    },
+    {
+      "id": "ukulele_cute",
+      "name": "Cute Ukulele",
+      "style": "ukulele (ViacheslavStarostin)"
+    },
+    {
+      "id": "ukulele_joyful",
+      "name": "Joyful Ukulele",
+      "style": "ukulele (MFCC)"
+    },
+    {
+      "id": "tea_ceremony",
+      "name": "Tea Ceremony",
+      "style": "Chinese calm (alex-morgan)"
+    },
+    {
+      "id": "guzheng_erhu",
+      "name": "Guzheng & Erhu",
+      "style": "Chinese (RainStreetCat)"
+    },
+    {
+      "id": "cranes",
+      "name": "Where the Cranes Go",
+      "style": "Chinese (kaazoom)"
+    },
+    {
+      "id": "warm_acoustic",
+      "name": "Warm Acoustic",
+      "style": "acoustic (andriig)"
+    },
+    {
+      "id": "cozy_coffee_a",
+      "name": "Cozy Coffee A",
+      "style": "cosy jazz (andriih)"
+    },
+    {
+      "id": "cozy_coffee_b",
+      "name": "Cozy Coffee B",
+      "style": "cosy lofi (andriih)"
+    },
+    {
+      "id": "ambient_a",
+      "name": "Ambient A",
+      "style": "ambient (leberch)"
+    },
+    {
+      "id": "ambient_b",
+      "name": "Ambient B",
+      "style": "ambient (leberch)"
+    },
+    {
+      "id": "kawaii_sparkle",
+      "name": "Kawaii Sparkle",
+      "style": "kawaii pop (Nala_Subrada)"
+    },
+    {
+      "id": "cat_dreams",
+      "name": "Cat Dreams",
+      "style": "kawaii chill (abdipr)"
+    },
+    {
+      "id": "kawaii_friends",
+      "name": "Kawaii Friends",
+      "style": "kawaii (ckotty3)"
+    }
   ]
 }
