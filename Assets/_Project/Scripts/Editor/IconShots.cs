@@ -368,6 +368,9 @@ namespace Squishy.EditorTools
                 var fins = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < content.finishes.Length; i++) fins.Add("sq:" + i);
                 ThumbSheet("finishes", fins, 8);
+                var poms = new System.Collections.Generic.List<string>();
+                for (int i = 0; i < 8 && i < content.styles.Length; i++) poms.Add("pomwand:" + content.styles[i].id);
+                ThumbSheet("pompoms", poms, 4);
             }
 
             {

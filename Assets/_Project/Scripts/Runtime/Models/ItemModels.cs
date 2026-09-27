@@ -23,6 +23,30 @@ namespace Squishy.Runtime.Models
     {
         private const float PI = Mathf.PI;
 
+        /// <summary>
+        /// A fluffy yarn pom-pom: a soft core covered in small tufts, in the style's yarn colours, with a tie on top.
+        /// (It was one patterned sphere, which read as a golf ball.)
+        /// </summary>
+        public static void Pompom(Transform pom, StyleData s, float r)
+        {
+            var main = M(s.pal[1]);
+            var mix = M(s.pal[4]);
+            Node.Mesh(pom, Sph(r * .9f, 14, 10), main);
+            const int N = 120; // many fine tufts: fuzzy, not lumpy
+            var rnd = new System.Random(s.id.GetHashCode());
+            for (int i = 0; i < N; i++)
+            {
+                // Fibonacci sphere: tufts spread evenly all round, each a little different in size.
+                float y = 1 - 2 * (i + .5f) / N, rr = Mathf.Sqrt(1 - y * y), a = i * 2.39996f;
+                var d = new Vector3(Mathf.Cos(a) * rr, y, Mathf.Sin(a) * rr);
+                float tuft = r * (.13f + .06f * (float)rnd.NextDouble()), out1 = r * (.92f + .06f * (float)rnd.NextDouble());
+                var t = Node.Mesh(pom, Sph(tuft, 6, 4), rnd.NextDouble() < .15 ? mix : main, d.x * out1, d.y * out1, d.z * out1, shadow: false);
+                t.localRotation = Quaternion.FromToRotation(Vector3.up, d);
+                t.localScale = new Vector3(1, 1.7f, 1); // yarn ends poke outward
+            }
+            Node.Mesh(pom, Cyl(r * .18f, r * .22f, r * .3f, 8), mix, 0, r * .95f, 0); // the tie where the string meets it
+        }
+
         public static Transform Build(GameContent content, string arch, string styleId, Transform parent, ItemParts p)
         {
             var s = content.Style(styleId) ?? content.Style("minimal");
@@ -197,8 +221,7 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Cyl(.012f, .012f, .26f, 6), T, .12f, .44f, 0).RotZ(PI / 2);
                     Node.Mesh(g, Cyl(.004f, .004f, .14f, 4), M("#EFE2C9"), .25f, .37f, 0);
                     var pom = Node.Group(g, "pom", .25f, .3f, 0);
-                    Node.Mesh(pom, Sph(.065f, 12, 10), P);
-                    Node.Mesh(pom, Sph(.03f, 8, 6), A, .04f, .03f, .03f);
+                    Pompom(pom, s, .065f);
                     p.pom = pom;
                     break;
                 }

@@ -56,7 +56,7 @@ namespace Squishy.Runtime.Game
             if (floatPom == null)
             {
                 floatPom = Node.Group(room, "floatPom");
-                Node.Mesh(floatPom, ThreeGeo.Sph(.065f, 12, 10), ThreeMat.Pattern(C.Style(it.style) ?? C.Style("minimal")));
+                Squishy.Runtime.Models.ItemModels.Pompom(floatPom, C.Style(it.style) ?? C.Style("minimal"), .065f);
                 Node.SetLayer(floatPom, HomeLayer);
             }
             floatPom.gameObject.SetActive(true);
