@@ -67,6 +67,39 @@ namespace Squishy.Runtime.Game
             if (visiting) VisitAct("pet"); else TaskEvent("squish");
         }
 
+        // ---------------- squishing the new squishy in its steamer ----------------
+
+        /// <summary>On the reveal, the squishy fills its steamer like the toy: press it, hold deeper, drag to smear.</summary>
+        private bool UnboxSquishDown(Vector2 p, bool touch)
+        {
+            if (!newbie.Pivot.gameObject.activeSelf || !(ustate == "card" || ustate == "landed")) return false;
+            var ray = PickRay(p);
+            float t = RayPick.Hit(ray, newbie.Body, false);
+            if (t < 0) return false;
+            drag = new Drag { start = p, touch = touch, unboxSq = true };
+            drag.dent = newbie.PressAt(ray.GetPoint(t), C.rules.dentRadius * 1.6f);
+            newbie.Express(SquishyModel.Mouth.Oh, .8f);
+            sfx.Press();
+            Buzz(5);
+            return true;
+        }
+
+        private void UnboxSquishMove(Vector2 p)
+        {
+            var ray = PickRay(p);
+            float t = RayPick.Hit(ray, newbie.Body, false);
+            if (t < 0) return;
+            int was = drag.dent;
+            drag.dent = newbie.MovePress(drag.dent, ray.GetPoint(t));
+            if (drag.dent != was) Buzz(2);
+        }
+
+        private void UnboxSquishUp()
+        {
+            newbie.ReleaseAll();
+            newbie.Express(SquishyModel.Mouth.Smile, 1.2f);
+        }
+
         // ---------------- hold to ping (zoomed out) ----------------
 
         /// <summary>Called every frame: a squish held long enough pings the squishy out from under the finger.</summary>
@@ -179,18 +212,23 @@ namespace Squishy.Runtime.Game
             string rar = C.FinishRarity(f), tier = f.tier ?? "";
             if (rar == "Common") return;
             n = Mathf.Max(1, n / 2); // a gentle shimmer, never a shower
+            float big = rar == "Legendary" ? 1.25f : rar == "Epic" ? 1.1f : 1;
             for (int i = 0; i < n; i++)
             {
                 Color col;
-                if (tier == "Holographic") col = Color.HSVToRGB(Random.value, .45f, 1);
+                if (tier == "Holographic") col = Color.HSVToRGB(Random.value, .5f, 1);
                 else if (tier == "UV" && !string.IsNullOrEmpty(f.glow)) col = ThreeMat.Hex(f.glow);
                 else if (f.spark != null && f.spark.Length > 0) col = ThreeMat.Hex(f.spark[Random.Range(0, f.spark.Length)]);
                 else if (rar == "Legendary") col = ThreeMat.Hex("#FFE08A");
                 else col = Color.Lerp(ThreeMat.Hex(string.IsNullOrEmpty(f.color) ? "#FFFFFF" : f.color), Color.white, .5f);
-                var v = new Vector3(Rnd(-1, 1) * spread, Rnd(.25f, .6f) + (tier == "Galaxy" ? .2f : 0), Rnd(-1, 1) * spread);
-                float size = tier == "UV" ? Rnd(.025f, .04f) : Rnd(.012f, .024f);
-                float life = tier == "Galaxy" ? Rnd(1.4f, 2.2f) : Rnd(.8f, 1.4f);
-                fxPool.Spawn(at + new Vector3(Rnd(-.04f, .04f), 0, Rnd(-.04f, .04f)), v, size, life, 1.6f, .15f, col: col);
+                // Glints lift gently off the surface and drift out, twinkling as they slowly turn: calm, never a burst.
+                float a = Random.value * Mathf.PI * 2;
+                var outDir = new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a));
+                var v = outDir * Rnd(.08f, .22f) * (spread / .3f) + Vector3.up * Rnd(.12f, .3f);
+                float size = Rnd(.045f, .085f) * big * (tier == "Glitter" ? .8f : 1);
+                float life = tier == "Galaxy" ? Rnd(1.6f, 2.4f) : Rnd(1f, 1.6f);
+                fxPool.Spawn(at + outDir * Rnd(.02f, .08f), v, size, life, 1.4f, tier == "Glitter" ? -.05f : .02f,
+                    w: new Vector3(Rnd(0, 6), 0, Rnd(-1.5f, 1.5f)), col: col * (tier == "UV" ? 1.2f : 1));
             }
         }
     }

@@ -199,7 +199,7 @@ namespace Squishy.Runtime.Game
 
         private void UpdatePity()
         {
-            ui.SetPity("Rare or better within " + (C.rules.pityRare - S.sinceRare) + " · Epic or better within " + (C.rules.pityEpic - S.sinceEpic), "Odds · Rare in " + (C.rules.pityRare - S.sinceRare));
+            ui.SetPity("Rare or better within " + (C.rules.pityRare - S.sinceRare) + " · Epic or better within " + (C.rules.pityEpic - S.sinceEpic) + " · Legendary within " + (C.rules.pityLegendary - S.sinceLegendary), "Odds · Rare in " + (C.rules.pityRare - S.sinceRare));
         }
 
         private void SetLayers(int n)
@@ -413,6 +413,7 @@ namespace Squishy.Runtime.Game
 
         private void StepUnbox(float dt)
         {
+            if ((drag == null || !drag.unboxSq) && newbie.Holding) newbie.ReleaseAll(); // no finger on it: dents rise back
             if (liftT >= 0) StepLift(dt);
             ust += dt;
             StepKitchen(dt);

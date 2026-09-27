@@ -34,7 +34,7 @@ namespace Squishy.Runtime.Game
             homeWall.Skin(curSkin);
             UpdateMusic();
             homeSteam = new ParticlePool(70, ThreeGeo.Ico1(), SteamMat(), false, HomeLayer);
-            fxPool = new ParticlePool(120, ThreeGeo.Ico1(), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, null, false, false), true, HomeLayer);
+            fxPool = new ParticlePool(160, ThreeGeo.Plane(1, 1), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, Textures.Glint(), true, false), true, HomeLayer) { Glint = true }; // star glints, not blobs
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);
             foreach (var st in S.items) AddItem(st);
             pet = new SquishyModel(room, .1f);
@@ -331,7 +331,7 @@ namespace Squishy.Runtime.Game
                 PlanPath(s.stand.x, s.stand.y, s.y, s.approach, it);
             }
             // Busy by itself with something: say so, and that a tap now earns a tip (the passive-income interaction).
-            if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label + (act.scrub ? " · rub me to scrub!" : ""), false);
+            if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label, false);
             else ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, act.label, false);
         }
 

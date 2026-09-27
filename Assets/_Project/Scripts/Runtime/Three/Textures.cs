@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Squishy.Runtime.Three
 {
     /// <summary>The prototype's canvas-painted textures: style patterns, squishy finish maps, sparkle sprite, light rays, unbox wall tiles.</summary>
-    public static class Textures
+    public static partial class Textures
     {
         private static readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
         private static float Rnd(float a, float b) { return Random.Range(a, b); }

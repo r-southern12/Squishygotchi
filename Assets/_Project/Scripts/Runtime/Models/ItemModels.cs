@@ -135,7 +135,7 @@ namespace Squishy.Runtime.Models
                     break;
                 case "plant":
                 {
-                    Node.Mesh(g, Cyl(.15f, .12f, .22f, 12), A, 0, .11f, 0);
+                    Node.Mesh(g, Cyl(.15f, .12f, .2f, 12), A, 0, .1f, 0); // ends below the rim: coplanar tops flickered
                     Node.Mesh(g, Cyl(.155f, .155f, .04f, 12), T, 0, .2f, 0);
                     Node.Mesh(g, Cyl(.128f, .128f, .012f, 12), M("#5A3E2B"), 0, .221f, 0); // soil
                     var top = Node.Group(g, "top", 0, .22f, 0);

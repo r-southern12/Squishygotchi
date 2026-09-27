@@ -19,7 +19,7 @@ A Tamagotchi-style mobile game: a squishy dumpling pet lives inside a 3D bamboo 
 - **Data-driven content.** Styles, item types, skins, squishy finishes, recipes, ingredients, snacks, tools, tool skins, tasks, shop prices, room levels and drop tables live in data assets (ScriptableObjects or JSON), not in code. Adding a style or recipe should never need a code change.
 - **Simulation separate from presentation.** Needs, economy, gacha, tasks and progression are plain C# with no Unity scene dependencies, so they can be unit-tested and run in fast-forward.
 - **Time-based needs.** Store timestamps and compute drain on resume (offline progress). Plan for server time later to stop clock cheating; keep a single `IClock` abstraction.
-- **Deterministic gacha.** The drop table and pity counters are data plus a seeded RNG, with a test that simulates 10,000 opens and checks rates (Common 76 / Rare 18 / Epic 5 / Legendary 1; pity Rare+ in 10, Epic+ in 50).
+- **Deterministic gacha.** The drop table and pity counters are data plus a seeded RNG, with a test that simulates 10,000 opens and checks rates (Common 76 / Rare 18 / Epic 5 / Legendary 1; pity Rare+ in 10, Epic+ in 50, Legendary in 100).
 - **Pieces vs skins.** An item *piece* has a type and a current *skin*; skins are unlocked separately. Stations max one per room (stools two); decor limited by room level slots.
 - **Save system** from the start: versioned save data, local first; cloud sync later.
 

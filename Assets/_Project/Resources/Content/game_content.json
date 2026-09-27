@@ -1393,34 +1393,34 @@
   "pantry": [
     {
       "name": "Flour",
-      "shape": "bag",
+      "shape": "flour_sack",
       "color": "#F4EFE4",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Cabbage",
-      "shape": "head",
+      "shape": "cabbage",
       "color": "#A7C97E",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Chives",
-      "shape": "stalks",
+      "shape": "chives",
       "color": "#7DBA5E",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Ginger",
-      "shape": "knobs",
+      "shape": "ginger",
       "color": "#E1B96A",
       "rarity": "Common"
     },
     {
       "name": "Mushroom",
-      "shape": "cap",
+      "shape": "shiitake",
       "color": "#A0724E",
       "rarity": "Common"
     },
@@ -1432,83 +1432,83 @@
     },
     {
       "name": "Tofu",
-      "shape": "block",
+      "shape": "tofu",
       "color": "#F5EEDC",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Egg",
-      "shape": "egg",
+      "shape": "eggs",
       "color": "#F7EBD0",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Black sesame",
-      "shape": "pot",
+      "shape": "sesame_bowl",
       "color": "#3A302C",
       "rarity": "Common"
     },
     {
       "name": "Pork",
-      "shape": "meat",
+      "shape": "pork_belly",
       "color": "#E8A09A",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Bok choy",
-      "shape": "leafy",
+      "shape": "bok_choy",
       "color": "#6FAE5A",
       "rarity": "Common"
     },
     {
       "name": "Chili",
-      "shape": "chili",
+      "shape": "chilies",
       "color": "#D8412F",
       "rarity": "Rare"
     },
     {
       "name": "Red bean paste",
-      "shape": "pot",
+      "shape": "red_bean_jar",
       "color": "#8E3B2E",
       "rarity": "Common"
     },
     {
       "name": "Lotus seeds",
-      "shape": "beans",
+      "shape": "lotus_seeds",
       "color": "#EAD7A8",
       "rarity": "Rare"
     },
     {
       "name": "Soy sauce",
-      "shape": "bottle",
+      "shape": "soy_bottle",
       "color": "#3B2418",
       "rarity": "Common",
       "basic": true
     },
     {
       "name": "Potato",
-      "shape": "egg",
+      "shape": "potatoes",
       "color": "#C9A36B",
       "rarity": "Common"
     },
     {
       "name": "Cheese",
-      "shape": "wedge",
+      "shape": "cheese_wedge",
       "color": "#F2C94C",
       "rarity": "Rare"
     },
     {
       "name": "Kimchi",
-      "shape": "pot",
+      "shape": "kimchi_jar",
       "color": "#D9573B",
       "rarity": "Rare"
     },
     {
       "name": "Sugar",
-      "shape": "bag",
+      "shape": "sugar_cubes",
       "color": "#FFFFFF",
       "rarity": "Common",
       "basic": true
@@ -2248,7 +2248,8 @@
     "flingHold": 0.45,
     "flingSpeed": 2.4,
     "musicCredit": "Music by Redlight_Chill",
-    "giftStackMax": 8
+    "giftStackMax": 8,
+    "pityLegendary": 100
   },
   "cosmetics": [
     {

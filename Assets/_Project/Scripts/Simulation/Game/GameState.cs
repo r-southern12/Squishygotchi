@@ -16,7 +16,7 @@ namespace Squishy.Simulation.Game
         public bool dead;
         /// <summary>Tucked in: needs, ageing and the death clock are paused (holidays, busy weeks).</summary>
         public bool tucked;
-        public int sinceRare, sinceEpic, setDone;
+        public int sinceRare, sinceEpic, sinceLegendary, setDone;
         public ulong rng;
         public List<TaskState> tasks = new List<TaskState>();
         public List<PieceState> items = new List<PieceState>();

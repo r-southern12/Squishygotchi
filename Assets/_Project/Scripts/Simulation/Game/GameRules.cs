@@ -264,10 +264,12 @@ namespace Squishy.Simulation.Game
         {
             double r = Random();
             string rar = r < R.pLegendary ? "Legendary" : r < R.pLegendary + R.pEpic ? "Epic" : r < R.pLegendary + R.pEpic + R.pRare ? "Rare" : "Common";
-            if (S.sinceEpic >= R.pityEpic - 1 && GameContent.RarityRank(rar) < 2) rar = "Epic";
+            if (R.pityLegendary > 0 && S.sinceLegendary >= R.pityLegendary - 1 && GameContent.RarityRank(rar) < 3) rar = "Legendary";
+            else if (S.sinceEpic >= R.pityEpic - 1 && GameContent.RarityRank(rar) < 2) rar = "Epic";
             else if (S.sinceRare >= R.pityRare - 1 && GameContent.RarityRank(rar) < 1) rar = "Rare";
             S.sinceRare = GameContent.RarityRank(rar) >= 1 ? 0 : S.sinceRare + 1;
             S.sinceEpic = GameContent.RarityRank(rar) >= 2 ? 0 : S.sinceEpic + 1;
+            S.sinceLegendary = GameContent.RarityRank(rar) >= 3 ? 0 : S.sinceLegendary + 1;
             return rar;
         }
 

@@ -256,6 +256,7 @@ namespace Squishy.Runtime.Game
         {
             if (!Rules.Spend(n)) { sfx.Bonk(); return false; }
             sfx.Coin();
+            ui.MarkBought(); // the shop row flashes "Bought!" so it's clear it worked
             return true;
         }
 

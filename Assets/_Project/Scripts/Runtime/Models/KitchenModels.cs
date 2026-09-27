@@ -7,7 +7,7 @@ using static Squishy.Runtime.Three.ThreeMat;
 namespace Squishy.Runtime.Models
 {
     /// <summary>toolModel, foodModel, dishModel, snackModel and the stove's utensil rack.</summary>
-    public static class KitchenModels
+    public static partial class KitchenModels
     {
         private const float PI = Mathf.PI;
 
@@ -58,6 +58,7 @@ namespace Squishy.Runtime.Models
             var f = c.pantry[i];
             var g = Node.Group(parent, "food" + i);
             Material col = M(f.color), gr = M("#7DBA5E");
+            if (Detailed(f.shape, f.color, g)) return g;
             // Shapes come from the data, so new ingredients reuse them without code.
             switch (f.shape)
             {

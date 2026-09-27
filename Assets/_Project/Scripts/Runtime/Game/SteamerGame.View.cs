@@ -137,7 +137,7 @@ namespace Squishy.Runtime.Game
             // behind: with one stuck entry every new touch looked like a pinch and nothing in the room could be tapped.
             if (!touch || Input.touchCount <= 1) { ptrs.Clear(); drag = null; }
             ptrs[id] = new Pointer { pos = p, t = Time.realtimeSinceStartup };
-            if (mode == "unbox") { HoldStart(); return; }
+            if (mode == "unbox") { if (!UnboxSquishDown(p, touch)) HoldStart(); return; }
             if (ptrs.Count == 2)
             {
                 var ab = ptrs.Values.ToArray();
@@ -207,6 +207,7 @@ namespace Squishy.Runtime.Game
             if (!ptrs.TryGetValue(id, out var prevP)) return;
             var prev = prevP.pos;
             ptrs[id] = new Pointer { pos = p, t = Time.realtimeSinceStartup };
+            if (drag != null && drag.unboxSq) { UnboxSquishMove(p); return; }
             if (mode == "unbox") return;
             if (ptrs.Count == 2)
             {
@@ -316,7 +317,7 @@ namespace Squishy.Runtime.Game
         {
             ptrs.Remove(id);
             if (ptrs.Count < 2) { pinch0 = 0; twist = null; }
-            if (mode == "unbox") { HoldEnd(); return; }
+            if (mode == "unbox") { if (drag != null && drag.unboxSq) { UnboxSquishUp(); drag = null; return; } HoldEnd(); return; }
             if (drag == null) return;
             if (ptrs.Count > 0 && drag.item != null) return;
             if (drag.tactile) { EndTactile(); drag = null; return; }

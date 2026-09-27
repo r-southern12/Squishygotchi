@@ -9,7 +9,9 @@ namespace Squishy.Runtime.Game
     /// </summary>
     public sealed class Sfx : MonoBehaviour
     {
-        public readonly SoundBank Bank = new SoundBank();
+        private SoundBank _bank;
+        /// <summary>Loaded on first use (Resources can't load while a MonoBehaviour is being constructed).</summary>
+        public SoundBank Bank { get { return _bank ?? (_bank = new SoundBank()); } }
         private readonly AudioSource[] _pool = new AudioSource[8];
         private int _next;
         private AudioSource _hum;

@@ -257,7 +257,7 @@ namespace Squishy.Runtime.Game
                     () =>
                     {
                         if (own) Rules.Equip(id);
-                        else if (!Rules.BuyCosmetic(id)) { sfx.Bonk(); return; }
+                        else if (!Rules.BuyCosmetic(id)) { sfx.Bonk(); return; } else ui.MarkBought();
                         RefreshCosmetics();
                         sfx.Snap();
                         WriteSave();

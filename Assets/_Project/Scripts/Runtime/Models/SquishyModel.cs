@@ -159,11 +159,13 @@ namespace Squishy.Runtime.Models
         public void SetFinish(FinishData f)
         {
             Fin = f;
-            _base = ThreeMat.Lin(f.color);
+            // Glitter, galaxy and holographic skins paint their colour into a texture (flecks, nebula, sheen), so the tint is white.
+            var tierMap = Textures.TierMap(f);
+            _base = tierMap != null ? Color.white : ThreeMat.Lin(f.color);
             Mat.SetVector("_BaseColor", _base);
             Mat.SetFloat("_Roughness", f.rough);
             Mat.SetFloat("_Metalness", f.metal ? .6f : 0f);
-            Mat.SetTexture("_BaseMap", string.IsNullOrEmpty(f.map) ? Texture2D.whiteTexture : Textures.FinishMap(f.map));
+            Mat.SetTexture("_BaseMap", tierMap != null ? tierMap : string.IsNullOrEmpty(f.map) ? Texture2D.whiteTexture : Textures.FinishMap(f.map));
             Mat.SetVector("_EmissionColor", string.IsNullOrEmpty(f.glow) ? Color.black : ThreeMat.Lin(f.glow) * .25f);
             K = f.tier == "UV" ? 40 : f.tier == "Common" ? 5 : 12;
             RiseTime = f.tier == "UV" ? 1f : f.tier == "Common" ? 3f : f.tier == "Holographic" ? 1.6f : 2.4f; // foam rises slowly, jelly quickly

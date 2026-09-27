@@ -38,6 +38,7 @@ namespace Squishy.EditorTools
 
         public static void Run()
         {
+            EditorUtility.audioMasterMute = true; // test runs play the game: never through the owner's speakers
             SessionState.SetBool(Key, true);
             EditorSceneManager.OpenScene("Assets/_Project/Scenes/Main.unity");
             EditorApplication.EnterPlaymode();
@@ -51,6 +52,7 @@ namespace Squishy.EditorTools
         private static void Tick()
         {
             if (!EditorApplication.isPlaying) return;
+            AudioListener.volume = 0; // silent test runs
             if (_start < 0) _start = Time.frameCount;
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
@@ -86,6 +88,31 @@ namespace Squishy.EditorTools
                     else { var c = btn.worldBound.center; var hit = btn.panel.Pick(c); Debug.Log("IconShots: admin button at " + btn.worldBound + " picks " + (hit == null ? "null" : hit.GetType().Name + " name=" + hit.name + " parentIsBtn=" + (hit == btn || hit.parent == btn)) + " panelBounds=" + btn.panel.visualTree.worldBound); }
                     g.OnAdmin(); Debug.Log("IconShots: admin ok, mode=" + typeof(Squishy.Runtime.Game.SteamerGame).GetField("mode", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(g)); }
                 catch (System.Exception e) { Debug.LogError("IconShots: admin threw " + e); }
+                Finish(0);
+                return;
+            }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FX") == "1")
+            {
+                // The rarity sparkles: a glitter squishy squished a few times, photographed mid-shimmer.
+                if (f < 90) return;
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var petM = (Squishy.Runtime.Models.SquishyModel)T.GetField("pet", flags).GetValue(game);
+                var content = (Squishy.Simulation.Game.GameContent)T.GetField("C", flags | System.Reflection.BindingFlags.Public).GetValue(game);
+                int fi = System.Array.FindIndex(content.finishes, x => x.name == "Rainbow Fizz");
+                if (f == 90) petM.SetFinish(content.finishes[fi]);
+                var fx = T.GetMethod("SquishFx", flags);
+                var pw = T.GetMethod("PetWorld", flags);
+                if (f < 150) { if (f % 12 == 0) fx.Invoke(game, new object[] { (Vector3)pw.Invoke(game, null) + Vector3.up * petM.Scale * .6f, 10, .35f }); return; }
+                EditorApplication.update -= Tick;
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var flat = cam.transform.position - Bounds(FindPet()).center;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+                Shot(cam, rt, tex, Bounds(FindPet()), flat.normalized, 25, 3.2f, 30, Shader.GetGlobalFloat("_PostWarm"), "fx");
                 Finish(0);
                 return;
             }
@@ -334,6 +361,14 @@ namespace Squishy.EditorTools
             sheet.Apply();
             Directory.CreateDirectory("Library/IconChecks");
             File.WriteAllBytes("Library/IconChecks/plants.png", sheet.EncodeToPNG());
+            {
+                var foods = new System.Collections.Generic.List<string>();
+                for (int i = 0; i < content.pantry.Length; i++) foods.Add("food:" + i);
+                ThumbSheet("foods", foods, 5);
+                var fins = new System.Collections.Generic.List<string>();
+                for (int i = 0; i < content.finishes.Length; i++) fins.Add("sq:" + i);
+                ThumbSheet("finishes", fins, 8);
+            }
 
             {
             // Every style's shelf on one sheet2 (6 x 4), rendered with the catalogue thumbnail camera.
@@ -369,6 +404,43 @@ namespace Squishy.EditorTools
             Directory.CreateDirectory("Library/IconChecks");
             File.WriteAllBytes("Library/IconChecks/shelves.png", sheet2.EncodeToPNG());
             }
+        }
+
+        /// <summary>A contact sheet of catalogue thumbnails (Library/IconChecks/NAME.png), for checking models by eye.</summary>
+        private static void ThumbSheet(string name, System.Collections.Generic.List<string> keys, int cols)
+        {
+            const int T = 200;
+            int rows = (keys.Count + cols - 1) / cols;
+            var rt = new RenderTexture(T, T, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            var sheet = new Texture2D(T * cols, T * rows, TextureFormat.RGBA32, false, false);
+            var fill = new Color32[T * cols * T * rows];
+            for (int i = 0; i < fill.Length; i++) fill[i] = new Color32(247, 240, 228, 255);
+            sheet.SetPixels32(fill);
+            for (int i = 0; i < keys.Count; i++)
+            {
+                var th = Squishy.Runtime.Game.Thumbs.Get(keys[i]);
+                if (th == null) continue;
+                Graphics.Blit(th, rt);
+                var prev = RenderTexture.active;
+                RenderTexture.active = rt;
+                var cell = new Texture2D(T, T, TextureFormat.RGBA32, false, false);
+                cell.ReadPixels(new Rect(0, 0, T, T), 0, 0);
+                RenderTexture.active = prev;
+                var px = cell.GetPixels32();
+                int cx = (i % cols) * T, cy = (rows - 1 - i / cols) * T;
+                for (int y = 0; y < T; y++)
+                for (int x = 0; x < T; x++)
+                {
+                    var c = px[y * T + x];
+                    if (c.a < 8) continue;
+                    var d = sheet.GetPixel(cx + x, cy + y);
+                    float a = c.a / 255f;
+                    sheet.SetPixel(cx + x, cy + y, new Color(Mathf.Lerp(d.r, c.r / 255f, a), Mathf.Lerp(d.g, c.g / 255f, a), Mathf.Lerp(d.b, c.b / 255f, a), 1));
+                }
+            }
+            sheet.Apply();
+            Directory.CreateDirectory("Library/IconChecks");
+            File.WriteAllBytes("Library/IconChecks/" + name + ".png", sheet.EncodeToPNG());
         }
 
         private static void Shot(Camera cam, RenderTexture rt, Texture2D tex, Bounds bb, Vector3 flat, float elev, float fill, float fov, float warm, string name)

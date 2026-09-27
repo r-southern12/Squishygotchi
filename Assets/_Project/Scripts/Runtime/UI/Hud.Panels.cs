@@ -140,9 +140,16 @@ namespace Squishy.Runtime.UI
         }
 
         /// <summary>A .rec row: 52px thumbnail, title/sub/extra, action button.</summary>
+        // Purchase feedback: a buy tapped from a row marks that row, and when the panel redraws it flashes "Bought!".
+        private string _pendingBuy, _lastBought;
+        private float _lastBoughtAt = -9;
+        public void MarkBought() { if (_pendingBuy != null) { _lastBought = _pendingBuy; _lastBoughtAt = Time.realtimeSinceStartup; } }
+
         public VisualElement Rec(VisualElement parent, string thumbKey, string title, string sub, string btn, Action onClick, bool disabled, VisualElement extra = null, bool noImage = false)
         {
             var r = new Frame().Set(C("#F4EBDD"), 16).Row().Pad(10, 10, 10, 10).In(parent);
+            bool justBought = title == _lastBought && Time.realtimeSinceStartup - _lastBoughtAt < 1f;
+            if (onClick != null) { var inner = onClick; onClick = () => { _pendingBuy = title; try { inner(); } finally { _pendingBuy = null; } }; }
             r.pickingMode = PickingMode.Position;
             if (!noImage)
             {
@@ -157,6 +164,13 @@ namespace Squishy.Runtime.UI
             b.Wrap();
             if (!string.IsNullOrEmpty(sub)) { var fx = Label(tx, sub, "Figtree", 600, 11, "#5F7F62"); fx.Wrap(); }
             if (extra != null) tx.Add(extra);
+            if (justBought)
+            {
+                var ok = Label(tx, "Bought!", "Gluten", 800, 15, "#4C7552");
+                r.style.backgroundColor = C("#D5EDCF");
+                r.schedule.Execute(() => { r.style.backgroundColor = C("#F4EBDD"); ok.style.opacity = 0; }).StartingIn(1400);
+                Tw.Run(r, .35f, u => r.style.scale = new Scale(Vector3.one * (1 + .04f * Mathf.Sin(Mathf.PI * u))));
+            }
             if (btn != null)
             {
                 var bt = Button(r, btn, "#C8674E", "#8E4332", Cream, 12, 0, 14, onClick, disabled).Pad(8, 12, 8, 12);

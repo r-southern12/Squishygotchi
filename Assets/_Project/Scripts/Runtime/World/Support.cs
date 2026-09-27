@@ -106,6 +106,9 @@ namespace Squishy.Runtime.World
         private readonly MaterialPropertyBlock _mpb = new MaterialPropertyBlock();
         private int _next, _live;
 
+        /// <summary>Sparkle mode: camera-facing star sprites that swell in, twinkle, slowly turn and fade (squish and bounce effects).</summary>
+        public bool Glint;
+
         public ParticlePool(int count, Mesh mesh, Material mat, bool colored, int layer)
         {
             _ps = new P[count];
@@ -146,6 +149,15 @@ namespace Squishy.Runtime.World
                 q.v.y += q.g * dt;
                 q.p += q.v * dt;
                 float u = q.t / q.life, sc;
+                if (Glint)
+                {
+                    q.r.z += q.w.z * dt;
+                    float env = Mathf.Sin(Mathf.PI * Mathf.Min(1, u)) , tw = .7f + .3f * Mathf.Sin(q.t * 11 + q.w.x);
+                    _m[n] = Matrix4x4.TRS(Space3.U(q.p), cam.transform.rotation * Quaternion.AngleAxis(q.r.z * Mathf.Rad2Deg, Vector3.forward), Vector3.one * Mathf.Max(.001f, q.s * env * tw));
+                    _c[n] = q.col * Mathf.Clamp01(env * 1.4f);
+                    n++;
+                    continue;
+                }
                 if (steam) sc = Mathf.Max(.001f, q.s * Mathf.Pow(Mathf.Sin(Mathf.PI * Mathf.Min(1, u * 1.1f + .05f)), .6f));
                 else
                 {

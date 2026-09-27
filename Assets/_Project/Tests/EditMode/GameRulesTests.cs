@@ -269,12 +269,31 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Pity_Guarantees_Every_Tier()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 77));
+            int rare = 0, epic = 0, leg = 0;
+            for (int n = 0; n < 30000; n++)
+            {
+                int k = GameContent.RarityRank(rules.RollRarity());
+                rare = k >= 1 ? 0 : rare + 1;
+                epic = k >= 2 ? 0 : epic + 1;
+                leg = k >= 3 ? 0 : leg + 1;
+                Assert.Less(rare, c.rules.pityRare);
+                Assert.Less(epic, c.rules.pityEpic);
+                Assert.Less(leg, c.rules.pityLegendary);
+            }
+        }
+
+        [Test]
         public void Published_Odds_Match_The_Rules()
         {
             var c = Content();
             var o = GameRules.MeasureOdds(c);
             Assert.AreEqual(1f, o.common + o.rare + o.epic + o.legendary, .001f);
-            Assert.AreEqual(c.rules.pLegendary, o.legendary, .003f);
+            Assert.Greater(o.legendary, c.rules.pLegendary, "Legendary pity lifts it above its base rate");
+            Assert.Less(o.legendary, c.rules.pLegendary * 2);
             Assert.Greater(o.rare, c.rules.pRare, "pity lifts Rare above its base rate");
             Assert.AreEqual(c.rules.favouriteChance, o.favouriteCopy, .03f);
         }

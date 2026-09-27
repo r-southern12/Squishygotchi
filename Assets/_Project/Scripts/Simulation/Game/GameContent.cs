@@ -52,7 +52,7 @@ namespace Squishy.Simulation.Game
         public int setCount;
         public float deathSeconds, dayLength, selfCareCap, happyBase, happyComfortDivisor;
         public float pLegendary, pEpic, pRare, favouriteChance, pTwoLayers, pThreeLayers;
-        public int pityRare, pityEpic;
+        public int pityRare, pityEpic, pityLegendary;
         public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;
