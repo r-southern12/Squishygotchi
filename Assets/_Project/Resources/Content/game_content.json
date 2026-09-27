@@ -2149,7 +2149,7 @@
     },
     {
       "id": "fridge",
-      "text": "Raid the fridge together",
+      "text": "Raid the fridge with your squishy",
       "goal": 1,
       "coins": 20,
       "ev": "act_snack",
