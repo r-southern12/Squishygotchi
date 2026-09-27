@@ -253,7 +253,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Duplicate furniture skin | 20 coins |
 | Duplicate tool / tool skin / steamer skin | 10 / 15 / 30 coins |
 
-**Care tasks:** 3 at a time; a claimed task is replaced after a 3-hour wait (tasks are rate-limited, not farmable). About 34 missions (food, cleaning, rest, play, mood, garden, home, friends; none ask you to open steamers) live in the data; one is only offered if you own what it needs (a slide mission needs a slide; a visit mission needs a friend), and the last 8 shown never come straight back. Missions count events; no two missions ask for the same thing.
+**Care tasks:** 3 at a time; a claimed task is replaced after a 3-hour wait (tasks are rate-limited, not farmable). About 33 missions (food, cleaning, rest, play, mood, garden, home, friends; none ask you to open steamers) live in the data; one is only offered if you own what it needs (a slide mission needs a slide; a visit mission needs a friend), and the last 8 shown never come straight back. Missions count events; no two missions ask for the same thing.
 
 | Task | Reward |
 | --- | --- |

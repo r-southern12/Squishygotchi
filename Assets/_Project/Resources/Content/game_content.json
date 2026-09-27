@@ -2353,14 +2353,6 @@
       "time": true
     },
     {
-      "id": "happy10",
-      "text": "Stay Happy for 10 minutes",
-      "goal": 600,
-      "coins": 90,
-      "ev": "happy",
-      "time": true
-    },
-    {
       "id": "allhalf",
       "text": "Keep every need above half for 5 minutes",
       "goal": 300,
