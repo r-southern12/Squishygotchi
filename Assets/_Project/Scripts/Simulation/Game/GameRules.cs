@@ -315,6 +315,9 @@ namespace Squishy.Simulation.Game
             if (rar != "Legendary" && Random() < R.favouriteChance) return new Reward { type = "sq", i = S.favIdx, rar = rar };
             var o = new List<int>();
             for (int k = 0; k < C.finishes.Length; k++) if (C.FinishRarity(C.finishes[k]) == rar) o.Add(k);
+            // New squishies first: while any of this rarity are still missing, you get one of those (the rarity odds are unchanged).
+            var fresh = o.FindAll(k => SquishCount(k) == 0);
+            if (fresh.Count > 0) o = fresh;
             return new Reward { type = "sq", i = o.Count > 0 ? Pick(o) : S.favIdx, rar = rar };
         }
 

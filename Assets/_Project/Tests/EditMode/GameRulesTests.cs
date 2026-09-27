@@ -223,6 +223,60 @@ namespace Squishy.Tests
             CollectionAssert.AreEqual(new[] { 0, 1, 3 }, rules.UnlockedTracks());
         }
 
+        [Test]
+        public void Free_Steamers_Stack_Every_Few_Hours_And_Bonus_Is_Separate()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 9);
+            var clock = new ManualClock(new DateTime(2026, 9, 28, 9, 0, 0, DateTimeKind.Utc));
+            var rules = new GameRules(c, s) { Clock = clock };
+            s.giftReadyAt = 0;
+            rules.AccrueGifts();
+            Assert.IsFalse(rules.GiftReady(), "the first free steamer comes after the wait");
+            clock.Advance(TimeSpan.FromHours(c.rules.giftHours * 2 + .5));
+            int before = s.steamers;
+            Assert.AreEqual(2, rules.ClaimGifts(), "two waits, two stacked steamers");
+            Assert.AreEqual(before + 2, s.steamers);
+            clock.Advance(TimeSpan.FromDays(30));
+            Assert.AreEqual(c.rules.giftStackMax, rules.ClaimGifts(), "a long time away fills the stack to its cap");
+            Assert.IsTrue(rules.BonusReady());
+            Assert.IsTrue(rules.ClaimBonus());
+            Assert.IsFalse(rules.ClaimBonus(), "one bonus per wait");
+            clock.Advance(TimeSpan.FromHours(c.rules.giftHours));
+            Assert.IsTrue(rules.ClaimBonus());
+        }
+
+        [Test]
+        public void Squishy_Prizes_Are_New_Until_A_Rarity_Is_Complete()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 21);
+            var rules = new GameRules(c, s);
+            for (int n = 0; n < 4000; n++)
+            {
+                var rw = rules.RollReward();
+                if (rw.type != "sq" || rw.i == s.favIdx) continue;
+                if (rules.SquishCount(rw.i) > 0)
+                {
+                    // A repeat (not the favourite) only once every squishy of that rarity is owned.
+                    for (int k = 0; k < c.finishes.Length; k++)
+                        if (c.FinishRarity(c.finishes[k]) == rw.rar) Assert.Greater(rules.SquishCount(k), 0, c.finishes[k].name + " was still missing");
+                }
+                rules.Claim(rw);
+            }
+        }
+
+        [Test]
+        public void Published_Odds_Match_The_Rules()
+        {
+            var c = Content();
+            var o = GameRules.MeasureOdds(c);
+            Assert.AreEqual(1f, o.common + o.rare + o.epic + o.legendary, .001f);
+            Assert.AreEqual(c.rules.pLegendary, o.legendary, .003f);
+            Assert.Greater(o.rare, c.rules.pRare, "pity lifts Rare above its base rate");
+            Assert.AreEqual(c.rules.favouriteChance, o.favouriteCopy, .03f);
+        }
+
         private sealed class MemoryStore : ISaveStore
         {
             public string Text;

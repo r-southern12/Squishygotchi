@@ -236,7 +236,8 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Finishing a set of 3 tasks | +2 steamers |
 | Task streak | 3 days: +1 steamer; 7 days: +2 steamers |
 | Weekly goal (15 tasks) | +3 steamers |
-| Gift steamer | 1 every 3 hours (free players watch an optional short video; paid players just claim) |
+| Free steamer | 1 every 3 hours, stacking up to 8 while you're away; tap the gift chip to collect them all |
+| Bonus steamer | 1 more every 3 hours: an optional short video for free players, simply included with the full game |
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Squish when energised | 1–5 coins |
 | Visiting a friend | 3 coins per caring action (they get 2) |
@@ -279,9 +280,10 @@ No furniture is sold in the shop; furniture comes from steamers.
 | Epic | 5% |
 | Legendary | 1% |
 
-- **Pity:** Rare+ guaranteed within 10 steamers; Epic+ within 50. Counter shown on the Odds button. Odds always visible.
+- **Pity:** Rare+ guaranteed within 10 steamers; Epic+ within 50. Counter shown on the Odds button. Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
+- **Never paid:** steamers, coins or anything that turns into pulls are never sold for real money (keeps us clear of paid loot-box laws and suits a young audience). Duplicates refund coins.
 - **Stacked steamers:** 15% have 2 tiers and 5% have 3, each with its own prize.
-- **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (40% chance to be a copy of your favourite, never for Legendary), tool skins, steamer skins.
+- **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (25% chance to be a copy of your favourite, never for Legendary; otherwise one you don't own yet, until every squishy of that rarity is collected), tool skins, steamer skins.
 - **Legendary:** one of 6 legendary squishies, or a Gold / Galaxy steamer skin. Gold is metallic with a cream floor.
 
 **The reveal** happens on the counter of a softly blurred, gently animated professional kitchen: steamer drops in → hold anywhere to build steam (rattle, rim glow, haptic ticks) → lid blows off → a squishy fills its steamer wall to wall like the toy and slowly rises from squashed; other prizes launch and land (on a display plate only for food) → a card shows what it is, whether it's new, and what it did → the opened steamer slides away and a fresh one slides in.
@@ -363,8 +365,8 @@ Soft-block diorama with a tilt-shift miniature look.
 
 ## Monetisation and ethics
 
-- **Free:** one squishy life or 28 days, whichever comes first, with optional rewarded videos (for the gift steamer) and light banners. No pop-up ads.
-- **Paid unlock:** a one-off purchase removes ads and limits; the gift steamer is claimed directly.
+- **Free:** one squishy life or 28 days, whichever comes first, with optional rewarded videos (for the bonus steamer) and light banners. No pop-up ads.
+- **Paid unlock:** a one-off purchase removes ads and limits; the bonus steamer is included without a video.
 - Coins are earned by playing; steamers can be bought with coins. Accessories cost prestige, which only comes from caring.
 - Odds published; pity guarantee. No forced ads.
 - Young players: check Apple Kids Category, Google Families policy and under-13 privacy law before release. No chat; friend codes only.

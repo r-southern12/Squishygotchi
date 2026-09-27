@@ -51,7 +51,8 @@ namespace Squishy.Runtime.Game
             ui.ExpandDot(canExpand && mode == "home");
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can grow! Open Arrange to expand"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
-            if (Rules.GiftReady()) ui.SetGift("Gift!", true);
+            if (Rules.GiftReady()) ui.SetGift(S.giftStack > 1 ? "×" + S.giftStack : "Gift!", true);
+            else if (Rules.BonusReady()) ui.SetGift("Bonus", true);
             else { var w = Rules.GiftWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();
             if (mode == "home" && !paywallShown && Rules.TrialOver() && !S.dead && !_dying) ShowPaywall();
@@ -148,21 +149,26 @@ namespace Squishy.Runtime.Game
 
         // ---------------- gift steamer ----------------
 
+        /// <summary>
+        /// The gift chip: collects the free steamers stacked up (one every few hours), and offers the bonus steamer:
+        /// an optional short video for free players, simply included with the full game. Never required.
+        /// </summary>
         public void OnGift()
         {
-            if (!Rules.GiftReady())
+            int got = Rules.ClaimGifts();
+            if (got > 0) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+" + got + " free steamer" + (got == 1 ? "" : "s") + "!"); sfx.Chime(); WriteSave(); }
+            if (!Rules.BonusReady())
             {
+                if (got > 0) return;
                 var w = Rules.GiftWait();
-                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "Next gift in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m");
-                sfx.Bonk();
+                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "Next free steamer in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m");
                 return;
             }
-            Action claim = () => { Rules.ClaimGift(); ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+1 steamer!"); sfx.Chime(); WriteSave(); };
-            if (S.premium) { claim(); return; }
-            // Free players watch a short, optional video; the gift waits if they skip.
-            ui.ShowDialog("A gift steamer!", "Watch a short video to open your free steamer. You can skip: the gift waits for you.", "#D9A64A",
-                ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) claim(); }); })),
-                ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
+            Action bonus = () => { if (Rules.ClaimBonus()) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .36f), "+1 bonus steamer!"); sfx.Chime(); WriteSave(); } };
+            if (S.premium) { bonus(); return; }
+            ui.ShowDialog("Bonus steamer", (got > 0 ? "Your free steamers are in. " : "") + "Want one more? Watch a short video for a bonus steamer. Totally optional: free steamers keep coming every " + C.rules.giftHours + " hours either way.", "#D9A64A",
+                ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) bonus(); }); })),
+                ("No thanks", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }
 
         // ---------------- settings ----------------

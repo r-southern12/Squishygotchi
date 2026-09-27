@@ -2197,7 +2197,7 @@
     "pRare": 0.18,
     "pityRare": 10,
     "pityEpic": 50,
-    "favouriteChance": 0.4,
+    "favouriteChance": 0.25,
     "pTwoLayers": 0.15,
     "pThreeLayers": 0.05,
     "dupeItemCoins": 20,
@@ -2247,7 +2247,8 @@
     "dentRadius": 0.085,
     "flingHold": 0.45,
     "flingSpeed": 2.4,
-    "musicCredit": "Music by Redlight_Chill"
+    "musicCredit": "Music by Redlight_Chill",
+    "giftStackMax": 8
   },
   "cosmetics": [
     {

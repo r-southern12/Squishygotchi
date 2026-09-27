@@ -154,14 +154,46 @@ namespace Squishy.Simulation.Game
 
         // ---- gift steamer ----
 
-        public bool GiftReady() { return S.giftReadyAt <= Clock.UtcNow.Ticks; }
-        public TimeSpan GiftWait() { return TimeSpan.FromTicks(Math.Max(0, S.giftReadyAt - Clock.UtcNow.Ticks)); }
+        // A free steamer every giftHours, stacking up (to giftStackMax) until collected, even while away.
+        // Separately, a bonus steamer every giftHours: an optional video for free players, automatic with the full game.
 
-        public void ClaimGift()
+        /// <summary>Adds any free steamers that have come due. Safe to call every frame.</summary>
+        public void AccrueGifts()
         {
-            if (!GiftReady()) return;
+            long now = Clock.UtcNow.Ticks, step = TimeSpan.FromHours(R.giftHours).Ticks;
+            if (S.giftReadyAt <= 0) { S.giftReadyAt = now + step; return; }
+            // Far behind (a long time away): skip whole steps once the stack is full.
+            if (now - S.giftReadyAt > step * (long)R.giftStackMax) S.giftReadyAt = now - step * (long)R.giftStackMax;
+            while (S.giftReadyAt <= now)
+            {
+                if (S.giftStack < R.giftStackMax) S.giftStack++;
+                S.giftReadyAt += step;
+            }
+        }
+
+        public bool GiftReady() { AccrueGifts(); return S.giftStack > 0; }
+        public TimeSpan GiftWait() { AccrueGifts(); return TimeSpan.FromTicks(Math.Max(0, S.giftReadyAt - Clock.UtcNow.Ticks)); }
+
+        /// <summary>Collects every stacked free steamer. Returns how many.</summary>
+        public int ClaimGifts()
+        {
+            AccrueGifts();
+            int n = S.giftStack;
+            if (n <= 0) return 0;
+            S.giftStack = 0;
+            SetSteamers(S.steamers + n);
+            return n;
+        }
+
+        public bool BonusReady() { return S.bonusReadyAt <= Clock.UtcNow.Ticks; }
+        public TimeSpan BonusWait() { return TimeSpan.FromTicks(Math.Max(0, S.bonusReadyAt - Clock.UtcNow.Ticks)); }
+
+        public bool ClaimBonus()
+        {
+            if (!BonusReady()) return false;
             SetSteamers(S.steamers + 1);
-            S.giftReadyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            S.bonusReadyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            return true;
         }
 
         // ---- daily streak and weekly goal ----

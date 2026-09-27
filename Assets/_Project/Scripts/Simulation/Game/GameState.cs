@@ -30,6 +30,8 @@ namespace Squishy.Simulation.Game
         public List<string> cosmetics = new List<string>();
         public string hat = "", face = "", neck = "";
         public bool premium;
+        public int giftStack; // free steamers waiting to be collected
+        public long bonusReadyAt; // when the next bonus (video) steamer is available
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;
         public int stageAwarded; // highest life stage whose prestige has been paid this life

@@ -61,9 +61,14 @@ namespace Squishy.Runtime.UI
             _panelTitle["cook"].text = "Cook";
             _panelTitle["odds"].text = "Steamer odds";
             _panelTitle["info"].text = "Comfort";
-            // Odds (static text, like the prototype's table).
+        }
+
+        /// <summary>The odds screen, filled from the measured rules (SteamerGame.OnOdds).</summary>
+        public void SetOdds(IEnumerable<(string tier, string pct)> rows, params string[] notes)
+        {
             var ob = _panelBody["odds"];
-            foreach (var (tier, pct) in new[] { ("Common", "76%"), ("Rare", "18%"), ("Epic", "5%"), ("Legendary", "1%") })
+            ob.Clear();
+            foreach (var (tier, pct) in rows)
             {
                 var tr = new VisualElement().Row(Align.Center, Justify.SpaceBetween).Pad(6, 4, 6, 4).In(ob);
                 tr.style.borderBottomWidth = 1;
@@ -71,8 +76,7 @@ namespace Squishy.Runtime.UI
                 Label(tr, tier, "Figtree", 400, 14);
                 Label(tr, pct, "Figtree", 700, 14);
             }
-            Para(ob, "Rare or better is guaranteed at least once every 10 steamers, and Epic or better once every 50.", 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
-            Para(ob, "Some steamers are stacked: 2 layers (15%) or 3 layers (5%), each with its own prize at these odds. Inside: furniture about 50%, kitchen kits (tools and ingredients) 28%, squishies 12%, tool skins 5%, rare ingredients 3%, steamer skins 1%. A squishy has a 40% chance to be a copy of your favourite, which helps it grow.", 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
+            foreach (var n in notes) Para(ob, n, 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
         }
 
         public VisualElement PanelBody(string id) { var b = _panelBody[id]; b.Clear(); return b.contentContainer; }

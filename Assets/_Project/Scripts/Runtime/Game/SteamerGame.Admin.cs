@@ -29,7 +29,7 @@ namespace Squishy.Runtime.Game
             Row(body, "Squishy", ("Grow", Grow), ("Age +1 day", () => { S.age++; UpdateSub(); OnAdmin(); }));
             Row(body, "Friends", ("Test visit (my room)", TestVisit), ("Visit credit +1", () => { Rules.CreditVisit("test", DateTime.UtcNow.Ticks, 1); OnAdmin(); }));
             Row(body, "Life", ("Old age now", () => { ui.ClosePanels(); S.age = Mathf.CeilToInt(Rules.ExpectedLifespanDays()); }), ("+50 prestige", () => { S.prestige += 50; OnAdmin(); }));
-            Row(body, "Unlock", (S.premium ? "Premium: on" : "Premium: off", () => { S.premium = !S.premium; paywallShown = false; OnAdmin(); }), ("Gift ready", () => { S.giftReadyAt = 0; OnAdmin(); }), ("End trial", () => { S.trialStart = 1; ui.ClosePanels(); }));
+            Row(body, "Unlock", (S.premium ? "Premium: on" : "Premium: off", () => { S.premium = !S.premium; paywallShown = false; OnAdmin(); }), ("Gift +1", () => { S.giftStack++; S.bonusReadyAt = 0; OnAdmin(); }), ("End trial", () => { S.trialStart = 1; ui.ClosePanels(); }));
             Row(body, "Save", ("Reset game", ResetGame));
             ui.OpenPanel("info");
         }

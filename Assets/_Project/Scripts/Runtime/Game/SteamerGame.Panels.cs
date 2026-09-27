@@ -33,7 +33,23 @@ namespace Squishy.Runtime.Game
         public void OnCoinPill() { if (mode == "home") { OpenShop(); sfx.Tap(); } }
         public void OnShop() { OpenShop(); sfx.Tap(); }
         public void OnTasks() { DrawTasks(); ui.OpenPanel("tasks"); sfx.Tap(); }
-        public void OnOdds() { UpdatePity(); ui.OpenPanel("odds"); }
+        public void OnOdds() { FillOdds(); UpdatePity(); ui.OpenPanel("odds"); }
+
+        /// <summary>Published odds, measured from the real rules: base rates, rates with pity, what's inside, and how steamers are earned.</summary>
+        private void FillOdds()
+        {
+            var R = C.rules;
+            var o = GameRules.MeasureOdds(C);
+            string P(float v) { return (v * 100).ToString(v < .1f ? "0.0" : "0") + "%"; }
+            var inside = new System.Text.StringBuilder("Inside a steamer: ");
+            for (int k = 0; k < o.kinds.Count; k++) inside.Append(k > 0 ? ", " : "").Append(o.kinds[k].Key.ToLowerInvariant()).Append(" ").Append(P(o.kinds[k].Value));
+            ui.SetOdds(new[] { ("Common", P(1 - R.pRare - R.pEpic - R.pLegendary)), ("Rare", P(R.pRare)), ("Epic", P(R.pEpic)), ("Legendary", P(R.pLegendary)) },
+                "With pity counted, each prize is Common " + P(o.common) + ", Rare " + P(o.rare) + ", Epic " + P(o.epic) + ", Legendary " + P(o.legendary) + ". Rare or better is guaranteed at least once every " + R.pityRare + " prizes, and Epic or better once every " + R.pityEpic + ".",
+                "Some steamers are stacked: 2 layers (" + P(R.pTwoLayers) + ") or 3 layers (" + P(R.pThreeLayers) + "), each with its own prize at these odds.",
+                inside + ".",
+                "Squishies: " + P(R.favouriteChance) + " of the time it's a copy of your favourite (copies make it grow). Otherwise it's one you don't have yet, until you have every squishy of that rarity.",
+                "Getting steamers: a free one every " + R.giftHours + " hours (they stack up to " + R.giftStackMax + "), a bonus one every " + R.giftHours + " hours with an optional video, care tasks, and coins earned in the game. Steamers are never sold for real money.");
+        }
         public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); if (id == "info") UpdateMusic(); } // leaving the Sound Lab: back to this steamer's track
 
         public void OnSound(bool on)
