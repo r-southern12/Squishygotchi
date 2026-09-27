@@ -349,7 +349,7 @@ Soft-block diorama with a tilt-shift miniature look.
 - The squishy is the one soft, round, glossy thing in every frame.
 - Steamer interior: slatted bamboo walls that lower on the camera side; a slatted bamboo base as the floor; wall skin as whole-room theme.
 - **App icon:** a violet glitter dumpling popping out of a bamboo steamer with the lid flying, on yellow (supplied pack, used as supplied).
-- **Sound:** calm, soothing, ASMR-like: soft recorded foley only (no beeps, bongs or synth tones), quiet by default.
+- **Sound:** calm, soothing, ASMR-like: soft recorded foley only (no beeps, bongs or synth tones), quiet by default. Recordings from Pixabay (free licence) in Resources/Sfx; which clip plays for each moment lives in Resources/Content/sounds.json. The admin Sound Lab lets the owner audition and assign any clip (or silence) to any moment, with volume, then copy the picks so they become the defaults.
 - **Music:** calm lofi tracks (Redlight_Chill, credited in Settings). Every steamer skin unlocks its own track (Bamboo: The Temple, Red lacquer: Chan No Yu, Celadon: Cherry Blossom Tree, Birch: Autumn, Sea glass: Welcome to the Onsens, Gold: The Silk Road, Galaxy: Daydreaming, Candy stripe: Hot Chocolate). By default the music follows the steamer in use; Settings > Track picks any unlocked one. Visiting a friend plays their steamer's track. Sound and music each switch off in Settings.
 
 ## Mobile controls and performance

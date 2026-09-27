@@ -27,6 +27,7 @@ namespace Squishy.Runtime.Game
             Ads.Init(C.rules.adsGameIdAndroid, C.rules.adsGameIdIos);
             sfx.SoundOn = S.soundOn;
             sfx.MusicOn = S.musicOn;
+            ApplySoundPicks();
             ui.SetSoundIcon(S.soundOn);
             Haptics.Enabled = S.hapticsOn;
             Notifier.Enabled = S.notificationsOn;

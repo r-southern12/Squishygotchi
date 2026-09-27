@@ -20,6 +20,7 @@ namespace Squishy.Runtime.Game
             ui.SetPanelTitle("info", "Admin (testing)");
             var body = ui.PanelBody("info");
             Hud.Para(body, "Hidden test tools. Hold the coin counter to open. Speed: " + timeScale + "x · Day " + S.age + " · death clock " + Mathf.RoundToInt(S.deathClock / 60) + " min.");
+            Row(body, "Sound", ("Sound Lab", OnSoundLab));
             Row(body, "Wallet", ("+500 coins", () => { Rules.AddCoins(500); UpdateSub(); OnAdmin(); }), ("+5000", () => { Rules.AddCoins(5000); UpdateSub(); OnAdmin(); }), ("+5 steamers", () => { Rules.SetSteamers(S.steamers + 5); OnAdmin(); }));
             Row(body, "Skip time", ("+1 hour", () => Skip(1)), ("+6 hours", () => Skip(6)), ("+1 day", () => Skip(24)), ("+1 week", () => Skip(168)));
             Row(body, "Needs", ("Full", () => SetNeeds(1)), ("Half", () => SetNeeds(.5f)), ("Low", () => SetNeeds(.15f)), ("Empty", () => SetNeeds(0)));

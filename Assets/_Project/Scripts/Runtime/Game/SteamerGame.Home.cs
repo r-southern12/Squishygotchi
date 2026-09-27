@@ -467,6 +467,7 @@ namespace Squishy.Runtime.Game
                 sfx.Tap();
                 FloaterAt(A.it, A.it.st.lampOn ? "Lights on" : "Lights off · full rest");
             }
+            if (A.role == "bath") sfx.Bath();
             if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; ComputeComfort(); }
             if (A.role == "shower" && A.it != null) A.it.parts.openT = 0;
             StartToy(A);

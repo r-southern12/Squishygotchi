@@ -37,6 +37,7 @@ namespace Squishy.Simulation.Game
         public List<string> tiersClaimed = new List<string>();
         public bool soundOn = true, musicOn = true, hapticsOn = true, notificationsOn = true;
         public string track = ""; // chosen music ("" follows the steamer in use)
+        public List<SoundPick> soundPicks = new List<SoundPick>(); // Sound Lab choices (clip per sound event)
 
         // Player profile: kept on this phone; the friend code is what friends will use to visit.
         public string playerName = "", avatar = "", friendCode = "";
@@ -85,6 +86,10 @@ namespace Squishy.Simulation.Game
     /// <summary>The latest visit from one friend that has already paid you coins.</summary>
     [System.Serializable]
     public class VisitCredit { public string id; public long at; }
+
+    /// <summary>A Sound Lab choice: which clip (and how loud) plays for a sound event.</summary>
+    [System.Serializable]
+    public class SoundPick { public string ev, clip; public float vol = -1; }
 }
 
 namespace Squishy.Simulation.Game

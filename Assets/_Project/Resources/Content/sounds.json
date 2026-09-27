@@ -1,0 +1,320 @@
+{
+  "note": "Sound picks: each event lists options best-first; the first is the default. 'clip#n' is the n-th sound found in a longer recording; 'none' is silence. Sound Lab (admin) can assign any clip to any event.",
+  "clips": [
+    "app_tap_2",
+    "app_tap_3",
+    "bottle_clink",
+    "bubble_pop_06",
+    "canvas_tent",
+    "chime_1",
+    "chime_g003",
+    "cloth_rustle",
+    "drop_in_water",
+    "foam_asmr",
+    "foam_squeeze",
+    "glass_clink_7",
+    "glass_soft_clink",
+    "gooey_squish",
+    "kalimba_down",
+    "kalimba_g",
+    "kalimba_g4",
+    "light_bubble_pop",
+    "palm_taps",
+    "pillow_hit",
+    "pillow_throw",
+    "pot_cooking",
+    "pot_on_table",
+    "pot_pan_down",
+    "simmer",
+    "slime_impact",
+    "slime_squish_12",
+    "slime_squish_2",
+    "slime_squish_5",
+    "slimy_rub",
+    "soft_bubble_pop",
+    "soft_pop",
+    "soft_ui_click",
+    "squish",
+    "steam",
+    "steam_hiss",
+    "ui_tap_light",
+    "ui_tap_soft",
+    "water_drop",
+    "water_drop_pop",
+    "wind_chime_gentle",
+    "wind_chimes_2",
+    "wood_table_tap"
+  ],
+  "slices": [
+    {
+      "clip": "foam_asmr",
+      "n": 6
+    },
+    {
+      "clip": "slimy_rub",
+      "n": 4
+    },
+    {
+      "clip": "palm_taps",
+      "n": 6
+    },
+    {
+      "clip": "pillow_throw",
+      "n": 4
+    },
+    {
+      "clip": "glass_soft_clink",
+      "n": 3
+    },
+    {
+      "clip": "wind_chime_gentle",
+      "n": 3
+    },
+    {
+      "clip": "foam_squeeze",
+      "n": 2
+    },
+    {
+      "clip": "gooey_squish",
+      "n": 2
+    },
+    {
+      "clip": "squish",
+      "n": 2
+    },
+    {
+      "clip": "kalimba_down",
+      "n": 1
+    },
+    {
+      "clip": "simmer",
+      "n": 1
+    },
+    {
+      "clip": "steam_hiss",
+      "n": 1
+    }
+  ],
+  "events": [
+    {
+      "id": "press",
+      "name": "Squish (close-up press)",
+      "vol": 0.55,
+      "len": 0.9,
+      "options": [
+        "foam_asmr#1",
+        "foam_asmr#2",
+        "foam_asmr#3",
+        "foam_squeeze#1",
+        "slimy_rub#1",
+        "slimy_rub#2"
+      ]
+    },
+    {
+      "id": "squish",
+      "name": "Squeeze (hold, zoomed out)",
+      "vol": 0.5,
+      "len": 1.2,
+      "options": [
+        "slime_squish_12",
+        "gooey_squish#1",
+        "slime_squish_5",
+        "squish#1",
+        "slime_squish_2"
+      ]
+    },
+    {
+      "id": "pop",
+      "name": "Pop (ping out, lid pops)",
+      "vol": 0.5,
+      "len": 1,
+      "options": [
+        "soft_bubble_pop",
+        "light_bubble_pop",
+        "soft_pop",
+        "bubble_pop_06",
+        "water_drop_pop"
+      ]
+    },
+    {
+      "id": "land",
+      "name": "Land / bounce",
+      "vol": 0.45,
+      "len": 0.8,
+      "options": [
+        "slime_squish_2",
+        "pillow_hit",
+        "slime_impact",
+        "pillow_throw#1"
+      ]
+    },
+    {
+      "id": "hop",
+      "name": "Hop round the room",
+      "vol": 0.2,
+      "len": 0.4,
+      "options": [
+        "none",
+        "palm_taps#1",
+        "palm_taps#2",
+        "palm_taps#3"
+      ]
+    },
+    {
+      "id": "tap",
+      "name": "Buttons and menus",
+      "vol": 0.35,
+      "len": 0.4,
+      "options": [
+        "ui_tap_soft",
+        "app_tap_3",
+        "app_tap_2",
+        "ui_tap_light",
+        "soft_ui_click"
+      ]
+    },
+    {
+      "id": "lift",
+      "name": "Pick up furniture / lid",
+      "vol": 0.4,
+      "len": 0.7,
+      "options": [
+        "cloth_rustle",
+        "canvas_tent"
+      ]
+    },
+    {
+      "id": "drop",
+      "name": "Put furniture down",
+      "vol": 0.4,
+      "len": 0.8,
+      "options": [
+        "wood_table_tap",
+        "pot_on_table",
+        "pot_pan_down"
+      ]
+    },
+    {
+      "id": "snap",
+      "name": "Wall snap / choose skin",
+      "vol": 0.3,
+      "len": 0.4,
+      "options": [
+        "soft_ui_click",
+        "none",
+        "wood_table_tap"
+      ]
+    },
+    {
+      "id": "kick",
+      "name": "Plays with a toy",
+      "vol": 0.4,
+      "len": 0.7,
+      "options": [
+        "pillow_hit",
+        "pillow_throw#1",
+        "pillow_throw#2"
+      ]
+    },
+    {
+      "id": "nope",
+      "name": "Can't do that",
+      "vol": 0.35,
+      "len": 0.6,
+      "options": [
+        "palm_taps#4",
+        "none",
+        "wood_table_tap"
+      ]
+    },
+    {
+      "id": "coin",
+      "name": "Coins",
+      "vol": 0.35,
+      "len": 1.2,
+      "options": [
+        "glass_soft_clink#1",
+        "glass_clink_7",
+        "bottle_clink",
+        "glass_soft_clink#2"
+      ]
+    },
+    {
+      "id": "chime",
+      "name": "Task done / reward",
+      "vol": 0.35,
+      "len": 2.2,
+      "options": [
+        "wind_chime_gentle#1",
+        "wind_chimes_2",
+        "chime_g003",
+        "chime_1",
+        "wind_chime_gentle#2"
+      ]
+    },
+    {
+      "id": "note",
+      "name": "Xylophone toy notes (pitched)",
+      "vol": 0.45,
+      "len": 1.5,
+      "options": [
+        "kalimba_g4",
+        "kalimba_g"
+      ]
+    },
+    {
+      "id": "sad",
+      "name": "Sad",
+      "vol": 0.3,
+      "len": 2.5,
+      "options": [
+        "kalimba_down",
+        "none"
+      ]
+    },
+    {
+      "id": "cook",
+      "name": "Cooking on the stove",
+      "vol": 0.35,
+      "len": 2.5,
+      "options": [
+        "pot_cooking",
+        "simmer"
+      ]
+    },
+    {
+      "id": "thunk",
+      "name": "Steamer set down",
+      "vol": 0.45,
+      "len": 1,
+      "options": [
+        "pot_on_table",
+        "pot_pan_down",
+        "wood_table_tap"
+      ]
+    },
+    {
+      "id": "hum",
+      "name": "Steam building (hold to open)",
+      "vol": 0.4,
+      "len": 3,
+      "loop": true,
+      "options": [
+        "steam",
+        "steam_hiss",
+        "none"
+      ]
+    },
+    {
+      "id": "bath",
+      "name": "Gets in the bath",
+      "vol": 0.45,
+      "len": 1.2,
+      "options": [
+        "water_drop",
+        "drop_in_water",
+        "water_drop_pop"
+      ]
+    }
+  ]
+}

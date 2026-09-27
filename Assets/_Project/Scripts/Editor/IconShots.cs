@@ -55,6 +55,24 @@ namespace Squishy.EditorTools
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
             if (f < 180) return; // let the room build, the squishy settle and thumbnails finish
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_SOUNDS") == "1")
+            {
+                if (f < 60) return;
+                EditorApplication.update -= Tick;
+                var bank = new Squishy.Runtime.Game.SoundBank();
+                int ok = 0, bad = 0;
+                var sb = new System.Text.StringBuilder();
+                foreach (var o in bank.AllOptions())
+                {
+                    if (o == "none") continue;
+                    var a = bank.Get(o, 1.2f, false);
+                    if (a == null) { bad++; sb.Append(" MISSING:").Append(o); } else { ok++; sb.Append(" ").Append(o).Append("=").Append(a.length.ToString("F2")); }
+                }
+                foreach (var e in bank.Table.events) foreach (var o in e.options) if (o != "none" && !bank.AllOptions().Contains(o)) { bad++; sb.Append(" UNKNOWN:").Append(e.id).Append("/").Append(o); }
+                Debug.Log("IconShots: sounds ok=" + ok + " bad=" + bad + sb);
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_ADMIN") == "1")
             {
                 if (f < 120) return;

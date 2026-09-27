@@ -3,12 +3,26 @@ using UnityEngine;
 
 namespace Squishy.EditorTools
 {
-    /// <summary>Music tracks stream from disk as mono Vorbis (small in the APK, little memory).</summary>
+    /// <summary>Music streams from disk as mono Vorbis; sound clips decompress on load (SoundBank cuts them up).</summary>
     public sealed class MusicImport : AssetPostprocessor
     {
+        private void SfxSettings()
+        {
+            var imp = (AudioImporter)assetImporter;
+            imp.forceToMono = true;
+            var s = imp.defaultSampleSettings;
+            s.loadType = AudioClipLoadType.DecompressOnLoad;
+            s.compressionFormat = AudioCompressionFormat.Vorbis;
+            s.quality = .6f;
+            s.preloadAudioData = false;
+            imp.defaultSampleSettings = s;
+        }
+
         private void OnPreprocessAudio()
         {
-            if (!assetPath.Replace("\\", "/").Contains("/Resources/Music/")) return;
+            string p = assetPath.Replace("\\", "/");
+            if (p.Contains("/Resources/Sfx/")) { SfxSettings(); return; }
+            if (!p.Contains("/Resources/Music/")) return;
             var imp = (AudioImporter)assetImporter;
             imp.forceToMono = true;
             imp.loadInBackground = true;
