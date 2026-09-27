@@ -52,3 +52,31 @@ one squishy's life or four weeks, then unlock the full game once. No ads in the 
 ## Still open
 - Cloud save of your own game and server time: can use the same Unity project (Cloud Save + Authentication).
   Until then saves are local and the clock guard stops winding the phone clock back.
+
+## Release checklist (owner)
+
+Business and accounts
+- [ ] Decide: publish as an individual or as a company (a company keeps your home address off the store page and limits personal liability; see notes below).
+- [ ] If a company: register it, get a business bank account, and a free D-U-N-S number (Apple requires one for organisation accounts; Google uses it to verify organisations).
+- [ ] Google Play Console account (one-off fee). New *personal* accounts must run a closed test with at least 12 testers for 14 days before they can publish; organisation accounts skip this.
+- [ ] Apple Developer Program (yearly fee), plus a Mac or Unity Build Automation for iOS builds.
+- [ ] Payout and tax details in both stores (needed for the full-game unlock purchase and any ad revenue).
+
+Legal and compliance
+- [ ] Privacy policy hosted at a public web address (text drafted above), and a support email.
+- [ ] Age rating questionnaires (IARC on Google Play; Apple's rating form).
+- [ ] Target audience: if under-13s are included, Google Play Families rules apply: only Families-certified ad networks, no personalised ads, careful data handling (COPPA in the US, GDPR-K in the EU/UK).
+- [ ] Google Play Data safety form and Apple privacy labels (anonymous sign-in for Friends, friend codes, no personal data).
+- [ ] Trademark check (and optionally registration) for "Squishiotchi" in your country and main markets.
+- [ ] Keep asset credits: Redlight_Chill music (if kept) credited in Settings; Pixabay sounds and music need no credit.
+- [ ] Odds shown in game (done); steamers are never sold for real money (keeps clear of paid loot-box rules).
+
+Technical
+- [ ] Final app ID (package name): cannot be changed after the first upload.
+- [ ] Release signing key (Android keystore) created and backed up in two safe places.
+- [ ] Set adminTools false in game_content.json; remove test-only content.
+- [ ] Link the Unity Cloud project (Friends) and set Cloud Save indexes.
+- [ ] Set up the full-game unlock product in both stores and test a purchase.
+- [ ] Ads: pick a Families-certified network or ship without ads.
+- [ ] Store listing: icon (done), phone screenshots, feature graphic, short and long description.
+- [ ] Final sound and music picks baked in; unused audio removed to shrink the download.
