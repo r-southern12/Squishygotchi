@@ -167,10 +167,13 @@ namespace Squishy.Runtime.Game
             // the slide). The activity lasts two runs.
             const float Run = 2.4f;
             float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry), u = t % Run;
-            Vector2 foot = new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), top = new Vector2(it.tx - dx * .12f, it.tz - dz * .12f), end = new Vector2(it.tx + dx * .42f, it.tz + dz * .42f);
+            // The ladder is at the back (z -.23): climb up the outside of it, not through it.
+            float back = .23f + PetRadius() * .75f;
+            Vector2 foot = new Vector2(it.tx - dx * back, it.tz - dz * back), top = new Vector2(it.tx - dx * .12f, it.tz - dz * .12f), end = new Vector2(it.tx + dx * .42f, it.tz + dz * .42f);
             var side = new Vector2(it.tx + dz * .34f, it.tz - dx * .34f); // beside the slide, halfway along
             Vector2 pos, look;
-            if (u < .8f) { float k = u / .8f; pos = Vector2.Lerp(foot, top, k); ai.y = .47f * k; extra = .05f * Mathf.Sin(u * 30); look = top - foot; }
+            if (u < .6f) { float k = u / .6f; pos = foot; ai.y = .5f * k; extra = .05f * Mathf.Sin(u * 30); look = top - foot; } // straight up the ladder
+            else if (u < .8f) { float k = (u - .6f) / .2f; pos = Vector2.Lerp(foot, top, k); ai.y = .5f - .03f * k + .06f * Mathf.Sin(k * Mathf.PI); look = top - foot; } // hop over onto the platform
             else if (u < 1f) { pos = top; ai.y = .47f; look = end - top; }
             else if (u < 1.5f) { float k = (u - 1f) / .5f; pos = Vector2.Lerp(top, end, k); ai.y = .47f * (1 - k); extra = -.1f; look = end - top; }
             else
