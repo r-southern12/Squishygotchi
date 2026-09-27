@@ -13,7 +13,7 @@ namespace Squishy.Runtime.Game
     /// </summary>
     public static class SquishyArt
     {
-        public enum Mood { Happy, Droopy, Sad }
+        public enum Mood { Happy, Droopy, Sad, Asleep }
 
         private static float Sq(float a) { return a * a; }
         private static float Sstep(float a, float b, float x) { x = Mathf.Clamp01((x - a) / (b - a)); return x * x * (3 - 2 * x); }
@@ -145,7 +145,8 @@ namespace Squishy.Runtime.Game
             {
                 float px = cx + sx * ex;
                 Soft(g, S, px + sx * rx * .23f, ey + rx * .13f, rx * .13f, rx * .075f, new Color(blush.r, blush.g, blush.b, mood == Mood.Sad ? .35f : elder ? .85f : .7f));
-                if (mood == Mood.Happy)
+                if (mood == Mood.Asleep) Arc(g, S, px, ey - er * .2f, er * .75f, 0, Mathf.PI, ink, er * .22f); // closed, content eyes
+                else if (mood == Mood.Happy)
                 {
                     Ellipse(g, S, px, ey, er * .88f, er, ink);
                     Ellipse(g, S, px + er * .3f, ey - er * .38f, er * .34f, er * .34f, Color.white);

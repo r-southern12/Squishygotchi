@@ -32,6 +32,7 @@ namespace Squishy.Runtime.Game
             var hit = ray.GetPoint(t);
             drag.tactile = true;
             drag.dent = pet.PressAt(hit, C.rules.dentRadius);
+            if (!visiting) TaskEvent("dent");
             if (ai.mode == "walk" || ai.mode == "chase") { ai.mode = "idle"; ai.path = null; }
             ai.idleT = Mathf.Max(ai.idleT, 3);
             sfx.Press();
@@ -51,6 +52,7 @@ namespace Squishy.Runtime.Game
             if (drag.dent != was)
             {
                 // Each new dent in a smear: a soft squish and a few motes.
+                if (!visiting) TaskEvent("dent");
                 // A smear is quiet: the faintest tick and the odd mote.
                 Buzz(2);
                 if (Random.value < .3f) SquishFx(world.InverseTransformPoint(hit), 1, .15f);
@@ -189,6 +191,7 @@ namespace Squishy.Runtime.Game
 
         private void EndFling()
         {
+            if (!visiting) TaskEvent("fling");
             ai.mode = "idle";
             ai.idleT = 1.5f;
             ai.y = 0;

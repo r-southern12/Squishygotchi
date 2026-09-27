@@ -396,6 +396,7 @@ namespace Squishy.Runtime.Game
         /// <summary>The energised bonus: 1-5 coins for a squish (or a tap on what it played with) within the minute.</summary>
         private void TipCoins()
         {
+            if (!visiting) TaskEvent("tip");
             energyT = 0;
             energisedBy = null;
             int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
@@ -459,6 +460,7 @@ namespace Squishy.Runtime.Game
         {
             var A = ai.act;
             if (A == null) return;
+            if (!ai.self && !visiting) TaskEvent("act_" + A.role); // missions: "go down the slide", "bath time"...
             if (A.role == "lamp" && A.it != null)
             {
                 A.it.st.lampOn = !A.it.st.lampOn;
@@ -696,6 +698,7 @@ namespace Squishy.Runtime.Game
                 return;
             }
             float sdt = dt * timeScale;
+            Rules.DrainScale = S.asleep ? Rules.DrainScaleAt(System.DateTime.UtcNow.Ticks) : 1;
             int age0 = S.age;
             bool died = !visiting && Rules.StepCare(sdt, comfort); // a friend's squishy doesn't drain while you visit
             if (S.age != age0) UpdateSub();
@@ -717,6 +720,7 @@ namespace Squishy.Runtime.Game
             if (cond > .5f && mode == "home")
             {
                 TaskEvent("happy", dt);
+                if (S.needs[0] > .5f && S.needs[1] > .5f && S.needs[2] > .5f && S.needs[3] > .5f) TaskEvent("allhalf", dt);
                 S.happyT += dt * Rules.HappyRate(comfort) / 60;
                 if (S.happyT >= 1) { int n = Mathf.FloorToInt(S.happyT); S.happyT -= n; Rules.AddCoins(n); }
             }

@@ -141,6 +141,7 @@ namespace Squishy.Runtime.Game
         /// <summary>A xylophone note: the bar dips, the squishy dances.</summary>
         private void PlayBar(Item it, int bar, bool byPlayer)
         {
+            if (byPlayer && !visiting) TaskEvent("note");
             bar = Mathf.Clamp(bar, 0, 5);
             sfx.Note(bar);
             var b = it.parts.bars[bar];

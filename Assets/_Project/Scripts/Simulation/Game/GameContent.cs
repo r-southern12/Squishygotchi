@@ -40,7 +40,7 @@ namespace Squishy.Simulation.Game
         public bool toward, needSeat, sleep, scrub, inside;
     }
 
-    [Serializable] public class TaskData { public string id, text; public int goal, coins; public bool time; }
+    [Serializable] public class TaskData { public string id, text, ev; public int goal, coins; public bool time; public string[] requires; } // ev: the event it counts (defaults to id); requires: any of these item types placed, or "friend"
     [Serializable] public class PlacedData { public string key; public float x, z, ry; }
     [Serializable] public class CountData { public int i, n; }
 
@@ -52,7 +52,8 @@ namespace Squishy.Simulation.Game
         public int setCount;
         public float deathSeconds, dayLength, selfCareCap, happyBase, happyComfortDivisor;
         public float pLegendary, pEpic, pRare, favouriteChance, pTwoLayers, pThreeLayers;
-        public int pityRare, pityEpic, pityLegendary;
+        public int pityRare, pityEpic, pityLegendary, taskMemory, nightStartHour, nightEndHour, nightWakeByHour, nightAskSeconds;
+        public float nightDrain;
         public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;

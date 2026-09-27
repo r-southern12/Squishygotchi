@@ -487,7 +487,7 @@ namespace Squishy.Runtime.Game
                 var piece = items.Find(i => i.arch == c.arch);
                 if (!e.own) note += ". Skin not found yet.";
                 else if (inRoom != null) note += ". On your " + a.name.ToLowerInvariant() + " now.";
-                else if (piece != null && !S.dead) Act("Use on my " + a.name.ToLowerInvariant(), () => { Restyle(piece, c.style); RebuildObstacles(); sfx.Snap(); DrawCatalogue(); ShowDetail(e); });
+                else if (piece != null && !S.dead) Act("Use on my " + a.name.ToLowerInvariant(), () => { Restyle(piece, c.style); TaskEvent("reskin"); RebuildObstacles(); sfx.Snap(); DrawCatalogue(); ShowDetail(e); });
                 else if (piece == null)
                 {
                     int si = S.storage.FindIndex(k => k.Split(':')[0] == c.arch);

@@ -304,6 +304,7 @@ namespace Squishy.Runtime.UI
         }
 
         public void HideMemo() { _memo.Shown(false); }
+        public bool AnyPanelOpen { get { foreach (var k in PanelIds) if (PanelOpen(k)) return true; return _memo.style.display != DisplayStyle.None; } }
 
         // ---------------- catalogue sheet ----------------
 

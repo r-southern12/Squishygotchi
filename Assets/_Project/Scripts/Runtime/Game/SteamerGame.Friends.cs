@@ -180,11 +180,13 @@ namespace Squishy.Runtime.Game
         private void EndVisit(bool now)
         {
             if (!visiting) return;
+            bool realVisit = visitId != null;
             Action back = () =>
             {
                 visiting = false;
                 Rules = ownRules;
                 ownRules = null;
+                if (realVisit) TaskEvent("visit");
                 ui.HideVisit();
                 RebuildHome();
                 SetMode("home");

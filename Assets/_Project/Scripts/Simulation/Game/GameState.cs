@@ -19,6 +19,7 @@ namespace Squishy.Simulation.Game
         public int sinceRare, sinceEpic, sinceLegendary, setDone;
         public ulong rng;
         public List<TaskState> tasks = new List<TaskState>();
+        public List<string> recentTasks = new List<string>(); // the last few tasks shown, so they don't come straight back
         public List<PieceState> items = new List<PieceState>();
         public List<string> storage = new List<string>();
 
@@ -32,6 +33,9 @@ namespace Squishy.Simulation.Game
         public bool premium;
         public int giftStack; // steamers that arrived on their own since the player last saw the "+N arrived" note
         public long onlineReadyAt; // when the next free in-game steamer can be claimed
+        public bool asleep; // turned in for the night
+        public long sleepAt, sleepUntil, lastNightPrompt;
+        public int sleepSteamers, nightBank;
         public long bonusReadyAt; // when the next bonus (video) steamer is available
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;

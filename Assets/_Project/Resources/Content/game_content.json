@@ -2128,22 +2128,256 @@
       "coins": 40
     },
     {
+      "id": "cook3",
+      "text": "Cook 3 dishes",
+      "goal": 3,
+      "coins": 90,
+      "ev": "cook"
+    },
+    {
+      "id": "snack",
+      "text": "Give a snack",
+      "goal": 1,
+      "coins": 15
+    },
+    {
+      "id": "snack3",
+      "text": "Give 3 snacks",
+      "goal": 3,
+      "coins": 35,
+      "ev": "snack"
+    },
+    {
+      "id": "fridge",
+      "text": "Raid the fridge together",
+      "goal": 1,
+      "coins": 20,
+      "ev": "act_snack",
+      "requires": [
+        "fridge"
+      ]
+    },
+    {
       "id": "scrub",
       "text": "Scrub your squishy in the bath or shower",
       "goal": 1,
       "coins": 30
     },
     {
-      "id": "kick",
-      "text": "Play fetch: 5 kicks",
-      "goal": 5,
-      "coins": 30
+      "id": "bathtime",
+      "text": "Bath time in the tub",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_bath",
+      "requires": [
+        "tub"
+      ]
+    },
+    {
+      "id": "showertime",
+      "text": "Have a shower",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_shower",
+      "requires": [
+        "shower"
+      ]
+    },
+    {
+      "id": "sink",
+      "text": "Splash about at the sink",
+      "goal": 1,
+      "coins": 15,
+      "ev": "act_wash",
+      "requires": [
+        "sink"
+      ]
     },
     {
       "id": "nap",
       "text": "Nap with the lights off",
       "goal": 1,
       "coins": 30
+    },
+    {
+      "id": "bednap",
+      "text": "Snuggle into bed for a nap",
+      "goal": 1,
+      "coins": 20,
+      "ev": "act_bed",
+      "requires": [
+        "bed"
+      ]
+    },
+    {
+      "id": "lounge",
+      "text": "Lounge on a cushion or beanbag",
+      "goal": 1,
+      "coins": 15,
+      "ev": "act_lounge",
+      "requires": [
+        "cushion",
+        "beanbag"
+      ]
+    },
+    {
+      "id": "sit",
+      "text": "Sit on a chair for a while",
+      "goal": 1,
+      "coins": 10,
+      "ev": "act_seat",
+      "requires": [
+        "chair"
+      ]
+    },
+    {
+      "id": "lamp",
+      "text": "Switch a lamp on or off",
+      "goal": 1,
+      "coins": 10,
+      "ev": "act_lamp",
+      "requires": [
+        "lamp"
+      ]
+    },
+    {
+      "id": "tea",
+      "text": "Have tea time",
+      "goal": 1,
+      "coins": 25,
+      "requires": [
+        "teatable"
+      ]
+    },
+    {
+      "id": "kick",
+      "text": "Play fetch: 5 kicks",
+      "goal": 5,
+      "coins": 30,
+      "requires": [
+        "ball"
+      ]
+    },
+    {
+      "id": "kick12",
+      "text": "Play fetch: 12 kicks",
+      "goal": 12,
+      "coins": 55,
+      "ev": "kick",
+      "requires": [
+        "ball"
+      ]
+    },
+    {
+      "id": "squish",
+      "text": "Squish 10 times",
+      "goal": 10,
+      "coins": 20
+    },
+    {
+      "id": "squish30",
+      "text": "Squish 30 times",
+      "goal": 30,
+      "coins": 45,
+      "ev": "squish"
+    },
+    {
+      "id": "dent",
+      "text": "Press 15 dents, zoomed right in",
+      "goal": 15,
+      "coins": 30,
+      "ev": "dent"
+    },
+    {
+      "id": "fling",
+      "text": "Hold to ping your squishy round the room 3 times",
+      "goal": 3,
+      "coins": 30,
+      "ev": "fling"
+    },
+    {
+      "id": "chase",
+      "text": "Play pom-pom chase",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_wand",
+      "requires": [
+        "pomwand"
+      ]
+    },
+    {
+      "id": "bubbles",
+      "text": "Blow bubbles together",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_bubbles",
+      "requires": [
+        "bubbles"
+      ]
+    },
+    {
+      "id": "music",
+      "text": "Play the xylophone together",
+      "goal": 1,
+      "coins": 20,
+      "ev": "act_music",
+      "requires": [
+        "xylophone"
+      ]
+    },
+    {
+      "id": "notes",
+      "text": "Tap out 20 xylophone notes",
+      "goal": 20,
+      "coins": 30,
+      "ev": "note",
+      "requires": [
+        "xylophone"
+      ]
+    },
+    {
+      "id": "slide",
+      "text": "Go down the slide",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_slide",
+      "requires": [
+        "slide"
+      ]
+    },
+    {
+      "id": "slide3",
+      "text": "Go down the slide 3 times",
+      "goal": 3,
+      "coins": 50,
+      "ev": "act_slide",
+      "requires": [
+        "slide"
+      ]
+    },
+    {
+      "id": "bounce",
+      "text": "Bounce on the trampoline",
+      "goal": 1,
+      "coins": 25,
+      "ev": "act_bounce",
+      "requires": [
+        "trampoline"
+      ]
+    },
+    {
+      "id": "tip",
+      "text": "Catch it energised: tap for a tip",
+      "goal": 1,
+      "coins": 20,
+      "ev": "tip"
+    },
+    {
+      "id": "tip3",
+      "text": "Catch 3 energised tips",
+      "goal": 3,
+      "coins": 45,
+      "ev": "tip"
     },
     {
       "id": "happy",
@@ -2153,28 +2387,90 @@
       "time": true
     },
     {
+      "id": "happy10",
+      "text": "Stay Happy for 10 minutes",
+      "goal": 600,
+      "coins": 90,
+      "ev": "happy",
+      "time": true
+    },
+    {
+      "id": "allhalf",
+      "text": "Keep every need above half for 5 minutes",
+      "goal": 300,
+      "coins": 60,
+      "ev": "allhalf",
+      "time": true
+    },
+    {
       "id": "water",
       "text": "Water a plant",
       "goal": 1,
-      "coins": 15
+      "coins": 15,
+      "requires": [
+        "plant"
+      ]
     },
     {
-      "id": "squish",
-      "text": "Squish 10 times",
-      "goal": 10,
+      "id": "water3",
+      "text": "Water 3 plants",
+      "goal": 3,
+      "coins": 35,
+      "ev": "water",
+      "requires": [
+        "plant"
+      ]
+    },
+    {
+      "id": "unbox",
+      "text": "Open a steamer",
+      "goal": 1,
       "coins": 20
     },
     {
-      "id": "tea",
-      "text": "Have tea time",
-      "goal": 1,
-      "coins": 25
+      "id": "unbox5",
+      "text": "Open 5 steamers",
+      "goal": 5,
+      "coins": 60,
+      "ev": "unbox"
     },
     {
-      "id": "snack",
-      "text": "Give a snack",
+      "id": "newprize",
+      "text": "Find something new in a steamer",
       "goal": 1,
-      "coins": 15
+      "coins": 30,
+      "ev": "new_prize"
+    },
+    {
+      "id": "arrange",
+      "text": "Rearrange 3 pieces of furniture",
+      "goal": 3,
+      "coins": 20,
+      "ev": "arrange"
+    },
+    {
+      "id": "reskin",
+      "text": "Give a piece a new look (change its skin)",
+      "goal": 1,
+      "coins": 20,
+      "ev": "reskin"
+    },
+    {
+      "id": "shop",
+      "text": "Buy something in the shop",
+      "goal": 1,
+      "coins": 15,
+      "ev": "buy"
+    },
+    {
+      "id": "visit",
+      "text": "Visit a friend's steamer",
+      "goal": 1,
+      "coins": 40,
+      "ev": "visit",
+      "requires": [
+        "friend"
+      ]
     }
   ],
   "rules": {
@@ -2249,7 +2545,13 @@
     "flingSpeed": 2.4,
     "musicCredit": "Music by Redlight_Chill",
     "giftStackMax": 8,
-    "pityLegendary": 100
+    "pityLegendary": 100,
+    "taskMemory": 8,
+    "nightStartHour": 20,
+    "nightEndHour": 7,
+    "nightWakeByHour": 10,
+    "nightDrain": 0.35,
+    "nightAskSeconds": 20
   },
   "cosmetics": [
     {

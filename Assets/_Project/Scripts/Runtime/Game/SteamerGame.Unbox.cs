@@ -290,6 +290,7 @@ namespace Squishy.Runtime.Game
             }
             Rules.SetSteamers(S.steamers - 1);
             PreparePrize();
+            TaskEvent("unbox");
             UMove("reveal", reduce ? .3f : 1.4f);
             WriteSave();
         }
@@ -389,6 +390,7 @@ namespace Squishy.Runtime.Game
             sfx.Chime();
             Buzz(15);
             var card = Rules.Claim(reward);
+            if (card.isNew) TaskEvent("new_prize");
             if (card.delayedCoins > 0) { int n = card.delayedCoins; Later(.4f, () => AddCoins(n)); }
             if (card.grewTo >= 0) grewTo = card.grewTo;
             if (card.kitchenChanged) DecorateStoves();

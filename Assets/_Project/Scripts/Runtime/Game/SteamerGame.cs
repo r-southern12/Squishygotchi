@@ -98,7 +98,8 @@ namespace Squishy.Runtime.Game
             Notifier.Init();
             Notifier.Clear();
             GoOnline(); // friends: anonymous sign-in and sharing your room (fails soft offline)
-            ui.ShowIntro(AfterIntro);
+            if (S.asleep) ShowWakeScreen(AfterIntro); // after a night's sleep: the wake-up screen, not the title
+            else ui.ShowIntro(AfterIntro);
         }
 
         private void SetupRendering()
@@ -257,6 +258,7 @@ namespace Squishy.Runtime.Game
             if (!Rules.Spend(n)) { sfx.Bonk(); return false; }
             sfx.Coin();
             ui.MarkBought(); // the shop row flashes "Bought!" so it's clear it worked
+            TaskEvent("buy");
             return true;
         }
 
@@ -304,8 +306,10 @@ namespace Squishy.Runtime.Game
             {
                 float step = Mathf.Min(10, away - t);
                 foreach (var it in items) if (it.arch == "plant") it.st.wilt = Mathf.Min(1, it.st.wilt + step * C.rules.plantWiltRate);
+                Rules.DrainScale = Rules.DrainScaleAt(saved.Ticks + (long)(t * TimeSpan.TicksPerSecond)); // asleep overnight: slower
                 if (Rules.StepCare(step, comfort)) S.dead = true;
             }
+            Rules.DrainScale = 1;
         }
 
         public void WriteSave()
@@ -327,6 +331,7 @@ namespace Squishy.Runtime.Game
             bool wasDead = S.dead;
             CatchUp(_pausedAt.Value, System.DateTime.UtcNow);
             _pausedAt = null;
+            if (S.asleep && !S.dead) ShowWakeScreen(null);
             DrawNeeds();
             UpdateSub();
             if (S.dead && !wasDead) { S.dead = false; Die(); }

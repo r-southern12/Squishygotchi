@@ -187,6 +187,16 @@ namespace Squishy.Runtime.Game
         private sealed class Plan { public DateTime when; public string title, text, mood; public bool urgent; }
 
         /// <summary>Schedules the reminders from the current state, predicting drain the same way GameRules does.</summary>
+        /// <summary>Seconds until a need drops by this much: slower while it sleeps overnight, then the normal rate.</summary>
+        private static double Until(double amount, double rate, GameRules rules)
+        {
+            var s = rules.S;
+            if (amount <= 0) return 0;
+            if (!s.asleep) return amount / rate;
+            double night = rate * rules.R.nightDrain, left = Math.Max(0, (s.sleepUntil - DateTime.UtcNow.Ticks) / (double)TimeSpan.TicksPerSecond);
+            return amount <= night * left ? amount / night : left + (amount - night * left) / rate;
+        }
+
         public static void Schedule(GameRules rules, float comfort)
         {
             if (_pending && Thumbs.Ready) RenderPictures(rules);
@@ -209,7 +219,7 @@ namespace Squishy.Runtime.Game
                 {
                     double rate = decay[k] * slow;
                     if (rate <= 0) continue;
-                    double low = (s.needs[k] - LowAt) / rate, empty = s.needs[k] / rate;
+                    double low = Until(s.needs[k] - LowAt, rate, rules), empty = Until(s.needs[k], rate, rules);
                     if (low > 600 && low < firstLow) { firstLow = low; first = k; }
                     if (empty < firstEmpty) { firstEmpty = empty; emptyK = k; }
                 }

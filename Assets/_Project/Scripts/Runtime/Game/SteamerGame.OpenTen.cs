@@ -48,6 +48,9 @@ namespace Squishy.Runtime.Game
                     kitchen |= c.kitchenChanged;
                 }
             }
+            TaskEvent("unbox", OpenMany);
+            int fresh = cards.FindAll(c => c.isNew).Count;
+            if (fresh > 0) TaskEvent("new_prize", fresh);
             if (coins > 0) AddCoins(coins);
             if (kitchen) DecorateStoves();
             WriteSave();

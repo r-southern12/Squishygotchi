@@ -159,7 +159,7 @@ namespace Squishy.Simulation.Game
             S.qolTime += sdt;
             float slow = ComfortSlow(comfort);
             float[] decay = { R.decayHunger, R.decayPlay, R.decayRest, R.decayClean };
-            for (int k = 0; k < 4; k++) S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * sdt);
+            for (int k = 0; k < 4; k++) S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * DrainScale * sdt);
             S.dayT += sdt;
             if (S.dayT > R.dayLength) { S.dayT = 0; S.age++; }
             bool empty = false;
@@ -508,12 +508,31 @@ namespace Squishy.Simulation.Game
 
         public TaskData TaskDef(TaskState t) { foreach (var d in C.tasks) if (d.id == t.id) return d; return C.tasks[0]; }
 
+        /// <summary>A task you can actually do (you own what it needs), not on the board and not one of the last few.</summary>
         public TaskState NewTask()
         {
             var opts = new List<TaskData>();
-            foreach (var d in C.tasks) if (!S.tasks.Exists(t => t.id == d.id)) opts.Add(d);
-            return new TaskState { id = Pick(opts).id };
+            foreach (var d in C.tasks) if (!S.tasks.Exists(t => t.id == d.id) && !S.recentTasks.Contains(d.id) && CanDo(d)) opts.Add(d);
+            if (opts.Count == 0) foreach (var d in C.tasks) if (!S.tasks.Exists(t => t.id == d.id) && CanDo(d)) opts.Add(d);
+            if (opts.Count == 0) foreach (var d in C.tasks) if (!S.tasks.Exists(t => t.id == d.id)) opts.Add(d);
+            var pick = Pick(opts);
+            S.recentTasks.Add(pick.id);
+            while (S.recentTasks.Count > R.taskMemory) S.recentTasks.RemoveAt(0);
+            return new TaskState { id = pick.id };
         }
+
+        public bool CanDo(TaskData d)
+        {
+            if (d.requires == null || d.requires.Length == 0) return true;
+            foreach (var r in d.requires)
+            {
+                if (r == "friend" && S.friends.Count > 0) return true;
+                if (S.items.Exists(p => p.Arch == r)) return true;
+            }
+            return false;
+        }
+
+        public static string Ev(TaskData d) { return string.IsNullOrEmpty(d.ev) ? d.id : d.ev; }
 
         /// <summary>Adds progress to matching tasks. Returns true if one was just finished.</summary>
         public bool TaskEvent(string id, float n)
@@ -522,8 +541,8 @@ namespace Squishy.Simulation.Game
             bool fin = false;
             foreach (var t in S.tasks)
             {
-                if (t.id != id || t.done || !TaskReady(t)) continue;
                 var d = TaskDef(t);
+                if (Ev(d) != id || t.done || !TaskReady(t)) continue;
                 t.prog = Math.Min(d.goal, t.prog + n);
                 if (t.prog >= d.goal) { t.done = true; fin = true; }
             }

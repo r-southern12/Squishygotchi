@@ -334,6 +334,7 @@ namespace Squishy.Runtime.Game
                 it.bv = -6;
                 sfx.Drop();
                 Buzz(10);
+                TaskEvent("arrange");
                 if (it.a.role == "tea" || it.a.role == "seat")
                 {
                     var t = it.a.role == "tea" ? it : items.Find(x => x.a.role == "tea");
@@ -520,6 +521,7 @@ namespace Squishy.Runtime.Game
                     if (!Rules.Owned(key)) { ui.SetHint("Find the " + c.name + " in steamers"); sfx.Bonk(); return; }
                     Snap();
                     Restyle(cur, c.style);
+                    TaskEvent("reskin");
                     cur.bv = -6;
                     RebuildObstacles();
                     DrawTray();

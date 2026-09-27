@@ -188,7 +188,7 @@ namespace Squishy.Tests
             {
                 var t = s.tasks[0];
                 var d = rules.TaskDef(t);
-                rules.TaskEvent(t.id, d.goal);
+                rules.TaskEvent(GameRules.Ev(d), d.goal);
                 paid += d.coins;
                 rules.ClaimTask(0);
                 Assert.IsFalse(rules.TaskReady(s.tasks[0]), "a claimed slot rests before its next task");
@@ -296,6 +296,55 @@ namespace Squishy.Tests
             Assert.Less(o.legendary, c.rules.pLegendary * 2);
             Assert.Greater(o.rare, c.rules.pRare, "pity lifts Rare above its base rate");
             Assert.AreEqual(c.rules.favouriteChance, o.favouriteCopy, .03f);
+        }
+
+        [Test]
+        public void Night_Sleep_Drains_Slowly_And_Collects_Free_Steamers()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 31);
+            var utc = new DateTime(2026, 9, 28, 11, 0, 0, DateTimeKind.Utc);
+            var clock = new ManualClock(utc);
+            var rules = new GameRules(c, s) { Clock = clock };
+            var local = new DateTime(2026, 9, 28, 21, 0, 0); // 9pm local
+            Assert.IsTrue(rules.IsNight(local));
+            Assert.IsFalse(rules.IsNight(new DateTime(2026, 9, 28, 15, 0, 0)));
+            rules.AccrueGifts(); // the arrivals timer is already running in the game
+            s.onlineReadyAt = 0; // one free steamer waiting at bedtime
+            int before = s.steamers;
+            rules.GoToSleep(utc, local);
+            Assert.IsTrue(s.asleep);
+            Assert.AreEqual(c.rules.nightDrain, rules.DrainScaleAt(utc.AddHours(5).Ticks), 1e-6, "slow drain in the night");
+            Assert.AreEqual(1f, rules.DrainScaleAt(utc.AddHours(14).Ticks), 1e-6, "normal again after the wake-by hour (10am)");
+            clock.Advance(TimeSpan.FromHours(10)); // 7am
+            var r = rules.WakeUp(clock.UtcNow);
+            Assert.IsFalse(s.asleep);
+            int online = 1 + (int)(10 / c.rules.giftHours);
+            int passive = (int)(10 / c.rules.giftHours); // arrivals on their own (the first came due during the night)
+            Assert.GreaterOrEqual(s.steamers - before, online + passive - 1);
+            Assert.AreEqual(s.steamers - before, r.steamers);
+        }
+
+        [Test]
+        public void Missions_Need_What_You_Own_And_Dont_Repeat_Straight_Away()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 5);
+            var rules = new GameRules(c, s);
+            s.items.RemoveAll(p => p.Arch == "slide" || p.Arch == "trampoline");
+            s.friends.Clear();
+            var seen = new System.Collections.Generic.List<string>();
+            for (int n = 0; n < 60; n++)
+            {
+                var t = rules.NewTask();
+                var d = rules.TaskDef(t);
+                Assert.IsTrue(rules.CanDo(d), d.id + " needs something the room doesn't have");
+                Assert.AreNotEqual("slide", d.id);
+                Assert.AreNotEqual("visit", d.id);
+                int last = seen.LastIndexOf(t.id);
+                if (last >= 0) Assert.GreaterOrEqual(seen.Count - last, c.rules.taskMemory, t.id + " came back too soon");
+                seen.Add(t.id);
+            }
         }
 
         private sealed class MemoryStore : ISaveStore

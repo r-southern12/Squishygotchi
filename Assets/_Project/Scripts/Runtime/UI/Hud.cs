@@ -26,7 +26,8 @@ namespace Squishy.Runtime.UI
 
         private readonly List<(VisualElement el, string[] modes)> _modal = new List<(VisualElement, string[])>();
         private VisualElement _top, _bottom, _canvas, _floaters;
-        private Frame _gift;
+        private Frame _gift, _moon;
+        public void SetMoon(bool on) { if (_moon != null && _moon.style.display != (on ? DisplayStyle.Flex : DisplayStyle.None)) _moon.Shown(on); }
         private Frame _prestige;
         private Frame _expandDot;
         private Label _prestigeLbl;
@@ -196,6 +197,9 @@ namespace Squishy.Runtime.UI
             _comfortLbl = Label(_comfort, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
             Tap(_comfort, () => _g.OnComfort());
             // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
+            // At night: turn in for the night (hidden in the daytime).
+            _moon = IconBtn(row3, "rest", 36, 20, -1, () => _g.OnMoon(), out _);
+            _moon.Shown(false);
             IconBtn(row3, "friends", 36, 20, -1, () => _g.OnFriends(), out _viewIcon);
             row3.Gap(6);
             var fpsBox = Chip(_top, 8).Pad(3, 8, 3, 8).Shown(false);
@@ -234,6 +238,7 @@ namespace Squishy.Runtime.UI
             BuildCards(safeBottom);
             BuildSheet(safeTop, safeBottom);
             BuildIntro(safeTop, safeBottom);
+            BuildNight(safeTop, safeBottom);
             BuildVisit(safeBottom);
             _floaters = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
             _wipe = new VisualElement().Abs(0, 0, 0, 0).NoPick().In(Root);
@@ -615,6 +620,7 @@ namespace Squishy.Runtime.UI
         {
             Tw.Update(dt);
             StepIntro(dt);
+            StepNight(dt);
         }
     }
 }
