@@ -84,6 +84,11 @@ namespace Squishy.Runtime.Models
             return Add(local, d.r, d.depth * .85f).id;
         }
 
+        /// <summary>Lets go of every held press (a touch that ended without a release: pinch, cancel, a new tap).</summary>
+        public void ReleaseAll() { foreach (var d in _dents) d.held = false; }
+
+        public bool Holding { get { foreach (var d in _dents) if (d.held) return true; return false; } }
+
         public void Release(int id)
         {
             var d = _dents.Find(x => x.id == id);

@@ -179,6 +179,7 @@ namespace Squishy.Runtime.Game
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
                 fxPool?.Update(dt, true, cam); // sized motes that swell in and fade out (the other mode ignores size)
+                if (pet != null && (drag == null || !drag.tactile) && pet.Holding) pet.ReleaseAll(); // no finger on it: dents always rise back
                 CheckFlingHold();
                 cam.backgroundColor = ThreeMat.Hex("#CFB38C");
                 cam.cullingMask = 1 << HomeLayer;
