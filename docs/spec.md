@@ -112,6 +112,12 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 **Look:** a wide, soft dome with about 10 rounded pleats fanning straight down from a smooth crown (only a slight curl, no knot or bump), bead eyes with highlights, blush. Glossy material; finishes change colour, gloss, metal, glow, glitter and pattern.
 
+### Night
+
+- Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night.
+- Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer for each 3-hour window is collected for you; passive steamers keep arriving. Reminders account for the slower drain and still honour quiet hours.
+- The night screen: a starry sky and the squishy asleep (tap to wake early). The next time the game opens, a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep".
+
 ## Room and placement
 
 The room is the inside of the steamer. It starts with one of each station and grows with your collection.
