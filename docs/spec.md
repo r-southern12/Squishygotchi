@@ -120,6 +120,8 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 - **Clear jelly:** some finishes are see-through (firmer at the rim) with things living inside that drift on their own, scatter from a finger press and slosh when squashed or bounced: suspended glitter (Frost, Lilac/Mint/Peach Fizz, Ocean Sparkle, Rainbow Fizz, Moonbeam), glowing motes (the UV glow skins), and the Epic **Aquarium** tier: Koi Pond (koi swim away from your finger), Goldfish Bowl (goldfish and bubbles), Bubble Tea (tapioca pearls that sink and bounce), Snow Globe (snow that swirls). All in data (clear, opacity, inside, insideCount, insideColors).
 
+- **Tactile squishing (close-up):** zoom in further than before; presses dent the finer mesh and the face rides the skin (eyes and mouth sink and tilt with a dent and spring back). Pressed-in volume swells out elsewhere like fluid in a balloon. Two fingers on the squishy, brought together, pinch and squeeze it (spreading still zooms out); it rises back slowly on release. It keeps doing whatever it was doing while you squish it. Sitting or lying on furniture, it drapes over the edges (a big squishy envelops a small stool).
+
 ## Room and placement
 
 The room is the inside of the steamer. It starts with one of each station and grows with your collection.

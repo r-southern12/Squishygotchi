@@ -49,7 +49,7 @@ namespace Squishy.Runtime.Models
         /// </summary>
         public static Mesh BaoMesh()
         {
-            var m = ThreeGeo.Deformed("bao", 216, 84, v =>
+            var m = ThreeGeo.Deformed("bao", 288, 112, v => // finer for close-up squishing
             {
                 var d = v.normalized;
                 float a = -Twist(d.y), cs = Mathf.Cos(a), sn = Mathf.Sin(a);

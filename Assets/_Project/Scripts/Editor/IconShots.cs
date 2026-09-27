@@ -323,6 +323,27 @@ namespace Squishy.EditorTools
                 held.Add(model.PressAt(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(dir.normalized)), .055f));
             for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
             Shot(cam, rt, tex, bb, flat, 22, 1.25f, 30, warm, "dents");
+            {
+                // A press on the face (the eye should sink with the skin), a two-finger squeeze, and draping over a stool.
+                model.ReleaseAll();
+                for (int i = 0; i < 80; i++) model.Update(.05f, 0, false, 0);
+                int eyeDent = model.PressAt(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(.36f, .1f, .93f).normalized)), .07f);
+                for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.5f, 30, warm, "face_dent");
+                model.Release(eyeDent);
+                for (int i = 0; i < 80; i++) model.Update(.05f, 0, false, 0);
+                model.BeginPinch(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(-1, .1f, .2f).normalized)), model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(1, .1f, .2f).normalized)));
+                model.SetPinch(.9f);
+                for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 60, 1.6f, 30, warm, "pinch");
+                model.EndPinch();
+                for (int i = 0; i < 100; i++) model.Update(.05f, 0, false, 0);
+                model.SetSupport(.45f, true);
+                for (int i = 0; i < 30; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 4, 1.5f, 30, warm, "drape");
+                model.SetSupport(0, false);
+                for (int i = 0; i < 60; i++) model.Update(.05f, 0, false, 0);
+            }
             foreach (int id in held) model.Release(id);
             for (int i = 0; i < 80; i++) model.Update(.05f, 0, false, 0); // let the dents rise
             model.SetStage(Squishy.Simulation.Game.GameRules.Life.Baby);

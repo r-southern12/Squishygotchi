@@ -21,6 +21,35 @@ namespace Squishy.Runtime.Game
 
         private bool CloseUp { get { return camS.zoom < -.6f; } }
 
+        // Pinch and squeeze (two fingers on the squishy, zoomed in).
+        private bool squeezeArm, squeezing;
+        private Vector3 sqA, sqB;
+        private float squeezeLast;
+
+        private bool PetPoint(Vector2 p, out Vector3 world)
+        {
+            var ray = PickRay(p);
+            float t = RayPick.Hit(ray, pet.Body, false);
+            world = t >= 0 ? ray.GetPoint(t) : Vector3.zero;
+            return t >= 0;
+        }
+
+        /// <summary>Fingers off: the squeeze rises back slowly, it smiles, and it counts as a squish.</summary>
+        private void EndSqueeze()
+        {
+            if (!squeezing) { squeezeArm = false; return; }
+            squeezing = false;
+            pet.EndPinch();
+            pet.Express(SquishyModel.Mouth.Smile, 1.4f);
+            float gain = (Condition() < .12f ? C.rules.squishPlayGainCritical : C.rules.squishPlayGain) * .8f;
+            S.needs[Needs.Play] = Mathf.Min(1, S.needs[Needs.Play] + gain);
+            DrawNeeds();
+            if (visiting) VisitAct("pet"); else TaskEvent("squish");
+        }
+
+        /// <summary>How far in the pinch can zoom: past the old close-up, right up to the squishy's face.</summary>
+        private const float MinZoom = -1.5f;
+
         // ---------------- tactile dents (close-up) ----------------
 
         /// <summary>Starts a press on the squishy at a screen point. Returns false if the finger missed it.</summary>
@@ -33,8 +62,7 @@ namespace Squishy.Runtime.Game
             drag.tactile = true;
             drag.dent = pet.PressAt(hit, C.rules.dentRadius);
             if (!visiting) TaskEvent("dent");
-            if (ai.mode == "walk" || ai.mode == "chase") { ai.mode = "idle"; ai.path = null; }
-            ai.idleT = Mathf.Max(ai.idleT, 3);
+            // It carries on with whatever it is doing while you squish it (it used to freeze).
             sfx.Press();
             Buzz(4);
             SquishFx(world.InverseTransformPoint(hit), 2, .2f);

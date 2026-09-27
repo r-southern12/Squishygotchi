@@ -98,14 +98,70 @@ namespace Squishy.Runtime.Models
             if (d != null) d.held = false;
         }
 
+        // ---- pinch and squeeze (two fingers, zoomed in) ----
+        private bool _pinchOn;
+        private Vector3 _pinchA, _pinchB;
+        private float _pinch, _pinchT;
+        private const float PinchR = .62f, PinchDepth = .58f;
+
+        /// <summary>Two fingers on the squishy: it squeezes between them (see SetPinch) and balloons out elsewhere.</summary>
+        public void BeginPinch(Vector3 worldA, Vector3 worldB)
+        {
+            EnsureTactileMesh();
+            _pinchA = Body.InverseTransformPoint(worldA);
+            _pinchB = Body.InverseTransformPoint(worldB);
+            _pinchOn = true;
+            _pinchT = 0;
+        }
+
+        /// <summary>0 = fingers where they started, 1 = squeezed as far as it goes.</summary>
+        public void SetPinch(float amount) { if (_pinchOn) _pinchT = Mathf.Clamp01(amount); }
+
+        public void EndPinch() { _pinchOn = false; _pinchT = 0; }
+
+        public bool Pinching { get { return _pinchOn; } }
+
+        // ---- draping over what it sits on ----
+        private float _supR = 1, _drape, _drapeT, _drapeApplied;
+
+        /// <summary>
+        /// Sitting or lying on something with a top of this radius (body units): the underside sags down round its
+        /// edges and the sides bulge a little, so a big squishy on a small stool envelops it. 0 lets it rise back.
+        /// </summary>
+        public void SetSupport(float radius, bool on)
+        {
+            if (on) { EnsureTactileMesh(); _supR = Mathf.Max(.05f, radius); }
+            _drapeT = on ? 1 : 0;
+        }
+
+        /// <summary>How far a point sags straight down while draped (the bottom band, outside the seat).</summary>
+        private float Sag(Vector3 b, out float side)
+        {
+            side = 0;
+            if (_drape <= 0) return 0;
+            float rho = Mathf.Sqrt(b.x * b.x + b.z * b.z), over = Mathf.SmoothStep(0, 1, (rho - _supR) / .35f);
+            if (over <= 0) return 0;
+            float h = b.y - B;
+            side = _drape * .05f * over * Mathf.SmoothStep(0, 1, h / .25f) * (1 - Mathf.SmoothStep(0, 1, (h - .25f) / .5f));
+            return _drape * .24f * over * (1 - Mathf.SmoothStep(0, 1, h / .6f));
+        }
+
         /// <summary>Pressing deepens held dents; released ones rise back slowly. Rebuilds the mesh when anything moved.</summary>
         private void StepTactile(float dt)
         {
-            // The toy squashes a lot: holding presses sink the body as well as denting it.
+            // Held presses give the whole body a little squash; the rest of the volume goes into the swell (see Push).
             float target = 0;
             foreach (var d in _dents) if (d.held) target += d.depth / Mathf.Max(.01f, d.r);
-            _tSquash += (Mathf.Min(.45f, target * .5f) - _tSquash) * Mathf.Min(1, dt * (target > 0 ? 6 : 2.3f / Mathf.Max(.2f, RiseTime)));
-            if (_dents.Count == 0 && !_tDirty) return;
+            target += _pinch * .6f;
+            _tSquash += (Mathf.Min(.22f, target * .25f) - _tSquash) * Mathf.Min(1, dt * (target > 0 ? 6 : 2.3f / Mathf.Max(.2f, RiseTime)));
+            // The squeeze follows the fingers quickly, and rises back like memory foam when they let go.
+            _pinch += (_pinchT - _pinch) * Mathf.Min(1, dt * (_pinchT > _pinch ? 10 : 2.3f / Mathf.Max(.2f, RiseTime)));
+            if (_pinch < .002f && !_pinchOn) _pinch = 0;
+            if (_pinch > .02f) { PokeInside(_pinchA, _pinch * dt * 4); PokeInside(_pinchB, _pinch * dt * 4); }
+            _drape += (_drapeT - _drape) * Mathf.Min(1, dt * (_drapeT > _drape ? 3 : 1.5f));
+            if (_drape < .002f && _drapeT <= 0) _drape = 0;
+            bool draping = Mathf.Abs(_drape - _drapeApplied) > .003f;
+            if (_dents.Count == 0 && _pinch <= 0 && !draping && (!_tDirty || _drape > 0)) return;
             for (int i = _dents.Count - 1; i >= 0; i--)
             {
                 var d = _dents[i];
@@ -119,35 +175,65 @@ namespace Squishy.Runtime.Models
             ApplyDents();
         }
 
+        // Per-frame deformation constants (shared by the mesh and the face riders).
+        private float _limit = .01f, _swell;
+
+        /// <summary>
+        /// How far a point of the surface moves along its outward direction: sunk in under each press and each pinch
+        /// point (smooth bowls that saturate softly), a soft lip round each dent, and a gentle swell everywhere else
+        /// holding the displaced volume, like fluid in a balloon.
+        /// </summary>
+        private float Push(Vector3 b)
+        {
+            float bowl = 0, lip = 0, near = 0;
+            foreach (var d in _dents)
+            {
+                float rim = d.r * 2.2f;
+                float dx = b.x - d.p.x, dy = b.y - d.p.y, dz = b.z - d.p.z, dd = dx * dx + dy * dy + dz * dz;
+                if (dd >= rim * rim) continue;
+                if (dd < d.r * d.r) { float k = 1 - dd / (d.r * d.r); bowl += d.depth * k * k * k; near = 1; }
+                else
+                {
+                    float u = (Mathf.Sqrt(dd) - d.r) / (rim - d.r), w = Mathf.Sin(u * Mathf.PI);
+                    lip = Mathf.Max(lip, d.depth * .45f * w * w);
+                    near = Mathf.Max(near, 1 - u);
+                }
+            }
+            if (_pinch > 0)
+            {
+                float r2 = PinchR * PinchR;
+                for (int i = 0; i < 2; i++)
+                {
+                    var c = i == 0 ? _pinchA : _pinchB;
+                    float dd = (b - c).sqrMagnitude;
+                    if (dd < r2 * 4) near = Mathf.Max(near, 1 - Mathf.Sqrt(dd) / (PinchR * 2));
+                    if (dd < r2) { float k = 1 - dd / r2; bowl += _pinch * PinchDepth * k * k; }
+                }
+            }
+            float sink = _limit * (1 - Mathf.Exp(-bowl / _limit));
+            return lip * (1 - sink / _limit) - sink + _swell * (1 - near);
+        }
+
         private void ApplyDents()
         {
             if (_tMesh == null) return;
-            if (_dents.Count == 0)
+            _drapeApplied = _drape;
+            if (_dents.Count == 0 && _pinch <= 0 && _drape <= 0)
             {
-                if (_tDirty) { _tMesh.vertices = _tBase; _tMesh.normals = _tNorm; _tMesh.RecalculateBounds(); _tDirty = false; }
+                if (_tDirty) { _tMesh.vertices = _tBase; _tMesh.normals = _tNorm; _tMesh.RecalculateBounds(); _tDirty = false; RideSurface(true); }
                 return;
             }
-            // Pushed toward the body's centre (a smooth direction; the pleats' normals swing across each groove and
-            // crossed neighbours into creases). Overlapping bowls add up but saturate softly, so there's no seam.
-            float limit = 0;
-            foreach (var d in _dents) limit = Mathf.Max(limit, d.max);
-            limit = Mathf.Max(limit, .01f);
+            // The volume pressed in (roughly depth x area of each bowl) comes back out as a swell over the rest.
+            _limit = .01f;
+            float volume = 0;
+            foreach (var d in _dents) { _limit = Mathf.Max(_limit, d.max); volume += d.depth * d.r * d.r; }
+            if (_pinch > 0) { _limit = Mathf.Max(_limit, PinchDepth); volume += 2 * _pinch * PinchDepth * PinchR * PinchR * .6f; }
+            _swell = Mathf.Min(.16f, volume * .55f);
             for (int v = 0; v < _tBase.Length; v++)
             {
                 var b = _tBase[v];
-                float bowl = 0, bulge = 0;
-                foreach (var d in _dents)
-                {
-                    float rim = d.r * 2.2f;
-                    float dx = b.x - d.p.x, dy = b.y - d.p.y, dz = b.z - d.p.z, dd = dx * dx + dy * dy + dz * dz;
-                    if (dd >= rim * rim) continue;
-                    if (dd < d.r * d.r) { float k = 1 - dd / (d.r * d.r); bowl += d.depth * k * k * k; } // smooth bowl, soft edges
-                    else { float w = Mathf.Sin((Mathf.Sqrt(dd) - d.r) / (rim - d.r) * Mathf.PI); bulge = Mathf.Max(bulge, d.depth * .45f * w * w); } // the foam pushed aside swells up round the dent
-                }
-                if (bowl == 0 && bulge == 0) { _tWork[v] = b; continue; }
-                float sink = limit * (1 - Mathf.Exp(-bowl / limit));
-                float push = bulge * (1 - sink / limit) - sink;
-                _tWork[v] = b + (b - Core).normalized * push;
+                float push = Push(b), sag = Sag(b, out float side);
+                _tWork[v] = push == 0 && sag == 0 && side == 0 ? b : b + (b - Core).normalized * (push + side) + Vector3.down * sag;
             }
             _tMesh.vertices = _tWork;
             _tMesh.RecalculateNormals();
@@ -157,6 +243,68 @@ namespace Squishy.Runtime.Models
             _tMesh.normals = n;
             _tMesh.RecalculateBounds();
             _tDirty = true;
+            RideSurface(false);
+        }
+
+        /// <summary>Where a resting surface point is now (dents, pinch, swell and drape).</summary>
+        private Vector3 Displaced(Vector3 a)
+        {
+            float sag = Sag(a, out float side);
+            return a + (a - Core).normalized * (Push(a) + side) + Vector3.down * sag;
+        }
+
+        // ---- the face rides the surface ----
+        private sealed class Rider { public Transform t; public Vector3 basePos, anchor; public Quaternion baseRot; }
+        private readonly List<Rider> _riders = new List<Rider>();
+
+        /// <summary>
+        /// Eyes, mouth, blush, brows, cowlick and accessories move with the skin under them: pressed in with a dent,
+        /// carried out by the swell, tilted with the slope, and back to rest when it rises.
+        /// </summary>
+        private void RideSurface(bool rest)
+        {
+            CollectRiders();
+            foreach (var r in _riders)
+            {
+                if (r.t == null) continue;
+                if (rest) { r.t.localPosition = r.basePos; r.t.localRotation = r.baseRot; continue; }
+                var a = r.anchor;
+                var dir = (a - Core).normalized;
+                var t1 = Vector3.Cross(dir, Vector3.up);
+                if (t1.sqrMagnitude < 1e-4f) t1 = Vector3.right;
+                t1.Normalize();
+                var t2 = Vector3.Cross(dir, t1);
+                const float e = .05f;
+                Vector3 a1 = a + t1 * e, a2 = a + t2 * e;
+                var p0 = Displaced(a);
+                var p1 = Displaced(a1);
+                var p2 = Displaced(a2);
+                // Tilt with the surface: the displaced patch round the anchor against the resting one.
+                var nNew = Vector3.Cross(p1 - p0, p2 - p0).normalized;
+                var nOld = Vector3.Cross(a1 - a, a2 - a).normalized;
+                if (Vector3.Dot(nNew, dir) < 0) nNew = -nNew;
+                if (Vector3.Dot(nOld, dir) < 0) nOld = -nOld;
+                r.t.localPosition = r.basePos + (p0 - a);
+                r.t.localRotation = Quaternion.FromToRotation(nOld, nNew) * r.baseRot;
+            }
+        }
+
+        /// <summary>Everything sitting on the skin: direct children of the body, or children of groups at its centre.</summary>
+        private void CollectRiders()
+        {
+            _riders.RemoveAll(r => r.t == null);
+            foreach (Transform c in Body)
+            {
+                if (c == _inside || c == _backing) continue;
+                if (c.localPosition.sqrMagnitude > .04f) AddRider(c, c.localPosition);
+                else if (c.GetComponent<MeshFilter>() == null) foreach (Transform g in c) if (g.localPosition.sqrMagnitude > .04f) AddRider(g, g.localPosition); // groups at the centre (brows)
+            }
+        }
+
+        private void AddRider(Transform t, Vector3 anchor)
+        {
+            foreach (var r in _riders) if (r.t == t) return;
+            _riders.Add(new Rider { t = t, basePos = t.localPosition, anchor = anchor, baseRot = t.localRotation });
         }
     }
 }

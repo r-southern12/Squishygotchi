@@ -767,7 +767,6 @@ namespace Squishy.Runtime.Game
             if (mode == "edit" || pet.Held) { }
             else if (ai.mode == "idle")
             {
-                if (pet.Dented) ai.idleT = Mathf.Max(ai.idleT, .5f); // stays put while you squish it
                 ai.idleT -= dt;
                 if (ai.idleT <= 0) Autonomous();
                 var cp = Space3.U(cam.transform.position);
@@ -803,6 +802,10 @@ namespace Squishy.Runtime.Game
                 if (energyT > 20 && Random.value < dt * 1.5f) { var pp = PetWorld(); HPuff(new Vector3(pp.x + Rnd(-.15f, .15f), pp.y + pet.Scale * 1.1f, pp.z + Rnd(-.15f, .15f)), new Vector3(0, .4f, 0), .025f, .7f, 2, .2f); }
             }
             StepTipCoin(dt);
+            // Sitting or lying on something: the squishy drapes over its edges (a big one envelops a small stool).
+            var supRole = ai.mode == "act" && ai.act != null && ai.act.it != null ? ai.act.role : null;
+            bool sup = (supRole == "seat" || supRole == "lounge" || supRole == "bed") && ai.actT > .2f;
+            pet.SetSupport(sup ? ai.act.it.a.r * .75f / Mathf.Max(.01f, pet.Scale * pet.StageScale) : 0, sup);
             pet.Update(dt, extra, sleeping, droop);
             ApplyPetTransform(lift, sleeping);
             AnimateFurniture(dt);

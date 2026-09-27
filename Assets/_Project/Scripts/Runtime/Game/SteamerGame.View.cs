@@ -51,12 +51,12 @@ namespace Squishy.Runtime.Game
             }
             // zoom: -1 close-up on the squishy, 0 follow (the prototype's default), 1 whole room.
             float z = Mathf.Max(0, c.zoom), close = Mathf.Max(0, -c.zoom), e = c.edit;
-            float hx = ai.x * (1 - z), hz = ai.z * (1 - z), hy = (Y0 + pet.Scale * (1 - .35f * close) + ai.y) * (1 - z) + .3f * z;
+            float hx = ai.x * (1 - z), hz = ai.z * (1 - z), hy = (Y0 + pet.Scale * (1 - .35f * Mathf.Min(1, close)) + ai.y) * (1 - z) + .3f * z;
             float tx = hx + (c.panT.x - hx) * e, tz = hz + (c.panT.z - hz) * e, ty = hy + (.25f - hy) * e;
             float kk = Mathf.Min(1, dt * (e > .5f ? 12 : 3));
             c.target += new Vector3((tx - c.target.x) * kk, (ty - c.target.y) * kk, (tz - c.target.z) * kk);
             float near = .45f + pet.Scale * 2.4f;
-            float dH = FitDist((near + (HR * 1.12f - near) * z) * (1 - .55f * close)), dE = FitDist(.7f + (HR * 1.12f - .7f) * c.ez), elH = 42 + 14 * z - 14 * close + c.htilt;
+            float dH = FitDist((near + (HR * 1.12f - near) * z) * (1 - .55f * Mathf.Min(1, close) - .27f * Mathf.Max(0, close - 1))) /* past -1: closer still, for squishing */, dE = FitDist(.7f + (HR * 1.12f - .7f) * c.ez), elH = 42 + 14 * z - 14 * close + c.htilt;
             float d = dH + (dE - dH) * e, el = (elH + (c.tilt - elH) * e) * Mathf.Deg2Rad;
             var pos = new Vector3(c.target.x + Mathf.Sin(c.yaw) * Mathf.Cos(el) * d, c.target.y + Mathf.Sin(el) * d, c.target.z + Mathf.Cos(c.yaw) * Mathf.Cos(el) * d);
             PlaceCamera(pos, c.target);
@@ -135,7 +135,7 @@ namespace Squishy.Runtime.Game
         {
             // A lost pointer-up (notification shade, system gesture, app switch) must never leave a stale finger
             // behind: with one stuck entry every new touch looked like a pinch and nothing in the room could be tapped.
-            if (!touch || Input.touchCount <= 1) { ptrs.Clear(); drag = null; }
+            if (!touch || Input.touchCount <= 1) { ptrs.Clear(); drag = null; if (squeezing) { pet.EndPinch(); squeezing = false; } squeezeArm = false; }
             ptrs[id] = new Pointer { pos = p, t = Time.realtimeSinceStartup };
             if (mode == "unbox") { if (!UnboxSquishDown(p, touch)) HoldStart(); return; }
             if (ptrs.Count == 2)
@@ -145,6 +145,8 @@ namespace Squishy.Runtime.Game
                 if (mode == "edit" && moving != null) { twist = (Mathf.Atan2(b.y - a.y, b.x - a.x), moving.ry, 0); return; }
                 pinch0 = Vector2.Distance(a, b);
                 zoom0 = mode == "edit" ? camS.ezT : camS.zoomT;
+                // Zoomed in with both fingers on the squishy: bringing them together squeezes it (spreading still zooms out).
+                squeezeArm = mode == "home" && CloseUp && !S.tucked && PetPoint(a, out sqA) && PetPoint(b, out sqB);
                 camS.mid = (a + b) / 2;
                 drag = null;
                 pet.Held = false;
@@ -221,6 +223,21 @@ namespace Squishy.Runtime.Game
                     if (step != tw.step) { twist = (tw.a0, tw.r0, step); moving.ry = tw.r0 - step * Mathf.PI / 12; sfx.Snap(); Buzz(5); }
                     return;
                 }
+                if (pinch0 > 0 && (squeezing || squeezeArm))
+                {
+                    float dq = Vector2.Distance(a, b);
+                    if (squeezing)
+                    {
+                        float amt = Mathf.Clamp01((pinch0 - dq) / (pinch0 * .55f));
+                        if (Mathf.Floor(amt * 5) != Mathf.Floor(squeezeLast * 5)) Buzz(3); // soft ticks as it gives
+                        squeezeLast = amt;
+                        pet.SetPinch(amt);
+                        return;
+                    }
+                    if (dq < pinch0 - 8) { squeezing = true; squeezeArm = false; squeezeLast = 0; pet.BeginPinch(sqA, sqB); sfx.Press(); Buzz(8); return; }
+                    if (dq > pinch0 + 8) squeezeArm = false; // spreading: it's a zoom after all
+                    else return;
+                }
                 if (pinch0 > 0)
                 {
                     float d = Vector2.Distance(a, b);
@@ -231,7 +248,7 @@ namespace Squishy.Runtime.Game
                         if (camS.mid.HasValue) PanBy(mid.x - camS.mid.Value.x, mid.y - camS.mid.Value.y);
                         camS.mid = mid;
                     }
-                    else camS.zoomT = Mathf.Clamp(zoom0 - (d - pinch0) / 220, -1, 1);
+                    else camS.zoomT = Mathf.Clamp(zoom0 - (d - pinch0) / 220, MinZoom, 1);
                 }
                 return;
             }
@@ -316,7 +333,7 @@ namespace Squishy.Runtime.Game
         public void CanvasUp(int id, Vector2 p)
         {
             ptrs.Remove(id);
-            if (ptrs.Count < 2) { pinch0 = 0; twist = null; }
+            if (ptrs.Count < 2) { pinch0 = 0; twist = null; EndSqueeze(); }
             if (mode == "unbox") { if (drag != null && drag.unboxSq) { UnboxSquishUp(); drag = null; return; } HoldEnd(); return; }
             if (drag == null) return;
             if (ptrs.Count > 0 && drag.item != null) return;
@@ -401,7 +418,7 @@ namespace Squishy.Runtime.Game
                 }
                 return;
             }
-            camS.zoomT = Mathf.Clamp(camS.zoomT + deltaY * .0015f, -1, 1);
+            camS.zoomT = Mathf.Clamp(camS.zoomT + deltaY * .0015f, MinZoom, 1);
         }
 
         // ---------------- arrange ----------------
