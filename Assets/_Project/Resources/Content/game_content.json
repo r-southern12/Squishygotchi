@@ -2378,26 +2378,6 @@
       ]
     },
     {
-      "id": "unbox",
-      "text": "Open a steamer",
-      "goal": 1,
-      "coins": 20
-    },
-    {
-      "id": "unbox5",
-      "text": "Open 5 steamers",
-      "goal": 5,
-      "coins": 60,
-      "ev": "unbox"
-    },
-    {
-      "id": "newprize",
-      "text": "Find something new in a steamer",
-      "goal": 1,
-      "coins": 30,
-      "ev": "new_prize"
-    },
-    {
       "id": "arrange",
       "text": "Rearrange 3 pieces of furniture",
       "goal": 3,
