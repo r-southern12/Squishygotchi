@@ -407,10 +407,10 @@ namespace Squishy.Runtime.Game
                 if (!on) return;
                 tipCoin = Node.Group(room, "tipCoin");
                 tipSpin = Node.Group(tipCoin, "spin");
-                Node.Mesh(tipSpin, ThreeGeo.Cyl(.055f, .055f, .014f, 28), ThreeMat.M("#E8B83A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
-                Node.Mesh(tipSpin, ThreeGeo.Torus(.052f, .008f, 6, 28), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false);
-                Node.Mesh(tipSpin, ThreeGeo.Cyl(.036f, .036f, .018f, 24), ThreeMat.M("#F6D46A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
-                Node.Mesh(tipSpin, ThreeGeo.RBox(.012f, .04f, .02f, .004f), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false); // the stamp in the middle
+                Node.Mesh(tipSpin, ThreeGeo.Cyl(.04f, .04f, .026f, 28), ThreeMat.M("#E8B83A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
+                Node.Mesh(tipSpin, ThreeGeo.Torus(.039f, .01f, 6, 28), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false);
+                Node.Mesh(tipSpin, ThreeGeo.Cyl(.027f, .027f, .03f, 24), ThreeMat.M("#F6D46A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
+                Node.Mesh(tipSpin, ThreeGeo.RBox(.01f, .03f, .034f, .004f), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false); // the stamp in the middle
                 Node.SetLayer(tipCoin, HomeLayer);
             }
             tipCoinS = Mathf.MoveTowards(tipCoinS, on ? 1 : 0, dt * 5);
