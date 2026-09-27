@@ -318,12 +318,13 @@ namespace Squishy.Runtime.Game
                 else if (reward.type == "tool") obj = KitchenModels.Tool(C, S, reward.i, null, holder);
                 else if (reward.type == "kit")
                 {
-                    // The recipe's tools and ingredients laid out side by side.
+                    // The recipe's tools in a back row and its ingredients in front: a cluster that fills the round steamer
+                    // (one long line left every piece small).
                     obj = Node.Group(holder, "kit");
                     var rc = C.recipes[reward.i];
-                    int n = rc.tools.Length + rc.ing.Length, slot = 0;
-                    foreach (var t in rc.tools) KitchenModels.Tool(C, S, t, null, obj).localPosition = new Vector3((slot++ - (n - 1) / 2f) * .42f, 0, 0);
-                    foreach (var i in rc.ing) KitchenModels.Food(C, i, obj).localPosition = new Vector3((slot++ - (n - 1) / 2f) * .42f, 0, .05f);
+                    int nt = rc.tools.Length, ni = rc.ing.Length;
+                    for (int q = 0; q < nt; q++) KitchenModels.Tool(C, S, rc.tools[q], null, obj).localPosition = new Vector3((q - (nt - 1) / 2f) * .42f, 0, ni > 0 ? -.2f : 0);
+                    for (int q = 0; q < ni; q++) KitchenModels.Food(C, rc.ing[q], obj).localPosition = new Vector3((q - (ni - 1) / 2f) * .34f, 0, nt > 0 ? .2f : 0);
                 }
                 else obj = KitchenModels.Food(C, reward.i, holder);
                 // Like the squishy, every prize fills its steamer: as wide as the squishy (wall to wall), never towering.
