@@ -392,6 +392,36 @@ namespace Squishy.Runtime.Game
 
         /// <summary>Seconds left of the energised glow after it played with something by itself (runtime only).</summary>
         private float energyT;
+        private Transform tipCoin, tipSpin;
+        private float tipCoinS;
+
+        /// <summary>
+        /// While a tip is waiting (the minute after it played on its own), a little gold coin spins over its head, so
+        /// it's clear there's something to collect (the wiggle alone wasn't visible). It pops in and shrinks away.
+        /// </summary>
+        private void StepTipCoin(float dt)
+        {
+            bool on = energyT > 0 && !visiting && mode == "home" && !S.dead;
+            if (tipCoin == null)
+            {
+                if (!on) return;
+                tipCoin = Node.Group(room, "tipCoin");
+                tipSpin = Node.Group(tipCoin, "spin");
+                Node.Mesh(tipSpin, ThreeGeo.Cyl(.055f, .055f, .014f, 28), ThreeMat.M("#E8B83A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
+                Node.Mesh(tipSpin, ThreeGeo.Torus(.052f, .008f, 6, 28), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false);
+                Node.Mesh(tipSpin, ThreeGeo.Cyl(.036f, .036f, .018f, 24), ThreeMat.M("#F6D46A"), 0, 0, 0, shadow: false).RotX(Mathf.PI / 2);
+                Node.Mesh(tipSpin, ThreeGeo.RBox(.012f, .04f, .02f, .004f), ThreeMat.M("#C99426"), 0, 0, 0, shadow: false); // the stamp in the middle
+                Node.SetLayer(tipCoin, HomeLayer);
+            }
+            tipCoinS = Mathf.MoveTowards(tipCoinS, on ? 1 : 0, dt * 5);
+            tipCoin.gameObject.SetActive(tipCoinS > .001f);
+            if (tipCoinS <= .001f) return;
+            var p = PetWorld();
+            float bob = .015f * Mathf.Sin(time * 3.2f);
+            tipCoin.localPosition = new Vector3(p.x, p.y + pet.Scale * pet.StageScale * 1.3f + .19f + bob, p.z);
+            tipCoin.localScale = Vector3.one * (tipCoinS * (1.25f - .25f * tipCoinS));
+            tipSpin.RotY(time * 3.5f);
+        }
 
         /// <summary>The energised bonus: 1-5 coins for a squish (or a tap on what it played with) within the minute.</summary>
         private void TipCoins()
@@ -772,6 +802,7 @@ namespace Squishy.Runtime.Game
                 extra += .08f * Mathf.Clamp01(energyT / 20f) * Mathf.Sin(time * 2.4f);
                 if (energyT > 20 && Random.value < dt * 1.5f) { var pp = PetWorld(); HPuff(new Vector3(pp.x + Rnd(-.15f, .15f), pp.y + pet.Scale * 1.1f, pp.z + Rnd(-.15f, .15f)), new Vector3(0, .4f, 0), .025f, .7f, 2, .2f); }
             }
+            StepTipCoin(dt);
             pet.Update(dt, extra, sleeping, droop);
             ApplyPetTransform(lift, sleeping);
             AnimateFurniture(dt);

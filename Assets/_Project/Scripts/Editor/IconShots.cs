@@ -91,6 +91,28 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_COIN") == "1")
+            {
+                // The tip coin over an energised squishy.
+                if (f < 60) return;
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                if (f < 64) { var st = ((Squishy.Simulation.Game.GameRules)typeof(Squishy.Runtime.Game.SteamerGame).GetField("Rules", flags | System.Reflection.BindingFlags.Public).GetValue(game)).S; for (int k = 0; k < 4; k++) st.needs[k] = 1; }
+                typeof(Squishy.Runtime.Game.SteamerGame).GetField("energyT", flags).SetValue(game, 60f);
+                if (f < 140) return;
+                EditorApplication.update -= Tick;
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var flat = cam.transform.position - Bounds(FindPet()).center;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+{ var T1 = typeof(Squishy.Runtime.Game.SteamerGame); Debug.Log("IconShots: mode=" + T1.GetField("mode", flags).GetValue(game) + " visiting=" + T1.GetField("visiting", flags).GetValue(game)); T1.GetMethod("StepTipCoin", flags).Invoke(game, new object[] { .3f }); }
+                { var T0 = typeof(Squishy.Runtime.Game.SteamerGame); var tc = (Transform)T0.GetField("tipCoin", flags).GetValue(game); Debug.Log("IconShots: coin " + (tc == null ? "null" : tc.gameObject.activeInHierarchy + " pos " + tc.position + " scale " + tc.localScale + " layer " + tc.gameObject.layer) + " energyT " + T0.GetField("energyT", flags).GetValue(game) + " pet " + FindPet().position); }
+                                Shot(cam, rt, tex, Bounds(FindPet()), flat.normalized, 20, 4f, 30, Shader.GetGlobalFloat("_PostWarm"), "coin");
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FX") == "1")
             {
                 // The rarity sparkles: a glitter squishy squished a few times, photographed mid-shimmer.

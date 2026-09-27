@@ -2340,7 +2340,7 @@
     },
     {
       "id": "tip",
-      "text": "Tap your squishy while it’s wiggly after playing",
+      "text": "Tap your squishy when a coin spins over its head",
       "goal": 1,
       "coins": 20,
       "ev": "tip"
