@@ -226,7 +226,7 @@ namespace Squishy.Runtime.UI
             _expandDot = new Frame().Set(C("#6F9A74"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
             editBtn.Add(_expandDot);
             _rot = Side(controls, "rotate", "Turn", () => _g.RotateSelected(), "edit", out _);
-            Spacer(controls);
+            Side(controls, "gift", "Open 10", () => _g.OpenTen(), "unbox", out _);
             _bottom.Gap(9);
 
             BuildZoomBar();

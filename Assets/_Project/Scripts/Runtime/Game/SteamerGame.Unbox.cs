@@ -326,15 +326,17 @@ namespace Squishy.Runtime.Game
                     foreach (var i in rc.ing) KitchenModels.Food(C, i, obj).localPosition = new Vector3((slot++ - (n - 1) / 2f) * .42f, 0, .05f);
                 }
                 else obj = KitchenModels.Food(C, reward.i, holder);
-                // Normalise every prize to the same display size and stand it on the plate.
+                // Like the squishy, every prize fills its steamer: as wide as the squishy (wall to wall), never towering.
                 var bb = Node.LocalBounds(obj, holder);
-                float target = reward.type == "item" ? .6f : .42f, k = target / Mathf.Max(bb.size.x, Mathf.Max(bb.size.y * .8f, bb.size.z));
+                float wide = R * US * 2 * .83f, tall = R * US * 1.35f;
+                float k = Mathf.Min(wide / Mathf.Max(.01f, Mathf.Max(bb.size.x, bb.size.z)), tall / Mathf.Max(.01f, bb.size.y));
                 obj.localScale *= k;
                 bb = Node.LocalBounds(obj, holder);
-                obj.localPosition += new Vector3(-bb.center.x, .045f - bb.min.y, -bb.center.z);
+                obj.localPosition += new Vector3(-bb.center.x, .045f * (R * US * .95f / .36f) - bb.min.y, -bb.center.z); // on the (scaled) plate
                 Node.SetLayer(prize, UnboxLayer);
                 prize.gameObject.SetActive(false);
-                ucam.half = .55f;
+                plate.localScale = Vector3.one * (R * US * .95f / .36f); // the plate fills the steamer floor too
+                ucam.half = 1.05f;
             }
         }
 

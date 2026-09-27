@@ -51,9 +51,16 @@ namespace Squishy.Runtime.Game
             ui.ExpandDot(canExpand && mode == "home");
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can grow! Open Arrange to expand"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
-            if (Rules.GiftReady()) ui.SetGift(S.giftStack > 1 ? "×" + S.giftStack : "Gift!", true);
+            Rules.AccrueGifts();
+            if (S.giftStack > 0 && mode == "home" && !visiting)
+            {
+                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+" + S.giftStack + " steamer" + (S.giftStack == 1 ? "" : "s") + " arrived");
+                S.giftStack = 0;
+                WriteSave();
+            }
+            if (Rules.OnlineReady()) ui.SetGift("Free!", true);
             else if (Rules.BonusReady()) ui.SetGift("Bonus", true);
-            else { var w = Rules.GiftWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
+            else { var w = Rules.GiftWait(); var o = Rules.OnlineWait(); if (o < w) w = o; ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();
             if (mode == "home" && !paywallShown && Rules.TrialOver() && !S.dead && !_dying) ShowPaywall();
         }
@@ -155,18 +162,18 @@ namespace Squishy.Runtime.Game
         /// </summary>
         public void OnGift()
         {
-            int got = Rules.ClaimGifts();
-            if (got > 0) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+" + got + " free steamer" + (got == 1 ? "" : "s") + "!"); sfx.Chime(); WriteSave(); }
+            int got = Rules.ClaimOnline() ? 1 : 0;
+            if (got > 0) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+1 free steamer!"); sfx.Chime(); WriteSave(); }
             if (!Rules.BonusReady())
             {
                 if (got > 0) return;
-                var w = Rules.GiftWait();
+                var w = Rules.OnlineWait();
                 ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "Next free steamer in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m");
                 return;
             }
             Action bonus = () => { if (Rules.ClaimBonus()) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .36f), "+1 bonus steamer!"); sfx.Chime(); WriteSave(); } };
             if (S.premium) { bonus(); return; }
-            ui.ShowDialog("Bonus steamer", (got > 0 ? "Your free steamers are in. " : "") + "Want one more? Watch a short video for a bonus steamer. Totally optional: free steamers keep coming every " + C.rules.giftHours + " hours either way.", "#D9A64A",
+            ui.ShowDialog("Bonus steamer", (got > 0 ? "Your free steamer is in. " : "") + "Want one more? Watch a short video for a bonus steamer. Totally optional: steamers keep arriving every " + C.rules.giftHours + " hours either way.", "#D9A64A",
                 ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) bonus(); }); })),
                 ("No thanks", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }

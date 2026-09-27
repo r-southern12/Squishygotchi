@@ -154,35 +154,35 @@ namespace Squishy.Simulation.Game
 
         // ---- gift steamer ----
 
-        // A free steamer every giftHours, stacking up (to giftStackMax) until collected, even while away.
-        // Separately, a bonus steamer every giftHours: an optional video for free players, automatic with the full game.
+        // Every giftHours: one steamer arrives on its own (added straight to your steamers, up to giftStackMax while away),
+        // one more is free to claim when you're in the game, and a third is a bonus for an optional video (included with the full game).
 
-        /// <summary>Adds any free steamers that have come due. Safe to call every frame.</summary>
-        public void AccrueGifts()
+        /// <summary>Adds the steamers that have arrived on their own. Returns how many just arrived. Safe to call every frame.</summary>
+        public int AccrueGifts()
         {
             long now = Clock.UtcNow.Ticks, step = TimeSpan.FromHours(R.giftHours).Ticks;
-            if (S.giftReadyAt <= 0) { S.giftReadyAt = now + step; return; }
-            // Far behind (a long time away): skip whole steps once the stack is full.
-            if (now - S.giftReadyAt > step * (long)R.giftStackMax) S.giftReadyAt = now - step * (long)R.giftStackMax;
-            while (S.giftReadyAt <= now)
-            {
-                if (S.giftStack < R.giftStackMax) S.giftStack++;
-                S.giftReadyAt += step;
-            }
+            if (S.giftReadyAt <= 0) { S.giftReadyAt = now + step; return 0; }
+            // A long time away: only the last giftStackMax arrivals count.
+            if (now - S.giftReadyAt >= step * (long)R.giftStackMax) S.giftReadyAt = now - step * (long)(R.giftStackMax - 1);
+            int n = 0;
+            while (S.giftReadyAt <= now) { n++; S.giftReadyAt += step; }
+            if (n > 0) { SetSteamers(S.steamers + n); S.giftStack += n; }
+            return n;
         }
 
-        public bool GiftReady() { AccrueGifts(); return S.giftStack > 0; }
+        /// <summary>Time until the next steamer arrives on its own.</summary>
         public TimeSpan GiftWait() { AccrueGifts(); return TimeSpan.FromTicks(Math.Max(0, S.giftReadyAt - Clock.UtcNow.Ticks)); }
 
-        /// <summary>Collects every stacked free steamer. Returns how many.</summary>
-        public int ClaimGifts()
+        /// <summary>The free one you claim by being in the game.</summary>
+        public bool OnlineReady() { return S.onlineReadyAt <= Clock.UtcNow.Ticks; }
+        public TimeSpan OnlineWait() { return TimeSpan.FromTicks(Math.Max(0, S.onlineReadyAt - Clock.UtcNow.Ticks)); }
+
+        public bool ClaimOnline()
         {
-            AccrueGifts();
-            int n = S.giftStack;
-            if (n <= 0) return 0;
-            S.giftStack = 0;
-            SetSteamers(S.steamers + n);
-            return n;
+            if (!OnlineReady()) return false;
+            SetSteamers(S.steamers + 1);
+            S.onlineReadyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            return true;
         }
 
         public bool BonusReady() { return S.bonusReadyAt <= Clock.UtcNow.Ticks; }

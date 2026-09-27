@@ -236,8 +236,10 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Finishing a set of 3 tasks | +2 steamers |
 | Task streak | 3 days: +1 steamer; 7 days: +2 steamers |
 | Weekly goal (15 tasks) | +3 steamers |
-| Free steamer | 1 every 3 hours, stacking up to 8 while you're away; tap the gift chip to collect them all |
+| Steamer drip | 1 arrives on its own every 3 hours (up to 8 banked while away) |
+| Online steamer | 1 more to claim from the gift chip every 3 hours while you're in the game |
 | Bonus steamer | 1 more every 3 hours: an optional short video for free players, simply included with the full game |
+| Open 10 | With 10 or more steamers, open ten at once (same odds and pity), prizes listed best first |
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Squish when energised | 1–5 coins |
 | Visiting a friend | 3 coins per caring action (they get 2) |

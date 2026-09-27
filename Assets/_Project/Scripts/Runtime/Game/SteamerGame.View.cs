@@ -107,6 +107,17 @@ namespace Squishy.Runtime.Game
                 float d = RayPick.Hit(ray, it.g);
                 if (d >= 0 && d < bd) { bd = d; best = it; }
             }
+            if (best != null) return best;
+            // Small toys (the pom-pom wand...) are thin: a tap near one on the floor counts too.
+            var fp = FloorPoint(panel, 0);
+            if (!fp.HasValue) return null;
+            float near = float.MaxValue;
+            foreach (var it in items)
+            {
+                if (it.a.r > .35f || it.a.cat == "Floor" || it.arch == "tomb") continue;
+                float d = Dist(fp.Value.x - it.tx, fp.Value.z - it.tz);
+                if (d < Mathf.Max(.3f, it.a.r * 1.8f) && d < near) { near = d; best = it; }
+            }
             return best;
         }
 
@@ -162,6 +173,14 @@ namespace Squishy.Runtime.Game
             if (S.dead) return;
             bool onPet = PetHit(p);
             if (onPet && !S.tucked && energyT > 0) TipCoins();
+            if (ai.mode == "act" && ai.act != null && ai.act.role == "wand")
+            {
+                // Pom-pom chase: a touch anywhere steers the pom-pom (even on the squishy or furniture), so small hands can't miss.
+                drag.wand = true;
+                var fw = FloorPoint(p, 0);
+                if (fw.HasValue) wandFinger = new Vector2(fw.Value.x, fw.Value.z);
+                return;
+            }
             if (onPet)
             {
                 if (S.tucked) { Wake(); return; }
@@ -172,14 +191,6 @@ namespace Squishy.Runtime.Game
                 pet.Held = true;
                 sfx.Squish();
                 Buzz(12);
-                return;
-            }
-            if (ai.mode == "act" && ai.act != null && ai.act.role == "wand" && ItemHit(p) == null)
-            {
-                // Wave the pom-pom: it follows your finger across the floor.
-                drag.wand = true;
-                var fw = FloorPoint(p, 0);
-                if (fw.HasValue) wandFinger = new Vector2(fw.Value.x, fw.Value.z);
                 return;
             }
             var hitIt = ItemHit(p);

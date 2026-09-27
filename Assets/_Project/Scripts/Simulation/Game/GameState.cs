@@ -30,7 +30,8 @@ namespace Squishy.Simulation.Game
         public List<string> cosmetics = new List<string>();
         public string hat = "", face = "", neck = "";
         public bool premium;
-        public int giftStack; // free steamers waiting to be collected
+        public int giftStack; // steamers that arrived on their own since the player last saw the "+N arrived" note
+        public long onlineReadyAt; // when the next free in-game steamer can be claimed
         public long bonusReadyAt; // when the next bonus (video) steamer is available
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;

@@ -224,26 +224,28 @@ namespace Squishy.Tests
         }
 
         [Test]
-        public void Free_Steamers_Stack_Every_Few_Hours_And_Bonus_Is_Separate()
+        public void Steamers_Arrive_Every_Few_Hours_Plus_Online_And_Bonus()
         {
             var c = Content();
             var s = GameRules.NewState(c, 9);
             var clock = new ManualClock(new DateTime(2026, 9, 28, 9, 0, 0, DateTimeKind.Utc));
             var rules = new GameRules(c, s) { Clock = clock };
             s.giftReadyAt = 0;
-            rules.AccrueGifts();
-            Assert.IsFalse(rules.GiftReady(), "the first free steamer comes after the wait");
-            clock.Advance(TimeSpan.FromHours(c.rules.giftHours * 2 + .5));
+            Assert.AreEqual(0, rules.AccrueGifts(), "the first one comes after the wait");
             int before = s.steamers;
-            Assert.AreEqual(2, rules.ClaimGifts(), "two waits, two stacked steamers");
+            clock.Advance(TimeSpan.FromHours(c.rules.giftHours * 2 + .5));
+            Assert.AreEqual(2, rules.AccrueGifts(), "two waits, two steamers, added on their own");
             Assert.AreEqual(before + 2, s.steamers);
             clock.Advance(TimeSpan.FromDays(30));
-            Assert.AreEqual(c.rules.giftStackMax, rules.ClaimGifts(), "a long time away fills the stack to its cap");
-            Assert.IsTrue(rules.BonusReady());
+            Assert.AreEqual(c.rules.giftStackMax, rules.AccrueGifts(), "a long time away is capped");
+            Assert.AreEqual(0, rules.AccrueGifts());
+            // In the game: one more free, and one more for an optional video, each once per wait.
+            Assert.IsTrue(rules.ClaimOnline());
+            Assert.IsFalse(rules.ClaimOnline());
             Assert.IsTrue(rules.ClaimBonus());
-            Assert.IsFalse(rules.ClaimBonus(), "one bonus per wait");
+            Assert.IsFalse(rules.ClaimBonus());
             clock.Advance(TimeSpan.FromHours(c.rules.giftHours));
-            Assert.IsTrue(rules.ClaimBonus());
+            Assert.IsTrue(rules.ClaimOnline() && rules.ClaimBonus());
         }
 
         [Test]
