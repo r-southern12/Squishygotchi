@@ -13,7 +13,7 @@ namespace Squishy.Runtime.Three
         /// <summary>A painted map for this finish's tier, or null when the tier has none (plain, UV, patterns use their own).</summary>
         public static Texture2D TierMap(FinishData f)
         {
-            if (!string.IsNullOrEmpty(f.map) || f.spark == null || f.spark.Length == 0) return null;
+            if (f.clear || !string.IsNullOrEmpty(f.map) || f.spark == null || f.spark.Length == 0) return null; // clear jelly keeps its glitter inside
             string kind = f.tier == "Glitter" ? "fleck" : f.tier == "Galaxy" || f.name == "Cosmic Pearl" ? "nebula" : f.tier == "Holographic" || f.name == "Candy Floss" ? "holo" : null;
             if (kind == null) return null;
             string key = "tier" + kind + f.name;

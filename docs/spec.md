@@ -118,6 +118,8 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer for each 3-hour window is collected for you; passive steamers keep arriving. Reminders account for the slower drain and still honour quiet hours.
 - The night screen: a starry sky and the squishy asleep (tap to wake early). The next time the game opens, a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep".
 
+- **Clear jelly:** some finishes are see-through (firmer at the rim) with things living inside that drift on their own, scatter from a finger press and slosh when squashed or bounced: suspended glitter (Frost, Lilac/Mint/Peach Fizz, Ocean Sparkle, Rainbow Fizz, Moonbeam), glowing motes (the UV glow skins), and the Epic **Aquarium** tier: Koi Pond (koi swim away from your finger), Goldfish Bowl (goldfish and bubbles), Bubble Tea (tapioca pearls that sink and bounce), Snow Globe (snow that swirls). All in data (clear, opacity, inside, insideCount, insideColors).
+
 ## Room and placement
 
 The room is the inside of the steamer. It starts with one of each station and grows with your collection.

@@ -90,6 +90,7 @@ namespace Squishy.Runtime.Models
             _neck = neck != null ? Neck(neck) : null;
             int layer = Pivot.gameObject.layer;
             foreach (var t in new[] { _hat, _face, _neck }) if (t != null) Node.SetLayer(t, layer);
+            if (Fin != null && Fin.clear) FrontParts(true); // accessories draw over a clear body too
         }
 
         private const float HatScale = 1.7f;

@@ -350,6 +350,13 @@ namespace Squishy.EditorTools
                     model.Update(0, 0, false, 0);
                     Shot(cam, rt, tex, bb, flat, 14, 1.5f, 30, warm, "legendary_" + fin.name.Replace(" ", ""));
                 }
+            foreach (var fin in content.finishes)
+                if (fin.clear)
+                {
+                    model.SetFinish(fin);
+                    for (int i = 0; i < 30; i++) model.Update(.05f, 0, false, 0); // let the inside settle and swim a little
+                    Shot(cam, rt, tex, bb, flat, 14, 1.5f, 30, warm, "clear_" + fin.name.Replace(" ", ""));
+                }
             { var tubT = Squishy.Runtime.Game.Thumbs.Get("tub:aegean"); if (tubT != null) { var trt = new RenderTexture(tubT.width, tubT.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB); Graphics.Blit(tubT, trt); var pa = RenderTexture.active; RenderTexture.active = trt; var tt = new Texture2D(tubT.width, tubT.height, TextureFormat.RGBA32, false, false); tt.ReadPixels(new Rect(0, 0, tubT.width, tubT.height), 0, 0); RenderTexture.active = pa; Directory.CreateDirectory("Library/IconChecks"); File.WriteAllBytes("Library/IconChecks/tub.png", tt.EncodeToPNG()); } }
             // Every style's plant on one sheet (6 x 4), rendered with the catalogue thumbnail camera.
             const int T = 256;

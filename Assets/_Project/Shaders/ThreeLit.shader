@@ -15,6 +15,10 @@ Shader "Squishy/ThreeLit"
         _ReceiveShadows ("Receive shadows", Float) = 1
         [Toggle(_STANDARD)] _Standard ("Standard shading", Float) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
+        [HideInInspector] _SrcBlend ("Src blend", Float) = 1
+        [HideInInspector] _DstBlend ("Dst blend", Float) = 0
+        [HideInInspector] _ZWrite ("ZWrite", Float) = 1
+        _Clear ("Clear jelly (edges firmer)", Float) = 0
     }
 
     SubShader
@@ -33,6 +37,10 @@ Shader "Squishy/ThreeLit"
             float _ReceiveShadows;
             float _Standard;
             float _Cull;
+            float _SrcBlend;
+            float _DstBlend;
+            float _ZWrite;
+            float _Clear;
         CBUFFER_END
 
         TEXTURE2D(_BaseMap);
@@ -44,6 +52,8 @@ Shader "Squishy/ThreeLit"
             Name "ForwardLit"
             Tags { "LightMode" = "UniversalForward" }
             Cull [_Cull]
+            Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha // alpha accumulates, so thumbnails of clear jelly keep their see-through look
+            ZWrite [_ZWrite]
 
             HLSLPROGRAM
             #pragma vertex Vert
@@ -187,6 +197,10 @@ Shader "Squishy/ThreeLit"
                 }
                 c += diffuse * lerp(_HemiGround.rgb, _HemiSky.rgb, 0.5 * n.y + 0.5);
                 c += _EmissionColor.rgb;
+                // Clear jelly: see-through in the middle, firmer towards the rim (Fresnel), like a clear squishy.
+                float fres = pow(1.0 - saturate(dot(n, v)), 2.5);
+                float alpha = lerp(1.0, saturate(albedo.a + (1.0 - albedo.a) * fres * 0.9), _Clear);
+                return half4(c, alpha);
             #endif
                 return half4(c, 1.0);
             }

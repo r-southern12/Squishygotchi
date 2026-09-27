@@ -893,7 +893,11 @@
       "spark": [
         "#FFFFFF",
         "#DDEBFF"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.72,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Lilac Fizz",
@@ -903,7 +907,11 @@
       "spark": [
         "#FFFFFF",
         "#FFE3FA"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.72,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Nebula",
@@ -944,21 +952,33 @@
       "tier": "UV",
       "color": "#BFE6C6",
       "rough": 0.2,
-      "glow": "#6BFF9E"
+      "glow": "#6BFF9E",
+      "clear": true,
+      "opacity": 0.76,
+      "inside": "glow",
+      "insideCount": 40
     },
     {
       "name": "Glowlemon",
       "tier": "UV",
       "color": "#E9F29B",
       "rough": 0.2,
-      "glow": "#E8FF4D"
+      "glow": "#E8FF4D",
+      "clear": true,
+      "opacity": 0.76,
+      "inside": "glow",
+      "insideCount": 40
     },
     {
       "name": "Glowpink",
       "tier": "UV",
       "color": "#F7C3E6",
       "rough": 0.2,
-      "glow": "#FF6BD5"
+      "glow": "#FF6BD5",
+      "clear": true,
+      "opacity": 0.76,
+      "inside": "glow",
+      "insideCount": 40
     },
     {
       "name": "Opal",
@@ -1050,7 +1070,11 @@
       "spark": [
         "#FFFFFF",
         "#CFE3FF"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.64,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Cosmic Pearl",
@@ -1151,7 +1175,11 @@
       "spark": [
         "#FFFFFF",
         "#DFFFF0"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.72,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Peach Fizz",
@@ -1161,7 +1189,11 @@
       "spark": [
         "#FFFFFF",
         "#FFE6D2"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.72,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Ocean Sparkle",
@@ -1171,7 +1203,11 @@
       "spark": [
         "#FFFFFF",
         "#C9F4FF"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.72,
+      "inside": "glitter",
+      "insideCount": 110
     },
     {
       "name": "Rainbow Fizz",
@@ -1184,7 +1220,11 @@
         "#C8FF9B",
         "#FFE39B",
         "#D6B3FF"
-      ]
+      ],
+      "clear": true,
+      "opacity": 0.62,
+      "inside": "glitter",
+      "insideCount": 140
     },
     {
       "name": "Midnight Glitter",
@@ -1258,14 +1298,22 @@
       "tier": "UV",
       "color": "#D9C6F2",
       "rough": 0.2,
-      "glow": "#B86BFF"
+      "glow": "#B86BFF",
+      "clear": true,
+      "opacity": 0.76,
+      "inside": "glow",
+      "insideCount": 40
     },
     {
       "name": "Glowtangerine",
       "tier": "UV",
       "color": "#FAD2B0",
       "rough": 0.2,
-      "glow": "#FF9A3D"
+      "glow": "#FF9A3D",
+      "clear": true,
+      "opacity": 0.76,
+      "inside": "glow",
+      "insideCount": 40
     },
     {
       "name": "Pearl",
@@ -1289,6 +1337,69 @@
         "#C8FF9B",
         "#FFD66B"
       ]
+    },
+    {
+      "name": "Koi Pond",
+      "tier": "Aquarium",
+      "color": "#BFE7E4",
+      "rough": 0.15,
+      "clear": true,
+      "opacity": 0.56,
+      "inside": "koi",
+      "insideCount": 3,
+      "insideColors": [
+        "#F2F2EE",
+        "#E8612C",
+        "#E8B33A",
+        "#2A2A2E"
+      ],
+      "spark": []
+    },
+    {
+      "name": "Goldfish Bowl",
+      "tier": "Aquarium",
+      "color": "#CFEAF5",
+      "rough": 0.15,
+      "clear": true,
+      "opacity": 0.52,
+      "inside": "goldfish",
+      "insideCount": 4,
+      "insideColors": [
+        "#F28A2E",
+        "#F6B04A",
+        "#FFFFFF"
+      ],
+      "spark": []
+    },
+    {
+      "name": "Bubble Tea",
+      "tier": "Aquarium",
+      "color": "#E9D2B4",
+      "rough": 0.25,
+      "clear": true,
+      "opacity": 0.86,
+      "inside": "boba",
+      "insideCount": 22,
+      "insideColors": [
+        "#2E1B14",
+        "#4A2C20"
+      ],
+      "spark": []
+    },
+    {
+      "name": "Snow Globe",
+      "tier": "Aquarium",
+      "color": "#DCEBF7",
+      "rough": 0.15,
+      "clear": true,
+      "opacity": 0.52,
+      "inside": "snow",
+      "insideCount": 120,
+      "insideColors": [
+        "#FFFFFF",
+        "#EAF4FF"
+      ],
+      "spark": []
     }
   ],
   "tiers": [
@@ -1321,6 +1432,11 @@
       "tier": "Holographic",
       "rarity": "Epic",
       "color": "#B9A6F0"
+    },
+    {
+      "tier": "Aquarium",
+      "rarity": "Epic",
+      "color": "#6FC3C9"
     },
     {
       "tier": "Legendary",

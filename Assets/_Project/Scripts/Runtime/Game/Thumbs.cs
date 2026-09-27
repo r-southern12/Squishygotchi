@@ -65,10 +65,12 @@ namespace Squishy.Runtime.Game
             _cam.transform.rotation = Quaternion.LookRotation(Space3.U(ctr) - Space3.U(pos), Vector3.up);
             SceneLighting.ClearLamps();
             Post.ThumbMode(true);
+            _pet.ThumbBacking(true);
             var req = new UniversalRenderPipeline.SingleCameraRequest { destination = _rt };
             if (RenderPipeline.SupportsRenderRequest(_cam, req)) RenderPipeline.SubmitRenderRequest(_cam, req);
             else _cam.Render();
             Post.ThumbMode(false);
+            _pet.ThumbBacking(false);
             _game.RestoreLamps();
             var prev = RenderTexture.active;
             RenderTexture.active = _rt;

@@ -162,6 +162,7 @@ namespace Squishy.Runtime.Models
             // Glitter, galaxy and holographic skins paint their colour into a texture (flecks, nebula, sheen), so the tint is white.
             var tierMap = Textures.TierMap(f);
             _base = tierMap != null ? Color.white : ThreeMat.Lin(f.color);
+            if (f.clear) _base.a = f.opacity > 0 ? f.opacity : .45f; // clear jelly: see-through (firmer at the rim)
             Mat.SetVector("_BaseColor", _base);
             Mat.SetFloat("_Roughness", f.rough);
             Mat.SetFloat("_Metalness", f.metal ? .6f : 0f);
@@ -179,6 +180,7 @@ namespace Squishy.Runtime.Models
                 _sparkMesh.colors = cols;
             }
             ThreeMat.SetOpacity(_blush, f.tier == "Galaxy" ? .35f : .5f);
+            SetupInside(f);
             _g = -1;
         }
 
@@ -198,13 +200,16 @@ namespace Squishy.Runtime.Models
             EyeOpen += (open - EyeOpen) * Mathf.Min(1, dt * 14);
             StepFace(dt, x, closed, droop);
             StepTactile(dt);
+            StepInside(dt, x);
             StepCowlick(dt, x);
             bool beads = _eyeMode == EyeMode.Beads;
             foreach (var e in _eyes) e.localScale = beads ? new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f) : Vector3.zero;
             if (Grey != _g)
             {
                 _g = Grey;
-                Mat.SetVector("_BaseColor", Color.Lerp(StageTint(_base), GreyC, Grey));
+                var tint = Color.Lerp(StageTint(_base), GreyC, Grey);
+                tint.a = _base.a;
+                Mat.SetVector("_BaseColor", tint);
                 _sparkles.enabled = Fin != null && Fin.spark != null && Fin.spark.Length > 0 && Grey < .5f;
             }
         }

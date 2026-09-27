@@ -70,7 +70,9 @@ namespace Squishy.Runtime.Models
         {
             EnsureTactileMesh();
             float s = Mathf.Max(.01f, Scale * StageScale);
-            return Add(Body.InverseTransformPoint(world), Mathf.Clamp(worldRadius / s, .2f, .55f), 0).id;
+            var local = Body.InverseTransformPoint(world);
+            PokeInside(local, 1);
+            return Add(local, Mathf.Clamp(worldRadius / s, .2f, .55f), 0).id;
         }
 
         /// <summary>Slides a held press to a new world point. Returns the id to keep using (a smear leaves a trail).</summary>
@@ -81,6 +83,7 @@ namespace Squishy.Runtime.Models
             var local = Body.InverseTransformPoint(world);
             if ((local - d.p).sqrMagnitude < d.r * d.r * .09f) return id;
             d.held = false;
+            PokeInside(local, .6f);
             return Add(local, d.r, d.depth * .85f).id;
         }
 

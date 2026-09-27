@@ -21,7 +21,7 @@ namespace Squishy.Simulation.Game
         public bool walk;
     }
 
-    [Serializable] public class FinishData { public string name, tier, color, glow, map; public float rough; public string[] spark; public bool metal; }
+    [Serializable] public class FinishData { public string name, tier, color, glow, map; public float rough; public string[] spark; public bool metal; public bool clear; public float opacity; public string inside; public int insideCount; public string[] insideColors; } // clear: see-through jelly; inside: what floats in it (glitter, snow, boba, koi, goldfish, glow)
     [Serializable] public class TierData { public string tier, rarity, color; }
     [Serializable] public class ToolData { public string name, color, rarity; public int price, maxDur; public bool basic; }
     [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; }
