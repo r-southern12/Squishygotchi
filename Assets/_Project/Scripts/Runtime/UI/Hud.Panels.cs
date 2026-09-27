@@ -269,7 +269,7 @@ namespace Squishy.Runtime.UI
             _tomb.Shown(keepsake != null);
             if (keepsake != null) { _tomb.Fill = C(keepsake); _tomb.MarkDirtyRepaint(); }
             _memoBtns.Clear();
-            foreach (var b in buttons) Button(_memoBtns, b.label, b.bg, b.shadow, b.color, 16, 50, 17, b.act, false, 5);
+            foreach (var b in buttons) if (b.label != null) Button(_memoBtns, b.label, b.bg, b.shadow, b.color, 16, 50, 17, b.act, false, 5);
             _memoBtns.Gap(10);
             _mName.text = name;
             _mMeta.text = meta;

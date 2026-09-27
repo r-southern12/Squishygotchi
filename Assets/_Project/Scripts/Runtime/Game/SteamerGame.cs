@@ -73,6 +73,7 @@ namespace Squishy.Runtime.Game
             LoadOutcome outcome;
             _save = _saves.Load(t => GameRules.NewState(C, (ulong)t), out outcome);
             Rules = new GameRules(C, _save.state);
+            Rules.Protected = C.rules.adminTools || Debug.isDebugBuild; // test builds: neglect can't kill unless the tester switches protection off
             Rules.CoinsChanged += () => ui.SetCoins(S.coins);
             Rules.SteamersChanged += () => ui.SetSteamers(S.steamers, mode == "home");
 

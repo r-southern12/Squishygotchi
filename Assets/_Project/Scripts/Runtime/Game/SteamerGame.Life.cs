@@ -141,7 +141,9 @@ namespace Squishy.Runtime.Game
                 "Thanks for looking after " + Rules.Fav.name + "! Unlock the full game to keep caring for squishies: no ads, no limits, every future squishy.",
                 null,
                 ("Unlock full game" + (price.Length > 0 ? " · " + price : ""), "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => store.Buy())),
-                ("Restore purchase", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => store.Restore())));
+                ("Restore purchase", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => store.Restore())),
+                // Test builds only: never lock the tester out (switched off with adminTools for release).
+                (C.rules.adminTools || Debug.isDebugBuild ? "Tester: unlock (admin)" : null, "#8C7BB0", "#6A5A8E", Hud.Cream, (Action)(() => { S.premium = true; WriteSave(); ui.HideMemo(); paywallShown = false; ui.ShowHud(true); })));
         }
 
         // ---------------- gift steamer ----------------

@@ -149,6 +149,9 @@ namespace Squishy.Simulation.Game
         public float ComfortSlow(float comfort) { return 1f - Math.Min(R.comfortSlowMax, comfort * R.comfortSlowPerPoint); }
 
         /// <summary>Drains needs, ages the squishy and runs the death clock. Returns true when it dies.</summary>
+        /// <summary>Testing only (admin "Protect squishy"): needs still drain, but neglect can't kill. Not saved.</summary>
+        public bool Protected;
+
         public bool StepCare(float sdt, float comfort)
         {
             if (S.tucked) return false;
@@ -161,7 +164,7 @@ namespace Squishy.Simulation.Game
             if (S.dayT > R.dayLength) { S.dayT = 0; S.age++; }
             bool empty = false;
             for (int k = 0; k < 4; k++) if (S.needs[k] <= 0f) empty = true;
-            if (empty) { S.deathClock += sdt; if (S.deathClock > R.deathSeconds) return true; }
+            if (empty) { S.deathClock += sdt; if (Protected) S.deathClock = Math.Min(S.deathClock, R.deathSeconds - 1); if (S.deathClock > R.deathSeconds) return true; }
             else S.deathClock = Math.Max(0f, S.deathClock - sdt);
             return false;
         }
