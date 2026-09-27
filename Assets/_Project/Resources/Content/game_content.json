@@ -2259,27 +2259,10 @@
       ]
     },
     {
-      "id": "kick12",
-      "text": "Play fetch: 12 kicks",
-      "goal": 12,
-      "coins": 55,
-      "ev": "kick",
-      "requires": [
-        "ball"
-      ]
-    },
-    {
       "id": "squish",
       "text": "Squish 10 times",
       "goal": 10,
       "coins": 20
-    },
-    {
-      "id": "squish30",
-      "text": "Squish 30 times",
-      "goal": 30,
-      "coins": 45,
-      "ev": "squish"
     },
     {
       "id": "dent",
@@ -2346,16 +2329,6 @@
       ]
     },
     {
-      "id": "slide3",
-      "text": "Go down the slide 3 times",
-      "goal": 3,
-      "coins": 50,
-      "ev": "act_slide",
-      "requires": [
-        "slide"
-      ]
-    },
-    {
       "id": "bounce",
       "text": "Bounce on the trampoline",
       "goal": 1,
@@ -2367,16 +2340,9 @@
     },
     {
       "id": "tip",
-      "text": "Catch it energised: tap for a tip",
+      "text": "Tap your squishy while it’s wiggly after playing",
       "goal": 1,
       "coins": 20,
-      "ev": "tip"
-    },
-    {
-      "id": "tip3",
-      "text": "Catch 3 energised tips",
-      "goal": 3,
-      "coins": 45,
       "ev": "tip"
     },
     {
@@ -2407,16 +2373,6 @@
       "text": "Water a plant",
       "goal": 1,
       "coins": 15,
-      "requires": [
-        "plant"
-      ]
-    },
-    {
-      "id": "water3",
-      "text": "Water 3 plants",
-      "goal": 3,
-      "coins": 35,
-      "ev": "water",
       "requires": [
         "plant"
       ]
