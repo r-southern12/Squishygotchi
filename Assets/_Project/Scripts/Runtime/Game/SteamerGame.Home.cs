@@ -708,7 +708,13 @@ namespace Squishy.Runtime.Game
             sfx.Kick();
             Buzz(10);
             shake = Mathf.Max(shake, .12f);
-            HPuff(new Vector3(bl.tx, Y0 + .08f, bl.tz), new Vector3(-dx / l * .6f, .5f, -dz / l * .6f), .07f, .4f, 3, .3f);
+            // A few soft white glints where it was kicked (it was a grey steam puff from the old smoke effects).
+            if (fxPool != null)
+                for (int i = 0; i < 4; i++)
+                {
+                    float ga = Rnd(0, Mathf.PI * 2);
+                    fxPool.Spawn(new Vector3(bl.tx, Y0 + .1f, bl.tz), new Vector3(Mathf.Cos(ga) * .25f, Rnd(.25f, .45f), Mathf.Sin(ga) * .25f), Rnd(.04f, .06f), Rnd(.5f, .8f), 2f, -.2f, w: new Vector3(Rnd(0, 6), 0, Rnd(-2, 2)), col: Color.white);
+                }
         }
 
         private void StepHome(float dt)
