@@ -450,6 +450,27 @@ namespace Squishy.EditorTools
                 var tea = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < 4 && i < content.styles.Length; i++) tea.Add("teatable:" + content.styles[i * 5 % content.styles.Length].id);
                 ThumbSheet("tea", tea, 2);
+                // Mid-pour close-ups from three sides (512 px each): the tipped spout should end over the cup.
+                Squishy.Runtime.Models.ItemModels.PreviewPour = 1;
+                var live = Squishy.Runtime.Game.Thumbs.LiveBegin("teatable:" + content.styles[1].id);
+                if (live != null)
+                {
+                    var pourSheet = new Texture2D(512 * 3, 512, TextureFormat.RGBA32, false, false);
+                    var srgb = new RenderTexture(512, 512, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                    for (int v = 0; v < 3; v++)
+                    {
+                        if (v > 0) Squishy.Runtime.Game.Thumbs.LiveStep(2.1f / .7f);
+                        Graphics.Blit(live, srgb);
+                        var pa = RenderTexture.active;
+                        RenderTexture.active = srgb;
+                        pourSheet.ReadPixels(new Rect(0, 0, 512, 512), v * 512, 0);
+                        RenderTexture.active = pa;
+                    }
+                    pourSheet.Apply();
+                    File.WriteAllBytes("Library/IconChecks/pour.png", pourSheet.EncodeToPNG());
+                    Squishy.Runtime.Game.Thumbs.LiveEnd();
+                }
+                Squishy.Runtime.Models.ItemModels.PreviewPour = -1;
             }
 
             {

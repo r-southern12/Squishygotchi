@@ -292,15 +292,13 @@ namespace Squishy.Runtime.Game
                 foreach (var cp in table.parts.cups) { var w = ThreeWorld(cp); float d = Dist(w.x - ai.x, w.z - ai.z); if (d < best) { best = d; cup = cp; } }
                 if (forTwo && round % 2 == 1) foreach (var cp in table.parts.cups) if (cp != cup) { cup = cp; break; }
             }
-            Vector3 to = cup != null ? ThreeWorld(cup) : new Vector3(ai.x, 0, ai.z);
-            float dx = to.x - table.tx, dz = to.z - table.tz;
-            float yaw = Mathf.Atan2(-dz, dx) - table.ry;
-            Node.Rot(pot, 0, yaw, -.6f * tilt);
-            pot.localPosition = new Vector3(0, table.parts.potY + .05f * tilt, 0);
-            if (table.parts.spout == null) return;
+            if (cup == null || table.parts.spout == null) return;
+            ItemModels.PourPose(table.parts, cup.localPosition, tilt);
+            var to = ThreeWorld(cup);
             var sp = ThreeWorld(table.parts.spout);
-            if (tilt > .85f && Random.value < dt * 40)
-                drops.Spawn(sp, new Vector3((to.x - sp.x) * 1.2f, -.2f, (to.z - sp.z) * 1.2f), .012f, .28f, 0, -6, col: ThreeMat.Hex("#B8793F"));
+            // A thin stream straight down into the tea (it stops at the tea's surface).
+            if (tilt > .9f && Random.value < dt * 45)
+                drops.Spawn(sp, new Vector3((to.x - sp.x) * 2, -.25f, (to.z - sp.z) * 2), .011f, .12f, 0, -6, floor: to.y + .046f, col: ThreeMat.Hex("#B8793F"));
             if (tilt < .1f && Random.value < dt * 1.5f) HPuff(new Vector3(sp.x, sp.y + .03f, sp.z), new Vector3(0, .35f, 0), .03f, .9f, 1.4f, .22f);
         }
 

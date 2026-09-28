@@ -40,7 +40,7 @@ namespace Squishy.Runtime.Models
             Node.Mesh(pot, Cyl(.008f, .012f, .012f, 10), trim, 0, .153f, 0);
             Node.Mesh(pot, Sph(.016f, 12, 8), trim, 0, .164f, 0);
             // Spout: tapering segments along a curve from low on the body up and out.
-            Vector2 p0 = new Vector2(.062f, .045f), p1 = new Vector2(.13f, .05f), p2 = new Vector2(.145f, .125f);
+            Vector2 p0 = new Vector2(.062f, .045f), p1 = new Vector2(.12f, .042f), p2 = new Vector2(.162f, .1f); // ends rising at about 55°, so a pour tips it level
             System.Func<float, Vector2> bez = u => (1 - u) * (1 - u) * p0 + 2 * (1 - u) * u * p1 + u * u * p2;
             const int N = 6;
             for (int k = 0; k < N; k++)
@@ -52,10 +52,31 @@ namespace Squishy.Runtime.Models
             }
             Node.Mesh(pot, Torus(.0095f, .0025f, 4, 12), trim, p2.x, p2.y, 0).RotX(Mathf.PI / 2);
             var tip = Node.Group(pot, "spoutTip", p2.x + .004f, p2.y, 0);
-            // Handle: a C-shaped loop on the far side, open towards the body.
-            Node.Mesh(pot, Torus(.042f, .009f, 8, 20, Mathf.PI * 1.3f), body, -.1f, .072f, 0).RotZ(Mathf.PI * .35f);
+            // Handle: a C-shaped loop on the far side, open towards the body, both ends set into it.
+            Node.Mesh(pot, Torus(.042f, .009f, 8, 22, Mathf.PI * 1.5f), body, -.094f, .072f, 0).RotZ(Mathf.PI * .25f);
             return tip;
         }
+
+        /// <summary>
+        /// The teapot mid-pour towards a cup (cupLocal: the cup's place on the table): turned to face it, tipped by
+        /// tilt (0 to 1), and moved so the tipped spout ends right over the middle of the cup, a little above its rim.
+        /// Worked out from where the spout tip sits on the pot, so it lines up whatever the cup's distance.
+        /// </summary>
+        public static void PourPose(ItemParts p, Vector3 cupLocal, float tilt)
+        {
+            if (p.pot == null || p.spout == null) return;
+            float dist = Mathf.Sqrt(cupLocal.x * cupLocal.x + cupLocal.z * cupLocal.z);
+            float yaw = Mathf.Atan2(-cupLocal.z, cupLocal.x), th = .9f * tilt; // tipped enough that the spout points level
+            Node.Rot(p.pot, 0, yaw, -th);
+            var tp = p.spout.localPosition;
+            float tipR = tp.x * Mathf.Cos(th) + tp.y * Mathf.Sin(th), tipY = -tp.x * Mathf.Sin(th) + tp.y * Mathf.Cos(th);
+            const float Rim = .05f, Above = .035f;
+            float reach = (dist - .004f - tipR) * tilt, lift = Mathf.Max(0, Rim + Above - tipY) * tilt;
+            p.pot.localPosition = new Vector3(Mathf.Cos(yaw) * reach, p.potY + lift, -Mathf.Sin(yaw) * reach);
+        }
+
+        /// <summary>Render checks only: build tea tables with the pot mid-pour (-1 = off).</summary>
+        public static float PreviewPour = -1;
 
         /// <summary>A teacup on its saucer with tea in it and a little handle.</summary>
         public static Transform TeaCup(Transform parent, Material china, Material trim, float x, float y, float z)
@@ -131,6 +152,7 @@ namespace Squishy.Runtime.Models
                     // Cups and saucers: moved in front of whichever seats are nearby (SteamerGame.ArrangeTeaCups).
                     p.cups = new Transform[2];
                     for (int k = 0; k < 2; k++) p.cups[k] = TeaCup(g, L, T, k == 0 ? -.16f : .15f, h + .056f, k == 0 ? .1f : -.12f);
+                    if (PreviewPour >= 0) PourPose(p, p.cups[0].localPosition, PreviewPour);
                     break;
                 }
                 case "stove":
