@@ -238,7 +238,7 @@ namespace Squishy.Simulation.Game
         public bool Knows(int i) { return Owned(RecipeKey(i)); }
         public int KnownRecipes() { int n = 0; for (int i = 0; i < C.recipes.Length; i++) if (Knows(i)) n++; return n; }
 
-        public int RecipeLvl(int i) { return Math.Min(5, 1 + S.recipeXP[i] / 3); }
+        public int RecipeLvl(int i) { return Math.Min(5, 1 + S.recipeXP[i] / Math.Max(1, R.cooksPerLevel)); }
 
         public List<string> MissingFor(RecipeData rc)
         {
@@ -559,22 +559,19 @@ namespace Squishy.Simulation.Game
         /// <summary>Time until a resting slot gets its next task.</summary>
         public TimeSpan TaskWait(TaskState t) { return TimeSpan.FromTicks(Math.Max(0, t.readyAt - Clock.UtcNow.Ticks)); }
 
-        /// <summary>Pays a finished task and replaces it. Returns true when the set earns its steamers.</summary>
+        /// <summary>Pays a finished task (its coins and a steamer) and replaces it. Returns false if it wasn't finished.</summary>
         public bool ClaimTask(int i)
         {
             var t = S.tasks[i];
             if (!t.done) return false;
             AddCoins(TaskDef(t).coins);
             SetSteamers(S.steamers + R.taskSteamers); // every task also pays a steamer
-            S.setDone++;
             LastRewardMessage = RecordTaskDone();
             var next = NewTask();
-            next.readyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.taskCooldownHours).Ticks; // rate-limited: one new task per slot every few hours
+            next.readyAt = NextReset(Clock.UtcNow.Ticks, R.taskCooldownHours); // rate-limited: a new task at the next reset on the clock
             S.tasks[i] = next;
-            bool steamer = false;
-            if (S.setDone >= R.tasksPerSteamer) { S.setDone = 0; SetSteamers(S.steamers + R.taskSetSteamers); steamer = true; }
             if (TasksChanged != null) TasksChanged();
-            return steamer;
+            return true;
         }
     }
 }

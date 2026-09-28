@@ -16,40 +16,7 @@ namespace Squishy.Runtime.Models
             var t = c.tools[i];
             var sk = c.toolSkins[skinIdx ?? s.toolSkin[i]];
             var g = Node.Group(parent, "tool" + i);
-            Material col = M(string.IsNullOrEmpty(sk.col) ? t.color : sk.col), w = M(sk.name == "Gold" ? "#B8913A" : "#8A5D3B");
-            switch (i)
-            {
-                case 0:
-                    Node.Mesh(g, RBox(.05f, .02f, .4f, .01f), w, 0, .02f, .1f);
-                    Node.Mesh(g, RBox(.16f, .02f, .16f, .02f), col, 0, .02f, -.16f);
-                    break;
-                case 1:
-                    Node.Mesh(g, RBox(.28f, .02f, .18f, .01f), col, 0, .02f, -.05f);
-                    Node.Mesh(g, RBox(.06f, .03f, .18f, .015f), w, 0, .02f, .16f);
-                    break;
-                case 2:
-                    foreach (var x in new[] { -.05f, 0f, .05f }) Node.Mesh(g, RBox(.025f, .015f, .34f, .006f), col, x, .02f, 0);
-                    break;
-                case 3:
-                    Node.Mesh(g, Sph(.2f, 16, 8), col, 0, .2f, 0).ScaleY(.45f);
-                    Node.Mesh(g, RBox(.3f, .03f, .04f, .01f), w, .3f, .14f, 0);
-                    break;
-                case 4:
-                    Node.Mesh(g, Cyl(.06f, .06f, .4f, 12), col, 0, .06f, 0).RotZ(PI / 2);
-                    foreach (var x in new[] { -.25f, .25f }) Node.Mesh(g, Cyl(.025f, .025f, .12f, 8), w, x, .06f, 0).RotZ(PI / 2);
-                    break;
-                case 5:
-                    Node.Mesh(g, Cyl(.18f, .18f, .12f, 18), col, 0, .06f, 0);
-                    Node.Mesh(g, Cyl(.19f, .16f, .08f, 18), M("#A97E47"), 0, .16f, 0);
-                    break;
-                case 6:
-                    Node.Mesh(g, RBox(.04f, .02f, .36f, .01f), col, 0, .1f, .06f);
-                    Node.Mesh(g, Sph(.08f, 12, 8), col, 0, .06f, -.16f).ScaleY(.5f);
-                    break;
-                default:
-                    foreach (var x in new[] { -.03f, .03f }) Node.Mesh(g, Cyl(.012f, .016f, .4f, 6), col, x, .02f, 0).RotX(PI / 2);
-                    break;
-            }
+            ToolShape(t.shape, string.IsNullOrEmpty(sk.col) ? t.color : sk.col, sk.name == "Gold" ? "#B8913A" : "#8A5D3B", g);
             return g;
         }
 

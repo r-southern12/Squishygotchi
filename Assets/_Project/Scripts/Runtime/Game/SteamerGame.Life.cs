@@ -51,17 +51,10 @@ namespace Squishy.Runtime.Game
             ui.ExpandDot(canExpand && mode == "home");
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can grow! Open Arrange to expand"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
-            Rules.AccrueGifts();
-            if (S.giftStack > 0 && mode == "home" && !visiting && !S.asleep)
-            {
-                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+" + S.giftStack + " steamer" + (S.giftStack == 1 ? "" : "s") + " arrived");
-                S.giftStack = 0;
-                WriteSave();
-            }
             StepNight(1);
             if (Rules.OnlineReady()) ui.SetGift("Free!", true);
             else if (Rules.BonusReady()) ui.SetGift("Bonus", true);
-            else { var w = Rules.GiftWait(); var o = Rules.OnlineWait(); if (o < w) w = o; ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
+            else { var w = Rules.OnlineWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();
             if (mode == "home" && !paywallShown && Rules.TrialOver() && !S.dead && !_dying) ShowPaywall();
         }

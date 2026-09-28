@@ -154,24 +154,25 @@ namespace Squishy.Simulation.Game
 
         // ---- gift steamer ----
 
-        // Every giftHours: one steamer arrives on its own (added straight to your steamers, up to giftStackMax while away),
-        // one more is free to claim when you're in the game, and a third is a bonus for an optional video (included with the full game).
+        // Every giftHours, besides the steamer each care task pays: one is free to claim when you're in the game,
+        // and one more is a bonus for an optional video (included with the full game). Nothing arrives on its own.
+        // Both refill at fixed resets on the clock, like the care tasks, so the wait is often less than the window.
 
-        /// <summary>Adds the steamers that have arrived on their own. Returns how many just arrived. Safe to call every frame.</summary>
-        public int AccrueGifts()
+        /// <summary>The first reset after this moment: every few hours on the local clock (midnight, 3am, 6am... for 3).</summary>
+        public static long NextReset(long afterUtcTicks, double hours)
         {
-            long now = Clock.UtcNow.Ticks, step = TimeSpan.FromHours(R.giftHours).Ticks;
-            if (S.giftReadyAt <= 0) { S.giftReadyAt = now + step; return 0; }
-            // A long time away: only the last giftStackMax arrivals count.
-            if (now - S.giftReadyAt >= step * (long)R.giftStackMax) S.giftReadyAt = now - step * (long)(R.giftStackMax - 1);
-            int n = 0;
-            while (S.giftReadyAt <= now) { n++; S.giftReadyAt += step; }
-            if (n > 0) { SetSteamers(S.steamers + n); S.giftStack += n; }
-            return n;
+            var local = new DateTime(afterUtcTicks, DateTimeKind.Utc).ToLocalTime();
+            double h = (local - local.Date).TotalHours;
+            return local.Date.AddHours((Math.Floor(h / hours + 1e-9) + 1) * hours).ToUniversalTime().Ticks;
         }
 
-        /// <summary>Time until the next steamer arrives on its own.</summary>
-        public TimeSpan GiftWait() { AccrueGifts(); return TimeSpan.FromTicks(Math.Max(0, S.giftReadyAt - Clock.UtcNow.Ticks)); }
+        /// <summary>How many resets fall after one moment, up to and including another.</summary>
+        public static int ResetsBetween(long fromUtcTicks, long toUtcTicks, double hours)
+        {
+            int n = 0;
+            for (long b = NextReset(fromUtcTicks, hours); b <= toUtcTicks; b = NextReset(b, hours)) n++;
+            return n;
+        }
 
         /// <summary>The free one you claim by being in the game.</summary>
         public bool OnlineReady() { return S.onlineReadyAt <= Clock.UtcNow.Ticks; }
@@ -181,7 +182,7 @@ namespace Squishy.Simulation.Game
         {
             if (!OnlineReady()) return false;
             SetSteamers(S.steamers + 1);
-            S.onlineReadyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            S.onlineReadyAt = NextReset(Clock.UtcNow.Ticks, R.giftHours);
             return true;
         }
 
@@ -192,7 +193,7 @@ namespace Squishy.Simulation.Game
         {
             if (!BonusReady()) return false;
             SetSteamers(S.steamers + 1);
-            S.bonusReadyAt = Clock.UtcNow.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            S.bonusReadyAt = NextReset(Clock.UtcNow.Ticks, R.giftHours);
             return true;
         }
 

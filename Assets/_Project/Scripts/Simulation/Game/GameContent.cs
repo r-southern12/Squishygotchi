@@ -23,7 +23,7 @@ namespace Squishy.Simulation.Game
 
     [Serializable] public class FinishData { public string name, tier, color, glow, map; public float rough; public string[] spark; public bool metal; public bool clear; public float opacity; public string inside; public int insideCount; public string[] insideColors; } // clear: see-through jelly; inside: what floats in it (glitter, snow, boba, koi, goldfish, glow)
     [Serializable] public class TierData { public string tier, rarity, color; }
-    [Serializable] public class ToolData { public string name, color, rarity; public int price, maxDur; public bool basic; }
+    [Serializable] public class ToolData { public string name, color, rarity, shape; public int price, maxDur; public bool basic; }
     [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; }
     [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity, glow; public string music, musicName; public float metal, rough; } // music: the track this steamer unlocks (Resources/Music)
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
@@ -56,8 +56,9 @@ namespace Squishy.Simulation.Game
         public float nightDrain;
         public int[] nightSnoozeMinutes; // the bedtime prompt's snooze choices
         public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
-        public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers, taskSteamers;
+        public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, taskSteamers;
         public float taskCooldownHours;
+        public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
@@ -66,7 +67,6 @@ namespace Squishy.Simulation.Game
         public float dentRadius, flingHold, flingSpeed; // tactile squish: dent size in the world; hold time and speed of the ping // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
-        public int giftStackMax;
         public int weeklyGoal, weeklySteamers;
         public bool adminTools;
         public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos, musicCredit;

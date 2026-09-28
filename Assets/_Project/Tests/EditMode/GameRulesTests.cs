@@ -195,7 +195,7 @@ namespace Squishy.Tests
                 clock.Advance(TimeSpan.FromHours(c.rules.taskCooldownHours));
             }
             Assert.AreEqual(coins + paid, s.coins);
-            Assert.AreEqual(steamers + 3 * c.rules.taskSteamers + c.rules.taskSetSteamers, s.steamers, "a steamer per task, plus the set bonus");
+            Assert.AreEqual(steamers + 3 * c.rules.taskSteamers, s.steamers, "a steamer per task and nothing more");
         }
 
         [Test]
@@ -224,28 +224,34 @@ namespace Squishy.Tests
         }
 
         [Test]
-        public void Steamers_Arrive_Every_Few_Hours_Plus_Online_And_Bonus()
+        public void Resets_Fall_On_The_Clock()
+        {
+            // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
+            var at = new DateTime(2026, 9, 28, 4, 50, 0, DateTimeKind.Local).ToUniversalTime();
+            var next = new DateTime(GameRules.NextReset(at.Ticks, 3), DateTimeKind.Utc).ToLocalTime();
+            Assert.AreEqual(6, next.Hour);
+            Assert.AreEqual(0, next.Minute);
+            Assert.AreEqual(3, GameRules.ResetsBetween(at.Ticks, at.AddHours(9).Ticks, 3), "6, 9 and 12 o'clock");
+        }
+
+        [Test]
+        public void Free_Steamer_And_Bonus_Every_Few_Hours_Nothing_On_Its_Own()
         {
             var c = Content();
             var s = GameRules.NewState(c, 9);
             var clock = new ManualClock(new DateTime(2026, 9, 28, 9, 0, 0, DateTimeKind.Utc));
             var rules = new GameRules(c, s) { Clock = clock };
-            s.giftReadyAt = 0;
-            Assert.AreEqual(0, rules.AccrueGifts(), "the first one comes after the wait");
             int before = s.steamers;
-            clock.Advance(TimeSpan.FromHours(c.rules.giftHours * 2 + .5));
-            Assert.AreEqual(2, rules.AccrueGifts(), "two waits, two steamers, added on their own");
-            Assert.AreEqual(before + 2, s.steamers);
             clock.Advance(TimeSpan.FromDays(30));
-            Assert.AreEqual(c.rules.giftStackMax, rules.AccrueGifts(), "a long time away is capped");
-            Assert.AreEqual(0, rules.AccrueGifts());
-            // In the game: one more free, and one more for an optional video, each once per wait.
+            Assert.AreEqual(before, s.steamers, "time away alone brings no steamers");
+            // In the game: one free, and one more for an optional video, each once per wait (and they don't stack).
             Assert.IsTrue(rules.ClaimOnline());
             Assert.IsFalse(rules.ClaimOnline());
             Assert.IsTrue(rules.ClaimBonus());
             Assert.IsFalse(rules.ClaimBonus());
             clock.Advance(TimeSpan.FromHours(c.rules.giftHours));
             Assert.IsTrue(rules.ClaimOnline() && rules.ClaimBonus());
+            Assert.AreEqual(before + 4, s.steamers);
         }
 
         [Test]
@@ -309,7 +315,6 @@ namespace Squishy.Tests
             var local = new DateTime(2026, 9, 28, 21, 0, 0); // 9pm local
             Assert.IsTrue(rules.IsNight(local));
             Assert.IsFalse(rules.IsNight(new DateTime(2026, 9, 28, 15, 0, 0)));
-            rules.AccrueGifts(); // the arrivals timer is already running in the game
             s.onlineReadyAt = 0; // one free steamer waiting at bedtime
             int before = s.steamers;
             rules.GoToSleep(utc, local);
@@ -319,9 +324,8 @@ namespace Squishy.Tests
             clock.Advance(TimeSpan.FromHours(10)); // 7am
             var r = rules.WakeUp(clock.UtcNow);
             Assert.IsFalse(s.asleep);
-            int online = 1 + (int)(10 / c.rules.giftHours);
-            int passive = (int)(10 / c.rules.giftHours); // arrivals on their own (the first came due during the night)
-            Assert.GreaterOrEqual(s.steamers - before, online + passive - 1);
+            int online = 1 + GameRules.ResetsBetween(utc.Ticks, utc.AddHours(10).Ticks, c.rules.giftHours); // the free one waiting at bedtime, then one per reset
+            Assert.AreEqual(online, s.steamers - before);
             Assert.AreEqual(s.steamers - before, r.steamers);
         }
 

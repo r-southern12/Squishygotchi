@@ -1517,14 +1517,16 @@
       "rarity": "Common",
       "price": 60,
       "maxDur": 18,
-      "basic": true
+      "basic": true,
+      "shape": "spatula"
     },
     {
       "name": "Cleaver",
       "color": "#9AA3AB",
       "rarity": "Rare",
       "price": 150,
-      "maxDur": 30
+      "maxDur": 30,
+      "shape": "cleaver"
     },
     {
       "name": "Fork set",
@@ -1532,28 +1534,32 @@
       "rarity": "Common",
       "price": 60,
       "maxDur": 18,
-      "basic": true
+      "basic": true,
+      "shape": "cutlery"
     },
     {
       "name": "Wok",
       "color": "#3B2A20",
       "rarity": "Rare",
       "price": 150,
-      "maxDur": 30
+      "maxDur": 30,
+      "shape": "wok"
     },
     {
       "name": "Rolling pin",
       "color": "#D6AE72",
       "rarity": "Rare",
       "price": 150,
-      "maxDur": 30
+      "maxDur": 30,
+      "shape": "rollingpin"
     },
     {
       "name": "Mini steamer",
       "color": "#D6AE72",
       "rarity": "Rare",
       "price": 150,
-      "maxDur": 30
+      "maxDur": 30,
+      "shape": "steamer"
     },
     {
       "name": "Ladle",
@@ -1561,7 +1567,8 @@
       "rarity": "Common",
       "price": 60,
       "maxDur": 18,
-      "basic": true
+      "basic": true,
+      "shape": "ladle"
     },
     {
       "name": "Chopsticks",
@@ -1569,7 +1576,8 @@
       "rarity": "Common",
       "price": 60,
       "maxDur": 18,
-      "basic": true
+      "basic": true,
+      "shape": "chopsticks"
     }
   ],
   "pantry": [
@@ -2626,8 +2634,6 @@
     "ingredientPrice": 8,
     "newToolPrice": 60,
     "minRepair": 10,
-    "tasksPerSteamer": 3,
-    "taskSetSteamers": 2,
     "taskCooldownHours": 3,
     "tuckMinCondition": 0.12,
     "lifespanMinDays": 30,
@@ -2661,7 +2667,6 @@
     "flingHold": 0.45,
     "flingSpeed": 2.4,
     "musicCredit": "Music by Redlight_Chill",
-    "giftStackMax": 8,
     "pityLegendary": 100,
     "taskMemory": 8,
     "nightStartHour": 20,
@@ -2676,7 +2681,8 @@
     ],
     "visitFeed": 0.2,
     "visitPet": 0.15,
-    "taskSteamers": 1
+    "taskSteamers": 1,
+    "cooksPerLevel": 5
   },
   "cosmetics": [
     {

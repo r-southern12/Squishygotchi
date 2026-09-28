@@ -444,6 +444,9 @@ namespace Squishy.EditorTools
                 var decor = new System.Collections.Generic.List<string>();
                 foreach (var st in new[] { content.styles[0].id, content.styles[5].id }) foreach (var ty in new[] { "vase", "lantern", "sidetable", "easel", "pouf", "books" }) decor.Add(ty + ":" + st);
                 ThumbSheet("decor", decor, 6);
+                var tools = new System.Collections.Generic.List<string>();
+                for (int i = 0; i < content.tools.Length; i++) for (int j = 0; j < content.toolSkins.Length; j++) tools.Add("tskin:" + i + ":" + j);
+                ThumbSheet("tools", tools, content.toolSkins.Length);
             }
 
             {

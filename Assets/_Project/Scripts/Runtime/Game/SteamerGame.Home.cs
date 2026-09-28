@@ -525,7 +525,7 @@ namespace Squishy.Runtime.Game
                     cookTool.localScale = Vector3.one * .55f;
                     cookTool.localPosition = pan.localPosition + new Vector3(0, .04f, 0);
                     Node.SetLayer(cookTool, HomeLayer);
-                    pan.gameObject.SetActive(cookTi != 3 && cookTi != 5);
+                    pan.gameObject.SetActive(C.tools[cookTi].shape != "wok" && C.tools[cookTi].shape != "steamer");
                 }
                 cookDish = KitchenModels.Dish(C, rc == null ? 0 : System.Array.IndexOf(C.recipes, rc), room);
                 cookDish.localScale = Vector3.one * .55f;
@@ -934,17 +934,18 @@ namespace Squishy.Runtime.Game
                         var bp = pan.localPosition;
                         tl.localPosition = new Vector3(bp.x, bp.y + .04f, bp.z);
                         float rx = 0, ryy = 0, rz = 0;
-                        if (cookTi == 0) rx = -.3f + Mathf.Sin(t * 10) * .5f;
-                        else if (cookTi == 1) { tl.localPosition += new Vector3(0, Mathf.Abs(Mathf.Sin(t * 12)) * .05f, 0); rx = Mathf.Sin(t * 12) * .3f; }
-                        else if (cookTi == 2) ryy = t * 6;
-                        else if (cookTi == 3) { tl.localPosition += new Vector3(0, Mathf.Abs(Mathf.Sin(t * 6)) * .05f, 0); rz = Mathf.Sin(t * 6) * .3f; }
-                        else if (cookTi == 4) { tl.localPosition += new Vector3(Mathf.Sin(t * 5) * .06f, 0, 0); ryy = Mathf.PI / 2; }
-                        else if (cookTi == 6) ryy = t * 5;
-                        else if (cookTi == 7) rz = Mathf.Sin(t * 14) * .2f;
+                        string ts = C.tools[cookTi].shape;
+                        if (ts == "spatula") rx = -.3f + Mathf.Sin(t * 10) * .5f;
+                        else if (ts == "cleaver") { tl.localPosition += new Vector3(0, Mathf.Abs(Mathf.Sin(t * 12)) * .05f, 0); rx = Mathf.Sin(t * 12) * .3f; }
+                        else if (ts == "cutlery") ryy = t * 6;
+                        else if (ts == "wok") { tl.localPosition += new Vector3(0, Mathf.Abs(Mathf.Sin(t * 6)) * .05f, 0); rz = Mathf.Sin(t * 6) * .3f; }
+                        else if (ts == "rollingpin") { tl.localPosition += new Vector3(Mathf.Sin(t * 5) * .06f, 0, 0); ryy = Mathf.PI / 2; }
+                        else if (ts == "ladle") ryy = t * 5;
+                        else if (ts == "chopsticks") rz = Mathf.Sin(t * 14) * .2f;
                         Node.Rot(tl, rx, ryy, rz);
                     }
                     else pan.RotZ(Mathf.Sin(t * 20) * .06f);
-                    if (Random.value < dt * (cookTi == 5 ? 14 : 6))
+                    if (Random.value < dt * (cookTi >= 0 && C.tools[cookTi].shape == "steamer" ? 14 : 6))
                     {
                         var wp = ThreeWorld(pan);
                         HPuff(new Vector3(wp.x, wp.y + .1f, wp.z), new Vector3(Rnd(-.2f, .2f), .8f, 0), Rnd(.04f, .07f), .8f, 1.5f, .4f);

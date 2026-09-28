@@ -16,7 +16,7 @@ namespace Squishy.Simulation.Game
         public bool dead;
         /// <summary>Tucked in: needs, ageing and the death clock are paused (holidays, busy weeks).</summary>
         public bool tucked;
-        public int sinceRare, sinceEpic, sinceLegendary, setDone;
+        public int sinceRare, sinceEpic, sinceLegendary;
         public ulong rng;
         public List<TaskState> tasks = new List<TaskState>();
         public List<string> recentTasks = new List<string>(); // the last few tasks shown, so they don't come straight back
@@ -31,13 +31,12 @@ namespace Squishy.Simulation.Game
         public List<string> cosmetics = new List<string>();
         public string hat = "", face = "", neck = "";
         public bool premium;
-        public int giftStack; // steamers that arrived on their own since the player last saw the "+N arrived" note
         public long onlineReadyAt; // when the next free in-game steamer can be claimed
         public bool asleep; // turned in for the night
         public long sleepAt, sleepUntil, lastNightPrompt, nightSnoozeUntil;
         public int sleepSteamers, nightBank;
         public long bonusReadyAt; // when the next bonus (video) steamer is available
-        public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;
+        public long trialStart, lastTaskDay, weekStart, lastSeenUtc;
         public int streak, weekTasks;
         public int stageAwarded; // highest life stage whose prestige has been paid this life
         public bool weekClaimed;

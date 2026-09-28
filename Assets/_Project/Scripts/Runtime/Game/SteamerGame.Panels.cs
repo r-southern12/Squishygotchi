@@ -48,7 +48,7 @@ namespace Squishy.Runtime.Game
                 "Some steamers are stacked: 2 layers (" + P(R.pTwoLayers) + ") or 3 layers (" + P(R.pThreeLayers) + "), each with its own prize at these odds.",
                 inside + ".",
                 "Squishies: " + P(R.favouriteChance) + " of the time it's a copy of your favourite (copies make it grow). Otherwise it's one you don't have yet, until you have every squishy of that rarity.",
-                "Getting steamers: a free one every " + R.giftHours + " hours (they stack up to " + R.giftStackMax + "), a bonus one every " + R.giftHours + " hours with an optional video, care tasks, and coins earned in the game. Steamers are never sold for real money.");
+                "Getting steamers: one for every care task, a free one to claim and a bonus one with an optional video, both refilling every " + R.giftHours + " hours on the clock (midnight, 3am, 6am...), and coins earned in the game. Steamers are never sold for real money.");
         }
         public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); if (id == "info") { UpdateMusic(); if (tenLive || tenCards.Count > 0) EndTenView(); } } // leaving the Sound Lab: back to this steamer's track
 
@@ -85,7 +85,7 @@ namespace Squishy.Runtime.Game
                 for (int s = 0; s < 5; s++) stars.Add(Icons.Make(s < lv ? "star" : "star_empty", 12, "#D9A64A"));
                 string fx = "Hunger +" + Mathf.RoundToInt(rc.hunger * mul * 100) + "%" + (rc.cap > 0 ? " (up to " + Mathf.RoundToInt(rc.cap * 100) + "%)" : "")
                     + (!string.IsNullOrEmpty(rc.bonusNeed) ? " · " + char.ToUpper(rc.bonusNeed[0]) + rc.bonusNeed.Substring(1) + " +" + Mathf.RoundToInt(rc.bonus * mul * 100) + "%" : "")
-                    + (lv < 5 && rc.ing.Length > 0 ? " · " + (3 - S.recipeXP[i] % 3) + " more to level up" : "");
+                    + (lv < 5 && rc.ing.Length > 0 ? " · " + (C.rules.cooksPerLevel - S.recipeXP[i] % C.rules.cooksPerLevel) + " more to level up" : "");
                 var fxl = Css.Label(extra, fx, "Figtree", 600, 11, "#5F7F62");
                 fxl.Wrap();
                 if (!string.IsNullOrEmpty(rc.note)) { var nl = Css.Label(extra, rc.note, "Figtree", 400, 11, "#7A6656"); nl.Wrap(); nl.style.unityFontStyleAndWeight = FontStyle.Italic; }
@@ -113,7 +113,7 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            ui.SetPanelSub("tasks", "Each: coins + " + C.rules.taskSteamers + " steamer · finish 3 for " + C.rules.taskSetSteamers + " bonus · " + S.setDone + " of 3 done · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s") + " · this week " + Rules.WeekTasks() + "/" + C.rules.weeklyGoal);
+            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s") + " · this week " + Rules.WeekTasks() + "/" + C.rules.weeklyGoal);
             for (int i = 0; i < S.tasks.Count; i++)
             {
                 var t = S.tasks[i];
@@ -132,7 +132,7 @@ namespace Squishy.Runtime.Game
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
                     ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .58f), "+" + d.coins + " coins" + (C.rules.taskSteamers > 0 ? " · +" + C.rules.taskSteamers + " steamer" : ""));
-                    if (Rules.ClaimTask(idx)) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .5f), "Set of 3: +" + C.rules.taskSetSteamers + " bonus steamers!"); sfx.Chime(); }
+                    Rules.ClaimTask(idx);
                     if (Rules.LastRewardMessage != null) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .42f), Rules.LastRewardMessage); sfx.Chime(); Rules.LastRewardMessage = null; }
                     ui.TaskDot(Rules.AnyTaskDone());
                     DrawTasks();

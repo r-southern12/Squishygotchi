@@ -115,7 +115,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 ### Night
 
 - Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night. The prompt can be snoozed (the player picks 15 minutes, 30 minutes or 1 hour, data) and asks again after; "Not tonight" stops it until the next evening.
-- Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer for each 3-hour window is collected for you; passive steamers keep arriving. Reminders account for the slower drain and still honour quiet hours.
+- Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer from each 3-hour reset in the night is collected for you. Reminders account for the slower drain and still honour quiet hours.
 - The night screen: a starry sky and the squishy asleep (tap to wake early). The next time the game opens, a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep".
 
 - **Clear jelly:** some finishes are see-through (firmer at the rim) with things living inside that drift on their own, scatter from a finger press and slosh when squashed or bounced: suspended glitter (Frost, Lilac/Mint/Peach Fizz, Ocean Sparkle, Rainbow Fizz, Moonbeam), glowing motes (the UV glow skins), and the Epic **Aquarium** tier: Koi Pond (koi swim away from your finger), Goldfish Bowl (goldfish and bubbles), Bubble Tea (tapioca pearls that sink and bounce), Snow Globe (snow that swirls). All in data (clear, opacity, inside, insideCount, insideColors).
@@ -224,7 +224,7 @@ Meals are cooked from ingredients using tools. **Snacks are separate**: bought i
 | ★ Egg & chive scramble | Egg, Chives | Spatula | 1 | +40% | — | Veggie jiaozi favourite |
 | Mystery dumplings | Flour, Pork, Cabbage, Chives | Rolling pin, Mini steamer | 4 | +80% | Play +15% | Best not to think about it |
 
-**Recipe mastery:** every 3 cooks earns a star, up to 5. Each star adds 10% to Hunger and bonus.
+**Recipe mastery:** every 5 cooks earns a star, up to 5. Each star adds 10% to Hunger and bonus.
 
 | Tool | Rarity | Uses before breaking | Price |
 | --- | --- | --- | --- |
@@ -245,13 +245,12 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 
 | Source | Amount |
 | --- | --- |
-| Care task | 15–50 coins each |
-| Finishing a set of 3 tasks | +2 steamers |
+| Care task | 15–50 coins and 1 steamer each |
 | Task streak | 3 days: +1 steamer; 7 days: +2 steamers |
 | Weekly goal (15 tasks) | +3 steamers |
-| Steamer drip | 1 arrives on its own every 3 hours (up to 8 banked while away) |
-| Online steamer | 1 more to claim from the gift chip every 3 hours while you're in the game |
-| Bonus steamer | 1 more every 3 hours: an optional short video for free players, simply included with the full game |
+| Free steamer | 1 to claim from the gift chip; refills at each 3-hour reset on the clock (midnight, 3am, 6am...), so the wait is often under 3 hours; it does not stack while away |
+| Bonus steamer | 1 more, refilling at the same 3-hour resets: an optional short video for free players, simply included with the full game |
+| Every 3 hours | 5 at most: 3 from care tasks, the free one and the bonus one. Nothing arrives on its own. |
 | Open 10 | With 10 or more steamers, open ten at once (same odds and pity): they burst open in turn (bigger bang for Epic and Legendary), then the prizes are listed best first with a spinning 3D showcase of the one you tap (tap to enlarge) |
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Squish when energised | 1–5 coins |
@@ -260,7 +259,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Duplicate furniture skin | 20 coins |
 | Duplicate tool / tool skin / steamer skin | 10 / 15 / 30 coins |
 
-**Care tasks:** 3 at a time; each pays its coins and 1 steamer, and finishing a set of 3 adds 2 bonus steamers; a claimed task is replaced after a 3-hour wait (tasks are rate-limited, not farmable). About 33 missions (food, cleaning, rest, play, mood, garden, home, friends; none ask you to open steamers) live in the data; one is only offered if you own what it needs (a slide mission needs a slide; a visit mission needs a friend), and the last 8 shown never come straight back. Missions count events; no two missions ask for the same thing.
+**Care tasks:** 3 at a time; each pays its coins and 1 steamer; a claimed task is replaced at the next 3-hour reset on the clock (tasks are rate-limited, not farmable). About 33 missions (food, cleaning, rest, play, mood, garden, home, friends; none ask you to open steamers) live in the data; one is only offered if you own what it needs (a slide mission needs a slide; a visit mission needs a friend), and the last 8 shown never come straight back. Missions count events; no two missions ask for the same thing.
 
 | Task | Reward |
 | --- | --- |

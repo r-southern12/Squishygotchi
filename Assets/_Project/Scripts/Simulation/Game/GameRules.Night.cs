@@ -38,7 +38,7 @@ namespace Squishy.Simulation.Game
             S.sleepSteamers = S.steamers;
             // The free steamer waiting now is collected straight away; the rest as the night goes by.
             S.nightBank = OnlineReady() ? 1 : 0;
-            S.onlineReadyAt = utc.Ticks + TimeSpan.FromHours(R.giftHours).Ticks;
+            S.onlineReadyAt = NextReset(utc.Ticks, R.giftHours);
             S.lastNightPrompt = NightKey(local);
         }
 
@@ -49,24 +49,21 @@ namespace Squishy.Simulation.Game
         public int NightSteamersSoFar(DateTime utc)
         {
             if (!S.asleep) return 0;
-            long step = TimeSpan.FromHours(R.giftHours).Ticks, end = Math.Min(utc.Ticks, S.sleepUntil);
-            AccrueGifts();
-            return S.nightBank + (int)Math.Max(0, (end - S.sleepAt) / step) + Math.Max(0, S.steamers - S.sleepSteamers);
+            long end = Math.Min(utc.Ticks, S.sleepUntil);
+            return S.nightBank + ResetsBetween(S.sleepAt, end, R.giftHours) + Math.Max(0, S.steamers - S.sleepSteamers);
         }
 
         public NightReport WakeUp(DateTime utc)
         {
             if (!S.asleep) return null;
-            long step = TimeSpan.FromHours(R.giftHours).Ticks, end = Math.Min(utc.Ticks, S.sleepUntil);
-            int windows = (int)Math.Max(0, (end - S.sleepAt) / step);
+            long end = Math.Min(utc.Ticks, S.sleepUntil);
+            int windows = ResetsBetween(S.sleepAt, end, R.giftHours); // the free one refilled (and was collected) at each reset in the night
             S.nightBank += windows;
-            AccrueGifts();
             SetSteamers(S.steamers + S.nightBank);
             var r = new NightReport { slept = TimeSpan.FromTicks(Math.Max(0, utc.Ticks - S.sleepAt)), steamers = Math.Max(0, S.steamers - S.sleepSteamers), early = utc.Ticks < S.sleepUntil - TimeSpan.FromHours(R.nightWakeByHour - R.nightEndHour).Ticks };
-            S.onlineReadyAt = S.sleepAt + (windows + 1) * step;
+            S.onlineReadyAt = NextReset(end, R.giftHours);
             S.asleep = false;
             S.nightBank = 0;
-            S.giftStack = 0; // the wake-up screen already counted the arrivals
             return r;
         }
     }
