@@ -127,20 +127,55 @@ namespace Squishy.Runtime.Game
             Save("sad", sad);
             for (int k = 0; k < 4; k++)
             {
-                Save("low" + k, Scene(droopy, k));
-                Save("empty" + k, Scene(sad, k));
+                Save("low" + k, Scene(droopy, k, rules));
+                Save("empty" + k, Scene(sad, k, rules));
             }
-            Save("fade", Scene(sad, -1));
+            Save("fade", Scene(sad, -1, rules));
         }
 
         /// <summary>A little postcard: the squishy on the left, a thought bubble of what it wants on the right.</summary>
-        private static byte[] Scene(byte[] squishyPng, int need)
+        /// <summary>
+        /// A soft, muted impression of the player's own room behind the squishy: the steamer's wall colour above a warm
+        /// floor, with blurred blobs in the colours of the furniture (was a plain beige card).
+        /// </summary>
+        private static void RoomBackdrop(Three.Canvas2D g, int W, int H, GameRules rules)
+        {
+            var c = rules.C;
+            var skin = c.skins[Mathf.Clamp(rules.S.curSkin, 0, c.skins.Length - 1)];
+            var cream = Three.Canvas2D.Css("#F7F0E4");
+            Color wall = Color.Lerp(Three.Canvas2D.Css(skin.a), cream, .55f), floor = Color.Lerp(Three.Canvas2D.Css("#E7CFA4"), cream, .35f);
+            // The colours of what is in the room (its most common style), as out-of-focus shapes along the floor line.
+            var counts = new Dictionary<string, int>();
+            foreach (var p in rules.S.items) { var st = p.Style; if (string.IsNullOrEmpty(st)) continue; counts.TryGetValue(st, out int n); counts[st] = n + 1; }
+            string best = null; int bn = 0;
+            foreach (var kv in counts) if (kv.Value > bn) { best = kv.Key; bn = kv.Value; }
+            var style = c.Style(best);
+            var pal = style != null ? style.pal : new[] { "#C8674E", "#6F9A74", "#D9A64A", "#8C7BB0", "#F2E3C6" };
+            var blobs = new List<(Vector2 p, float r, Color col)>();
+            var rnd = new System.Random(7);
+            for (int i = 0; i < 6; i++)
+                blobs.Add((new Vector2(40 + (float)rnd.NextDouble() * (W - 80), H * .52f + (float)rnd.NextDouble() * H * .22f), 34 + (float)rnd.NextDouble() * 38, Color.Lerp(Three.Canvas2D.Css(pal[i % pal.Length]), cream, .35f)));
+            g.FillShader((x, y) =>
+            {
+                float v = y / H; // 0 at the top
+                var col = Color.Lerp(wall, floor, Mathf.SmoothStep(0, 1, (v - .5f) / .2f));
+                foreach (var b in blobs)
+                {
+                    float dx = x - b.p.x, dy = (y - b.p.y) * 1.4f, w = Mathf.Exp(-(dx * dx + dy * dy) / (b.r * b.r)) * .8f;
+                    col = Color.Lerp(col, b.col, w);
+                }
+                float vig = 1 - .12f * Mathf.Pow(Mathf.Abs(x / W - .5f) * 2, 2); // a gentle vignette
+                return new Color(col.r * vig, col.g * vig, col.b * vig, 1);
+            });
+        }
+
+        private static byte[] Scene(byte[] squishyPng, int need, GameRules rules)
         {
             if (squishyPng == null) return null;
             const int W = 512, H = 256;
             var g = new Three.Canvas2D(W, H);
             Color bubble = Three.Canvas2D.Css("#FFFFFF");
-            g.FillRect(0, 0, W, H, Three.Canvas2D.Css("#F7F0E4"));
+            RoomBackdrop(g, W, H, rules);
             g.FillCircle(262, 178, 9, bubble);
             g.FillCircle(292, 148, 15, bubble);
             g.FillCircle(384, 104, 80, bubble);

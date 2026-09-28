@@ -113,6 +113,20 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_NOTIF") == "1")
+            {
+                if (f < 60) return;
+                EditorApplication.update -= Tick;
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var rules = (Squishy.Simulation.Game.GameRules)typeof(Squishy.Runtime.Game.SteamerGame).GetField("Rules", flags).GetValue(game);
+                var png = Squishy.Runtime.Game.SquishyArt.Png(rules.Fav, Squishy.Runtime.Game.SquishyArt.Mood.Droopy, rules.LifeStage());
+                var scene = (byte[])typeof(Squishy.Runtime.Game.Notifier).GetMethod("Scene", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { png, 1, rules });
+                Directory.CreateDirectory(Dir);
+                File.WriteAllBytes(Dir + "/notif.png", scene);
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FX") == "1")
             {
                 // The rarity sparkles: a glitter squishy squished a few times, photographed mid-shimmer.

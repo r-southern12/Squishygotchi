@@ -1,6 +1,11 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-  <!-- Status-bar icon: a squat, flat-topped dumpling with a softly scalloped (pleated) top and two pleat notches.
-     No pointed tip, so it can't read as a slime. -->
+  <!-- Status-bar icon: our squishy as a silhouette. A round bao dome on a flat base, three pleats curving down
+       from the top, and two little eyes cut out so it reads as a face even this small. -->
   <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
-      android:pathData="M2.5,16.8C2.5,12.6 4.4,9.8 7.4,8.9Q8.8,7.9 10.1,8.6Q11,7.8 12,8.5Q13,7.8 13.9,8.6Q15.2,7.9 16.6,8.9C19.6,9.8 21.5,12.6 21.5,16.8C21.5,19.2 18.6,20.2 12,20.2C5.4,20.2 2.5,19.2 2.5,16.8Z M9.6,9.4L10.5,12.2L10.9,9.2Z M13.1,9.2L13.5,12.2L14.4,9.4Z" />
+      android:pathData="M2.4,16.4C2.4,10.4 6.5,6.3 12,6.3C17.5,6.3 21.6,10.4 21.6,16.4C21.6,19.1 18.6,19.9 12,19.9C5.4,19.9 2.4,19.1 2.4,16.4Z
+        M11.2,7.5Q8.6,8.5 7.5,11.3L8.5,11.6Q9.5,9.3 11.6,8.4Z
+        M12.8,7.5Q15.4,8.5 16.5,11.3L15.5,11.6Q14.5,9.3 12.4,8.4Z
+        M11.5,8.1L12,11.4L12.5,8.1Z
+        M7.6,15.1a1.25,1.25 0,1 0,2.5 0a1.25,1.25 0,1 0,-2.5 0Z
+        M13.9,15.1a1.25,1.25 0,1 0,2.5 0a1.25,1.25 0,1 0,-2.5 0Z" />
 </vector>

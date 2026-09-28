@@ -71,7 +71,6 @@ public class SquishyNotify extends BroadcastReceiver {
             b.setStyle(new Notification.DecoratedCustomViewStyle());
             b.setCustomContentView(small);
             b.setCustomBigContentView(big);
-            b.setLargeIcon(bmp);
         }
         nm.notify(intent.getIntExtra("id", 1), b.build());
     }
