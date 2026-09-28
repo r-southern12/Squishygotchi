@@ -248,23 +248,22 @@ namespace Squishy.Runtime.Game
         private static byte[] Scene(byte[] squishyPng, IList<int> needs, GameRules rules)
         {
             if (squishyPng == null) return null;
-            const int W = 512, H = 256;
+            // Each extra need gets its own full-size bubble to the right (the picture grows wider instead of shrinking them).
+            int n = needs == null ? 0 : needs.Count;
+            const int H = 256, Step = 180;
+            int W = 512 + Step * Mathf.Max(0, n - 1);
             var g = new Three.Canvas2D(W, H);
             Color bubble = Three.Canvas2D.Css("#FFFFFF");
             RoomBackdrop(g, W, H, rules);
             g.FillCircle(262, 178, 9, bubble);
             g.FillCircle(292, 148, 15, bubble);
             g.FillCircle(384, 104, 80, bubble);
-            // One need fills the bubble; two sit side by side; three or four share it in a little grid.
-            int n = needs == null ? 0 : needs.Count;
             if (n == 0) DrawNeed(g, -1, 384, 104, 1, bubble);
-            else if (n == 1) DrawNeed(g, needs[0], 384, 104, 1, bubble);
-            else if (n == 2) { DrawNeed(g, needs[0], 348, 104, .62f, bubble); DrawNeed(g, needs[1], 420, 104, .62f, bubble); }
-            else
+            for (int i = 0; i < n; i++)
             {
-                var at = new[] { new Vector2(354, 76), new Vector2(414, 76), new Vector2(354, 132), new Vector2(414, 132) };
-                if (n == 3) at[2] = new Vector2(384, 132);
-                for (int i = 0; i < Mathf.Min(4, n); i++) DrawNeed(g, needs[i], at[i].x, at[i].y, .48f, bubble);
+                float cx = 384 + Step * i;
+                if (i > 0) { g.FillCircle(cx - Step / 2f, 158, 7, bubble); g.FillCircle(cx, 104, 80, bubble); } // thought dots, then its bubble
+                DrawNeed(g, needs[i], cx, 104, 1, bubble);
             }
             var bg = g.ToTexture(true, false, false, "scene", true);
             var sq = new Texture2D(2, 2);
