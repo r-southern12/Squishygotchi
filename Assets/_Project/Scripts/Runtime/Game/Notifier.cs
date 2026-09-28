@@ -98,6 +98,39 @@ namespace Squishy.Runtime.Game
         }
 
         private static bool _pending;
+        private static byte[] _droopyPng, _sadPng;
+
+        /// <summary>Every need that will be low when a reminder arrives (the one that triggered it first).</summary>
+        private static List<int> NeedsAt(GameRules rules, float comfort, DateTime when, int trigger)
+        {
+            var s = rules.S;
+            float slow = rules.ComfortSlow(comfort);
+            float[] decay = { rules.R.decayHunger, rules.R.decayPlay, rules.R.decayRest, rules.R.decayClean };
+            double secs = Math.Max(0, (when - DateTime.Now).TotalSeconds), left = s.asleep ? Math.Max(0, (s.sleepUntil - DateTime.UtcNow.Ticks) / (double)TimeSpan.TicksPerSecond) : 0;
+            var list = new List<int>();
+            if (trigger >= 0) list.Add(trigger);
+            for (int k = 0; k < 4; k++)
+            {
+                if (k == trigger) continue;
+                double rate = decay[k] * slow, asleepFor = Math.Min(secs, left);
+                double level = s.needs[k] - rate * (asleepFor * rules.R.nightDrain + (secs - asleepFor));
+                if (level < LowAt + .1f) list.Add(k);
+            }
+            return list;
+        }
+
+        /// <summary>The picture for a reminder showing these needs (made now if it is a new combination).</summary>
+        private static string PictureFor(string kind, List<int> needs, GameRules rules)
+        {
+            string key = kind + string.Join("", needs);
+            if (!Pictures.ContainsKey(key))
+            {
+                var portrait = kind == "empty" ? _sadPng : _droopyPng;
+                if (portrait == null) return kind + needs[0];
+                Save(key, Scene(portrait, needs, rules));
+            }
+            return key;
+        }
 
         /// <summary>Renders the pictures once the thumbnail camera exists, then refreshes the widget.</summary>
         public static void Retry(GameRules rules, float comfort)
@@ -127,10 +160,12 @@ namespace Squishy.Runtime.Game
             Save("sad", sad);
             for (int k = 0; k < 4; k++)
             {
-                Save("low" + k, Scene(droopy, k, rules));
-                Save("empty" + k, Scene(sad, k, rules));
+                Save("low" + k, Scene(droopy, new[] { k }, rules));
+                Save("empty" + k, Scene(sad, new[] { k }, rules));
             }
-            Save("fade", Scene(sad, -1, rules));
+            Save("fade", Scene(sad, null, rules));
+            _droopyPng = droopy;
+            _sadPng = sad;
         }
 
         /// <summary>A little postcard: the squishy on the left, a thought bubble of what it wants on the right.</summary>
@@ -169,7 +204,48 @@ namespace Squishy.Runtime.Game
             });
         }
 
-        private static byte[] Scene(byte[] squishyPng, int need, GameRules rules)
+        /// <summary>One need's little picture, centred at (cx, cy) at scale s: a bowl, a ball, a moon, a drop (or a heart for "fading").</summary>
+        private static void DrawNeed(Three.Canvas2D g, int need, float cx, float cy, float s, Color bubble)
+        {
+            if (need == 0)
+            {
+                var bowl = new List<Vector2>();
+                for (int i = 0; i <= 16; i++) { float a = Mathf.PI * i / 16; bowl.Add(new Vector2(cx - 42 * s * Mathf.Cos(a), cy + 34 * s * Mathf.Sin(a))); }
+                g.FillEllipse(cx, cy, 40 * s, 12 * s, 0, Three.Canvas2D.Css("#F4EBDD"));
+                g.FillPolygon(bowl, Three.Canvas2D.Css("#C8674E"));
+                g.StrokeArc(cx - 12 * s, cy - 22 * s, 10 * s, 0, Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4 * s);
+                g.StrokeArc(cx + 12 * s, cy - 30 * s, 10 * s, Mathf.PI, 2 * Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4 * s);
+            }
+            else if (need == 1)
+            {
+                g.FillCircle(cx, cy, 38 * s, Three.Canvas2D.Css("#6E9C9A"));
+                g.StrokeArc(cx - 52 * s, cy, 40 * s, -.9f, .9f, bubble, 5 * s);
+                g.StrokeArc(cx + 52 * s, cy, 40 * s, Mathf.PI - .9f, Mathf.PI + .9f, bubble, 5 * s);
+            }
+            else if (need == 2)
+            {
+                g.FillCircle(cx, cy, 38 * s, Three.Canvas2D.Css("#8C7BB0"));
+                g.FillCircle(cx + 20 * s, cy - 14 * s, 32 * s, bubble);
+                g.FillCircle(cx + 40 * s, cy + 30 * s, 5 * s, Three.Canvas2D.Css("#D9A64A"));
+                g.FillCircle(cx - 44 * s, cy - 40 * s, 4 * s, Three.Canvas2D.Css("#D9A64A"));
+            }
+            else if (need == 3)
+            {
+                var drop = Three.Canvas2D.Css("#7FB0C9");
+                g.FillCircle(cx, cy + 14 * s, 30 * s, drop);
+                g.FillPolygon(new[] { new Vector2(cx, cy - 44 * s), new Vector2(cx - 27 * s, cy + 4 * s), new Vector2(cx + 27 * s, cy + 4 * s) }, drop);
+                g.FillCircle(cx - 10 * s, cy + 8 * s, 8 * s, bubble);
+            }
+            else
+            {
+                var pink = Three.Canvas2D.Css("#E86A92");
+                g.FillCircle(cx - 17 * s, cy - 10 * s, 22 * s, pink);
+                g.FillCircle(cx + 17 * s, cy - 10 * s, 22 * s, pink);
+                g.FillPolygon(new[] { new Vector2(cx - 37 * s, cy - 2 * s), new Vector2(cx + 37 * s, cy - 2 * s), new Vector2(cx, cy + 40 * s) }, pink);
+            }
+        }
+
+        private static byte[] Scene(byte[] squishyPng, IList<int> needs, GameRules rules)
         {
             if (squishyPng == null) return null;
             const int W = 512, H = 256;
@@ -179,42 +255,16 @@ namespace Squishy.Runtime.Game
             g.FillCircle(262, 178, 9, bubble);
             g.FillCircle(292, 148, 15, bubble);
             g.FillCircle(384, 104, 80, bubble);
-            float cx = 384, cy = 104;
-            if (need == 0)
-            {
-                var bowl = new List<Vector2>();
-                for (int i = 0; i <= 16; i++) { float a = Mathf.PI * i / 16; bowl.Add(new Vector2(cx - 42 * Mathf.Cos(a), cy + 34 * Mathf.Sin(a))); }
-                g.FillEllipse(cx, cy, 40, 12, 0, Three.Canvas2D.Css("#F4EBDD"));
-                g.FillPolygon(bowl, Three.Canvas2D.Css("#C8674E"));
-                g.StrokeArc(cx - 12, cy - 22, 10, 0, Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4);
-                g.StrokeArc(cx + 12, cy - 30, 10, Mathf.PI, 2 * Mathf.PI, Three.Canvas2D.Css("#C9BBA8"), 4);
-            }
-            else if (need == 1)
-            {
-                g.FillCircle(cx, cy, 38, Three.Canvas2D.Css("#6E9C9A"));
-                g.StrokeArc(cx - 52, cy, 40, -.9f, .9f, bubble, 5);
-                g.StrokeArc(cx + 52, cy, 40, Mathf.PI - .9f, Mathf.PI + .9f, bubble, 5);
-            }
-            else if (need == 2)
-            {
-                g.FillCircle(cx, cy, 38, Three.Canvas2D.Css("#8C7BB0"));
-                g.FillCircle(cx + 20, cy - 14, 32, bubble);
-                g.FillCircle(cx + 40, cy + 30, 5, Three.Canvas2D.Css("#D9A64A"));
-                g.FillCircle(cx - 44, cy - 40, 4, Three.Canvas2D.Css("#D9A64A"));
-            }
-            else if (need == 3)
-            {
-                var drop = Three.Canvas2D.Css("#7FB0C9");
-                g.FillCircle(cx, cy + 14, 30, drop);
-                g.FillPolygon(new[] { new Vector2(cx, cy - 44), new Vector2(cx - 27, cy + 4), new Vector2(cx + 27, cy + 4) }, drop);
-                g.FillCircle(cx - 10, cy + 8, 8, bubble);
-            }
+            // One need fills the bubble; two sit side by side; three or four share it in a little grid.
+            int n = needs == null ? 0 : needs.Count;
+            if (n == 0) DrawNeed(g, -1, 384, 104, 1, bubble);
+            else if (n == 1) DrawNeed(g, needs[0], 384, 104, 1, bubble);
+            else if (n == 2) { DrawNeed(g, needs[0], 348, 104, .62f, bubble); DrawNeed(g, needs[1], 420, 104, .62f, bubble); }
             else
             {
-                var pink = Three.Canvas2D.Css("#E86A92");
-                g.FillCircle(cx - 17, cy - 10, 22, pink);
-                g.FillCircle(cx + 17, cy - 10, 22, pink);
-                g.FillPolygon(new[] { new Vector2(cx - 37, cy - 2), new Vector2(cx + 37, cy - 2), new Vector2(cx, cy + 40) }, pink);
+                var at = new[] { new Vector2(354, 76), new Vector2(414, 76), new Vector2(354, 132), new Vector2(414, 132) };
+                if (n == 3) at[2] = new Vector2(384, 132);
+                for (int i = 0; i < Mathf.Min(4, n); i++) DrawNeed(g, needs[i], at[i].x, at[i].y, .48f, bubble);
             }
             var bg = g.ToTexture(true, false, false, "scene", true);
             var sq = new Texture2D(2, 2);
@@ -246,7 +296,7 @@ namespace Squishy.Runtime.Game
             catch (Exception e) { Debug.LogWarning("Could not save picture: " + e.Message); }
         }
 
-        private sealed class Plan { public DateTime when; public string title, text, mood; public bool urgent; }
+        private sealed class Plan { public DateTime when; public string title, text, mood; public bool urgent; public int need = -1; }
 
         /// <summary>Schedules the reminders from the current state, predicting drain the same way GameRules does.</summary>
         /// <summary>Seconds until a need drops by this much: slower while it sleeps overnight, then the normal rate.</summary>
@@ -285,10 +335,10 @@ namespace Squishy.Runtime.Game
                     if (low > 600 && low < firstLow) { firstLow = low; first = k; }
                     if (empty < firstEmpty) { firstEmpty = empty; emptyK = k; }
                 }
-                if (first >= 0) plans.Add(new Plan { when = now.AddSeconds(firstLow), title = name, text = NeedEmoji[first] + " …?", mood = "low" + first });
+                if (first >= 0) plans.Add(new Plan { when = now.AddSeconds(firstLow), title = name, text = NeedEmoji[first] + " …?", mood = "low" + first, need = first });
                 if (firstEmpty < double.MaxValue)
                 {
-                    plans.Add(new Plan { when = now.AddSeconds(Math.Max(600, firstEmpty)), title = name, text = "🥺 " + NeedEmoji[emptyK], mood = "empty" + emptyK });
+                    plans.Add(new Plan { when = now.AddSeconds(Math.Max(600, firstEmpty)), title = name, text = "🥺 " + NeedEmoji[emptyK], mood = "empty" + emptyK, need = emptyK });
                     double fade = firstEmpty + Math.Max(0, rules.R.deathSeconds - s.deathClock) - FadeWarnSeconds;
                     if (fade > 600) plans.Add(new Plan { when = now.AddSeconds(fade), title = name, text = "💛 …", mood = "fade", urgent = true });
                 }
@@ -302,6 +352,15 @@ namespace Squishy.Runtime.Game
             foreach (var p in plans)
             {
                 if (!p.urgent && (p.when - last).TotalHours < GapHours) continue;
+                if (p.need >= 0)
+                {
+                    var needs = NeedsAt(rules, comfort, p.when, p.need);
+                    string kind = p.mood.StartsWith("empty") ? "empty" : "low";
+                    p.mood = PictureFor(kind, needs, rules);
+                    var em = new System.Text.StringBuilder();
+                    foreach (int k in needs) em.Append(NeedEmoji[k]);
+                    p.text = kind == "empty" ? "\U0001F97A " + em : em + " \u2026?";
+                }
                 Send(p);
                 last = p.when;
             }
