@@ -21,7 +21,7 @@ namespace Squishy.Runtime.Game
     /// </summary>
     public static class Notifier
     {
-        private const float LowAt = .25f, FadeWarnSeconds = 6 * 3600, GapHours = 3;
+        private const float LowAt = .4f, FadeWarnSeconds = 6 * 3600, GapHours = 3; // first nudge at 40% (about 6-7 hours away); 25% took 12 hours and was never seen
         private const int QuietFrom = 21, QuietTo = 8;
         private static bool _ready;
         private static int _nextId;
