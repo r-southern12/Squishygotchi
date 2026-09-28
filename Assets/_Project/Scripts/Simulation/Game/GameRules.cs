@@ -565,6 +565,7 @@ namespace Squishy.Simulation.Game
             var t = S.tasks[i];
             if (!t.done) return false;
             AddCoins(TaskDef(t).coins);
+            SetSteamers(S.steamers + R.taskSteamers); // every task also pays a steamer
             S.setDone++;
             LastRewardMessage = RecordTaskDone();
             var next = NewTask();

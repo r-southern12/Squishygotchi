@@ -195,7 +195,7 @@ namespace Squishy.Tests
                 clock.Advance(TimeSpan.FromHours(c.rules.taskCooldownHours));
             }
             Assert.AreEqual(coins + paid, s.coins);
-            Assert.AreEqual(steamers + c.rules.taskSetSteamers, s.steamers);
+            Assert.AreEqual(steamers + 3 * c.rules.taskSteamers + c.rules.taskSetSteamers, s.steamers, "a steamer per task, plus the set bonus");
         }
 
         [Test]

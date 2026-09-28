@@ -2675,7 +2675,8 @@
       60
     ],
     "visitFeed": 0.2,
-    "visitPet": 0.15
+    "visitPet": 0.15,
+    "taskSteamers": 1
   },
   "cosmetics": [
     {
