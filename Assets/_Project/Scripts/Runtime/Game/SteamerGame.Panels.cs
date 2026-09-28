@@ -206,6 +206,8 @@ namespace Squishy.Runtime.Game
                 if (Rules.CanExpand()) Hud.Button(body, "Expand now · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; ExpandRoom(); ui.ClosePanel("info"); }, false, 4);
             }
             else Hud.Para(body, "Your steamer is at its largest.");
+            ComboList(body);
+            body.Gap(8);
             ui.OpenPanel("info");
             sfx.Tap();
         }

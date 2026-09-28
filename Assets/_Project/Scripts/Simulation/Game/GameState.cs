@@ -13,6 +13,8 @@ namespace Squishy.Simulation.Game
         public int[] pantry, snacks, toolDur, toolSkin, recipeXP;
         public float[] needs = new float[4]; // hunger, play, rest, clean
         public float dayT, deathClock, happyT;
+        public List<string> combosFound = new List<string>(); // combos completed at least once (celebrated once)
+        public long calmUntil; // after a quiet moment, needs drain slower until then
         public int tipPile; // coins waiting in the spinning coin over its head (tap to collect)
         public long tipStart; // when the first of them arrived
         public bool dead;

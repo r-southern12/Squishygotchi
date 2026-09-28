@@ -30,6 +30,17 @@ namespace Squishy.Simulation.Game
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
     [Serializable] public class SizeData { public string name; public float s; public int at, decor; }
+    /// <summary>A furniture combo: see GameRules.Combos.</summary>
+    [Serializable]
+    public class ComboData
+    {
+        public string id, name, lead, act, then, text;
+        public string[] slots;
+        public int thenSlot;
+        public bool chainLeads, passive;
+        public float near, calmMinutes, cookMul, wearSkip, bonusIng;
+    }
+
     [Serializable] public class RoomLevelData { public float r; public int slots, need, cost; }
 
     [Serializable]
@@ -37,7 +48,7 @@ namespace Squishy.Simulation.Game
     {
         public string role, label, need, also;
         public float dur, rate, perch, front, cap;
-        public bool toward, needSeat, sleep, scrub, inside;
+        public bool toward, needSeat, sleep, scrub, inside, closed; // closed: eyes shut (a quiet moment)
     }
 
     [Serializable] public class TaskData { public string id, text, ev; public int goal, coins; public bool time; public string[] requires; } // ev: the event it counts (defaults to id); requires: any of these item types placed, or "friend"
@@ -59,7 +70,8 @@ namespace Squishy.Simulation.Game
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, taskSteamers;
         public float taskCooldownHours;
         public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
-        public float tipStackSeconds; // tips pile up in the coin over its head for this long before it stops adding more
+        public float tipStackSeconds;
+        public float comboNear, calmDrain; // combo pieces within this of one another; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
@@ -113,6 +125,7 @@ namespace Squishy.Simulation.Game
         public RulesData rules;
         public StarterData starter;
         public CosmeticData[] cosmetics;
+        public ComboData[] combos;
         public TierRewardData[] tierRewards;
 
         [NonSerialized] public List<CatalogueItem> Catalogue;

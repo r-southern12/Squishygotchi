@@ -139,6 +139,7 @@ namespace Squishy.Runtime.Game
         private void ComputeComfort()
         {
             comfort = Rules.Comfort(S.items, out setBonus);
+            ComputeCombos();
             ui.SetComfort(Mathf.RoundToInt(comfort).ToString());
         }
 
@@ -260,29 +261,48 @@ namespace Squishy.Runtime.Game
 
         private static float Dist(float dx, float dz) { return Mathf.Sqrt(dx * dx + dz * dz); }
 
+        /// <summary>Sitting on a seat, facing the table.</summary>
+        private Spot SeatSpot(Item seat, Item table)
+        {
+            float dx = seat.tx - table.tx, dz = seat.tz - table.tz, l = Dist(dx, dz);
+            if (l == 0) l = 1;
+            var st = C.Style(seat.style);
+            bool low = seat.a.role == "lounge" || (st != null && st.low);
+            return new Spot { approach = new Vector2(seat.tx + dx / l * .32f, seat.tz + dz / l * .32f), stand = new Vector2(seat.tx, seat.tz), y = low ? .1f : .28f, face = new Vector2(table.tx, table.tz) };
+        }
+
         private bool SeatNear(Item t) { return items.Any(it => (it.a.role == "seat" || it.a.role == "lounge") && Dist(it.tx - t.tx, it.tz - t.tz) < 1.1f); }
 
         /// <summary>useItem: user=true means the player asked, so the need can fill completely.</summary>
-        private void UseItem(Item it, bool user, RecipeData recipe = null)
+        private void UseItem(Item it, bool user, RecipeData recipe = null, Activity chainFrom = null)
         {
             if (S.dead) return;
             if (S.tucked) { if (user) Floater("Tucked in · tap " + Rules.Fav.name + " to wake", "bad"); return; }
             string role = it.a.role;
-            if (role == "decor") { FloaterAt(it, "Decor · +" + it.a.comfort + " comfort"); return; }
-            if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
-            if (role == "seat")
+            if (role == "seat" && chainFrom == null)
             {
                 var t = items.Find(x => x.a.role == "tea" && Dist(x.tx - it.tx, x.tz - it.tz) < 1.1f);
                 if (t != null) { it = t; role = "tea"; }
             }
-            var act = C.Activity(role);
+            // A finished combo takes precedence over the piece's own use (a chain carries on to its next piece).
+            var cm = chainFrom != null ? chainFrom.combo : ComboAt(it);
+            string comboAct = null;
+            if (cm != null)
+            {
+                if (chainFrom == null && !IsLead(cm, it)) { it = LeadOf(cm) ?? it; role = it.a.role; }
+                comboAct = chainFrom != null ? cm.combo.then : cm.combo.act;
+                if (string.IsNullOrEmpty(role) || role == "decor") role = comboAct;
+            }
+            if (role == "decor") { FloaterAt(it, "Decor · +" + it.a.comfort + " comfort"); return; }
+            if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
+            var act = !string.IsNullOrEmpty(comboAct) ? C.Activity(comboAct) ?? C.Activity(role) : C.Activity(role);
             if (act == null) return;
             if (it.a.size > 0 && Rules.FavSizeIdx < it.a.size) { FloaterAt(it, "Needs " + C.sizes[it.a.size].name + " size", "bad"); return; }
             if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat nearby", "bad"); return; }
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
             CleanupCook();
-            ai.act = new Activity { it = it, role = role, act = act, recipe = recipe };
+            ai.act = new Activity { it = it, role = role, act = act, recipe = recipe, combo = cm, chained = chainFrom != null };
             ai.actT = 0;
             ai.kicks = 0;
             ai.self = !user;
@@ -305,14 +325,17 @@ namespace Squishy.Runtime.Game
                     float d = Dist(x.tx - it.tx, x.tz - it.tz);
                     if (d < 1.1f && d < bd) { bd = d; seat = x; }
                 }
-                float dx = seat.tx - it.tx, dz = seat.tz - it.tz, l = Dist(dx, dz);
-                if (l == 0) l = 1;
-                var st = C.Style(seat.style);
-                bool low = seat.a.role == "lounge" || (st != null && st.low);
-                var s = new Spot { approach = new Vector2(seat.tx + dx / l * .32f, seat.tz + dz / l * .32f), stand = new Vector2(seat.tx, seat.tz), y = low ? .1f : .28f, face = new Vector2(it.tx, it.tz) };
+                var s = SeatSpot(seat, it);
                 ai.spot = s;
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, s.y, s.approach, seat);
+            }
+            else if (it.a.cat == "Floor")
+            {
+                var s = new Spot { stand = new Vector2(it.tx, it.tz), y = 0 };
+                ai.spot = s;
+                ai.mode = "walk";
+                PlanPath(s.stand.x, s.stand.y, 0, null, it);
             }
             else if (role == "slide")
             {
@@ -383,8 +406,11 @@ namespace Squishy.Runtime.Game
             if (Random.value < C.rules.selfPlayChance)
             {
                 // Content and bored: it wanders off to play or lounge on its own (a chance to catch it and earn a tip).
-                var fun = items.FindAll(i => (System.Array.IndexOf(PlayRoles, i.a.role) >= 0 || i.a.role == "lounge" || i.a.role == "seat" || i.a.role == "bounce")
+                var fun = items.FindAll(i => (System.Array.IndexOf(PlayRoles, i.a.role) >= 0 || i.a.role == "lounge" || i.a.role == "seat" || i.a.role == "bounce" || StartsCombo(i))
                     && !(i.a.size > 0 && Rules.FavSizeIdx < i.a.size));
+                // Finished combos are favourites: half the time it picks one of those.
+                var fav = fun.FindAll(StartsCombo);
+                if (fav.Count > 0 && Random.value < .5f) fun = fav;
                 if (fun.Count > 0) { UseItem(fun[Random.Range(0, fun.Count)], false); if (ai.act != null) return; }
             }
             if (Random.value < .7f) Wander(); else ai.idleT = Rnd(1.5f, 3);
@@ -515,11 +541,21 @@ namespace Squishy.Runtime.Game
             if (A.recipe != null && A.role == "eat")
             {
                 var rc = A.recipe;
+                var chef = ChefAt(A.it);
+                if (chef != null) A.cookMul = chef.cookMul;
                 if (rc.ing.Length > 0 && !ai.self)
                 {
                     foreach (var i in rc.ing) S.pantry[i] = Mathf.Max(0, S.pantry[i] - 1);
+                    if (chef != null && Random.value < chef.bonusIng)
+                    {
+                        int saved = rc.ing[Random.Range(0, rc.ing.Length)];
+                        S.pantry[saved]++;
+                        var stv = A.it;
+                        Later(1.2f, () => FloaterAt(stv, "Chef's corner: " + C.pantry[saved].name + " saved"));
+                    }
                     foreach (var i in rc.tools)
                     {
+                        if (chef != null && Random.value < chef.wearSkip) continue;
                         S.toolDur[i] = Mathf.Max(0, S.toolDur[i] - 1);
                         if (S.toolDur[i] == 0) { int ti = i; var st = A.it; Later(.9f, () => FloaterAt(st, C.tools[ti].name + " broke! Fix it in the shop", "bad")); }
                     }
@@ -553,10 +589,12 @@ namespace Squishy.Runtime.Game
                 }
                 else { Floater("No snacks · buy some in the shop", "bad"); ai.actT = A.act.dur; }
             }
+            StartCombo(A);
         }
 
         private void CleanupCook()
         {
+            ClearComboProps();
             if (cookTool != null) Node.Destroy(cookTool);
             if (cookDish != null) Node.Destroy(cookDish);
             if (cookStove != null && cookStove.parts.pan != null) cookStove.parts.pan.gameObject.SetActive(true);
@@ -570,7 +608,7 @@ namespace Squishy.Runtime.Game
             if (A != null && !ai.self)
             {
                 if (A.role == "plant") { FloaterAt(A.it, "Watered · +comfort"); if (visiting) VisitAct("water"); else TaskEvent("water"); }
-                if (A.role == "eat" && A.recipe != null && A.recipe.ing.Length > 0)
+                if ((A.role == "eat" || A.role == "dine") && A.recipe != null && A.recipe.ing.Length > 0)
                 {
                     int i = System.Array.IndexOf(C.recipes, A.recipe), l0 = Rules.RecipeLvl(i);
                     S.recipeXP[i]++;
@@ -581,6 +619,8 @@ namespace Squishy.Runtime.Game
                 if (A.role == "bed" && !items.Any(x => x.arch == "lamp" && x.st.lampOn)) TaskEvent("nap");
                 if (A.role == "tea") TaskEvent("tea");
             }
+            EndCombo(A);
+            if (ChainCombo(A)) return;
             FinishActivity();
         }
 
@@ -743,7 +783,7 @@ namespace Squishy.Runtime.Game
                 return;
             }
             float sdt = dt * timeScale;
-            Rules.DrainScale = S.asleep ? Rules.DrainScaleAt(System.DateTime.UtcNow.Ticks) : 1;
+            Rules.DrainScale = Rules.DrainScaleAt(System.DateTime.UtcNow.Ticks);
             int age0 = S.age;
             bool died = !visiting && Rules.StepCare(sdt, comfort); // a friend's squishy doesn't drain while you visit
             if (S.age != age0) UpdateSub();
@@ -777,7 +817,7 @@ namespace Squishy.Runtime.Game
                 if (homeWall.Grow >= 1) { homeWall.Group.localScale = Vector3.one; homeWall.Grow = null; }
             }
             float slowMove = 1 - droop * .55f, extra = 0, lift = 0;
-            bool sleeping = ai.mode == "act" && ai.act != null && ai.act.act.sleep;
+            bool sleeping = ai.mode == "act" && ai.act != null && (ai.act.act.sleep || ai.act.act.closed);
             float hopH = pet.Scale * .9f;
             if (mode == "edit" || pet.Held) { }
             else if (ai.mode == "idle")
@@ -877,7 +917,7 @@ namespace Squishy.Runtime.Game
                     if (S.needs[Needs.Play] < cap) S.needs[Needs.Play] = Mathf.Min(cap, S.needs[Needs.Play] + (ai.self ? .05f : .12f));
                     ai.seg = null;
                     ai.path.Clear();
-                    if (ai.kicks >= (ai.self ? 2 : 3)) FinishActivity();
+                    if (ai.kicks >= (ai.self ? 2 : 3)) { var A0 = ai.act; EndCombo(A0); if (!ChainCombo(A0)) FinishActivity(); }
                 }
             }
             else if (u >= 1)
@@ -910,19 +950,21 @@ namespace Squishy.Runtime.Game
             float rate = act.rate;
             if (A.role == "bed") { bool lampOn = items.Any(i => i.arch == "lamp" && i.st.lampOn); if (lampOn && !ai.self) rate *= .5f; }
             float capN = cap;
-            const float COOK = 2.4f;
-            bool eating = A.role == "eat" && t > COOK;
+            float COOK = 2.4f * A.cookMul;
+            if (A.role == "eat" && t > COOK && A.combo == null && MoveDinnerToTable(A)) return; // Dinner table: eaten sitting at the table
+            bool eating = (A.role == "eat" && t > COOK) || A.role == "dine";
+            float eatDur = A.role == "dine" ? act.dur : act.dur - COOK;
             if (eating || (A.role == "snack" && t > .4f)) pet.Chewing = true;
             if (A.recipe != null)
             {
                 int ri = System.Array.IndexOf(C.recipes, A.recipe);
                 float mul = 1 + .1f * (Rules.RecipeLvl(ri) - 1);
-                rate = eating ? A.recipe.hunger * mul / (act.dur - COOK) : 0;
+                rate = eating ? A.recipe.hunger * mul / eatDur : 0;
                 capN = ai.self ? .5f : (A.recipe.cap > 0 ? A.recipe.cap : 1);
                 if (eating && !string.IsNullOrEmpty(A.recipe.bonusNeed) && !ai.self)
                 {
                     int bk = Needs.Index(A.recipe.bonusNeed);
-                    S.needs[bk] = Mathf.Min(1, S.needs[bk] + A.recipe.bonus * mul / (act.dur - COOK) * dt);
+                    S.needs[bk] = Mathf.Min(1, S.needs[bk] + A.recipe.bonus * mul / eatDur * dt);
                 }
             }
             void Fill(string k, float r)
@@ -980,6 +1022,11 @@ namespace Squishy.Runtime.Game
                     extra = .22f * Mathf.Max(0, Mathf.Sin(t * 12));
                 }
             }
+            else if (A.role == "dine")
+            {
+                extra = .22f * Mathf.Max(0, Mathf.Sin(t * 12));
+                if (cookDish != null) cookDish.localScale = Vector3.one * (.55f * (.35f + .65f * Mathf.Max(0, 1 - t / act.dur)));
+            }
             else if (A.role == "snack") extra = .18f * Mathf.Max(0, Mathf.Sin(t * 14));
             else if (A.role == "tea" && it != null)
             {
@@ -1016,6 +1063,7 @@ namespace Squishy.Runtime.Game
             }
             else if (A.role == "makeDo") extra = .06f * Mathf.Sin(t * 5);
             StepToy(A, dt, t, ref lift, ref extra);
+            StepCombo(A, dt, t, ref lift, ref extra);
             if (t >= act.dur) EndAct();
         }
 

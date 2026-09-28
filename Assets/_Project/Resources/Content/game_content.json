@@ -597,7 +597,7 @@
       "r": 0.28,
       "face": "z",
       "comfort": 0,
-      "max": 1,
+      "max": 2,
       "price": 120
     },
     {
@@ -2308,6 +2308,104 @@
       "dur": 3,
       "front": 0.18,
       "toward": true
+    },
+    {
+      "role": "meditate",
+      "label": "Quiet time",
+      "need": "rest",
+      "dur": 7,
+      "rate": 0.12,
+      "perch": 0.12,
+      "closed": true
+    },
+    {
+      "role": "read",
+      "label": "Reading",
+      "need": "rest",
+      "also": "play",
+      "dur": 7,
+      "rate": 0.1,
+      "perch": 0.12
+    },
+    {
+      "role": "teaparty",
+      "label": "Tea for two",
+      "need": "rest",
+      "also": "hunger",
+      "dur": 5.5,
+      "rate": 0.16,
+      "front": 0.2,
+      "toward": true,
+      "needSeat": true
+    },
+    {
+      "role": "dine",
+      "label": "Dinner",
+      "need": "hunger",
+      "also": "play",
+      "dur": 3.1
+    },
+    {
+      "role": "spa",
+      "label": "Spa bath",
+      "need": "clean",
+      "also": "rest",
+      "dur": 6,
+      "rate": 0.17,
+      "perch": 0.06,
+      "scrub": true,
+      "closed": true
+    },
+    {
+      "role": "shake",
+      "label": "Shaking dry",
+      "need": "clean",
+      "dur": 2.2,
+      "rate": 0.08
+    },
+    {
+      "role": "splash",
+      "label": "Splash!",
+      "need": "clean",
+      "also": "play",
+      "dur": 4,
+      "rate": 0.16,
+      "perch": 0.06,
+      "scrub": true
+    },
+    {
+      "role": "concert",
+      "label": "Concert",
+      "need": "play",
+      "dur": 7.5,
+      "rate": 0.05,
+      "front": 0.18,
+      "toward": true
+    },
+    {
+      "role": "bubblegarden",
+      "label": "Bubble garden",
+      "need": "play",
+      "dur": 14,
+      "rate": 0.016,
+      "front": 0.2
+    },
+    {
+      "role": "cuddle",
+      "label": "Pom-pom cuddle",
+      "need": "rest",
+      "also": "play",
+      "dur": 3.5,
+      "rate": 0.07,
+      "perch": 0.12
+    },
+    {
+      "role": "dressup",
+      "label": "Dress-up",
+      "need": "play",
+      "dur": 6,
+      "rate": 0.03,
+      "front": 0.22
     }
   ],
   "tasks": [
@@ -2681,7 +2779,9 @@
     "visitPet": 0.15,
     "taskSteamers": 1,
     "cooksPerLevel": 5,
-    "tipStackSeconds": 300
+    "tipStackSeconds": 300,
+    "comboNear": 1.1,
+    "calmDrain": 0.8
   },
   "cosmetics": [
     {
@@ -3234,5 +3334,167 @@
       "xylophone:folk",
       "slide:cottage"
     ]
-  }
+  },
+  "combos": [
+    {
+      "id": "quiet_corner",
+      "name": "Quiet corner",
+      "slots": [
+        "cushion",
+        "rug",
+        "plant"
+      ],
+      "lead": "cushion",
+      "act": "meditate",
+      "calmMinutes": 30,
+      "text": "It sits very still and breathes slowly. Rest, and needs drain slower for a while after."
+    },
+    {
+      "id": "reading_nook",
+      "name": "Reading nook",
+      "slots": [
+        "beanbag|cushion",
+        "books",
+        "lamp"
+      ],
+      "lead": "beanbag|cushion",
+      "act": "read",
+      "text": "It curls up with a little book. Rest and Play."
+    },
+    {
+      "id": "tea_time",
+      "name": "Tea time",
+      "slots": [
+        "teatable",
+        "chair|cushion",
+        "chair|cushion"
+      ],
+      "lead": "teatable",
+      "act": "teaparty",
+      "text": "Tea for two: a bigger, cosier tea break. Rest and Hunger."
+    },
+    {
+      "id": "dinner_table",
+      "name": "Dinner table",
+      "slots": [
+        "stove",
+        "teatable",
+        "chair"
+      ],
+      "lead": "stove",
+      "passive": true,
+      "text": "After cooking it carries the dish to the table and eats sitting down. A little Play on top of the meal."
+    },
+    {
+      "id": "chefs_corner",
+      "name": "Chef's corner",
+      "slots": [
+        "stove",
+        "fridge",
+        "sink"
+      ],
+      "lead": "stove",
+      "passive": true,
+      "cookMul": 0.65,
+      "wearSkip": 0.5,
+      "bonusIng": 0.2,
+      "text": "Quicker cooking, tools wear half as fast, and sometimes an ingredient is saved."
+    },
+    {
+      "id": "spa_bath",
+      "name": "Spa bath",
+      "slots": [
+        "tub",
+        "plant"
+      ],
+      "lead": "tub",
+      "act": "spa",
+      "text": "Petals on the water and a long, happy soak. Clean fills higher, plus Rest."
+    },
+    {
+      "id": "steamed_clean",
+      "name": "Steamed Clean",
+      "slots": [
+        "shower",
+        "rug",
+        "wall"
+      ],
+      "lead": "shower",
+      "then": "shake",
+      "thenSlot": 1,
+      "text": "After the shower it steps onto the mat and shakes itself dry. Extra Clean."
+    },
+    {
+      "id": "splash_slide",
+      "name": "Splash slide",
+      "slots": [
+        "slide",
+        "tub"
+      ],
+      "lead": "slide",
+      "then": "splash",
+      "thenSlot": 1,
+      "text": "Down the slide and straight into the bath with a splash. Clean and Play."
+    },
+    {
+      "id": "playground",
+      "name": "Playground",
+      "slots": [
+        "trampoline",
+        "ball",
+        "rug"
+      ],
+      "lead": "trampoline|ball",
+      "chainLeads": true,
+      "text": "Bouncing, then kicking the ball about. A big Play boost."
+    },
+    {
+      "id": "concert",
+      "name": "Concert",
+      "slots": [
+        "xylophone",
+        "pouf|cushion",
+        "rug"
+      ],
+      "lead": "xylophone",
+      "act": "concert",
+      "text": "It plays a whole tune, then takes a bow. Play."
+    },
+    {
+      "id": "bubble_garden",
+      "name": "Bubble garden",
+      "slots": [
+        "bubbles",
+        "plant",
+        "rug"
+      ],
+      "lead": "bubbles",
+      "act": "bubblegarden",
+      "text": "More bubbles, drifting through the leaves. Play."
+    },
+    {
+      "id": "pompom_den",
+      "name": "Pom-pom den",
+      "slots": [
+        "pomwand",
+        "cushion|beanbag",
+        "rug"
+      ],
+      "lead": "pomwand",
+      "then": "cuddle",
+      "thenSlot": 1,
+      "text": "After the chase it flops onto the cushion and cuddles the pom-pom. Play and Rest."
+    },
+    {
+      "id": "dress_up",
+      "name": "Dress-up",
+      "slots": [
+        "wardrobe",
+        "screen"
+      ],
+      "lead": "wardrobe",
+      "act": "dressup",
+      "text": "It pops out of the wardrobe wearing an accessory for a moment: one of yours, or one it could earn."
+    }
+  ]
 }

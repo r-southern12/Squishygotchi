@@ -244,6 +244,38 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Combos_Form_From_Nearby_Pieces_And_Share_Them()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 7);
+            var rules = new GameRules(c, s);
+            string sty = c.styles[0].id;
+            var room = new System.Collections.Generic.List<PieceState>
+            {
+                new PieceState { key = "teatable:" + sty, x = 0, z = 0 },
+                new PieceState { key = "chair:" + sty, x = .6f, z = 0 },
+                new PieceState { key = "cushion:" + sty, x = -.6f, z = 0 },
+                new PieceState { key = "stove:" + sty, x = 0, z = .8f },
+                new PieceState { key = "plant:" + sty, x = 3, z = 3 },
+            };
+            var all = rules.Combos(room);
+            var tea = all.Find(m => m.combo.id == "tea_time");
+            var dinner = all.Find(m => m.combo.id == "dinner_table");
+            Assert.IsTrue(tea.Done, "table + stool + cushion is tea time");
+            Assert.IsTrue(dinner.Done, "the same table and stool with a stove near is the dinner table");
+            Assert.Contains(room[1], dinner.pieces, "pieces are shared between combos");
+            var spa = all.Find(m => m.combo.id == "spa_bath");
+            Assert.AreEqual(1, spa.have, "a lone plant is 1 of 2 towards the spa bath");
+            Assert.IsNull(spa.pieces[0], "the missing piece stays unknown");
+            room[2].x = 3; // the cushion moves away: tea time is 2 of 3
+            tea = rules.Combos(room).Find(m => m.combo.id == "tea_time");
+            Assert.AreEqual(2, tea.have);
+            Assert.IsFalse(tea.Done);
+            Assert.AreEqual(1, rules.NewlyFound(all).FindAll(x => x.id == "tea_time").Count);
+            Assert.AreEqual(0, rules.NewlyFound(all).Count, "each combo is celebrated once");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

@@ -43,7 +43,12 @@ namespace Squishy.Simulation.Game
         }
 
         /// <summary>Drain multiplier at a moment (used while catching up on time away).</summary>
-        public float DrainScaleAt(long utcTicks) { return S.asleep && utcTicks < S.sleepUntil ? R.nightDrain : 1; }
+        public float DrainScaleAt(long utcTicks)
+        {
+            float s = S.asleep && utcTicks < S.sleepUntil ? R.nightDrain : 1;
+            if (utcTicks < S.calmUntil) s *= R.calmDrain; // a quiet moment in the Quiet corner
+            return s;
+        }
 
         /// <summary>Steamers the night has brought so far (for the wake-up screen, before they're handed over).</summary>
         public int NightSteamersSoFar(DateTime utc)

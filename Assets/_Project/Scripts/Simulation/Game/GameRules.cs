@@ -50,6 +50,7 @@ namespace Squishy.Simulation.Game
             state.snacks = Fit(state.snacks, content.snacks.Length);
             state.toolSkin = Fit(state.toolSkin, content.tools.Length);
             state.recipeXP = Fit(state.recipeXP, content.recipes.Length);
+            if (state.combosFound == null) state.combosFound = new List<string>();
             if (state.toolDur == null || state.toolDur.Length < content.tools.Length)
             {
                 int old = state.toolDur == null ? 0 : state.toolDur.Length;

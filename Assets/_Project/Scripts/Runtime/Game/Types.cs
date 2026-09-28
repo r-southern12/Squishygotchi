@@ -61,6 +61,9 @@ namespace Squishy.Runtime.Game
         public ActivityData act;
         public RecipeData recipe;
         public bool scrubbed;
+        public GameRules.ComboMatch combo; // a furniture combo this activity belongs to
+        public bool chained; // the second part of a combo (it doesn't carry on again)
+        public float cookMul = 1; // Chef's corner: cooking goes quicker
     }
 
     /// <summary>The squishy's brain state (the prototype's `ai`).</summary>

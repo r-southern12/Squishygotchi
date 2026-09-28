@@ -22,6 +22,7 @@ namespace Squishy.Runtime.Game
         private int bubbleLeft;
         private float bubbleEmitT, bubbleJumpT = -1, bubbleJumpH;
         private Bubble bubbleJumpFor;
+        private Vector2? bubblePlant;
         private Material bubbleMat;
         private float noteT;
 
@@ -48,7 +49,7 @@ namespace Squishy.Runtime.Game
                 case "music":
                     extra = .12f * Mathf.Abs(Mathf.Sin(t * 8));
                     noteT -= dt;
-                    if (noteT <= 0) { noteT = ai.self ? .55f : .45f; PlayBar(it, Random.Range(0, 6), false); }
+                    if (noteT <= 0) { noteT = a.act.role == "concert" ? .4f : ai.self ? .55f : .45f; PlayBar(it, a.act.role == "concert" ? ConcertBar() : Random.Range(0, 6), false); }
                     return true;
                 case "slide": StepSlide(it, t, ref lift, ref extra); return true;
             }
@@ -98,6 +99,13 @@ namespace Squishy.Runtime.Game
             if (bubbleMat == null) bubbleMat = ThreeMat.Basic(ThreeMat.Lin("#DDF1F7"), .4f, ThreeMat.Blend.Alpha, depthWrite: false);
             bubbleToy = it;
             bubbleLeft = 12;
+            // Bubble garden: more of them, drifting out towards the plant.
+            bubblePlant = null;
+            if (ai.act != null && ai.act.combo != null && ai.act.act.role == "bubblegarden")
+            {
+                bubbleLeft = 18;
+                foreach (var p in ai.act.combo.pieces) { var pi = ItemOf(p); if (pi != null && pi.arch == "plant") bubblePlant = new Vector2(pi.tx, pi.tz); }
+            }
             bubbleEmitT = 0;
             bubbleJumpT = -1;
             sfx.Hop();
@@ -110,6 +118,7 @@ namespace Squishy.Runtime.Game
             var ring = ThreeWorld(it.parts.wand.childCount > 1 ? it.parts.wand.GetChild(1) : it.parts.wand);
             // Out across the room in any direction, at its own height.
             float a = Rnd(0, Mathf.PI * 2), sp = Rnd(.28f, .5f);
+            if (bubblePlant.HasValue) { a = Mathf.Atan2(bubblePlant.Value.y - ring.z, bubblePlant.Value.x - ring.x) + Rnd(-.7f, .7f); sp = Rnd(.18f, .34f); }
             var bub = new Bubble { p = ring, v = new Vector3(Mathf.Cos(a) * sp, Rnd(.05f, .18f), Mathf.Sin(a) * sp), born = time, life = Rnd(9, 14) };
             bub.t = Node.Mesh(room, ThreeGeo.Sph(Rnd(.045f, .07f), 12, 8), bubbleMat, ring.x, ring.y, ring.z, shadow: false);
             Node.SetLayer(bub.t, HomeLayer);
