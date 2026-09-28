@@ -146,7 +146,8 @@ namespace Squishy.Runtime.Game
                 pinch0 = Vector2.Distance(a, b);
                 zoom0 = mode == "edit" ? camS.ezT : camS.zoomT;
                 // Zoomed in with both fingers on the squishy: bringing them together squeezes it (spreading still zooms out).
-                squeezeArm = mode == "home" && CloseUp && !S.tucked && PetPoint(a, out sqA) && PetPoint(b, out sqB);
+                squeezeArm = mode == "home" && CloseUp && !S.tucked && PinchPoints(a, b, out sqA, out sqB);
+                if (squishMode) { drag = null; pet.Held = false; return; } // squish mode: two fingers are for squeezing only
                 camS.mid = (a + b) / 2;
                 drag = null;
                 pet.Held = false;
@@ -228,14 +229,14 @@ namespace Squishy.Runtime.Game
                     float dq = Vector2.Distance(a, b);
                     if (squeezing)
                     {
-                        float amt = Mathf.Clamp01((pinch0 - dq) / (pinch0 * .55f));
+                        float amt = Mathf.Clamp01((pinch0 - dq) / (pinch0 * .9f)); // fingers nearly touching: squeezed nearly flat
                         if (Mathf.Floor(amt * 5) != Mathf.Floor(squeezeLast * 5)) Buzz(3); // soft ticks as it gives
                         squeezeLast = amt;
                         pet.SetPinch(amt);
                         return;
                     }
                     if (dq < pinch0 - 8) { squeezing = true; squeezeArm = false; squeezeLast = 0; pet.BeginPinch(sqA, sqB); sfx.Press(); Buzz(8); return; }
-                    if (dq > pinch0 + 8) squeezeArm = false; // spreading: it's a zoom after all
+                    if (dq > pinch0 + 8 && !squishMode) squeezeArm = false; // spreading: it's a zoom after all (not in squish mode)
                     else return;
                 }
                 if (pinch0 > 0)
@@ -248,7 +249,11 @@ namespace Squishy.Runtime.Game
                         if (camS.mid.HasValue) PanBy(mid.x - camS.mid.Value.x, mid.y - camS.mid.Value.y);
                         camS.mid = mid;
                     }
-                    else camS.zoomT = Mathf.Clamp(zoom0 - (d - pinch0) / 220, MinZoom, 1);
+                    else if (!squishMode)
+                    {
+                        camS.zoomT = Mathf.Clamp(zoom0 - (d - pinch0) / 220, MinZoom, 1);
+                        if (camS.zoomT <= MinZoom + .01f) EnterSquishMode(); // all the way in: lock on for squishing
+                    }
                 }
                 return;
             }
@@ -418,7 +423,9 @@ namespace Squishy.Runtime.Game
                 }
                 return;
             }
+            if (squishMode) { if (deltaY > 0) ExitSquishMode(); return; }
             camS.zoomT = Mathf.Clamp(camS.zoomT + deltaY * .0015f, MinZoom, 1);
+            if (camS.zoomT <= MinZoom + .01f) EnterSquishMode();
         }
 
         // ---------------- arrange ----------------

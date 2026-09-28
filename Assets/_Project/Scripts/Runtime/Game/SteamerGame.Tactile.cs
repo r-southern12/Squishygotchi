@@ -19,7 +19,33 @@ namespace Squishy.Runtime.Game
         private Vector3 flingV;
         private float flingSpin;
 
-        private bool CloseUp { get { return camS.zoom < -.6f; } }
+        private bool CloseUp { get { return squishMode || camS.zoom < -.6f; } }
+
+        // Squish mode (user request, 29 Sep 2026): zooming all the way in locks onto the squishy. It carries on with its
+        // day, the camera follows it, and every touch is for squishing (two fingers always squeeze, never zoom), until
+        // the player taps "Done squishing".
+        private bool squishMode;
+
+        private void EnterSquishMode()
+        {
+            if (squishMode || mode != "home" || visiting) return;
+            squishMode = true;
+            camS.zoomT = MinZoom;
+            ui.SetSquishMode(true);
+            sfx.Tap();
+            Buzz(10);
+        }
+
+        public void ExitSquishMode()
+        {
+            if (!squishMode) return;
+            squishMode = false;
+            EndSqueeze();
+            pet.ReleaseAll();
+            camS.zoomT = 0; // back to following it round the room
+            ui.SetSquishMode(false);
+            sfx.Tap();
+        }
 
         // Pinch and squeeze (two fingers on the squishy, zoomed in).
         private bool squeezeArm, squeezing;
@@ -32,6 +58,27 @@ namespace Squishy.Runtime.Game
             float t = RayPick.Hit(ray, pet.Body, false);
             world = t >= 0 ? ray.GetPoint(t) : Vector3.zero;
             return t >= 0;
+        }
+
+        /// <summary>
+        /// Where two fingers grip the squishy. One finger on it is enough: the other is carried onto the body along
+        /// its own line of sight (projected across the first finger's depth), so a pinch works anywhere on it.
+        /// </summary>
+        private bool PinchPoints(Vector2 a, Vector2 b, out Vector3 wa, out Vector3 wb)
+        {
+            bool ha = PetPoint(a, out wa), hb = PetPoint(b, out wb);
+            if (ha && hb) return true;
+            if (!ha && !hb) return false;
+            var hit = ha ? wa : wb;
+            var ray = PickRay(ha ? b : a);
+            var plane = new Plane(-cam.transform.forward, hit);
+            if (!plane.Raycast(ray, out float t)) return false;
+            var p = ray.GetPoint(t);
+            // Onto the skin: the body surface in the direction of that point.
+            var local = pet.Body.InverseTransformPoint(p);
+            var surf = pet.Body.TransformPoint(SquishyModel.ShapeAt(local.sqrMagnitude > 1e-6f ? local.normalized : Vector3.up));
+            if (ha) wb = surf; else wa = surf;
+            return true;
         }
 
         /// <summary>Fingers off: the squeeze rises back slowly, it smiles, and it counts as a squish.</summary>

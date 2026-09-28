@@ -284,6 +284,7 @@ namespace Squishy.Runtime.Game
 
         private void SetMode(string m2)
         {
+            if (m2 != "home") ExitSquishMode();
             mode = m2;
             ui.HideBubble();
             ui.SetMode(m2);

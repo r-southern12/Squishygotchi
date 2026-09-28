@@ -47,19 +47,41 @@ namespace Squishy.Runtime.Models
         /// The bao mesh. Its grid follows the folds' slight curl so every groove runs with the grid columns instead of
         /// cutting across the rows (which left saw-tooth steps in the grooves); the surface is still ShapeAt.
         /// </summary>
-        public static Mesh BaoMesh()
+        public static Mesh BaoMesh() { return BaoMesh(288, 112); }
+
+        /// <summary>
+        /// Mesh detail by size: the same fine spacing per unit of size, so a bigger squishy gets a denser mesh rather
+        /// than the small one stretched with wider gaps (user request, 29 Sep 2026).
+        /// </summary>
+        private static readonly (float upTo, int w, int h)[] Detail = { (.125f, 160, 64), (.18f, 200, 78), (.25f, 256, 100), (.345f, 320, 124), (99, 352, 136) };
+
+        public static Mesh BaoMesh(int w, int h)
         {
-            var m = ThreeGeo.Deformed("bao", 288, 112, v => // finer for close-up squishing
+            var m = ThreeGeo.Deformed("bao" + w + "x" + h, w, h, v =>
             {
                 var d = v.normalized;
                 float a = -Twist(d.y), cs = Mathf.Cos(a), sn = Mathf.Sin(a);
                 return ShapeAt(new Vector3(d.x * cs - d.z * sn, d.y, d.x * sn + d.z * cs));
             });
-            if (!_welded) { WeldNormals(m); _welded = true; }
+            if (Welded.Add(m)) WeldNormals(m);
             return m;
         }
 
-        private static bool _welded;
+        private static readonly System.Collections.Generic.HashSet<Mesh> Welded = new System.Collections.Generic.HashSet<Mesh>();
+        private int _detail = -1;
+
+        /// <summary>Swaps in the mesh for the squishy's current size (it changes as it grows).</summary>
+        private void UpdateDetail()
+        {
+            float s = Scale * StageScale;
+            int tier = 0;
+            while (tier < Detail.Length - 1 && s > Detail[tier].upTo) tier++;
+            if (tier == _detail) return;
+            _detail = tier;
+            var mf = Body.GetComponent<MeshFilter>();
+            mf.sharedMesh = BaoMesh(Detail[tier].w, Detail[tier].h);
+            ResetTactile();
+        }
 
         /// <summary>
         /// Vertices duplicated along the wrap-around seam and at the poles got different normals, which showed as a crease
@@ -190,6 +212,7 @@ namespace Squishy.Runtime.Models
             float k = Held ? 120 : K * StageBounce, c = Held ? 2 * Mathf.Sqrt(120) * .9f : C;
             V += (k * ((Held ? 1 : 0) - X) - c * V) * dt;
             X += V * dt;
+            UpdateDetail();
             float x = Mathf.Clamp(X + extraSquash + droop * .3f + _tSquash, -.45f, 1); // _tSquash: held tactile presses squeeze the whole body
             float sc = Scale * StageScale;
             Pivot.localScale = new Vector3(sc * (1 + .3f * x), sc * (1 - .42f * x), sc * (1 + .3f * x));

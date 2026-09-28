@@ -25,7 +25,15 @@ namespace Squishy.Runtime.UI
         public readonly Tweens Tw = new Tweens();
 
         private readonly List<(VisualElement el, string[] modes)> _modal = new List<(VisualElement, string[])>();
-        private VisualElement _top, _bottom, _canvas, _floaters;
+        private VisualElement _top, _bottom, _canvas, _floaters, _controls, _squishBar;
+
+        /// <summary>Squish mode (zoomed right in on the squishy): the bottom bar swaps for the "Done squishing" button.</summary>
+        public void SetSquishMode(bool on)
+        {
+            _controls.Shown(!on);
+            _squishBar.Shown(on);
+            SetHint(on ? "Squish away: press, hold, drag or pinch" : "");
+        }
         private Frame _gift, _moon;
         public void SetMoon(bool on) { if (_moon != null && _moon.style.display != (on ? DisplayStyle.Flex : DisplayStyle.None)) _moon.Shown(on); }
         private Frame _prestige;
@@ -217,6 +225,7 @@ namespace Squishy.Runtime.UI
             _hint.style.maxWidth = 300;
             _hint.Wrap();
             var controls = new VisualElement().Row(Align.Center, Justify.Center).NoPick().In(_bottom);
+            _controls = controls;
             controls.style.width = Length.Percent(100);
             Side(controls, "tasks", "Tasks", () => _g.OnTasks(), "home", out _);
             _taskDot = new Frame().Set(C("#C8412F"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
@@ -231,6 +240,13 @@ namespace Squishy.Runtime.UI
             editBtn.Add(_expandDot);
             _rot = Side(controls, "rotate", "Turn", () => _g.RotateSelected(), "edit", out _);
             Side(controls, "gift", "Open 10", () => _g.OpenTen(), "unbox", out _);
+            // Squish mode: the bottom bar gives way to one clear way out.
+            _squishBar = new VisualElement().Row(Align.Center, Justify.Center).NoPick().In(_bottom);
+            var done = Button(_squishBar, "Done squishing", "#FFF7EC", "#D9C7AE", Ink, 99, 52, 18, () => _g.ExitSquishMode(), false, 4).Pad(0, 26, 0, 20);
+            done.Row(Align.Center);
+            done.Insert(0, Icons.Make("close", 20, Ink));
+            ((Label)done.userData).Margin(0, 0, 0, 8);
+            _squishBar.Shown(false);
             _bottom.Gap(9);
 
             BuildZoomBar();

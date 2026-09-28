@@ -52,6 +52,16 @@ namespace Squishy.Runtime.Models
             }
         }
 
+        /// <summary>A new mesh (the squishy grew): the tactile copy is rebuilt from it on the next press.</summary>
+        private void ResetTactile()
+        {
+            _tMesh = null;
+            _dents.Clear();
+            _tDirty = false;
+            _drapeApplied = -1;
+            if (_backing != null) { _backing.gameObject.SetActive(false); Object.Destroy(_backing.gameObject); _backing = null; }
+        }
+
         private Dent Add(Vector3 local, float r, float depth)
         {
             if (_dents.Count >= MaxDents)
@@ -100,9 +110,8 @@ namespace Squishy.Runtime.Models
 
         // ---- pinch and squeeze (two fingers, zoomed in) ----
         private bool _pinchOn;
-        private Vector3 _pinchA, _pinchB;
-        private float _pinch, _pinchT;
-        private const float PinchR = .62f, PinchDepth = .58f;
+        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis;
+        private float _pinch, _pinchT, _pinchHalf, _pinchReach;
 
         /// <summary>Two fingers on the squishy: it squeezes between them (see SetPinch) and balloons out elsewhere.</summary>
         public void BeginPinch(Vector3 worldA, Vector3 worldB)
@@ -110,12 +119,18 @@ namespace Squishy.Runtime.Models
             EnsureTactileMesh();
             _pinchA = Body.InverseTransformPoint(worldA);
             _pinchB = Body.InverseTransformPoint(worldB);
+            // The squeeze closes along the line between the fingers, wherever they are on the body.
+            _pinchMid = (_pinchA + _pinchB) / 2;
+            var ab = _pinchB - _pinchA;
+            _pinchHalf = Mathf.Max(.06f, ab.magnitude / 2);
+            _pinchAxis = ab.sqrMagnitude > 1e-6f ? ab.normalized : Vector3.right;
+            _pinchReach = Mathf.Clamp(_pinchHalf * .9f, .25f, .6f); // how wide the fingers' grip is
             _pinchOn = true;
             _pinchT = 0;
         }
 
         /// <summary>0 = fingers where they started, 1 = squeezed as far as it goes.</summary>
-        public void SetPinch(float amount) { if (_pinchOn) _pinchT = Mathf.Clamp01(amount); }
+        public void SetPinch(float amount) { if (_pinchOn) _pinchT = Mathf.Clamp(amount, 0, .96f); }
 
         public void EndPinch() { _pinchOn = false; _pinchT = 0; }
 
@@ -199,17 +214,7 @@ namespace Squishy.Runtime.Models
                     near = Mathf.Max(near, 1 - u);
                 }
             }
-            if (_pinch > 0)
-            {
-                float r2 = PinchR * PinchR;
-                for (int i = 0; i < 2; i++)
-                {
-                    var c = i == 0 ? _pinchA : _pinchB;
-                    float dd = (b - c).sqrMagnitude;
-                    if (dd < r2 * 4) near = Mathf.Max(near, 1 - Mathf.Sqrt(dd) / (PinchR * 2));
-                    if (dd < r2) { float k = 1 - dd / r2; bowl += _pinch * PinchDepth * k * k; }
-                }
-            }
+            if (_pinch > 0) near = Mathf.Max(near, PinchGrip(b, out _, out _, out _));
             float sink = _limit * (1 - Mathf.Exp(-bowl / _limit));
             return lip * (1 - sink / _limit) - sink + _swell * (1 - near);
         }
@@ -227,13 +232,13 @@ namespace Squishy.Runtime.Models
             _limit = .01f;
             float volume = 0;
             foreach (var d in _dents) { _limit = Mathf.Max(_limit, d.max); volume += d.depth * d.r * d.r; }
-            if (_pinch > 0) { _limit = Mathf.Max(_limit, PinchDepth); volume += 2 * _pinch * PinchDepth * PinchR * PinchR * .6f; }
-            _swell = Mathf.Min(.16f, volume * .55f);
+            // A squeeze displaces a lot: nearly all of the pinched bit goes into the rest of the squishy.
+            if (_pinch > 0) volume += _pinch * _pinchHalf * 2 * _pinchReach * _pinchReach * 1.8f;
+            _swell = Mathf.Min(.3f, volume * .55f);
             for (int v = 0; v < _tBase.Length; v++)
             {
                 var b = _tBase[v];
-                float push = Push(b), sag = Sag(b, out float side);
-                _tWork[v] = push == 0 && sag == 0 && side == 0 ? b : b + (b - Core).normalized * (push + side) + Vector3.down * sag;
+                _tWork[v] = Displaced(b);
             }
             _tMesh.vertices = _tWork;
             _tMesh.RecalculateNormals();
@@ -249,8 +254,36 @@ namespace Squishy.Runtime.Models
         /// <summary>Where a resting surface point is now (dents, pinch, swell and drape).</summary>
         private Vector3 Displaced(Vector3 a)
         {
-            float sag = Sag(a, out float side);
-            return a + (a - Core).normalized * (Push(a) + side) + Vector3.down * sag;
+            float push = Push(a), sag = Sag(a, out float side);
+            var p = push == 0 && sag == 0 && side == 0 ? a : a + (a - Core).normalized * (push + side) + Vector3.down * sag;
+            return _pinch > 0 ? p + PinchMove(a) : p;
+        }
+
+        /// <summary>How strongly the fingers grip this point (1 between them, falling off round the grip).</summary>
+        private float PinchGrip(Vector3 b, out float along, out Vector3 perpDir, out float perp)
+        {
+            var d = b - _pinchMid;
+            along = Vector3.Dot(d, _pinchAxis);
+            var pv = d - _pinchAxis * along;
+            perp = pv.magnitude;
+            perpDir = perp > 1e-5f ? pv / perp : Vector3.zero;
+            float over = Mathf.Max(0, Mathf.Abs(along) - _pinchHalf);
+            float kAlong = over <= 0 ? 1 : Mathf.Exp(-over * over / (_pinchReach * _pinchReach * .5f));
+            return Mathf.Exp(-perp * perp / (_pinchReach * _pinchReach)) * kAlong;
+        }
+
+        /// <summary>
+        /// The squeeze: everything in the fingers' grip closes towards the middle line between them (almost flat when
+        /// the fingers nearly touch), and the pinched lump puffs out sideways round the grip.
+        /// </summary>
+        private Vector3 PinchMove(Vector3 b)
+        {
+            float k = PinchGrip(b, out float along, out Vector3 perpDir, out float perp);
+            if (k < 1e-4f) return Vector3.zero;
+            var squeeze = -_pinchAxis * along * _pinch * .95f * k;
+            float ring = (perp - _pinchReach * .6f) / (_pinchReach * .7f);
+            var puff = perpDir * (_pinch * _pinchReach * .45f * Mathf.Exp(-ring * ring) * Mathf.Min(1, (_pinchHalf - Mathf.Min(_pinchHalf, Mathf.Abs(along))) / _pinchHalf + .4f));
+            return squeeze + puff;
         }
 
         // ---- the face rides the surface ----
