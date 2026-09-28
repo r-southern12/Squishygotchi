@@ -71,6 +71,8 @@ namespace Squishy.Simulation.Game
         public string key;
         public float x, z, ry, wilt;
         public bool lampOn = true;
+        public float hx, hz; // a ball's home: where it was last placed (it pops back there after play)
+        public bool homeSet;
 
         public string Arch { get { int i = key.IndexOf(':'); return i < 0 ? key : key.Substring(0, i); } }
         public string Style { get { int i = key.IndexOf(':'); return i < 0 ? "" : key.Substring(i + 1); } }

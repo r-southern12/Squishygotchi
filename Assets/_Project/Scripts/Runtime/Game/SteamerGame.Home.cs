@@ -799,6 +799,7 @@ namespace Squishy.Runtime.Game
             else if (ai.mode == "fling") StepFling(dt, ref lift, ref extra);
             else if (ai.mode == "act") StepAct(dt, ref extra, ref lift);
             StepBalls(dt);
+            StepBallHome(dt);
             float rr = Dist(ai.x, ai.z);
             if (rr > FLOOR_R - .1f) { ai.x *= (FLOOR_R - .1f) / rr; ai.z *= (FLOOR_R - .1f) / rr; }
             if (growAnim.HasValue)
@@ -1022,6 +1023,27 @@ namespace Squishy.Runtime.Game
 
         /// <summary>A part's position in three space (room coordinates).</summary>
         private Vector3 ThreeWorld(Transform t) { return world.InverseTransformPoint(t.position); }
+
+        /// <summary>After play, a ball left sitting away from where it was placed pops back home (it used to get stuck in corners).</summary>
+        private void StepBallHome(float dt)
+        {
+            foreach (var bl in items)
+            {
+                if (bl.arch != "ball") continue;
+                if (!bl.st.homeSet) { bl.st.hx = bl.tx; bl.st.hz = bl.tz; bl.st.homeSet = true; }
+                bool busy = mode == "edit" || bl.vx != 0 || bl.vz != 0 || (ai.act != null && ai.act.it == bl) || (drag != null && drag.ball == bl)
+                    || Dist(bl.tx - bl.st.hx, bl.tz - bl.st.hz) < .12f || Dist(bl.st.hx - ai.x, bl.st.hz - ai.z) < PetRadius() + bl.a.r + .05f;
+                bl.restT = busy ? 0 : bl.restT + dt;
+                if (bl.restT < 3) continue;
+                bl.restT = 0;
+                HPuff(new Vector3(bl.tx, Y0 + .1f, bl.tz), new Vector3(0, .5f, 0), .05f, .35f, 3, .25f);
+                bl.tx = bl.st.hx;
+                bl.tz = bl.st.hz;
+                bl.g.localPosition = new Vector3(bl.tx, bl.g.localPosition.y, bl.tz);
+                bl.grow = 0;
+                sfx.Snap();
+            }
+        }
 
         private void StepBalls(float dt)
         {

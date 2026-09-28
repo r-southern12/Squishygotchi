@@ -198,7 +198,7 @@ namespace Squishy.Runtime.Game
                 return;
             }
             var hitIt = ItemHit(p);
-            if (hitIt != null && hitIt.arch == "ball")
+            if (hitIt != null && hitIt.arch == "ball" && !squishMode)
             {
                 drag.ball = hitIt;
                 var fp = FloorPoint(p, 0);
@@ -400,7 +400,7 @@ namespace Squishy.Runtime.Game
             else if (!drag.moved && !drag.scrub)
             {
                 if (TapBubble(p)) { drag = null; return; }
-                var it = ItemHit(p);
+                var it = squishMode ? null : ItemHit(p); // squish mode: taps are for the squishy only
                 if (it != null)
                 {
                     if (it.a.role == "music" && ai.mode == "act" && ai.act != null && ai.act.it == it) { PlayBar(it, BarAt(it, p), true); drag = null; return; }
@@ -670,6 +670,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Soft collision: items slide apart instead of refusing the drop.</summary>
         private void Settle(Item moved)
         {
+            foreach (var b in items) if (b.arch == "ball") b.st.homeSet = false; // placed again: its home is wherever it ends up
             var solid = items.Where(it => !it.a.walk).ToList();
             for (int iter = 0; iter < 14; iter++)
             {

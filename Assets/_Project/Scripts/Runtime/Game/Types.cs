@@ -16,6 +16,7 @@ namespace Squishy.Runtime.Game
         public float lift, bx, bv, vx, vz;
         public bool atWall;
         public float? grow;
+        public float restT; // a ball: how long it has sat still away from home
 
         public string key { get { return st.key; } }
         public string arch { get { return st.Arch; } }
