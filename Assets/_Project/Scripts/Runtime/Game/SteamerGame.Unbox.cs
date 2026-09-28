@@ -295,6 +295,15 @@ namespace Squishy.Runtime.Game
             WriteSave();
         }
 
+        /// <summary>A kit piece scaled to a set width, so a long ladle doesn't dwarf the ingredients beside it.</summary>
+        private static Transform Even(Transform piece, float width)
+        {
+            var bb = Node.LocalBounds(piece, piece.parent);
+            float k = width / Mathf.Max(.01f, Mathf.Max(bb.size.x, bb.size.z));
+            piece.localScale *= Mathf.Clamp(k, .5f, 2.5f);
+            return piece;
+        }
+
         /// <summary>Rolls this layer's prize and builds its display model (hidden until it launches).</summary>
         private void PreparePrize()
         {
@@ -324,13 +333,13 @@ namespace Squishy.Runtime.Game
                     obj = Node.Group(holder, "kit");
                     var rc = C.recipes[reward.i];
                     int nt = rc.tools.Length, ni = rc.ing.Length;
-                    for (int q = 0; q < nt; q++) KitchenModels.Tool(C, S, rc.tools[q], null, obj).localPosition = new Vector3((q - (nt - 1) / 2f) * .42f, 0, ni > 0 ? -.2f : 0);
-                    for (int q = 0; q < ni; q++) KitchenModels.Food(C, rc.ing[q], obj).localPosition = new Vector3((q - (ni - 1) / 2f) * .34f, 0, nt > 0 ? .2f : 0);
+                    for (int q = 0; q < nt; q++) Even(KitchenModels.Tool(C, S, rc.tools[q], null, obj), .4f).localPosition = new Vector3((q - (nt - 1) / 2f) * .42f, 0, ni > 0 ? -.2f : 0);
+                    for (int q = 0; q < ni; q++) Even(KitchenModels.Food(C, rc.ing[q], obj), .3f).localPosition = new Vector3((q - (ni - 1) / 2f) * .34f, 0, nt > 0 ? .2f : 0);
                 }
                 else obj = KitchenModels.Food(C, reward.i, holder);
                 // Like the squishy, every prize fills its steamer: as wide as the squishy (wall to wall), never towering.
                 var bb = Node.LocalBounds(obj, holder);
-                float wide = R * US * 2 * .83f, tall = R * US * 1.35f;
+                float wide = R * US * 2 * (reward.type == "item" ? .68f : .8f), tall = R * US * 1.3f; // furniture stands taller, so a little narrower (tables overhung the rim)
                 float k = Mathf.Min(wide / Mathf.Max(.01f, Mathf.Max(bb.size.x, bb.size.z)), tall / Mathf.Max(.01f, bb.size.y));
                 obj.localScale *= k;
                 bb = Node.LocalBounds(obj, holder);

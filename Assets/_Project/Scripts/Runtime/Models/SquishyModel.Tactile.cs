@@ -110,7 +110,7 @@ namespace Squishy.Runtime.Models
 
         // ---- pinch and squeeze (two fingers, zoomed in) ----
         private bool _pinchOn;
-        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis;
+        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis, _pinchShift, _pinchShiftT;
         private float _pinch, _pinchT, _pinchHalf, _pinchReach;
 
         /// <summary>Two fingers on the squishy: it squeezes between them (see SetPinch) and balloons out elsewhere.</summary>
@@ -124,13 +124,17 @@ namespace Squishy.Runtime.Models
             var ab = _pinchB - _pinchA;
             _pinchHalf = Mathf.Max(.06f, ab.magnitude / 2);
             _pinchAxis = ab.sqrMagnitude > 1e-6f ? ab.normalized : Vector3.right;
-            _pinchReach = Mathf.Clamp(_pinchHalf * .9f, .25f, .6f); // how wide the fingers' grip is
+            _pinchReach = Mathf.Max(.3f, _pinchHalf * 1.3f); // a squeeze across the body grips all of it; a small pinch stays local
+            _pinchShift = _pinchShiftT = Vector3.zero;
             _pinchOn = true;
             _pinchT = 0;
         }
 
         /// <summary>0 = fingers where they started, 1 = squeezed as far as it goes.</summary>
         public void SetPinch(float amount) { if (_pinchOn) _pinchT = Mathf.Clamp(amount, 0, .96f); }
+
+        /// <summary>Both fingers moved together: the squeezed lump goes with them (world offset since the pinch began).</summary>
+        public void DragPinch(Vector3 worldOffset) { if (_pinchOn) _pinchShiftT = Body.InverseTransformVector(worldOffset); }
 
         public void EndPinch() { _pinchOn = false; _pinchT = 0; }
 
@@ -171,6 +175,7 @@ namespace Squishy.Runtime.Models
             _tSquash += (Mathf.Min(.22f, target * .25f) - _tSquash) * Mathf.Min(1, dt * (target > 0 ? 6 : 2.3f / Mathf.Max(.2f, RiseTime)));
             // The squeeze follows the fingers quickly, and rises back like memory foam when they let go.
             _pinch += (_pinchT - _pinch) * Mathf.Min(1, dt * (_pinchT > _pinch ? 10 : 2.3f / Mathf.Max(.2f, RiseTime)));
+            _pinchShift += ((_pinchOn ? _pinchShiftT : Vector3.zero) - _pinchShift) * Mathf.Min(1, dt * (_pinchOn ? 10 : 2.3f / Mathf.Max(.2f, RiseTime)));
             if (_pinch < .002f && !_pinchOn) _pinch = 0;
             if (_pinch > .02f) { PokeInside(_pinchA, _pinch * dt * 4); PokeInside(_pinchB, _pinch * dt * 4); }
             _drape += (_drapeT - _drape) * Mathf.Min(1, dt * (_drapeT > _drape ? 3 : 1.5f));
@@ -233,7 +238,7 @@ namespace Squishy.Runtime.Models
             float volume = 0;
             foreach (var d in _dents) { _limit = Mathf.Max(_limit, d.max); volume += d.depth * d.r * d.r; }
             // A squeeze displaces a lot: nearly all of the pinched bit goes into the rest of the squishy.
-            if (_pinch > 0) volume += _pinch * _pinchHalf * 2 * _pinchReach * _pinchReach * 1.8f;
+            if (_pinch > 0) volume += _pinch * _pinchHalf * _pinchReach * .6f; // most of it bulges sideways in the squeeze itself
             _swell = Mathf.Min(.3f, volume * .55f);
             for (int v = 0; v < _tBase.Length; v++)
             {
@@ -280,10 +285,12 @@ namespace Squishy.Runtime.Models
         {
             float k = PinchGrip(b, out float along, out Vector3 perpDir, out float perp);
             if (k < 1e-4f) return Vector3.zero;
-            var squeeze = -_pinchAxis * along * _pinch * .95f * k;
-            float ring = (perp - _pinchReach * .6f) / (_pinchReach * .7f);
-            var puff = perpDir * (_pinch * _pinchReach * .45f * Mathf.Exp(-ring * ring) * Mathf.Min(1, (_pinchHalf - Mathf.Min(_pinchHalf, Mathf.Abs(along))) / _pinchHalf + .4f));
-            return squeeze + puff;
+            // Like a stress ball: squeezed along the line between the fingers (to a sliver when they nearly meet) and
+            // bulging out sideways to keep its volume; dragging both fingers carries the squeezed lump along.
+            float sq = _pinch * .92f * k;
+            var squeeze = -_pinchAxis * along * sq;
+            var bulge = perpDir * perp * (1 / Mathf.Sqrt(Mathf.Max(.3f, 1 - sq)) - 1); // capped: about 1.8x wider at full squeeze
+            return squeeze + bulge + _pinchShift * k;
         }
 
         // ---- the face rides the surface ----

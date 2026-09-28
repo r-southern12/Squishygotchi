@@ -229,7 +229,7 @@ namespace Squishy.Simulation.Game
 
         // ---- collection tree ----
 
-        public static readonly string[] TreeTiers = { "Common", "Glitter", "Pattern", "Galaxy", "UV", "Holographic", "Legendary" };
+        public static readonly string[] TreeTiers = { "Common", "Glitter", "Pattern", "Galaxy", "UV", "Holographic", "Aquarium", "Legendary" };
 
         public int TierOwned(string tier, out int total)
         {

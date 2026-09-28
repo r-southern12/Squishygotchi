@@ -454,7 +454,7 @@ namespace Squishy.Runtime.Game
             var a = ai.act;
             bool energise = !visiting && a != null && ai.self && a.it != null;
             if (a != null && !string.IsNullOrEmpty(a.act.need))
-                Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1) + (ai.self ? " (half)" : ""));
+                Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1));
             ai.act = null;
             ai.target = null;
             ai.mode = "idle";

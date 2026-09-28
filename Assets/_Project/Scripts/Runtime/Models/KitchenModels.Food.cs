@@ -140,10 +140,15 @@ namespace Squishy.Runtime.Models
                 }
                 case "sesame_bowl":
                 {
-                    // A little bowl heaped with black seeds, a few spilt beside it.
-                    P(g, Cyl(.1f, .07f, .07f, 16), M("#EFE2C9"), 0, .035f, 0);
-                    P(g, Sph(.09f, 14, 8), col, 0, .07f, 0, 0, 0, 0, 1, .45f, 1);
-                    for (int k = 0; k < 16; k++) P(g, Sph(.009f, 5, 4), M(k % 3 == 0 ? "#5A4B44" : "#2A221F"), Mathf.Cos(k * 2.4f) * (.02f + .004f * k), .095f + .01f * Mathf.Sin(k), Mathf.Sin(k * 2.4f) * (.02f + .004f * k), 0, k, 0, 1.6f, .8f, 1);
+                    // A deep little bowl heaped high with black seeds (a tall mound, seeds all over it), a few spilt beside.
+                    P(g, Cyl(.09f, .062f, .1f, 16), M("#EFE2C9"), 0, .05f, 0);
+                    P(g, Torus(.088f, .008f, 5, 18), M("#E3D0AC"), 0, .1f, 0, Pi / 2, 0, 0);
+                    P(g, Sph(.085f, 16, 12), col, 0, .105f, 0, 0, 0, 0, 1, 1.05f, 1);
+                    for (int k = 0; k < 40; k++)
+                    {
+                        float u = (k + .5f) / 40f, ph = k * 2.39996f, cy = 1 - u * .95f, rr = Mathf.Sqrt(1 - cy * cy);
+                        P(g, Sph(.01f, 5, 4), M(k % 3 == 0 ? "#5A4B44" : "#2A221F"), Mathf.Cos(ph) * rr * .088f, .105f + cy * .092f, Mathf.Sin(ph) * rr * .088f, 0, ph, 0, 1.6f, .7f, 1);
+                    }
                     for (int k = 0; k < 6; k++) P(g, Sph(.009f, 5, 4), col, .13f + .02f * Mathf.Cos(k * 2), .005f, .04f + .025f * Mathf.Sin(k * 2), 0, k, 0, 1.6f, .6f, 1);
                     return true;
                 }

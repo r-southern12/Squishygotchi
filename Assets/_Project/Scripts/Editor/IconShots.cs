@@ -427,6 +427,9 @@ namespace Squishy.EditorTools
                 var poms = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < 8 && i < content.styles.Length; i++) poms.Add("pomwand:" + content.styles[i].id);
                 ThumbSheet("pompoms", poms, 4);
+                var decor = new System.Collections.Generic.List<string>();
+                foreach (var st in new[] { content.styles[0].id, content.styles[5].id }) foreach (var ty in new[] { "vase", "lantern", "sidetable", "easel", "pouf", "books" }) decor.Add(ty + ":" + st);
+                ThumbSheet("decor", decor, 6);
             }
 
             {

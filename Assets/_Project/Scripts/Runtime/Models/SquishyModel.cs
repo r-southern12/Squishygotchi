@@ -187,9 +187,9 @@ namespace Squishy.Runtime.Models
             if (f.clear) _base.a = f.opacity > 0 ? f.opacity : .45f; // clear jelly: see-through (firmer at the rim)
             Mat.SetVector("_BaseColor", _base);
             Mat.SetFloat("_Roughness", f.rough);
-            Mat.SetFloat("_Metalness", f.metal ? .6f : 0f);
+            Mat.SetFloat("_Metalness", f.metal ? .5f : 0f); // high metalness has nothing to reflect here and went brown
             Mat.SetTexture("_BaseMap", tierMap != null ? tierMap : string.IsNullOrEmpty(f.map) ? Texture2D.whiteTexture : Textures.FinishMap(f.map));
-            Mat.SetVector("_EmissionColor", string.IsNullOrEmpty(f.glow) ? Color.black : ThreeMat.Lin(f.glow) * .25f);
+            Mat.SetVector("_EmissionColor", !string.IsNullOrEmpty(f.glow) ? ThreeMat.Lin(f.glow) * .25f : f.metal ? ThreeMat.Lin(f.color) * .14f : Color.black); // metals: a warm sheen of their own colour
             K = f.tier == "UV" ? 40 : f.tier == "Common" ? 5 : 12;
             RiseTime = f.tier == "UV" ? 1f : f.tier == "Common" ? 3f : f.tier == "Holographic" ? 1.6f : 2.4f; // foam rises slowly, jelly quickly
             C = f.tier == "UV" ? 3 : f.tier == "Common" ? 5 : 4.5f;

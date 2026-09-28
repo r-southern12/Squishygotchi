@@ -608,7 +608,16 @@
       "r": 0.33,
       "comfort": 1,
       "max": 1,
-      "price": 200
+      "price": 200,
+      "face": "z",
+      "circles": [
+        -0.15,
+        0,
+        0.22,
+        0.15,
+        0,
+        0.22
+      ]
     },
     {
       "id": "shower",
@@ -805,6 +814,61 @@
       "size": 3,
       "max": 1,
       "price": 260
+    },
+    {
+      "id": "vase",
+      "name": "Flower vase",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.15,
+      "comfort": 1,
+      "price": 60
+    },
+    {
+      "id": "lantern",
+      "name": "Paper lantern",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.14,
+      "comfort": 2,
+      "price": 80
+    },
+    {
+      "id": "sidetable",
+      "name": "Side table",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.17,
+      "comfort": 1,
+      "price": 70
+    },
+    {
+      "id": "easel",
+      "name": "Painting easel",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.17,
+      "face": "z",
+      "comfort": 2,
+      "price": 90
+    },
+    {
+      "id": "pouf",
+      "name": "Floor pouf",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.18,
+      "comfort": 1,
+      "price": 60
+    },
+    {
+      "id": "books",
+      "name": "Book stack",
+      "cat": "Decor",
+      "role": "decor",
+      "r": 0.14,
+      "comfort": 1,
+      "price": 50
     }
   ],
   "tomb": {
@@ -1005,7 +1069,7 @@
       ]
     },
     {
-      "name": "Koi",
+      "name": "Calico",
       "tier": "Pattern",
       "color": "#FFFFFF",
       "rough": 0.5,
@@ -1028,14 +1092,15 @@
     {
       "name": "Golden Ticket",
       "tier": "Legendary",
-      "color": "#D9B45A",
-      "rough": 0.25,
-      "metal": true,
+      "color": "#F2B81E",
+      "rough": 0.14,
+      "metal": false,
       "spark": [
         "#FFFFFF",
         "#FFF2C2",
         "#FFE08A"
-      ]
+      ],
+      "glow": "#8A5A00"
     },
     {
       "name": "Violet Sparkle",
@@ -1053,13 +1118,14 @@
     {
       "name": "Rose Gold",
       "tier": "Legendary",
-      "color": "#E8A89A",
-      "rough": 0.25,
-      "metal": true,
+      "color": "#F0A08C",
+      "rough": 0.14,
+      "metal": false,
       "spark": [
         "#FFFFFF",
         "#FFE1D6"
-      ]
+      ],
+      "glow": "#6E2E1E"
     },
     {
       "name": "Moonbeam",

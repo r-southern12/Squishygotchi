@@ -270,11 +270,24 @@ namespace Squishy.Runtime.Game
         // ---------------- collection tree (Squishies screen) ----------------
 
         /// <summary>The squishy tree: each finish tier is a level; complete one to claim its reward.</summary>
+        /// <summary>An owned squishy's size and age for its card: "Jumbo · Day 12" (its own life, or not started yet).</summary>
+        private string SquishLine(int i)
+        {
+            string size = C.sizes[C.SizeIdxFor(Rules.SquishCount(i))].name;
+            int age = i == S.favIdx ? S.age : -1;
+            if (age < 0) { var life = S.lifeOf.Find(l => l.i == i); age = life != null ? life.age : -1; }
+            return size + " · " + (age >= 0 ? "Day " + age : "not raised yet");
+        }
+
         private void DrawTree(VisualElement grid)
         {
             var head = Css.Label(grid, Rules.SquishKinds + " of " + C.finishes.Length + " found · " + S.lives.Count + " lives · average quality of life " + Mathf.RoundToInt(Rules.LifetimeQol() * 100) + "% · " + S.prestige + " prestige", "Figtree", 700, 12, Hud.Muted);
             head.Wrap();
             head.style.marginBottom = 8;
+            var fbar = new VisualElement().Row(Align.Center, Justify.FlexEnd).In(grid);
+            fbar.style.marginBottom = 4;
+            Hud.Button(fbar, ownedOnly ? "Owned only · on" : "Owned only · off", ownedOnly ? "#6F9A74" : "#EADCC6", ownedOnly ? "#4C7552" : "#CDB999",
+                ownedOnly ? Hud.Cream : Hud.Ink, 99, 32, 13, () => { ownedOnly = !ownedOnly; selKey = null; DrawCatalogue(); sfx.Tap(); }).Size(150, null);
             foreach (var tier in GameRules.TreeTiers)
             {
                 int total, own = Rules.TierOwned(tier, out total);
@@ -297,10 +310,11 @@ namespace Squishy.Runtime.Game
                 for (int i = 0; i < C.finishes.Length; i++)
                 {
                     if (C.finishes[i].tier != tier) continue;
+                    if (ownedOnly && Rules.SquishCount(i) <= 0) continue;
                     if (n % 3 == 0) { row = new VisualElement().Row(Align.Stretch).In(grid); row.style.marginBottom = 8; }
                     int idx = i;
                     var e = new Entry { key = "sq:" + i, name = C.finishes[i].name, rarity = C.FinishRarity(C.finishes[i]), own = Rules.SquishCount(i) > 0, i = i };
-                    var cell = ui.Cell(row, e.key, e.name, e.rarity, e.own, e.key == selKey, null, () => { selKey = e.key; ShowDetail(e); sfx.Tap(); });
+                    var cell = ui.Cell(row, e.key, e.own ? e.name + " · " + SquishLine(i) : e.name, e.rarity, e.own, e.key == selKey, null, () => { selKey = e.key; ShowDetail(e); sfx.Tap(); });
                     if (n % 3 != 0) cell.style.marginLeft = 8;
                     n++;
                 }

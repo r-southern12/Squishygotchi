@@ -147,6 +147,7 @@ namespace Squishy.Runtime.Game
                 zoom0 = mode == "edit" ? camS.ezT : camS.zoomT;
                 // Zoomed in with both fingers on the squishy: bringing them together squeezes it (spreading still zooms out).
                 squeezeArm = mode == "home" && CloseUp && !S.tucked && PinchPoints(a, b, out sqA, out sqB);
+                squeezeMid0 = (a + b) / 2;
                 if (squishMode) { drag = null; pet.Held = false; return; } // squish mode: two fingers are for squeezing only
                 camS.mid = (a + b) / 2;
                 drag = null;
@@ -233,6 +234,10 @@ namespace Squishy.Runtime.Game
                         if (Mathf.Floor(amt * 5) != Mathf.Floor(squeezeLast * 5)) Buzz(3); // soft ticks as it gives
                         squeezeLast = amt;
                         pet.SetPinch(amt);
+                        // Both fingers moving together push the squeezed lump around.
+                        var mplane = new Plane(-cam.transform.forward, (sqA + sqB) / 2);
+                        Ray r0 = PickRay(squeezeMid0), r1 = PickRay((a + b) / 2);
+                        if (mplane.Raycast(r0, out float t0) && mplane.Raycast(r1, out float t1)) pet.DragPinch(Vector3.ClampMagnitude(r1.GetPoint(t1) - r0.GetPoint(t0), pet.Scale * pet.StageScale * .8f));
                         return;
                     }
                     if (dq < pinch0 - 8) { squeezing = true; squeezeArm = false; squeezeLast = 0; pet.BeginPinch(sqA, sqB); sfx.Press(); Buzz(8); return; }
@@ -281,6 +286,7 @@ namespace Squishy.Runtime.Game
                     }
                     else it.atWall = false;
                 }
+                else if (it.a.cat != "Floor" && SnapToPlacedWall(it, ref x, ref z)) { }
                 else if (rr > l - .12f)
                 {
                     x *= l / rr;
@@ -539,8 +545,11 @@ namespace Squishy.Runtime.Game
                 var got = all.Where(c => Rules.Owned(c.key)).ToList();
                 var shown = got.Concat(all.Where(c => !Rules.Owned(c.key)).Take(6)).ToList();
                 var cur = sel;
-                ui.DrawTray(C.Type(sel.arch).name + " skins · " + got.Count + " of " + all.Count, shown.Select(c => (c.key, Rules.Owned(c.key), c.key == cur.key, c.name)).ToList(), null, key =>
+                var skinTiles = shown.Select(c => (c.key, Rules.Owned(c.key), c.key == cur.key, c.name)).ToList();
+                skinTiles.Insert(0, ("__back", true, false, "Back")); // back to storage and new pieces
+                ui.DrawTray(C.Type(sel.arch).name + " skins · " + got.Count + " of " + all.Count, skinTiles, null, key =>
                 {
+                    if (key == "__back") { Select(null); DrawTray(); sfx.Tap(); return; }
                     var c = C.Cat(key);
                     if (!Rules.Owned(key)) { ui.SetHint("Find the " + c.name + " in steamers"); sfx.Bonk(); return; }
                     Snap();
@@ -555,9 +564,34 @@ namespace Squishy.Runtime.Game
                 return;
             }
             string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.DecorSlots();
-            if (S.storage.Count == 0) { ui.DrawTray(title, new List<(string, bool, bool, string)>(), "Empty. Get more from steamers.", null); return; }
             var list = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
-            ui.DrawTray(title, list, null, key => PlaceFromStorage(int.Parse(key.Substring(key.IndexOf('#') + 1))));
+            // Free decor slots: any decor you own can go in as a new piece (expanding the room adds slots to fill).
+            if (DecorCount() < Rules.DecorSlots())
+            {
+                var decor = C.Catalogue.Where(c => C.IsDecor(c.arch) && Rules.Owned(c.key)).OrderBy(c => c.arch).ToList();
+                if (decor.Count > 0) { list.Add(("__new", true, false, "New decor")); foreach (var c in decor) list.Add((c.key + "#new", true, false, "New " + c.name)); }
+            }
+            // The steamer itself: pick a skin for the room right here.
+            var skins = Enumerable.Range(0, C.skins.Length).Where(i => i == 0 || Rules.Owned("skin:" + i)).ToList();
+            if (skins.Count > 1) { list.Add(("__steamer", true, false, "Steamers")); foreach (int i in skins) list.Add(("skin:" + i + "#s", true, C.skins[i] == curSkin, C.skins[i].name + "|" + C.skins[i].a + "|" + C.skins[i].b)); }
+            if (list.Count == 0) { ui.DrawTray(title, list, "Empty. Get more from steamers.", null); return; }
+            ui.DrawTray(title, list, null, key =>
+            {
+                if (key.StartsWith("__")) return;
+                if (key.EndsWith("#new")) { S.storage.Add(key.Substring(0, key.Length - 4)); PlaceFromStorage(S.storage.Count - 1); return; }
+                if (key.StartsWith("skin:"))
+                {
+                    curSkin = C.skins[int.Parse(key.Substring(5, key.IndexOf('#') - 5))];
+                    homeWall.Skin(curSkin);
+                    UpdateMusic();
+                    WriteSave();
+                    sfx.Snap();
+                    Buzz(8);
+                    DrawTray();
+                    return;
+                }
+                PlaceFromStorage(int.Parse(key.Substring(key.IndexOf('#') + 1)));
+            });
         }
 
         private void PlaceFromStorage(int i)
@@ -599,6 +633,34 @@ namespace Squishy.Runtime.Game
             return h;
         }
 
+        /// <summary>
+        /// Brought close to a placed room divider or screen, a piece slides along it with its back to it (either side),
+        /// the way pieces snap to the steamer wall.
+        /// </summary>
+        private bool SnapToPlacedWall(Item it, ref float x, ref float z)
+        {
+            foreach (var w in items)
+            {
+                if (w == it || w.a.cat != "Wall") continue;
+                float ux = Mathf.Cos(w.ry), uz = -Mathf.Sin(w.ry), nx = Mathf.Sin(w.ry), nz = Mathf.Cos(w.ry); // the wall's length and face
+                float dx = x - w.tx, dz = z - w.tz, along = dx * ux + dz * uz, across = dx * nx + dz * nz;
+                float half = HalfLength(w), thick = w.a.circles != null && w.a.circles.Length >= 3 ? w.a.circles[2] : .16f;
+                float depth = it.a.circles != null && it.a.circles.Length > 0 ? .2f : it.a.r * .8f;
+                if (Mathf.Abs(along) > half + .05f || Mathf.Abs(across) > thick + depth + .18f) continue;
+                float side = across >= 0 ? 1 : -1;
+                across = side * (thick + depth + .01f);
+                along = Mathf.Clamp(along, -half, half);
+                x = w.tx + ux * along + nx * across;
+                z = w.tz + uz * along + nz * across;
+                // Back to the wall: its front faces away from it.
+                if (it.a.face == "z") it.ry = Mathf.Atan2(side * nx, side * nz);
+                else if (it.a.face == "x") it.ry = Mathf.Atan2(-side * nz, side * nx);
+                if (!it.atWall) { it.atWall = true; sfx.Snap(); Buzz(6); }
+                return true;
+            }
+            return false;
+        }
+
         private static void FaceCentreAt(Item it, float x, float z)
         {
             if (it.a.face == "z") it.ry = Mathf.Atan2(-x, -z);
@@ -621,6 +683,10 @@ namespace Squishy.Runtime.Game
                         float dx = q.x - p.x, dz = q.z - p.z, d = Mathf.Max(.001f, Dist(dx, dz)), min = p.r + q.r + .02f;
                         if (d >= min) continue;
                         float push = min - d, nx = dx / d, nz = dz / d, wa = A == moved ? .2f : .5f, wb = Bb == moved ? .2f : .5f;
+                        // Walls stay put: whatever meets a wall is the one that moves (unless you are moving the wall).
+                        bool aw = A.a.cat == "Wall" && A != moved, bw = Bb.a.cat == "Wall" && Bb != moved;
+                        if (aw && !bw) { wa = 0; wb = 1; }
+                        else if (bw && !aw) { wa = 1; wb = 0; }
                         A.tx -= nx * push * wa; A.tz -= nz * push * wa;
                         Bb.tx += nx * push * wb; Bb.tz += nz * push * wb;
                     }

@@ -26,7 +26,6 @@ namespace Squishy.Runtime.Models
         private Vector3[] _moteVerts;
         private string _insideKind;
         private float _prevInsideX;
-        private readonly List<Renderer> _frontParts = new List<Renderer>();
         private Transform _backing;
 
         /// <summary>
@@ -106,10 +105,17 @@ namespace Squishy.Runtime.Models
             foreach (var r in Body.GetComponentsInChildren<Renderer>(true))
             {
                 if (r == bodyR || (_inside != null && r.transform.IsChildOf(_inside)) || (_backing != null && r.transform == _backing)) continue;
-                if (clear) { r.material.renderQueue = 3001; if (!_frontParts.Contains(r)) _frontParts.Add(r); }
-                else if (_frontParts.Contains(r)) r.material.renderQueue = -1;
+                if (r.sharedMaterial == Mat) continue; // made of the body itself (the cowlick): it keeps the live body colour
+                if (clear)
+                {
+                    if (!_origMats.ContainsKey(r)) { _origMats[r] = r.sharedMaterial; r.sharedMaterial = new Material(r.sharedMaterial); }
+                    r.sharedMaterial.renderQueue = 3001;
+                }
+                else if (_origMats.TryGetValue(r, out var orig)) { r.sharedMaterial = orig; _origMats.Remove(r); }
             }
         }
+
+        private readonly Dictionary<Renderer, Material> _origMats = new Dictionary<Renderer, Material>();
 
         private void Recolour(FinishData f) { if (_moteMesh != null) _moteMesh.colors = MoteColours(f, _insideKind, _motes.Count); }
 

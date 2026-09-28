@@ -50,6 +50,7 @@ namespace Squishy.Runtime.Game
         // Pinch and squeeze (two fingers on the squishy, zoomed in).
         private bool squeezeArm, squeezing;
         private Vector3 sqA, sqB;
+        private Vector2 squeezeMid0;
         private float squeezeLast;
 
         private bool PetPoint(Vector2 p, out Vector3 world)
@@ -68,17 +69,32 @@ namespace Squishy.Runtime.Game
         {
             bool ha = PetPoint(a, out wa), hb = PetPoint(b, out wb);
             if (ha && hb) return true;
-            if (!ha && !hb) return false;
-            var hit = ha ? wa : wb;
-            var ray = PickRay(ha ? b : a);
-            var plane = new Plane(-cam.transform.forward, hit);
-            if (!plane.Raycast(ray, out float t)) return false;
-            var p = ray.GetPoint(t);
-            // Onto the skin: the body surface in the direction of that point.
-            var local = pet.Body.InverseTransformPoint(p);
-            var surf = pet.Body.TransformPoint(SquishyModel.ShapeAt(local.sqrMagnitude > 1e-6f ? local.normalized : Vector3.up));
-            if (ha) wb = surf; else wa = surf;
+            var centre = pet.Body.TransformPoint(new Vector3(0, .1f, 0));
+            // Lenient: fingers either side of it or just off its edge still grip it (always, in squish mode).
+            if (!ha && !hb && !squishMode && !NearPet((a + b) / 2, 1.6f) && !NearPet(a, 1.25f) && !NearPet(b, 1.25f)) return false;
+            var plane = new Plane(-cam.transform.forward, ha ? wa : hb ? wb : centre);
+            if (!ha) wa = OntoSkin(a, plane, centre);
+            if (!hb) wb = OntoSkin(b, plane, centre);
             return true;
+        }
+
+        /// <summary>Within this many of its own radii of the squishy on screen.</summary>
+        private bool NearPet(Vector2 panel, float radii)
+        {
+            var centre = pet.Body.TransformPoint(new Vector3(0, .1f, 0));
+            var sc = cam.WorldToScreenPoint(centre);
+            if (sc.z <= 0) return false;
+            float rpx = Vector2.Distance(sc, cam.WorldToScreenPoint(centre + cam.transform.right * pet.Scale * pet.StageScale * 1.2f));
+            return Vector2.Distance(ToScreen(panel), sc) < rpx * radii;
+        }
+
+        /// <summary>The point of skin under a finger that missed it: across the finger's depth, then onto the surface.</summary>
+        private Vector3 OntoSkin(Vector2 p, Plane plane, Vector3 centre)
+        {
+            var ray = PickRay(p);
+            var pt = plane.Raycast(ray, out float t) ? ray.GetPoint(t) : centre;
+            var local = pet.Body.InverseTransformPoint(pt);
+            return pet.Body.TransformPoint(SquishyModel.ShapeAt(local.sqrMagnitude > 1e-6f ? local.normalized : Vector3.up));
         }
 
         /// <summary>Fingers off: the squeeze rises back slowly, it smiles, and it counts as a squish.</summary>

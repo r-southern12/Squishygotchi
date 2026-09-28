@@ -411,9 +411,34 @@ namespace Squishy.Runtime.UI
                 b.style.marginRight = 6;
                 if (!entry.owned) b.style.opacity = .4f;
                 string thumbKey = entry.key.Contains("#") ? entry.key.Substring(0, entry.key.IndexOf('#')) : entry.key;
-                var img = new Image { scaleMode = ScaleMode.ScaleToFit, image = Thumbs.Get(thumbKey) }.In(b);
-                img.style.flexGrow = 1;
-                img.pickingMode = PickingMode.Ignore;
+                if (entry.key.StartsWith("__") || thumbKey.StartsWith("skin:"))
+                {
+                    // Text tiles: Back, section labels and steamer skins (a colour swatch and its name).
+                    b.style.width = entry.key == "__back" ? 56 : 76;
+                    b.style.alignItems = Align.Center;
+                    b.style.justifyContent = Justify.Center;
+                    if (thumbKey.StartsWith("skin:") && entry.label.Contains("|"))
+                    {
+                        var parts = entry.label.Split('|');
+                        new Frame().Set(C(parts[1]), -1, new Shadow(0, 0, 0, 3, C(parts[2]))).Size(22, 22).NoPick().In(b);
+                        var nl = Label(b, parts[0], "Figtree", 700, 10, Ink);
+                        nl.Wrap();
+                        nl.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    }
+                    else
+                    {
+                        var tl = Label(b, entry.label, "Gluten", 700, entry.key == "__back" ? 14 : 11, entry.key == "__back" ? Ink : Muted);
+                        tl.Wrap();
+                        tl.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    }
+                    if (entry.key.StartsWith("__") && entry.key != "__back") { b.style.backgroundColor = new StyleColor(Color.clear); }
+                }
+                else
+                {
+                    var img = new Image { scaleMode = ScaleMode.ScaleToFit, image = Thumbs.Get(thumbKey) }.In(b);
+                    img.style.flexGrow = 1;
+                    img.pickingMode = PickingMode.Ignore;
+                }
                 string key = entry.key;
                 Tap(b, () => onClick?.Invoke(key));
             }
