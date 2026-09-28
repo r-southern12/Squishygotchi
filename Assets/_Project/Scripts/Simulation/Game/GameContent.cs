@@ -54,6 +54,7 @@ namespace Squishy.Simulation.Game
         public float pLegendary, pEpic, pRare, favouriteChance, pTwoLayers, pThreeLayers;
         public int pityRare, pityEpic, pityLegendary, taskMemory, nightStartHour, nightEndHour, nightWakeByHour, nightAskSeconds;
         public float nightDrain;
+        public int[] nightSnoozeMinutes; // the bedtime prompt's snooze choices
         public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, tasksPerSteamer, taskSetSteamers;
         public float taskCooldownHours;

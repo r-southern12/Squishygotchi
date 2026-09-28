@@ -114,7 +114,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 ### Night
 
-- Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night.
+- Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night. The prompt can be snoozed (the player picks 15 minutes, 30 minutes or 1 hour, data) and asks again after; "Not tonight" stops it until the next evening.
 - Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer for each 3-hour window is collected for you; passive steamers keep arriving. Reminders account for the slower drain and still honour quiet hours.
 - The night screen: a starry sky and the squishy asleep (tap to wake early). The next time the game opens, a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep".
 

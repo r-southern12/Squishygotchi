@@ -34,7 +34,7 @@ namespace Squishy.Simulation.Game
         public int giftStack; // steamers that arrived on their own since the player last saw the "+N arrived" note
         public long onlineReadyAt; // when the next free in-game steamer can be claimed
         public bool asleep; // turned in for the night
-        public long sleepAt, sleepUntil, lastNightPrompt;
+        public long sleepAt, sleepUntil, lastNightPrompt, nightSnoozeUntil;
         public int sleepSteamers, nightBank;
         public long bonusReadyAt; // when the next bonus (video) steamer is available
         public long trialStart, giftReadyAt, lastTaskDay, weekStart, lastSeenUtc;

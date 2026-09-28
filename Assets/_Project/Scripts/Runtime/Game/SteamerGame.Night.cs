@@ -21,7 +21,7 @@ namespace Squishy.Runtime.Game
             var local = DateTime.Now;
             bool can = mode == "home" && !visiting && Rules.CanSleep(local);
             ui.SetMoon(can && !ui.IntroOn && !ui.NightOn);
-            if (!can || ui.IntroOn || ui.NightOn || S.lastNightPrompt == GameRules.NightKey(local)) { nightAsk = -1; return; }
+            if (!can || ui.IntroOn || ui.NightOn || S.lastNightPrompt == GameRules.NightKey(local) || DateTime.UtcNow.Ticks < S.nightSnoozeUntil) { nightAsk = -1; return; }
             if (nightAsk < 0) nightAsk = 0;
             nightAsk += dt;
             // After a little while in the game, and never over a panel, a dialog or a drag.
@@ -41,7 +41,28 @@ namespace Squishy.Runtime.Game
                 name + " will sleep until morning. While you’re both asleep its needs drain slowly, and your free steamers are collected for you. See you at breakfast!",
                 "#8C7BB0",
                 ("Good night", "#8C7BB0", "#6A5A8E", Hud.Cream, (Action)(() => { ui.HideMemo(); GoToBed(); })),
-                ("Not yet", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
+                ("Snooze…", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => { ui.HideMemo(); AskSnooze(); })),
+                ("Not tonight", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
+        }
+
+        /// <summary>Snooze the bedtime prompt: the player picks how long, then it asks again.</summary>
+        private void AskSnooze()
+        {
+            var mins = C.rules.nightSnoozeMinutes != null && C.rules.nightSnoozeMinutes.Length > 0 ? C.rules.nightSnoozeMinutes : new[] { 15, 30, 60 };
+            var buttons = new System.Collections.Generic.List<(string, string, string, string, Action)>();
+            foreach (int m in mins)
+            {
+                int mm = m;
+                buttons.Add((mm >= 60 && mm % 60 == 0 ? (mm / 60) + (mm == 60 ? " hour" : " hours") : mm + " minutes", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() =>
+                {
+                    ui.HideMemo();
+                    S.nightSnoozeUntil = DateTime.UtcNow.AddMinutes(mm).Ticks;
+                    S.lastNightPrompt = 0; // ask again once the snooze is up
+                    WriteSave();
+                    ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "I’ll ask again in " + (mm >= 60 && mm % 60 == 0 ? (mm / 60) + (mm == 60 ? " hour" : " hours") : mm + " minutes"));
+                })));
+            }
+            ui.ShowDialog("Snooze for how long?", "I’ll ask about bedtime again after that.", "#8C7BB0", buttons.ToArray());
         }
 
         private void GoToBed()

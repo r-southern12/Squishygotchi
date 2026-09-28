@@ -2595,7 +2595,12 @@
     "nightEndHour": 7,
     "nightWakeByHour": 10,
     "nightDrain": 0.35,
-    "nightAskSeconds": 20
+    "nightAskSeconds": 20,
+    "nightSnoozeMinutes": [
+      15,
+      30,
+      60
+    ]
   },
   "cosmetics": [
     {
