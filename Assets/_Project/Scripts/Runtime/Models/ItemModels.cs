@@ -11,6 +11,9 @@ namespace Squishy.Runtime.Models
     {
         public Transform pot, pan, door, water, top, ball, mat, rack, curtain, shade, pom, wand;
         public Transform[] bars;
+        public Transform[] cups; // tea table: a cup and saucer for each seat
+        public Transform spout; // tea table: the tip of the teapot's spout (where the tea pours from)
+        public float potY;
         public Material shadeMat;
         public Mesh curtainMesh;
         public Vector3[] curtainBase, curtainWork;
@@ -22,6 +25,50 @@ namespace Squishy.Runtime.Models
     public static class ItemModels
     {
         private const float PI = Mathf.PI;
+
+        /// <summary>
+        /// A proper little teapot (user feedback, 29 Sep 2026): a round body on a foot ring with a painted band, a lid
+        /// with a knob, a curved tapering spout and a loop handle. Returns the spout tip. Sits on y = 0, spout towards +x.
+        /// </summary>
+        public static Transform Teapot(Transform pot, Material body, Material trim)
+        {
+            Node.Mesh(pot, Cyl(.05f, .056f, .014f, 20), trim, 0, .007f, 0);
+            Node.Mesh(pot, Sph(.08f, 22, 14), body, 0, .066f, 0).localScale = new Vector3(1, .8f, 1);
+            Node.Mesh(pot, Torus(.0795f, .005f, 6, 32), trim, 0, .068f, 0).RotX(Mathf.PI / 2);
+            Node.Mesh(pot, Cyl(.05f, .054f, .012f, 20), trim, 0, .126f, 0);
+            Node.Mesh(pot, Sph(.047f, 18, 10), body, 0, .13f, 0).localScale = new Vector3(1, .45f, 1);
+            Node.Mesh(pot, Cyl(.008f, .012f, .012f, 10), trim, 0, .153f, 0);
+            Node.Mesh(pot, Sph(.016f, 12, 8), trim, 0, .164f, 0);
+            // Spout: tapering segments along a curve from low on the body up and out.
+            Vector2 p0 = new Vector2(.062f, .045f), p1 = new Vector2(.13f, .05f), p2 = new Vector2(.145f, .125f);
+            System.Func<float, Vector2> bez = u => (1 - u) * (1 - u) * p0 + 2 * (1 - u) * u * p1 + u * u * p2;
+            const int N = 6;
+            for (int k = 0; k < N; k++)
+            {
+                Vector2 a = bez(k / (float)N), b = bez((k + 1) / (float)N), m = (a + b) / 2, d = b - a;
+                float ra = Mathf.Lerp(.02f, .009f, k / (float)N), rb = Mathf.Lerp(.02f, .009f, (k + 1) / (float)N);
+                Node.Mesh(pot, Cyl(rb, ra, d.magnitude + .004f, 12), body, m.x, m.y, 0).RotZ(Mathf.Atan2(d.y, d.x) - Mathf.PI / 2);
+                if (k > 0) Node.Mesh(pot, Sph(ra, 10, 6), body, a.x, a.y, 0);
+            }
+            Node.Mesh(pot, Torus(.0095f, .0025f, 4, 12), trim, p2.x, p2.y, 0).RotX(Mathf.PI / 2);
+            var tip = Node.Group(pot, "spoutTip", p2.x + .004f, p2.y, 0);
+            // Handle: a C-shaped loop on the far side, open towards the body.
+            Node.Mesh(pot, Torus(.042f, .009f, 8, 20, Mathf.PI * 1.3f), body, -.1f, .072f, 0).RotZ(Mathf.PI * .35f);
+            return tip;
+        }
+
+        /// <summary>A teacup on its saucer with tea in it and a little handle.</summary>
+        public static Transform TeaCup(Transform parent, Material china, Material trim, float x, float y, float z)
+        {
+            var c = Node.Group(parent, "cup", x, y, z);
+            Node.Mesh(c, Cyl(.044f, .038f, .008f, 20), china, 0, .004f, 0);
+            Node.Mesh(c, Torus(.041f, .003f, 4, 24), trim, 0, .008f, 0).RotX(Mathf.PI / 2);
+            Node.Mesh(c, Cyl(.031f, .022f, .042f, 18), china, 0, .03f, 0);
+            Node.Mesh(c, Torus(.031f, .003f, 4, 22), trim, 0, .05f, 0).RotX(Mathf.PI / 2);
+            Node.Mesh(c, Cyl(.027f, .027f, .004f, 18), M("#A8683A"), 0, .046f, 0, shadow: false);
+            Node.Mesh(c, Torus(.012f, .0045f, 6, 12, Mathf.PI * 1.3f), china, .034f, .03f, 0).RotZ(Mathf.PI * 1.35f);
+            return c;
+        }
 
         /// <summary>
         /// A fluffy yarn pom-pom: a soft core covered in small tufts, in the style's yarn colours, with a tie on top.
@@ -77,13 +124,13 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Cyl(.08f, .14f, h, 10), W, 0, h / 2, 0);
                     Node.Mesh(g, Cyl(.34f, .34f, .05f, 22), W, 0, h + .02f, 0);
                     Node.Mesh(g, Cyl(.26f, .26f, .012f, 22), P, 0, h + .05f, 0, shadow: false);
-                    var pot = Node.Group(g, "pot", 0, h + .05f, 0);
-                    Node.Mesh(pot, Sph(.08f), A, 0, .07f, 0).ScaleY(.85f);
-                    Node.Mesh(pot, Cyl(.015f, .02f, .08f, 6), A, .09f, .08f, 0).RotZ(-.9f);
-                    Node.Mesh(pot, Sph(.035f, 8, 6), T, 0, .14f, 0);
+                    var pot = Node.Group(g, "pot", 0, h + .056f, 0);
+                    p.spout = Teapot(pot, A, T);
                     p.pot = pot;
-                    Node.Mesh(g, Cyl(.03f, .026f, .04f, 8), L, -.15f, h + .07f, .1f);
-                    Node.Mesh(g, Cyl(.03f, .026f, .04f, 8), L, .14f, h + .07f, -.12f);
+                    p.potY = h + .056f;
+                    // Cups and saucers: moved in front of whichever seats are nearby (SteamerGame.ArrangeTeaCups).
+                    p.cups = new Transform[2];
+                    for (int k = 0; k < 2; k++) p.cups[k] = TeaCup(g, L, T, k == 0 ? -.16f : .15f, h + .056f, k == 0 ? .1f : -.12f);
                     break;
                 }
                 case "stove":

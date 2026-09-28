@@ -151,6 +151,28 @@ The Comfort panel shows room progression: current level, slots used, squishy siz
 - Select an item to swap its skin from a strip of unlocked skins. Put items away into Storage and place them back.
 - Wall panels and folding screens divide the room. The shower curtain draws closed while in use.
 - **Stations form by nearness:** tea time needs a seat anywhere near the table.
+- **Combos:** pieces placed near one another (within about 1.1) make a set the squishy uses for a richer activity. A piece can count towards several combos at once (the same table and stool make Tea time with a cushion, and the Dinner table with a stove). A finished combo takes precedence over its piece's own use (tap its main piece, or a piece with no use of its own like the rug or books); on its own the squishy picks finished combos half the time when it plays. Each is celebrated the first time it's made. The Comfort panel lists them by name with a count (2/3) and the pieces found so far; the missing ones stay a mystery.
+
+| Combo | Pieces | What it does |
+| --- | --- | --- |
+| Quiet corner | cushion, rug, plant | Sits very still, eyes shut, breathing slowly; Rest, then needs drain 20% slower for 30 min |
+| Reading nook | beanbag or cushion, books, lamp | Reads a little book; Rest and Play |
+| Tea time | tea table, 2 seats (stool or cushion) | Tea for two: the pot pours for each cup in turn; more Rest and Hunger. With one seat it's plain tea. |
+| Dinner table | stove, tea table, stool | After cooking it carries the dish to the table and eats sitting down; a little Play on top |
+| Chef's corner | stove, fridge, sink | Cooking is quicker, tools wear half as fast, 20% chance an ingredient is saved |
+| Spa bath | bathtub, plant | Petals on the water, eyes shut; Clean plus Rest |
+| Steamed Clean | shower, rug, dividing wall | After the shower it steps onto the rug and shakes dry; extra Clean |
+| Splash slide | slide, bathtub | Down the slide and into the bath with a splash; Clean and Play |
+| Playground | trampoline, ball, rug | Bounces, then kicks the ball (or the other way round); big Play |
+| Concert | xylophone, pouf or cushion, rug | Plays a whole tune, then an encore bounce; Play |
+| Bubble garden | bubble wand, plant, rug | More bubbles, drifting towards the plant; Play |
+| Pom-pom den | pom-pom wand, cushion or beanbag, rug | After the chase it flops onto the cushion cuddling the pom-pom; Play and Rest |
+| Dress-up | wardrobe, folding screen | Pops out wearing an accessory for a moment: mostly one it could still earn, sometimes one of yours |
+
+- Up to 2 sinks per room (bathroom and kitchen).
+- **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
+- **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
+- In squish mode (zoomed right in) taps on furniture are ignored.
 
 **Comfort**
 

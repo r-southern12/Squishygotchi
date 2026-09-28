@@ -140,6 +140,7 @@ namespace Squishy.Runtime.Game
         {
             comfort = Rules.Comfort(S.items, out setBonus);
             ComputeCombos();
+            ArrangeTeaCups();
             ui.SetComfort(Mathf.RoundToInt(comfort).ToString());
         }
 
@@ -269,6 +270,63 @@ namespace Squishy.Runtime.Game
             var st = C.Style(seat.style);
             bool low = seat.a.role == "lounge" || (st != null && st.low);
             return new Spot { approach = new Vector2(seat.tx + dx / l * .32f, seat.tz + dz / l * .32f), stand = new Vector2(seat.tx, seat.tz), y = low ? .1f : .28f, face = new Vector2(table.tx, table.tz) };
+        }
+
+        /// <summary>
+        /// The teapot lifts, turns its spout to a cup and pours (a thin stream), then sets down again; for tea for two
+        /// it pours for each cup in turn. A wisp of steam from the spout now and then.
+        /// </summary>
+        private void PourTea(Item table, float t, float dt, bool forTwo)
+        {
+            var pot = table.parts.pot;
+            if (pot == null) return;
+            const float Cycle = 2.6f;
+            int round = Mathf.FloorToInt(t / Cycle);
+            float c = t - round * Cycle;
+            float tilt = c < .5f ? Mathf.SmoothStep(0, 1, c / .5f) : c < 1.4f ? 1 : c < 1.9f ? 1 - Mathf.SmoothStep(0, 1, (c - 1.4f) / .5f) : 0;
+            // Which cup: the one in front of the squishy, or each in turn for two.
+            Transform cup = null;
+            if (table.parts.cups != null && table.parts.cups.Length > 0)
+            {
+                float best = 1e9f;
+                foreach (var cp in table.parts.cups) { var w = ThreeWorld(cp); float d = Dist(w.x - ai.x, w.z - ai.z); if (d < best) { best = d; cup = cp; } }
+                if (forTwo && round % 2 == 1) foreach (var cp in table.parts.cups) if (cp != cup) { cup = cp; break; }
+            }
+            Vector3 to = cup != null ? ThreeWorld(cup) : new Vector3(ai.x, 0, ai.z);
+            float dx = to.x - table.tx, dz = to.z - table.tz;
+            float yaw = Mathf.Atan2(-dz, dx) - table.ry;
+            Node.Rot(pot, 0, yaw, -.6f * tilt);
+            pot.localPosition = new Vector3(0, table.parts.potY + .05f * tilt, 0);
+            if (table.parts.spout == null) return;
+            var sp = ThreeWorld(table.parts.spout);
+            if (tilt > .85f && Random.value < dt * 40)
+                drops.Spawn(sp, new Vector3((to.x - sp.x) * 1.2f, -.2f, (to.z - sp.z) * 1.2f), .012f, .28f, 0, -6, col: ThreeMat.Hex("#B8793F"));
+            if (tilt < .1f && Random.value < dt * 1.5f) HPuff(new Vector3(sp.x, sp.y + .03f, sp.z), new Vector3(0, .35f, 0), .03f, .9f, 1.4f, .22f);
+        }
+
+        /// <summary>Puts each tea table's cups in front of the seats round it (and sets the pot back down).</summary>
+        private void ArrangeTeaCups()
+        {
+            foreach (var table in items)
+            {
+                if (table.a.role != "tea" || table.parts.cups == null) continue;
+                var seats = items.Where(x => (x.a.role == "seat" || x.a.role == "lounge") && Dist(x.tx - table.tx, x.tz - table.tz) < 1.1f)
+                    .OrderBy(x => Dist(x.tx - table.tx, x.tz - table.tz)).Take(table.parts.cups.Length).ToList();
+                for (int k = 0; k < table.parts.cups.Length; k++)
+                {
+                    var cup = table.parts.cups[k];
+                    float wx, wz;
+                    if (k < seats.Count) { wx = seats[k].tx - table.tx; wz = seats[k].tz - table.tz; }
+                    else { float a = table.ry + (k == 0 ? 2.4f : -.7f); wx = Mathf.Sin(a); wz = Mathf.Cos(a); }
+                    float l = Mathf.Max(.001f, Dist(wx, wz));
+                    wx /= l; wz /= l;
+                    // Into the table's own turned space.
+                    float cr = Mathf.Cos(table.ry), sr = Mathf.Sin(table.ry);
+                    float lx = wx * cr - wz * sr, lz = wx * sr + wz * cr;
+                    cup.localPosition = new Vector3(lx * .2f, table.parts.potY, lz * .2f);
+                }
+                if (!(ai.act != null && ai.act.it == table)) { Node.Rot(table.parts.pot, 0, 0, 0); table.parts.pot.localPosition = new Vector3(0, table.parts.potY, 0); }
+            }
         }
 
         private bool SeatNear(Item t) { return items.Any(it => (it.a.role == "seat" || it.a.role == "lounge") && Dist(it.tx - t.tx, it.tz - t.tz) < 1.1f); }
@@ -855,7 +913,6 @@ namespace Squishy.Runtime.Game
                 // Energised: a slow, visible undulation that fades away over the last twenty seconds.
                 energyT = sleeping || S.tucked ? 0 : energyT - dt;
                 extra += .08f * Mathf.Clamp01(energyT / 20f) * Mathf.Sin(time * 2.4f);
-                if (energyT > 20 && Random.value < dt * 1.5f) { var pp = PetWorld(); HPuff(new Vector3(pp.x + Rnd(-.15f, .15f), pp.y + pet.Scale * 1.1f, pp.z + Rnd(-.15f, .15f)), new Vector3(0, .4f, 0), .025f, .7f, 2, .2f); }
             }
             StepTipCoin(dt);
             // Sitting or lying on something: the squishy drapes over its edges (a big one envelops a small stool).
@@ -1031,8 +1088,7 @@ namespace Squishy.Runtime.Game
             else if (A.role == "tea" && it != null)
             {
                 extra = .06f * Mathf.Sin(t * 3);
-                it.parts.pot.RotZ(Mathf.Sin(t * 1.5f) * .25f);
-                if (Random.value < dt * 3) { var wp = ThreeWorld(it.parts.pot); HPuff(new Vector3(wp.x, wp.y + .2f, wp.z), new Vector3(0, .6f, 0), .05f, 1, 1.5f, .3f); }
+                PourTea(it, t, dt, A.act.role == "teaparty");
             }
             else if (act.sleep)
             {
