@@ -57,6 +57,25 @@ namespace Squishy.Simulation.Game
         /// A friend visited and cared for your squishy: pay coins for each thing they did, once per visit.
         /// Returns the coins paid (0 if this visit was already counted).
         /// </summary>
+        /// <summary>What a friend's visit did for you, for the "while you were away" card.</summary>
+        public sealed class VisitGift { public string friendId, name; public int coins; public float hunger, play; public bool watered; }
+
+        /// <summary>
+        /// A friend's visit while you were away: coins, plus the care itself carries over to your squishy
+        /// (a snack tops up Hunger, a squish tops up Play, watering waters your plant). Each visit counts once.
+        /// </summary>
+        public VisitGift CreditVisit(string friendId, long at, int acts, string what, string name)
+        {
+            int coins = CreditVisit(friendId, at, acts);
+            if (coins <= 0) return null;
+            var g = new VisitGift { friendId = friendId, name = string.IsNullOrEmpty(name) ? "A friend" : name, coins = coins };
+            what = what ?? "";
+            if (what.Contains("feed")) { g.hunger = Math.Min(R.visitFeed, 1 - S.needs[Needs.Hunger]); S.needs[Needs.Hunger] += g.hunger; }
+            if (what.Contains("pet")) { g.play = Math.Min(R.visitPet, 1 - S.needs[Needs.Play]); S.needs[Needs.Play] += g.play; }
+            if (what.Contains("water")) { g.watered = true; foreach (var p in S.items) if (p.Arch == "plant") p.wilt = 0; }
+            return g;
+        }
+
         public int CreditVisit(string friendId, long at, int acts)
         {
             if (string.IsNullOrEmpty(friendId) || acts <= 0) return 0;

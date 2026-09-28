@@ -81,7 +81,7 @@ namespace Squishy.Runtime.Game
             if (si + 1 >= C.sizes.Length) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .4f), "Already fully grown"); return; }
             Rules.SetSquish(S.favIdx, C.sizes[si + 1].at);
             growAnim = (pet.Scale, C.sizes[si + 1].s, 0);
-            Floater("Grew to " + C.sizes[si + 1].name + "!");
+            Later(.9f, () => CelebrateGrowth(si + 1));
             UpdateSub();
             OnAdmin();
         }

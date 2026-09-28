@@ -16,7 +16,7 @@ namespace Squishy.Simulation.Game
     public sealed class RewardCard
     {
         public bool isNew;
-        public string name, tier, dot, meta;
+        public string name, tier, dot, meta, key;
         public int delayedCoins;
         public int grewTo = -1;
         public bool kitchenChanged;
@@ -367,6 +367,8 @@ namespace Squishy.Simulation.Game
         public RewardCard Claim(Reward rw)
         {
             var card = new RewardCard { isNew = true, dot = "#D8C7AE" };
+            card.key = rw.type == "sq" ? "sq:" + rw.i : rw.type == "item" ? rw.key : rw.type == "food" ? "food:" + rw.i : rw.type == "tool" ? "tool:" + rw.i
+                : rw.type == "tskin" ? "tskin:" + rw.i + ":" + rw.j : rw.type == "kit" ? "dish:" + rw.i : "steamerbox"; // the model to show it in 3D
             if (rw.type == "sq")
             {
                 var f = C.finishes[rw.i];

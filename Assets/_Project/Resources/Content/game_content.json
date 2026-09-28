@@ -2666,7 +2666,9 @@
       15,
       30,
       60
-    ]
+    ],
+    "visitFeed": 0.2,
+    "visitPet": 0.15
   },
   "cosmetics": [
     {

@@ -139,6 +139,7 @@ namespace Squishy.Runtime.Game
 
         public void GoHome()
         {
+            CollectCardCoins();
             if (ustate == "card" && layer > 0) ClaimRemainingLayers();
             WipeTo(() =>
             {
@@ -154,8 +155,8 @@ namespace Squishy.Runtime.Game
                 if (grewTo.HasValue)
                 {
                     growAnim = (pet.Scale, C.sizes[grewTo.Value].s, 0);
-                    Floater("Grew to " + C.sizes[grewTo.Value].name + "!");
-                    sfx.Chime();
+                    int grown = grewTo.Value;
+                    Later(.9f, () => CelebrateGrowth(grown)); // after it has visibly grown
                     grewTo = null;
                     UpdateSub();
                 }
@@ -214,6 +215,7 @@ namespace Squishy.Runtime.Game
         /// <summary>After a layer's card: the emptied top tier lifts away and the next prize pops from the tier below.</summary>
         private void NextLayer()
         {
+            CollectCardCoins();
             ui.HideCard();
             raysOn = 0;
             ClearPrize();
@@ -400,15 +402,32 @@ namespace Squishy.Runtime.Game
             Buzz(15);
             var card = Rules.Claim(reward);
             if (card.isNew) TaskEvent("new_prize");
-            if (card.delayedCoins > 0) { int n = card.delayedCoins; Later(.4f, () => AddCoins(n)); }
+            // Duplicates pay coins the player taps to collect (collected anyway if they move on).
+            cardCoins = card.delayedCoins;
             if (card.grewTo >= 0) grewTo = card.grewTo;
             if (card.kitchenChanged) DecorateStoves();
+            ui.CardCoins(cardCoins, CollectCardCoins);
             ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, layer > 0 ? "Next layer (" + layer + " left)" : S.steamers > 0 ? "Unbox again (" + S.steamers + ")" : "Get steamers");
+            WriteSave();
+        }
+
+        private int cardCoins;
+
+        private void CollectCardCoins()
+        {
+            if (cardCoins <= 0) return;
+            int n = cardCoins;
+            cardCoins = 0;
+            AddCoins(n);
+            ui.CardCoinsCollected();
+            ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .55f), "+" + n + " coins");
+            Buzz(10, 20, 10);
             WriteSave();
         }
 
         public void CardAgain()
         {
+            CollectCardCoins();
             if (layer > 0) { NextLayer(); return; }
             if (S.steamers <= 0) { GoHome(); Later(.5f, OpenShop); return; }
             // Clear the last prize straight away so it never shows inside the next steamer.
@@ -426,6 +445,7 @@ namespace Squishy.Runtime.Game
         private void StepUnbox(float dt)
         {
             if ((drag == null || !drag.unboxSq) && newbie.Holding) newbie.ReleaseAll(); // no finger on it: dents rise back
+            if (tenLive) Thumbs.LiveStep(dt); // the Open 10 showcase turning
             if (liftT >= 0) StepLift(dt);
             ust += dt;
             StepKitchen(dt);

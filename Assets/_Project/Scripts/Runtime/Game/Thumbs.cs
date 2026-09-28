@@ -101,16 +101,13 @@ namespace Squishy.Runtime.Game
             return png;
         }
 
-        public static Texture2D Cached(string key) { return Cache.TryGetValue(key, out var t) ? t : null; }
-        public static void Forget(string key) { Cache.Remove(key); }
-
-        public static Texture2D Get(string key)
+        /// <summary>Builds the model for a thumbnail key (a squishy uses the shared pet; everything else is new).</summary>
+        private static Transform BuildObj(string key)
         {
-            if (Cache.TryGetValue(key, out var cached)) return cached;
-            if (_cam == null) return null;
             var parts = key.Split(':');
             string kind = parts[0];
             Transform obj;
+
             if (kind == "sq")
             {
                 _pet.Pivot.gameObject.SetActive(true);
@@ -132,6 +129,73 @@ namespace Squishy.Runtime.Game
             }
             else if (kind == "tskin") { obj = KitchenModels.Tool(_c, _rules.S, int.Parse(parts[1]), int.Parse(parts[2]), _root); obj.RotY(.6f); }
             else { obj = ItemModels.Build(_c, parts[0], parts.Length > 1 ? parts[1] : "", _root, new ItemParts()); obj.RotY(-.5f); }
+            Node.SetLayer(obj, SteamerGame.ThumbLayer);
+            return obj;
+        }
+
+        // ---- live 3D view: one prize spinning slowly, rendered every frame (tap a prize to see it in 3D) ----
+        private static Transform _live;
+        private static string _liveKey;
+        private static RenderTexture _liveRT;
+        private static float _liveYaw, _liveBase, _liveR;
+        private static Vector3 _liveCtr;
+
+        public static RenderTexture LiveBegin(string key)
+        {
+            if (_cam == null) return null;
+            LiveEnd();
+            _liveKey = key;
+            _live = BuildObj(key);
+            _live.gameObject.SetActive(true);
+            _liveBase = key.StartsWith("sq:") ? .35f : key.StartsWith("tool") || key.StartsWith("tskin") ? .6f : key.StartsWith("food") ? .5f : -.5f;
+            var bb = Node.LocalBounds(_live, _root.parent);
+            _liveCtr = bb.center;
+            _liveR = Mathf.Max(Mathf.Sqrt(bb.size.x * bb.size.x + bb.size.z * bb.size.z), bb.size.y) * .55f + .02f; // room to turn
+            if (_liveRT == null) _liveRT = new RenderTexture(512, 512, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { antiAliasing = 4 };
+            _liveYaw = 0;
+            LiveStep(0);
+            return _liveRT;
+        }
+
+        public static void LiveStep(float dt)
+        {
+            if (_live == null || _cam == null) return;
+            _liveYaw += dt * .7f;
+            if (_liveKey.StartsWith("sq:")) { _pet.Yaw.RotY(_liveBase + _liveYaw); _pet.Update(dt, 0, false); }
+            else _live.RotY(_liveBase + _liveYaw);
+            var dir = new Vector3(0, .45f, 1).normalized;
+            var pos = _liveCtr + dir * (_liveR / Mathf.Tan(13 * Mathf.Deg2Rad));
+            _cam.transform.position = Space3.U(pos);
+            _cam.transform.rotation = Quaternion.LookRotation(Space3.U(_liveCtr) - Space3.U(pos), Vector3.up);
+            SceneLighting.ClearLamps();
+            Post.ThumbMode(true);
+            _pet.ThumbBacking(true);
+            var req = new UniversalRenderPipeline.SingleCameraRequest { destination = _liveRT };
+            if (RenderPipeline.SupportsRenderRequest(_cam, req)) RenderPipeline.SubmitRenderRequest(_cam, req);
+            else { _cam.targetTexture = _liveRT; _cam.Render(); _cam.targetTexture = _rt; }
+            Post.ThumbMode(false);
+            _pet.ThumbBacking(false);
+            _game.RestoreLamps();
+        }
+
+        public static void LiveEnd()
+        {
+            if (_live == null) return;
+            if (_liveKey.StartsWith("sq:")) _pet.Pivot.gameObject.SetActive(false);
+            else { _live.gameObject.SetActive(false); Node.Destroy(_live); }
+            _live = null;
+            _liveKey = null;
+        }
+
+        public static Texture2D Cached(string key) { return Cache.TryGetValue(key, out var t) ? t : null; }
+        public static void Forget(string key) { Cache.Remove(key); }
+
+        public static Texture2D Get(string key)
+        {
+            if (Cache.TryGetValue(key, out var cached)) return cached;
+            if (_cam == null) return null;
+            string kind = key.Split(':')[0];
+            var obj = BuildObj(key);
             Node.SetLayer(obj, SteamerGame.ThumbLayer);
             var tex = RenderTex(obj);
             tex.name = "thumb " + key;

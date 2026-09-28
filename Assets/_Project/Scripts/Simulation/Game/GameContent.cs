@@ -62,6 +62,7 @@ namespace Squishy.Simulation.Game
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
         public int visitCoins, visitHostCoins;
+        public float visitFeed, visitPet; // how much a friend's snack and squish top up Hunger and Play
         public float dentRadius, flingHold, flingSpeed; // tactile squish: dent size in the world; hold time and speed of the ping // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;

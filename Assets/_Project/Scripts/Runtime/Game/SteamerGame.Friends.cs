@@ -33,12 +33,13 @@ namespace Squishy.Runtime.Game
             if (!Online.Ready) return;
             await Online.Publish(Own.Snapshot());
             var visitors = await Online.Visitors();
-            int total = 0;
-            foreach (var v in visitors) total += Own.CreditVisit(v.id, v.at, v.acts);
-            if (total > 0)
+            var gifts = new List<GameRules.VisitGift>();
+            foreach (var v in visitors) { var g = Own.CreditVisit(v.id, v.at, v.acts, v.what, v.name); if (g != null) gifts.Add(g); }
+            if (gifts.Count > 0)
             {
                 WriteSave();
-                if (!visiting) Later(2f, () => Floater("A friend visited and looked after " + Own.Fav.name + "! +" + total + " coins"));
+                DrawNeeds();
+                StartCoroutine(ShowVisitGifts(gifts));
             }
         }
 
@@ -150,6 +151,29 @@ namespace Squishy.Runtime.Game
             return Tick("pet", "Squish them") + " · " + Tick("feed", "give a snack") + " · " + Tick("water", "water a plant");
         }
 
+        /// <summary>"While you were away": each friend who visited and exactly what they did for your squishy.</summary>
+        private System.Collections.IEnumerator ShowVisitGifts(List<GameRules.VisitGift> gifts)
+        {
+            while (ui.IntroOn || ui.NightOn || ui.CelebrationOn || visiting || mode != "home") yield return new WaitForSecondsRealtime(.5f);
+            yield return new WaitForSecondsRealtime(1f);
+            var sb = new System.Text.StringBuilder();
+            int coins = 0;
+            string fav = Own.Fav.name;
+            foreach (var g in gifts)
+            {
+                var did = new List<string>();
+                if (g.hunger > 0) did.Add("gave " + fav + " a snack (+" + Mathf.RoundToInt(g.hunger * 100) + "% hunger)");
+                if (g.play > 0) did.Add("squished them (+" + Mathf.RoundToInt(g.play * 100) + "% play)");
+                if (g.watered) did.Add("watered your plant");
+                if (did.Count == 0) did.Add("popped in to say hi");
+                sb.Append(g.name).Append(" ").Append(string.Join(", ", did)).Append(". +").Append(g.coins).Append(" coins.\n");
+                coins += g.coins;
+            }
+            sfx.Chime();
+            ui.ShowDialog(gifts.Count == 1 ? "A friend visited!" : gifts.Count + " friends visited!", sb.ToString().TrimEnd(), "#6FC3C9",
+                ("Lovely! (+" + coins + " coins)", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => ui.HideMemo())));
+        }
+
         /// <summary>One caring thing done on a visit: coins for you (once per kind), and a note for your friend.</summary>
         private void VisitAct(string kind)
         {
@@ -161,7 +185,7 @@ namespace Squishy.Runtime.Game
             ui.SetCoins(ownRules.S.coins);
             sfx.Coin();
             Floater("+" + C.rules.visitCoins + " coins · your friend gets some too");
-            _ = Online.RecordVisit(visitId, visitActs);
+            _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone), ownRules.S.playerName);
         }
 
         private void VisitSnack()

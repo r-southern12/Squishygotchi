@@ -347,6 +347,25 @@ namespace Squishy.Tests
             }
         }
 
+        [Test]
+        public void Friend_Visits_Carry_Their_Care_Over_Once()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 44);
+            var rules = new GameRules(c, s);
+            s.needs[Needs.Hunger] = .3f;
+            s.needs[Needs.Play] = .3f;
+            int coins = s.coins;
+            var g = rules.CreditVisit("mia", 1000, 3, "pet,feed,water", "Mia");
+            Assert.IsNotNull(g);
+            Assert.AreEqual("Mia", g.name);
+            Assert.AreEqual(.3f + c.rules.visitFeed, s.needs[Needs.Hunger], 1e-4f);
+            Assert.AreEqual(.3f + c.rules.visitPet, s.needs[Needs.Play], 1e-4f);
+            Assert.IsTrue(g.watered);
+            Assert.Greater(s.coins, coins);
+            Assert.IsNull(rules.CreditVisit("mia", 1000, 3, "pet,feed,water", "Mia"), "the same visit only counts once");
+        }
+
         private sealed class MemoryStore : ISaveStore
         {
             public string Text;

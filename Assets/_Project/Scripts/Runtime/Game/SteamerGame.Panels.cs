@@ -50,7 +50,7 @@ namespace Squishy.Runtime.Game
                 "Squishies: " + P(R.favouriteChance) + " of the time it's a copy of your favourite (copies make it grow). Otherwise it's one you don't have yet, until you have every squishy of that rarity.",
                 "Getting steamers: a free one every " + R.giftHours + " hours (they stack up to " + R.giftStackMax + "), a bonus one every " + R.giftHours + " hours with an optional video, care tasks, and coins earned in the game. Steamers are never sold for real money.");
         }
-        public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); if (id == "info") UpdateMusic(); } // leaving the Sound Lab: back to this steamer's track
+        public void OnPanelClosed(string id) { if (id != "cook" && id != "odds") sfx.Tap(); if (id == "info") { UpdateMusic(); if (tenLive || tenCards.Count > 0) EndTenView(); } } // leaving the Sound Lab: back to this steamer's track
 
         public void OnSound(bool on)
         {

@@ -24,7 +24,7 @@ namespace Squishy.Runtime.Game
         public static string PlayerId { get; private set; }
         public static string Status { get; private set; } = "Connecting…";
 
-        private const string KCode = "code", KRoom = "room", KVisitTo = "visitTo", KVisitAt = "visitAt", KVisitActs = "visitActs";
+        private const string KCode = "code", KRoom = "room", KVisitTo = "visitTo", KVisitAt = "visitAt", KVisitActs = "visitActs", KVisitWhat = "visitWhat", KVisitName = "visitName";
         private static Task _init;
 
         public static Task Init()
@@ -101,7 +101,7 @@ namespace Squishy.Runtime.Game
         }
 
         /// <summary>Records that you visited a friend and how many caring things you did (they're paid when they next open the game).</summary>
-        public static async Task RecordVisit(string friendId, int acts)
+        public static async Task RecordVisit(string friendId, int acts, string what = "", string name = "")
         {
             if (!Ready) return;
             try
@@ -111,30 +111,35 @@ namespace Squishy.Runtime.Game
                     { KVisitTo, friendId },
                     { KVisitAt, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() },
                     { KVisitActs, acts },
+                    { KVisitWhat, what ?? "" },
+                    { KVisitName, name ?? "" },
                 }, new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions()));
             }
             catch (Exception e) { Debug.LogWarning("Online visit: " + e.Message); }
         }
 
         /// <summary>Friends whose latest visit was to you: (their id, when, how many caring things).</summary>
-        public static async Task<List<(string id, long at, int acts)>> Visitors()
+        public static async Task<List<(string id, long at, int acts, string what, string name)>> Visitors()
         {
-            var list = new List<(string, long, int)>();
+            var list = new List<(string, long, int, string, string)>();
             if (!Ready) return list;
             try
             {
-                var query = new Query(new List<FieldFilter> { new FieldFilter(KVisitTo, PlayerId, FieldFilter.OpOptions.EQ, true) }, new HashSet<string> { KVisitAt, KVisitActs }, 0, 50);
+                var query = new Query(new List<FieldFilter> { new FieldFilter(KVisitTo, PlayerId, FieldFilter.OpOptions.EQ, true) }, new HashSet<string> { KVisitAt, KVisitActs, KVisitWhat, KVisitName }, 0, 50);
                 var found = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
                 foreach (var e in found)
                 {
                     long at = 0;
                     int acts = 0;
+                    string what = "", name = "";
                     foreach (var item in e.Data)
                     {
                         if (item.Key == KVisitAt) at = item.Value.GetAs<long>();
                         else if (item.Key == KVisitActs) acts = item.Value.GetAs<int>();
+                        else if (item.Key == KVisitWhat) what = item.Value.GetAs<string>();
+                        else if (item.Key == KVisitName) name = item.Value.GetAs<string>();
                     }
-                    list.Add((e.Id, at, acts));
+                    list.Add((e.Id, at, acts, what, name));
                 }
             }
             catch (Exception e) { Debug.LogWarning("Online visitors: " + e.Message); }

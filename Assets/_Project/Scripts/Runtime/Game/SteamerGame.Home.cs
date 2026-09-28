@@ -567,7 +567,7 @@ namespace Squishy.Runtime.Game
                     S.recipeXP[i]++;
                     int l1 = Rules.RecipeLvl(i);
                     TaskEvent("cook");
-                    if (l1 > l0) { var rc = A.recipe; Later(.6f, () => Floater(rc.name + " ★" + l1 + "!")); }
+                    if (l1 > l0) Later(.6f, () => CelebrateRecipe(i, l1));
                 }
                 if (A.role == "bed" && !items.Any(x => x.arch == "lamp" && x.st.lampOn)) TaskEvent("nap");
                 if (A.role == "tea") TaskEvent("tea");

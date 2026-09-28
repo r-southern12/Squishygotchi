@@ -218,6 +218,15 @@ namespace Squishy.Runtime.UI
             _cMeta = Label(_card, "Added to your collection", "Figtree", 400, 13, Muted).Margin(8, 0, 12, 0);
             _cMeta.style.unityTextAlign = TextAnchor.MiddleCenter;
             _cMeta.Wrap();
+            // Duplicates: a coin to tap and collect (more involvement than coins just appearing).
+            _cCoin = Button(_card, "", "#F2C94C", "#C99426", Ink, 99, 46, 16, () => { if (_cCoinAct != null) { var a = _cCoinAct; _cCoinAct = null; a(); } }, false, 4);
+            _cCoin.Row(Align.Center);
+            _cCoin.Pad(0, 20, 0, 14);
+            _cCoin.Insert(0, Icons.Make("coin", 24));
+            ((Label)_cCoin.userData).Margin(0, 0, 0, 8);
+            _cCoin.style.alignSelf = Align.Center;
+            _cCoin.Margin(0, 0, 12, 0);
+            _cCoin.Shown(false);
             var btns = new VisualElement().Row().In(_card);
             var again = Button(btns, "Unbox again", "#EADCC6", "#CDB999", Ink, 16, 50, 17, () => _g.CardAgain(), false, 5);
             again.style.flexGrow = 1;
@@ -260,6 +269,26 @@ namespace Squishy.Runtime.UI
                 el.style.translate = new Translate(0, fromY * (1 - e));
                 el.style.scale = Vector2.one * Mathf.LerpUnclamped(fromScale, 1, e);
             });
+        }
+
+        private Frame _cCoin;
+        private Action _cCoinAct;
+
+        /// <summary>The duplicate coin on the reveal card: tap to collect (then it shows it was collected).</summary>
+        public void CardCoins(int coins, Action collect)
+        {
+            _cCoinAct = coins > 0 ? collect : null;
+            _cCoin.Shown(coins > 0);
+            if (coins <= 0) return;
+            ((Label)_cCoin.userData).text = "+" + coins + " coins · tap to collect";
+            _cCoin.style.opacity = 1;
+            Tw.Run(_cCoin, .9f, u => _cCoin.style.scale = new Scale(Vector3.one * (1 + .06f * Mathf.Sin(u * Mathf.PI * 4) * (1 - u))));
+        }
+
+        public void CardCoinsCollected()
+        {
+            ((Label)_cCoin.userData).text = "Collected!";
+            Tw.Run(_cCoin, .35f, u => { _cCoin.style.scale = new Scale(Vector3.one * (1 + .15f * Mathf.Sin(u * Mathf.PI))); _cCoin.style.opacity = 1 - .5f * u; });
         }
 
         public void ShowCard(bool isNew, string name, string tier, string dot, string meta, string again)

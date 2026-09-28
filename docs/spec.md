@@ -122,6 +122,9 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 - **Tactile squishing (close-up):** zoom in further than before; presses dent the finer mesh and the face rides the skin (eyes and mouth sink and tilt with a dent and spring back). Pressed-in volume swells out elsewhere like fluid in a balloon. Zooming all the way in enters **squish mode**: the camera locks onto the squishy as it goes about its day and every touch is for squishing; a "Done squishing" button leaves it. Pinch anywhere: two fingers squeeze along the line between them (one finger on the squishy is enough), nearly flat when the fingers meet, with the displaced volume swelling the rest of the squishy; it rises back slowly on release. Mesh detail scales with size (bigger squishies get a denser mesh, not a stretched one). It keeps doing whatever it was doing while you squish it. Sitting or lying on furniture, it drapes over the edges (a big squishy envelops a small stool).
 
+- **Celebrations:** the squishy growing a size and a recipe levelling up each get a celebration card (confetti, stars filling in, a little fanfare, the squishy bouncing in gold glints).
+- **Friends while you were away:** a friend's care carries over (a snack tops up Hunger, a squish tops up Play, watering waters your plant, plus coins), and the next time you open the game a card says who visited and exactly what they did.
+
 ## Room and placement
 
 The room is the inside of the steamer. It starts with one of each station and grows with your collection.
@@ -249,7 +252,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Steamer drip | 1 arrives on its own every 3 hours (up to 8 banked while away) |
 | Online steamer | 1 more to claim from the gift chip every 3 hours while you're in the game |
 | Bonus steamer | 1 more every 3 hours: an optional short video for free players, simply included with the full game |
-| Open 10 | With 10 or more steamers, open ten at once (same odds and pity), prizes listed best first |
+| Open 10 | With 10 or more steamers, open ten at once (same odds and pity): they burst open in turn (bigger bang for Epic and Legendary), then the prizes are listed best first with a spinning 3D showcase of the one you tap (tap to enlarge) |
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Squish when energised | 1–5 coins |
 | Visiting a friend | 3 coins per caring action (they get 2) |
@@ -293,7 +296,7 @@ No furniture is sold in the shop; furniture comes from steamers.
 | Legendary | 1% |
 
 - **Pity:** Rare+ guaranteed within 10 prizes; Epic+ within 50; Legendary within 100. Counter shown on the Odds button. Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
-- **Never paid:** steamers, coins or anything that turns into pulls are never sold for real money (keeps us clear of paid loot-box laws and suits a young audience). Duplicates refund coins.
+- **Never paid:** steamers, coins or anything that turns into pulls are never sold for real money (keeps us clear of paid loot-box laws and suits a young audience). Duplicates refund coins: a coin on the reveal card (and on each duplicate in Open 10) that the player taps to collect; anything not tapped is collected on leaving.
 - **Stacked steamers:** 15% have 2 tiers and 5% have 3, each with its own prize.
 - **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (25% chance to be a copy of your favourite, never for Legendary; otherwise one you don't own yet, until every squishy of that rarity is collected), tool skins, steamer skins.
 - **Legendary:** one of 6 legendary squishies, or a Gold / Galaxy steamer skin. Gold is metallic with a cream floor.
