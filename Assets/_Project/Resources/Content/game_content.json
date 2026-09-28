@@ -2627,8 +2627,6 @@
     "dupeToolCoins": 10,
     "foodPerDrop": 2,
     "kitIngredients": 2,
-    "shopKitCooks": 2,
-    "shopKitPricePerIngredient": 7,
     "steamerPrice": 150,
     "snackPrice": 3,
     "ingredientPrice": 8,
@@ -2682,7 +2680,8 @@
     "visitFeed": 0.2,
     "visitPet": 0.15,
     "taskSteamers": 1,
-    "cooksPerLevel": 5
+    "cooksPerLevel": 5,
+    "tipStackSeconds": 300
   },
   "cosmetics": [
     {

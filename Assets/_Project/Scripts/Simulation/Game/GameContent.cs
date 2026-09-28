@@ -55,10 +55,11 @@ namespace Squishy.Simulation.Game
         public int pityRare, pityEpic, pityLegendary, taskMemory, nightStartHour, nightEndHour, nightWakeByHour, nightAskSeconds;
         public float nightDrain;
         public int[] nightSnoozeMinutes; // the bedtime prompt's snooze choices
-        public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients, shopKitCooks, shopKitPricePerIngredient;
+        public int dupeItemCoins, dupeToolSkinCoins, dupeSteamerSkinCoins, dupeToolCoins, foodPerDrop, kitIngredients;
         public int steamerPrice, snackPrice, ingredientPrice, newToolPrice, minRepair, taskSteamers;
         public float taskCooldownHours;
         public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
+        public float tipStackSeconds; // tips pile up in the coin over its head for this long before it stops adding more
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself

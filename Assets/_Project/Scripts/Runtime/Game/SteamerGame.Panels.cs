@@ -100,12 +100,53 @@ namespace Squishy.Runtime.Game
                 }
                 if (Rules.KitchenLvl() < rc.lvl) Hud.ReqChip(req, "Kitchen Lv " + rc.lvl, true);
                 var rcc = rc;
-                var row = ui.Rec(list, "dish:" + i, rc.name, null, "Cook", () => { CloseCook(); UseItem(cookStoveOpen, true, rcc); sfx.Tap(); }, miss.Count > 0, extra);
+                var row = ui.Rec(list, "dish:" + i, rc.name, null, "Cook", () =>
+                {
+                    if (Rules.MissingFor(rcc).Count > 0) { OutOfIngredients(rcc); return; }
+                    CloseCook();
+                    UseItem(cookStoveOpen, true, rcc);
+                    sfx.Tap();
+                }, miss.Count > 0 && !Rules.OnlyIngredientsMissing(rc), extra);
             }
             int left = C.recipes.Length - Rules.KnownRecipes();
             if (left > 0) Hud.Para(list, left + " more recipe" + (left == 1 ? "" : "s") + " to discover · kitchen kits in steamers teach new ones", 12, "#6F5F52");
             list.Gap(8);
             ui.OpenPanel("cook");
+        }
+
+        /// <summary>
+        /// Cook tapped while out of ingredients: rare ones (not sold) can be had one each for an optional video (included
+        /// with the full game); common ones are bought in the shop.
+        /// </summary>
+        private void OutOfIngredients(RecipeData rc)
+        {
+            var common = new List<int>();
+            var rare = new List<int>();
+            Rules.MissingIngredients(rc, common, rare);
+            string Names(List<int> l) { return string.Join(", ", l.Select(k => C.pantry[k].name)); }
+            sfx.Tap();
+            if (rare.Count > 0)
+            {
+                Action give = () =>
+                {
+                    foreach (var k in rare) Rules.AddIngredient(k, 1);
+                    ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+1 " + Names(rare));
+                    sfx.Chime();
+                    WriteSave();
+                    if (cookStoveOpen != null) OpenCook(cookStoveOpen);
+                };
+                string more = common.Count > 0 ? " You'll also need " + Names(common) + " from the shop." : "";
+                if (S.premium) { ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers. Have one on us!" + more, "#D9A64A",
+                    ("Get 1", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); give(); })),
+                    ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo()))); return; }
+                ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers, or watch a short video to get 1 now. Totally optional." + more, "#D9A64A",
+                    ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) give(); }); })),
+                    ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
+                return;
+            }
+            ui.ShowDialog("Out of " + Names(common), Names(common) + (common.Count == 1 ? " is" : " are") + " sold in the shop for " + C.rules.ingredientPrice + " coins each.", "#D9A64A",
+                ("Go to the shop", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); CloseCook(); OpenShop(); })),
+                ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }
 
         // ---------------- tasks ----------------
@@ -215,16 +256,17 @@ namespace Squishy.Runtime.Game
                 int k = i;
                 ui.Rec(body, "snack:" + i, C.snacks[i].name, "Quick snack from the pantry cupboard · you have " + S.snacks[i], R.snackPrice.ToString(), () => { if (Spend(R.snackPrice)) { S.snacks[k]++; OpenShop(); } }, S.coins < R.snackPrice);
             }
-            Hud.Sec(body, "Meal kits");
-            for (int i = 0; i < C.recipes.Length; i++)
+            Hud.Sec(body, "Ingredients");
+            Hud.Para(body, "Rare ingredients aren't sold: they come from steamers, or tap Cook to get one for a short video.", 12, "#6F5F52");
+            for (int i = 0; i < C.pantry.Length; i++)
             {
-                var rc = C.recipes[i];
-                if (!Rules.Knows(i) || !Rules.ShopKit(rc)) continue;
-                int price = Rules.ShopKitPrice(rc);
-                string contents = string.Join(", ", rc.ing.Select(k => R.shopKitCooks + " " + C.pantry[k].name));
-                ui.Rec(body, "dish:" + i, rc.name + " kit", "Ingredients for " + R.shopKitCooks + " cooks · " + contents, price.ToString(), () => { if (Rules.BuyKit(rc)) { sfx.Coin(); OpenShop(); } else sfx.Bonk(); }, S.coins < price);
+                if (!Rules.ShopSells(i)) continue;
+                int k = i;
+                var uses = new List<string>();
+                for (int r = 0; r < C.recipes.Length; r++) if (Rules.Knows(r) && System.Array.IndexOf(C.recipes[r].ing, i) >= 0) uses.Add(C.recipes[r].name);
+                ui.Rec(body, "food:" + i, C.pantry[i].name, "You have " + S.pantry[i] + (uses.Count > 0 ? " · for " + string.Join(", ", uses) : ""), R.ingredientPrice.ToString(),
+                    () => { if (Spend(R.ingredientPrice)) { Rules.AddIngredient(k, 1); OpenShop(); } }, S.coins < R.ingredientPrice);
             }
-            ShopCosmetics(body);
             Hud.Sec(body, "Kitchen tools");
             for (int i = 0; i < C.tools.Length; i++)
             {
@@ -251,6 +293,8 @@ namespace Squishy.Runtime.Game
                     ui.Rec(body, "tool:" + i, t.name + (d <= 0 ? " (broken)" : ""), d + " of " + t.maxDur + " uses left", "Fix " + cost, () => { if (Spend(cost)) { S.toolDur[k] = C.tools[k].maxDur; OpenShop(); } }, S.coins < cost, dur);
                 }
             }
+            Hud.Sec(body, "Accessories");
+            ui.Rec(body, null, "Prestige store", "Hats, bows and glasses are bought with prestige · you have " + S.prestige, "Open", () => OnPrestige(), false, null, true);
             body.Gap(8);
             if (!ui.PanelOpen("shop")) ui.OpenPanel("shop");
         }

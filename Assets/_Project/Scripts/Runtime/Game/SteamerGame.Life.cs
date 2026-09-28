@@ -75,16 +75,18 @@ namespace Squishy.Runtime.Game
 
         private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck)); Notifier.RefreshPictures(Rules); }
 
-        /// <summary>Prestige explained: total, this life's outlook and how to earn more.</summary>
+        /// <summary>The Prestige store (tap the prestige star): accessories bought with prestige, what it is and how to earn more.</summary>
         public void OnPrestige()
         {
-            ui.SetPanelTitle("info", "Prestige");
+            bool fresh = !ui.PanelOpen("info");
+            ui.SetPanelTitle("info", "Prestige store");
             var body = ui.PanelBody("info");
-            Big(body, S.prestige + " prestige", "Earned mostly when a squishy lives a full life, and a little each time it grows up well. Spend it on accessories in the shop.");
+            Big(body, S.prestige + " prestige", "Earned mostly when a squishy lives a full life, and a little each time it grows up well. Spend it on accessories here.");
             Hud.Para(body, Rules.Fav.name + "'s life so far: day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + ", quality of life " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "%. If it keeps living like this, it will earn about " + Rules.ProjectedPrestige() + " prestige at old age. Better care means a longer life and more prestige.");
             Hud.Para(body, "A little is also earned each time it grows into a new life stage (young, adult, elder), more the better it has been looked after.");
-            ui.OpenPanel("info");
-            sfx.Tap();
+            ShopCosmetics(body);
+            body.Gap(8);
+            if (fresh) { ui.OpenPanel("info"); sfx.Tap(); }
         }
 
         // ---------------- old age ----------------
@@ -246,8 +248,7 @@ namespace Squishy.Runtime.Game
 
         private void ShopCosmetics(VisualElement body)
         {
-            Hud.Sec(body, "Accessories · " + S.prestige + " prestige");
-            Hud.Para(body, "Prestige comes from squishies that live a full life. The better their life, the more you earn.", 12, "#6F5F52");
+            Hud.Sec(body, "Accessories");
             foreach (var c in C.cosmetics)
             {
                 bool own = Rules.HasCosmetic(c.id), worn = S.hat == c.id || S.face == c.id || S.neck == c.id;
@@ -261,7 +262,7 @@ namespace Squishy.Runtime.Game
                         RefreshCosmetics();
                         sfx.Snap();
                         WriteSave();
-                        OpenShop();
+                        OnPrestige();
                     }, !own && S.prestige < c.price, null, true);
             }
         }

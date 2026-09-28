@@ -396,12 +396,12 @@ namespace Squishy.Runtime.Game
         private float tipCoinS;
 
         /// <summary>
-        /// While a tip is waiting (the minute after it played on its own), a little gold coin spins over its head, so
-        /// it's clear there's something to collect (the wiggle alone wasn't visible). It pops in and shrinks away.
+        /// While tips are waiting, a little gold coin spins over its head (a bit bigger the more it holds). It stays
+        /// until tapped: nothing is lost by not tapping straight away.
         /// </summary>
         private void StepTipCoin(float dt)
         {
-            bool on = energyT > 0 && !visiting && mode == "home" && !S.dead;
+            bool on = S.tipPile > 0 && !visiting && mode == "home" && !S.dead;
             if (tipCoin == null)
             {
                 if (!on) return;
@@ -419,18 +419,21 @@ namespace Squishy.Runtime.Game
             var p = PetWorld();
             float bob = .015f * Mathf.Sin(time * 3.2f);
             tipCoin.localPosition = new Vector3(p.x, p.y + pet.Scale * pet.StageScale * 1.3f + .19f + bob, p.z);
-            tipCoin.localScale = Vector3.one * (tipCoinS * (1.25f - .25f * tipCoinS));
+            tipCoin.localScale = Vector3.one * (tipCoinS * (1.25f - .25f * tipCoinS) * (1 + Mathf.Min(.5f, S.tipPile / 40f)));
             tipSpin.RotY(time * 3.5f);
         }
 
-        /// <summary>The energised bonus: 1-5 coins for a squish (or a tap on what it played with) within the minute.</summary>
+        /// <summary>Collects every tip waiting in the coin (a squish, or a tap on what it played with).</summary>
         private void TipCoins()
         {
             if (!visiting) TaskEvent("tip");
             energyT = 0;
             energisedBy = null;
-            int coins = Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
+            int coins = S.tipPile;
+            S.tipPile = 0;
+            if (coins <= 0) return;
             Rules.AddCoins(coins);
+            WriteSave();
             sfx.Coin();
             Buzz(15);
             Floater("+" + coins + " coins");
@@ -443,6 +446,12 @@ namespace Squishy.Runtime.Game
         {
             energisedBy = by;
             energyT = C.rules.energySeconds;
+            // A tip goes into the coin; tips keep piling up for tipStackSeconds after the first, then it just waits.
+            long now = System.DateTime.UtcNow.Ticks;
+            bool first = S.tipPile == 0;
+            if (first) S.tipStart = now;
+            if (now - S.tipStart <= System.TimeSpan.FromSeconds(C.rules.tipStackSeconds).Ticks) S.tipPile += Random.Range(C.rules.tipMin, C.rules.tipMax + 1);
+            if (!first) return;
             ui.ShowBubble("coin", "Feeling bouncy · squish me!", false);
             Later(3f, () => { if (ai.mode == "idle" && energyT > 0) ui.HideBubble(); });
         }

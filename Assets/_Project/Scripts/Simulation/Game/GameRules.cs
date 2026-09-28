@@ -487,21 +487,35 @@ namespace Squishy.Simulation.Game
             return card;
         }
 
-        /// <summary>Recipes the shop sells as meal kits: common ingredients only (rare ones come from steamers).</summary>
-        public bool ShopKit(RecipeData rc)
+        /// <summary>The shop sells Common ingredients one at a time; Rare and better come from steamers (or one for an optional video at the stove).</summary>
+        public bool ShopSells(int food) { return C.pantry[food].rarity == "Common"; }
+
+        public void AddIngredient(int food, int n)
         {
-            if (rc.ing.Length == 0) return false;
-            foreach (var i in rc.ing) if (C.pantry[i].rarity != "Common") return false;
+            S.pantry[food] += n;
+            AddOwned("food:" + food);
+        }
+
+        /// <summary>Buys one Common ingredient. False if it isn't sold or you can't afford it.</summary>
+        public bool BuyIngredient(int food)
+        {
+            if (!ShopSells(food) || !Spend(R.ingredientPrice)) return false;
+            AddIngredient(food, 1);
             return true;
         }
 
-        public int ShopKitPrice(RecipeData rc) { return rc.ing.Length * R.shopKitCooks * R.shopKitPricePerIngredient; }
-
-        public bool BuyKit(RecipeData rc)
+        /// <summary>Ingredients a recipe is out of, split into ones the shop sells and rarer ones.</summary>
+        public void MissingIngredients(RecipeData rc, List<int> common, List<int> rare)
         {
-            if (!ShopKit(rc) || !Spend(ShopKitPrice(rc))) return false;
-            foreach (var i in rc.ing) { S.pantry[i] += R.shopKitCooks; AddOwned("food:" + i); }
-            return true;
+            foreach (var i in rc.ing)
+                if (!(S.pantry[i] > 0)) (ShopSells(i) ? common : rare).Add(i);
+        }
+
+        /// <summary>True when ingredients are all that's stopping a recipe (the tools and kitchen level are there).</summary>
+        public bool OnlyIngredientsMissing(RecipeData rc)
+        {
+            foreach (var i in rc.tools) if (!Owned(ToolKey(i)) || S.toolDur[i] <= 0) return false;
+            return KitchenLvl() >= rc.lvl;
         }
 
         // ---- tasks ----

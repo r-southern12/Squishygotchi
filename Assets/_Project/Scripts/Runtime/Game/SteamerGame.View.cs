@@ -176,7 +176,7 @@ namespace Squishy.Runtime.Game
             }
             if (S.dead) return;
             bool onPet = PetHit(p);
-            if (onPet && !S.tucked && energyT > 0) TipCoins();
+            if (onPet && !S.tucked && S.tipPile > 0) TipCoins();
             if (ai.mode == "act" && ai.act != null && ai.act.role == "wand")
             {
                 // Pom-pom chase: a touch anywhere steers the pom-pom (even on the squishy or furniture), so small hands can't miss.
@@ -407,7 +407,7 @@ namespace Squishy.Runtime.Game
                     it.bv = -7;
                     sfx.Tap();
                     Buzz(8);
-                    if (!visiting && energyT > 0 && it == energisedBy && ai.mode != "act") { TipCoins(); drag = null; return; } // tap what it played with
+                    if (!visiting && S.tipPile > 0 && it == energisedBy && ai.mode != "act") { TipCoins(); drag = null; return; } // tap what it played with
                     if (visiting && it.a.role != "plant") { Floater("Just visiting · their plants would love some water"); drag = null; return; }
                     if (it.a.role == "eat") OpenCook(it); else UseItem(it, true);
                 }

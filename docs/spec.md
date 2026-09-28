@@ -46,7 +46,7 @@ flowchart LR
   A[Care for squishy] --> B[Tasks, happy income, squish tips]
   B --> C[Coins]
   B --> D[Steamers]
-  C --> E[Shop: meal kits, snacks, steamers]
+  C --> E[Shop: ingredients, snacks, steamers]
   C --> D
   D --> F[Unbox]
   F --> G[Skins + items]
@@ -75,7 +75,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - **Only the player** can fill a need completely: cook a meal, nap with the lights off, bath and scrub, play with a toy.
 - **Tuck in** (sleep mode) pauses all needs when the player knows they'll be away; waking it resumes play. It can only be tucked in when its condition is above 12%.
 
-**Energised squishy (watching pays):** after it plays with something by itself it's energised for 60 s, slowly undulating with a few sparkles and a brief "Feeling bouncy · squish me!" bubble. Squish it in that minute for 1–5 coins; otherwise the wobble fades away over the last 20 s.
+**Energised squishy (watching pays):** after it plays with something by itself it's energised for 60 s, slowly undulating with a few sparkles and a brief "Feeling bouncy · squish me!" bubble. Each time, 1–5 coins go into a little gold coin spinning over its head. Tips pile up there for up to 5 minutes after the first (then it just waits, never disappearing), and one squish collects them all, so there's no need to keep tapping.
 
 **Tactile toy:** zoomed right in, touches press slow-rise dents into the squishy (hold deeper, drag to smear, memory-foam rise; jelly finishes rise quicker). Dents are a fixed size in the world, so a bigger squishy has more to squish. Zoomed out, holding on it squeezes it until it pings out from under your finger and bounces round the room. Rare and better squishies shed soft particles in their own style when squished or bouncing.
 
@@ -234,7 +234,7 @@ Meals are cooked from ingredients using tools. **Snacks are separate**: bought i
 - **Kitchen level** from tools owned: 2 at 2 tools, 3 at 4, 4 at 6. Tools hang on a rack above the stove; the stove gains pots and a hood as it levels.
 - **Wear:** each cook uses one use of every tool in the recipe. Broken tools block recipes until repaired in the shop.
 - **Kitchen kits** (steamers): a recipe's tools plus ingredients, and they teach the recipe if it's new (unknown recipes are favoured).
-- **Meal kits** (shop): ingredients for 2 cooks of a recipe you know, 7 coins per ingredient per kit. Common ingredients aren't sold loose or dropped alone; Rare ingredients can drop from steamers.
+- **Ingredients** (shop): Common ingredients are sold one at a time (8 coins each), so you only buy what you're out of. Rare and better are never sold: they drop from steamers, or tapping Cook while out of one offers 1 of each missing rare ingredient for an optional short video (free with the full game). Tapping Cook while out of a Common one points you to the shop.
 - **Ingredients (19):** Flour, Cabbage, Chives, Ginger, Mushroom, Prawn, Tofu, Egg, Black sesame, Pork, Bok choy, Chili, Red bean paste, Lotus seeds, Soy sauce, Potato, Cheese, Kimchi, Sugar.
 - **Snacks (5):** Rice cracker, Apple slices, Mochi bite, Egg tart, Sesame ball; 3 coins; eaten at the pantry cupboard; Hunger to 60% max.
 - **Tool skins:** Classic, Copper, Jade, Candy, Gold from steamers; shown on the rack and while cooking.
@@ -253,7 +253,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Every 3 hours | 5 at most: 3 from care tasks, the free one and the bonus one. Nothing arrives on its own. |
 | Open 10 | With 10 or more steamers, open ten at once (same odds and pity): they burst open in turn (bigger bang for Epic and Legendary), then the prizes are listed best first with a spinning 3D showcase of the one you tap (tap to enlarge) |
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
-| Squish when energised | 1–5 coins |
+| Tips (it played on its own) | 1–5 coins each, piling up for up to 5 minutes; one squish collects them |
 | Visiting a friend | 3 coins per caring action (they get 2) |
 | Completing a squishy tree tier | 2–5 steamers |
 | Duplicate furniture skin | 20 coins |
@@ -277,10 +277,10 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | --- | --- |
 | Steamer | 150 |
 | Snack | 3 |
-| Meal kit (2 cooks) | 7 per ingredient |
+| Ingredient (Common only) | 8 each |
 | Common tool | 60 |
 | Tool repair | ~half the tool's price, scaled by wear |
-| Accessories | prestige |
+| Accessories | prestige, in the Prestige store (tap the prestige star), not the coin shop |
 | Room level 3 / 4 | 400 / 1,000 (plus collection size) |
 
 No furniture is sold in the shop; furniture comes from steamers.

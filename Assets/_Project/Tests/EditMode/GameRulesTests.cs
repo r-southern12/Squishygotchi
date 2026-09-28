@@ -224,6 +224,26 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Shop_Sells_Common_Ingredients_One_At_A_Time_Never_Rare()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 5);
+            var rules = new GameRules(c, s);
+            s.coins = 1000;
+            int common = System.Array.FindIndex(c.pantry, p => p.rarity == "Common"), rare = System.Array.FindIndex(c.pantry, p => p.rarity != "Common");
+            int had = s.pantry[common];
+            Assert.IsTrue(rules.BuyIngredient(common));
+            Assert.AreEqual(had + 1, s.pantry[common]);
+            Assert.AreEqual(1000 - c.rules.ingredientPrice, s.coins);
+            Assert.IsFalse(rules.BuyIngredient(rare), "rare ingredients are never sold");
+            var rc = System.Array.Find(c.recipes, r => System.Array.Exists(r.ing, i => c.pantry[i].rarity != "Common"));
+            foreach (var i in rc.ing) s.pantry[i] = 0;
+            var lc = new System.Collections.Generic.List<int>(); var lr = new System.Collections.Generic.List<int>();
+            rules.MissingIngredients(rc, lc, lr);
+            Assert.IsTrue(lr.Count > 0 && lr.TrueForAll(i => !rules.ShopSells(i)) && lc.TrueForAll(i => rules.ShopSells(i)));
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
