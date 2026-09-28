@@ -16,7 +16,12 @@ namespace Squishy.Runtime.Game
         private Transform floatPom;
         private Vector3 pomPos, pomGoal;
         private Vector2? wandFinger;
-        private readonly List<(Transform t, Vector3 p, float born)> bubbles = new List<(Transform, Vector3, float)>();
+        private sealed class Bubble { public Transform t; public Vector3 p, v; public float born, life; }
+        private readonly List<Bubble> bubbles = new List<Bubble>();
+        private Item bubbleToy;
+        private int bubbleLeft;
+        private float bubbleEmitT, bubbleJumpT = -1, bubbleJumpH;
+        private Bubble bubbleJumpFor;
         private Material bubbleMat;
         private float noteT;
 
@@ -38,7 +43,7 @@ namespace Squishy.Runtime.Game
                 case "wand": StepWand(it, dt, t, ref lift); return true;
                 case "bubbles":
                     StepBubbles(dt, ref lift);
-                    if (bubbles.Count == 0 && t > 1) ai.actT = a.act.dur;
+                    if (bubbles.Count == 0 && bubbleLeft == 0 && t > 1) ai.actT = a.act.dur;
                     return true;
                 case "music":
                     extra = .12f * Mathf.Abs(Mathf.Sin(t * 8));
@@ -87,36 +92,82 @@ namespace Squishy.Runtime.Game
             }
         }
 
+        /// <summary>The wand waves and a stream of bubbles comes out of its ring over a few seconds.</summary>
         private void BlowBubbles(Item it)
         {
             if (bubbleMat == null) bubbleMat = ThreeMat.Basic(ThreeMat.Lin("#DDF1F7"), .4f, ThreeMat.Blend.Alpha, depthWrite: false);
+            bubbleToy = it;
+            bubbleLeft = 12;
+            bubbleEmitT = 0;
+            bubbleJumpT = -1;
             sfx.Hop();
-            for (int k = 0; k < 8; k++)
-            {
-                float a = Rnd(0, Mathf.PI * 2), r = Rnd(.2f, .7f);
-                var p = new Vector3(it.tx + Mathf.Cos(a) * r, Y0 + Rnd(.12f, .35f), it.tz + Mathf.Sin(a) * r);
-                var b = Node.Mesh(room, ThreeGeo.Sph(.055f, 12, 8), bubbleMat, p.x, p.y, p.z, shadow: false);
-                Node.SetLayer(b, HomeLayer);
-                bubbles.Add((b, p, time + Rnd(0, 6)));
-            }
         }
 
-        /// <summary>Bubbles drift and wobble; the squishy hops to pop the nearest one.</summary>
+        private void EmitBubble()
+        {
+            var it = bubbleToy;
+            if (it == null || it.parts.wand == null) { bubbleLeft = 0; return; }
+            var ring = ThreeWorld(it.parts.wand.childCount > 1 ? it.parts.wand.GetChild(1) : it.parts.wand);
+            // Out across the room in any direction, at its own height.
+            float a = Rnd(0, Mathf.PI * 2), sp = Rnd(.28f, .5f);
+            var bub = new Bubble { p = ring, v = new Vector3(Mathf.Cos(a) * sp, Rnd(.05f, .18f), Mathf.Sin(a) * sp), born = time, life = Rnd(9, 14) };
+            bub.t = Node.Mesh(room, ThreeGeo.Sph(Rnd(.045f, .07f), 12, 8), bubbleMat, ring.x, ring.y, ring.z, shadow: false);
+            Node.SetLayer(bub.t, HomeLayer);
+            bubbles.Add(bub);
+        }
+
+        /// <summary>Bubbles float out over the whole room; the squishy chases the nearest, bops low ones and jumps for high ones.</summary>
         private void StepBubbles(float dt, ref float lift)
         {
-            if (bubbles.Count == 0) return;
-            int best = 0;
-            for (int k = 0; k < bubbles.Count; k++)
+            // Blowing: the wand waves while bubbles stream out of it.
+            if (bubbleLeft > 0 && bubbleToy != null)
             {
-                var (t0, p, born) = bubbles[k];
-                p.y = Mathf.Min(Y0 + .45f, p.y + dt * .02f);
-                bubbles[k] = (t0, p, born);
-                t0.localPosition = p + new Vector3(Mathf.Sin(time * 2 + born) * .03f, Mathf.Sin(time * 3 + born) * .02f, 0);
-                if (Dist(p.x - ai.x, p.z - ai.z) < Dist(bubbles[best].p.x - ai.x, bubbles[best].p.z - ai.z)) best = k;
+                bubbleEmitT -= dt;
+                if (bubbleEmitT <= 0) { EmitBubble(); bubbleLeft--; bubbleEmitT = Rnd(.18f, .35f); }
+                if (bubbleToy.parts.wand != null) bubbleToy.parts.wand.RotZ(-.35f + .5f * Mathf.Sin(time * 9));
             }
-            var tgt = bubbles[best].p;
-            ChaseTo(tgt.x, tgt.z, dt, ref lift);
-            if (Dist(tgt.x - ai.x, tgt.z - ai.z) < PetRadius() + .05f) { pet.V += 2; PopBubble(best, .03f); }
+            else if (bubbleToy != null && bubbleToy.parts.wand != null) bubbleToy.parts.wand.RotZ(-.35f);
+            if (bubbles.Count == 0) return;
+            float head = Y0 + pet.Scale * pet.StageScale * 1.35f, lim = FLOOR_R - .15f;
+            Bubble best = null;
+            float bd = float.MaxValue;
+            for (int k = bubbles.Count - 1; k >= 0; k--)
+            {
+                var bb = bubbles[k];
+                // Drift, slow down, wobble and bob gently between knee and well-above-head height.
+                bb.v *= Mathf.Exp(-.35f * dt);
+                bb.v.y += (Mathf.Sin(time * .9f + bb.born) * .04f - (bb.p.y - (Y0 + .45f)) * .15f) * dt;
+                bb.p += bb.v * dt;
+                float rr = Dist(bb.p.x, bb.p.z);
+                if (rr > lim) { float nx = bb.p.x / rr, nz = bb.p.z / rr, vn = bb.v.x * nx + bb.v.z * nz; if (vn > 0) { bb.v.x -= 2 * vn * nx; bb.v.z -= 2 * vn * nz; } bb.p.x = nx * lim; bb.p.z = nz * lim; }
+                bb.p.y = Mathf.Clamp(bb.p.y, Y0 + .12f, Y0 + .85f);
+                bb.t.localPosition = bb.p + new Vector3(Mathf.Sin(time * 2 + bb.born) * .03f, Mathf.Sin(time * 3 + bb.born) * .02f, Mathf.Cos(time * 1.7f + bb.born) * .02f);
+                if (time - bb.born > bb.life) { PopBubble(k, 0); continue; }
+                float d = Dist(bb.p.x - ai.x, bb.p.z - ai.z);
+                if (d < bd) { bd = d; best = bb; }
+            }
+            if (best == null) return;
+            // A jump in progress: up to the bubble and back down.
+            if (bubbleJumpT >= 0)
+            {
+                bubbleJumpT += dt;
+                float u = Mathf.Clamp01(bubbleJumpT / .6f);
+                lift = Mathf.Max(lift, bubbleJumpH * 4 * u * (1 - u));
+                if (bubbleJumpFor != null && bubbles.Contains(bubbleJumpFor) && u > .35f && u < .65f && Dist(bubbleJumpFor.p.x - ai.x, bubbleJumpFor.p.z - ai.z) < PetRadius() + .12f)
+                {
+                    pet.V += 2.5f;
+                    PopBubble(bubbles.IndexOf(bubbleJumpFor), .035f);
+                    bubbleJumpFor = null;
+                }
+                if (u >= 1) { bubbleJumpT = -1; pet.V += 3; } // a squishy landing
+                return;
+            }
+            ChaseTo(best.p.x, best.p.z, dt, ref lift);
+            if (bd < PetRadius() + .1f)
+            {
+                if (best.p.y <= head) { pet.V += 2; PopBubble(bubbles.IndexOf(best), .03f); } // bop the low ones
+                else { bubbleJumpT = 0; bubbleJumpH = best.p.y - head + .08f; bubbleJumpFor = best; pet.V -= 3; sfx.Hop(); } // jump for the high ones
+            }
         }
 
         private void PopBubble(int k, float gain)
@@ -126,7 +177,7 @@ namespace Squishy.Runtime.Game
             HPuff(b.p, new Vector3(0, .3f, 0), .04f, .3f, 3, .2f);
             Node.Destroy(b.t);
             sfx.Snap();
-            GainPlay(gain);
+            if (gain > 0) GainPlay(gain);
         }
 
         /// <summary>Tap a bubble to pop it yourself. Returns true if one was hit.</summary>
@@ -218,6 +269,10 @@ namespace Squishy.Runtime.Game
             foreach (var it in items) if (it.parts.pom != null) it.parts.pom.gameObject.SetActive(true);
             foreach (var b in bubbles) Node.Destroy(b.t);
             bubbles.Clear();
+            bubbleLeft = 0;
+            bubbleJumpT = -1;
+            if (bubbleToy != null && bubbleToy.parts.wand != null) bubbleToy.parts.wand.RotZ(-.35f);
+            bubbleToy = null;
             wandFinger = null;
             if (ai.act != null && ai.act.role == "slide") ai.y = 0;
         }
