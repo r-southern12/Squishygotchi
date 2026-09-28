@@ -107,7 +107,7 @@ namespace Squishy.Runtime.Game
             float gain = (Condition() < .12f ? C.rules.squishPlayGainCritical : C.rules.squishPlayGain) * .8f;
             S.needs[Needs.Play] = Mathf.Min(1, S.needs[Needs.Play] + gain);
             DrawNeeds();
-            if (visiting) VisitAct("pet"); else TaskEvent("squish");
+            if (visiting) VisitAct("pet"); else { TaskEvent("squish"); if (squeezeLast > .3f) TaskEvent("pinch"); }
         }
 
         /// <summary>How far in the pinch can zoom: past the old close-up, right up to the squishy's face.</summary>

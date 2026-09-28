@@ -2454,6 +2454,13 @@
       "ev": "dent"
     },
     {
+      "id": "pinch",
+      "text": "Zoom right in and pinch your squishy",
+      "goal": 1,
+      "coins": 25,
+      "ev": "pinch"
+    },
+    {
       "id": "fling",
       "text": "Hold to ping your squishy round the room 3 times",
       "goal": 3,
