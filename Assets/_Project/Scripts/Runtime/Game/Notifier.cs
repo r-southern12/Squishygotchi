@@ -50,6 +50,33 @@ namespace Squishy.Runtime.Game
 #endif
         }
 
+        /// <summary>Whether the phone lets the game post reminders: "allowed", "blocked", "not asked", or "" off a phone.</summary>
+        public static string PermissionState()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            var st = Unity.Notifications.Android.AndroidNotificationCenter.UserPermissionToPost;
+            return st == Unity.Notifications.Android.PermissionStatus.Allowed ? "allowed" : st == Unity.Notifications.Android.PermissionStatus.NotRequested ? "not asked" : "blocked";
+#else
+            return "";
+#endif
+        }
+
+        /// <summary>Opens the phone's notification settings for the game (to allow reminders after saying no).</summary>
+        public static void OpenSettings()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            Unity.Notifications.Android.AndroidNotificationCenter.OpenNotificationSettings();
+#endif
+        }
+
+        /// <summary>Admin: a real reminder in ten seconds, to check they reach the phone.</summary>
+        public static void SendTest(GameRules rules)
+        {
+            Init();
+            if (Thumbs.Ready) RenderPictures(rules);
+            Send(new Plan { when = DateTime.Now.AddSeconds(10), title = rules.Fav.name, text = NeedEmoji[0] + " …?", mood = "low0" });
+        }
+
         public static void Clear()
         {
             if (!_ready) return;

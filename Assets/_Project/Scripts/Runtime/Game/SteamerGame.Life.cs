@@ -194,6 +194,12 @@ namespace Squishy.Runtime.Game
             if (S.musicOn && S.soundOn) TrackRow(body);
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
             Toggle(body, "Reminders", S.notificationsOn, v => { S.notificationsOn = v; Notifier.Enabled = v; if (!v) Notifier.Clear(); });
+            if (S.notificationsOn && Notifier.PermissionState() == "blocked")
+            {
+                // The phone is blocking them (permission refused): one tap to the setting that allows them.
+                Hud.Para(body, "Your phone is blocking reminders from " + Rules.Fav.name + ".").Margin(0, 0, 4, 0);
+                Hud.Button(body, "Allow in phone settings", "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 40, 15, Notifier.OpenSettings, false, 3).Margin(0, 0, 10, 0);
+            }
             Hud.Para(body, S.premium ? "Full game unlocked. Thank you!" : "Free trial · " + (Rules.TrialOver() ? "ended" : Mathf.CeilToInt((float)Rules.TrialLeft().TotalDays) + " days left, or until your first squishy's life ends."));
             if (!S.premium) Hud.Button(body, "Unlock full game" + (store.Price != null ? " · " + store.Price : ""), "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => store.Buy(), false, 4);
             Hud.Button(body, "Restore purchase", "#EADCC6", "#CDB999", Hud.Ink, 14, 40, 15, () => store.Restore(), false, 3).Margin(8, 0, 0, 0);

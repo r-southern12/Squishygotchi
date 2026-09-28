@@ -21,6 +21,7 @@ namespace Squishy.Runtime.Game
             var body = ui.PanelBody("info");
             Hud.Para(body, "Hidden test tools. Hold the coin counter to open. Speed: " + timeScale + "x · " + (Rules.Protected ? "can't die" : "can die") + " · Day " + S.age + " · death clock " + Mathf.RoundToInt(S.deathClock / 60) + " min.");
             Row(body, "Sound", ("Sound Lab", OnSoundLab));
+            Row(body, "Notifications (" + (Notifier.PermissionState() == "" ? "not a phone" : Notifier.PermissionState()) + ")", ("Test in 10 s", () => { Notifier.SendTest(Rules); ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .4f), "Sent: watch for it in 10 s"); }), ("Phone settings", Notifier.OpenSettings));
             Row(body, "Wallet", ("+500 coins", () => { Rules.AddCoins(500); UpdateSub(); OnAdmin(); }), ("+5000", () => { Rules.AddCoins(5000); UpdateSub(); OnAdmin(); }), ("+5 steamers", () => { Rules.SetSteamers(S.steamers + 5); OnAdmin(); }));
             Row(body, "Skip time", ("+1 hour", () => Skip(1)), ("+6 hours", () => Skip(6)), ("+1 day", () => Skip(24)), ("+1 week", () => Skip(168)));
             Row(body, "Needs", ("Full", () => SetNeeds(1)), ("Half", () => SetNeeds(.5f)), ("Low", () => SetNeeds(.15f)), ("Empty", () => SetNeeds(0)));
