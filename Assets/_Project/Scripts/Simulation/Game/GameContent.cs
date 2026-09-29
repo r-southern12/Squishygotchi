@@ -26,7 +26,7 @@ namespace Squishy.Simulation.Game
     [Serializable] public class FinishData { public string name, tier, color, glow, map; public float rough; public string[] spark; public bool metal; public bool clear; public float opacity; public string inside; public int insideCount; public string[] insideColors; } // clear: see-through jelly; inside: what floats in it (glitter, snow, boba, koi, goldfish, glow)
     [Serializable] public class TierData { public string tier, rarity, color; }
     [Serializable] public class ToolData { public string name, color, rarity, shape; public int price, maxDur; public bool basic; }
-    [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; }
+    [Serializable] public class IngredientData { public string name, color, rarity, shape; public bool basic; public float size; } // size: how big it shows on the steamer plate (0 = full)
     [Serializable] public class SteamerSkinData { public string name, a, b, t, rarity, glow; public string music, musicName; public float metal, rough; } // music: the track this steamer unlocks (Resources/Music)
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }

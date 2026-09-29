@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Squishy.Runtime.Three;
 using UnityEngine;
 
 namespace Squishy.Runtime.Game
@@ -85,6 +86,40 @@ namespace Squishy.Runtime.Game
         private bool SplashDocked(Item slide)
         {
             return ai.act != null && ai.act.combo != null && ai.act.combo.combo.then == "splash" && DockedTub(slide) != null;
+        }
+
+        /// <summary>
+        /// Zoomed in close, furniture between the camera and the squishy is hidden so it never blocks the view
+        /// (user feedback); it comes back once it's out of the way or you zoom out.
+        /// </summary>
+        private void StepOccluders(float dt)
+        {
+            bool close = mode == "home" && CloseUp && cam != null && pet != null;
+            Vector3 from = close ? ThreeWorld(cam.transform) : Vector3.zero, to = Vector3.zero;
+            if (close) { var pp = PetWorld(); to = new Vector3(pp.x, pp.y + pet.Scale * pet.StageScale * .45f, pp.z); }
+            foreach (var it in items)
+            {
+                bool block = close && it.a.cat != "Floor" && Occludes(it, from, to);
+                it.hideT = block ? .35f : Mathf.Max(0, it.hideT - dt);
+                bool hide = it.hideT > 0;
+                if (hide == it.hidden) continue;
+                it.hidden = hide;
+                foreach (var r in it.g.GetComponentsInChildren<Renderer>(true)) r.enabled = !hide;
+            }
+        }
+
+        /// <summary>Whether this piece stands in the line of sight to the squishy.</summary>
+        private bool Occludes(Item it, Vector3 from, Vector3 to)
+        {
+            if (it.h <= 0) { var bb = Node.LocalBounds(it.g, room); it.h = Mathf.Max(.05f, bb.max.y - Y0); }
+            Vector2 a = new Vector2(from.x, from.z), b = new Vector2(to.x, to.z), c = new Vector2(it.tx, it.tz);
+            var ab = b - a;
+            float l2 = ab.sqrMagnitude;
+            if (l2 < 1e-6f) return false;
+            float t = Mathf.Clamp01(Vector2.Dot(c - a, ab) / l2);
+            if (t > .96f) return false; // under or behind the squishy
+            float d = Vector2.Distance(a + ab * t, c), y = Mathf.Lerp(from.y, to.y, t);
+            return d < it.a.r + .08f && y < Y0 + it.h + .02f;
         }
 
         private Dictionary<string, int> ComboSnapshot()

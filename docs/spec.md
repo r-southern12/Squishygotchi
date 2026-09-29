@@ -100,7 +100,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
-**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). Size also unlocks items (trampoline at Jumbo, beanbag at Giant).
+**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). Size also unlocks items (beanbag at Standard, trampoline at Jumbo).
 
 | Size | Copies needed | Relative size | Steamer width |
 | --- | --- | --- | --- |
@@ -181,7 +181,9 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 - **Dress-up** turns to face you. **Shaking dry** flings droplets only. **Bath bubbles** are small, clear and pop.
 - **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
 - **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
-- In squish mode (zoomed right in) taps on furniture are ignored.
+- In squish mode (zoomed right in) taps on furniture are ignored. Zoomed in close, any piece between the camera and the squishy is hidden until it's out of the way.
+- **Opening steamers:** keep holding Open and it keeps going: each prize card shows for a moment, then the next layer or steamer starts charging; let go to stop.
+- **Ingredient sizes on the steamer plate:** each ingredient can have a display size (data); the chilli shows at half size.
 - **Getting about:** the squishy finds its way on a grid over the floor. It walks round tall pieces (stove, fridge, wardrobe, shower, walls) and, when a low piece (table, stool, cushion, bed, beanbag) is in its way, hops up onto it, across and down, and the piece bounces like a tap when it lands; brushing past a low piece's corner is a little hop over it. Chasing the ball, it slides round furniture instead of through it. Nothing is walked through.
 
 **Comfort**
@@ -199,7 +201,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 | Bed | Furniture | Nap. Lamp off gives a full rest; lamp on, half | Rest | 2 |
 | Stool (max 2) | Furniture | Seat for tea time | — | 1 |
 | Floor cushion | Furniture | Lounging; also a tea seat | Rest | 1 |
-| Beanbag | Furniture | Lounging; needs Giant size | Rest | 2 |
+| Beanbag | Furniture | Lounging; needs Standard size | Rest | 2 |
 | Tea table | Station | Tea time, sitting on a nearby seat | Rest, Hunger | 1 |
 | Stove | Station | Opens the Cook menu | Hunger | 0 |
 | Pantry cupboard | Station | Snack from your snack stock, up to 60% | Hunger | 0 |

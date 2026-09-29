@@ -18,6 +18,8 @@ namespace Squishy.Runtime.Game
         public bool docked; // a slide docked onto a bathtub while arranging
         public float? grow;
         public float restT; // a ball: how long it has sat still away from home
+        public float h, hideT; // height (measured once); how long it stays hidden once it stops blocking the view
+        public bool hidden;
 
         public string key { get { return st.key; } }
         public string arch { get { return st.Arch; } }

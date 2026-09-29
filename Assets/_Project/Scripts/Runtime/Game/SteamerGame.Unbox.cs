@@ -254,14 +254,37 @@ namespace Squishy.Runtime.Game
             Later(.8f, () => Floater("Also in the stack: " + string.Join(", ", names)));
         }
 
+        /// <summary>Some ingredients are small: a chilli shows at half the size of a cabbage (data: size).</summary>
+        private Transform FoodSize(Transform food, int i)
+        {
+            float s = C.pantry[i].size;
+            if (s > 0) food.localScale *= s;
+            return food;
+        }
+
         private void ClearPrize() { foreach (Transform c in prize) Node.Destroy(c); }
 
         public void HoldStart()
         {
+            if (mode == "unbox") keepHeld = true;
             if (mode == "unbox" && (ustate == "closed" || ustate == "charging")) { holding = true; ustate = "charging"; ui.MainDown(true); }
         }
 
-        public void HoldEnd() { holding = false; ui.MainDown(false); }
+        public void HoldEnd() { holding = false; keepHeld = false; ui.MainDown(false); }
+
+        private bool keepHeld;
+        private float cardShownAt;
+
+        /// <summary>
+        /// Still holding Open (user request): no need to press again for each steamer. The prize card shows for a
+        /// moment, then the next layer or steamer comes and starts charging; letting go stops.
+        /// </summary>
+        private void StepKeepHeld()
+        {
+            if (!keepHeld) return;
+            if (ustate == "closed" && !holding) { holding = true; ustate = "charging"; ui.MainDown(true); }
+            else if (ustate == "card" && Time.time - cardShownAt > 1.4f && (layer > 0 || S.steamers > 0)) CardAgain();
+        }
 
         private void Pop()
         {
@@ -336,7 +359,7 @@ namespace Squishy.Runtime.Game
                     var rc = C.recipes[reward.i];
                     int nt = rc.tools.Length, ni = rc.ing.Length;
                     for (int q = 0; q < nt; q++) Even(KitchenModels.Tool(C, S, rc.tools[q], null, obj), .4f).localPosition = new Vector3((q - (nt - 1) / 2f) * .42f, 0, ni > 0 ? -.2f : 0);
-                    for (int q = 0; q < ni; q++) Even(KitchenModels.Food(C, rc.ing[q], obj), .3f).localPosition = new Vector3((q - (ni - 1) / 2f) * .34f, 0, nt > 0 ? .2f : 0);
+                    for (int q = 0; q < ni; q++) FoodSize(Even(KitchenModels.Food(C, rc.ing[q], obj), .3f), rc.ing[q]).localPosition = new Vector3((q - (ni - 1) / 2f) * .34f, 0, nt > 0 ? .2f : 0);
                 }
                 else obj = KitchenModels.Food(C, reward.i, holder);
                 // Like the squishy, every prize fills its steamer: as wide as the squishy (wall to wall), never towering.
@@ -347,6 +370,7 @@ namespace Squishy.Runtime.Game
                 // one shared scale where the biggest pieces fill it, small ones a little larger than true so they still show.
                 if (reward.type == "item") k = Mathf.Min(k, wide / .9f * 1.35f);
                 obj.localScale *= k;
+                if (reward.type == "food") FoodSize(obj, reward.i);
                 bb = Node.LocalBounds(obj, holder);
                 obj.localPosition += new Vector3(-bb.center.x, .045f * (R * US * .95f / .36f) - bb.min.y, -bb.center.z); // on the (scaled) plate
                 Node.SetLayer(prize, UnboxLayer);
@@ -400,6 +424,7 @@ namespace Squishy.Runtime.Game
         private void ShowCard()
         {
             ustate = "card";
+            cardShownAt = Time.time;
             raysOn = 1;
             sfx.Chime();
             Buzz(15);
@@ -447,6 +472,7 @@ namespace Squishy.Runtime.Game
 
         private void StepUnbox(float dt)
         {
+            StepKeepHeld();
             if ((drag == null || !drag.unboxSq) && newbie.Holding) newbie.ReleaseAll(); // no finger on it: dents rise back
             if (tenLive) Thumbs.LiveStep(dt); // the Open 10 showcase turning
             if (liftT >= 0) StepLift(dt);

@@ -178,6 +178,7 @@ namespace Squishy.Runtime.Game
                 StepHome(dt);
                 StepMeta(dt);
                 HomeCamera(dt);
+                StepOccluders(dt);
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
                 bathBubbles?.Update(dt, true, cam);
