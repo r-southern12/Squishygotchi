@@ -188,7 +188,7 @@ namespace Squishy.Runtime.Game
             }
             if (onPet)
             {
-                if (S.tucked) { Floater("Holiday pause is on · turn it off in Settings"); return; }
+                if (S.tucked) { Floater("Paused · see Settings"); return; }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
                 if (CloseUp && BeginTactile(p)) return;
                 drag.squish = true;
@@ -550,7 +550,7 @@ namespace Squishy.Runtime.Game
             int n = items.Count(x => x.arch != "tomb");
             if (n == 0) { ui.SetHint("The room is already empty"); return; }
             sfx.Tap();
-            ui.ShowDialog("Put everything away?", "All " + n + " pieces go to storage, so you can start the room fresh. Undo brings them back.", "#D9A64A",
+            ui.ShowDialog("Put everything away?", "All " + n + " pieces go to storage, so you can start the room fresh. Undo brings them back.", null,
                 ("Put all away", "#6F9A74", "#4C7552", UI.Hud.Cream, (System.Action)(() =>
                 {
                     ui.HideMemo();

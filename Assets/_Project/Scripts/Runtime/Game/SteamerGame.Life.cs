@@ -51,7 +51,7 @@ namespace Squishy.Runtime.Game
             if (mode == "home" && !visiting && !S.dead && Rules.ReachRoomSize() && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
             ui.ExpandDot(canExpand && mode == "home");
-            if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can level up: space for one more piece! Open Arrange"); sfx.Chime(); }
+            if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Room can level up!"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
             StepNight(1);
             if (Rules.OnlineReady()) ui.SetGift("Free!", true);
@@ -171,7 +171,7 @@ namespace Squishy.Runtime.Game
             }
             Action bonus = () => { if (Rules.ClaimBonus()) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .36f), "+1 bonus steamer!"); sfx.Chime(); WriteSave(); } };
             if (S.premium) { bonus(); return; }
-            ui.ShowDialog("Bonus steamer", (got > 0 ? "Your free steamer is in. " : "") + "Want one more? Watch a short video for a bonus steamer. Totally optional: steamers keep arriving every " + C.rules.giftHours + " hours either way.", "#D9A64A",
+            ui.ShowDialog("Bonus steamer", (got > 0 ? "Your free steamer is in. " : "") + "Want one more? Watch a short video for a bonus steamer. Totally optional: your free steamer comes back every " + C.rules.giftHours + " hours either way.", "thumb:steamerbox",
                 ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) bonus(); }); })),
                 ("No thanks", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }

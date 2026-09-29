@@ -170,7 +170,7 @@ namespace Squishy.Runtime.Game
                 coins += g.coins;
             }
             sfx.Chime();
-            ui.ShowDialog(gifts.Count == 1 ? "A friend visited!" : gifts.Count + " friends visited!", sb.ToString().TrimEnd(), "#6FC3C9",
+            ui.ShowDialog(gifts.Count == 1 ? "A friend visited!" : gifts.Count + " friends visited!", sb.ToString().TrimEnd(), "icon:friends",
                 ("Lovely! (+" + coins + " coins)", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => ui.HideMemo())));
         }
 

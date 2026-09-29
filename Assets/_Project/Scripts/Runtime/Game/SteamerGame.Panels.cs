@@ -137,15 +137,15 @@ namespace Squishy.Runtime.Game
                     if (cookStoveOpen != null) OpenCook(cookStoveOpen);
                 };
                 string more = common.Count > 0 ? " You'll also need " + Names(common) + " from the shop." : "";
-                if (S.premium) { ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers. Have one on us!" + more, "#D9A64A",
+                if (S.premium) { ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers. Have one on us!" + more, "thumb:food:" + rare[0],
                     ("Get 1", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); give(); })),
                     ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo()))); return; }
-                ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers, or watch a short video to get 1 now. Totally optional." + more, "#D9A64A",
+                ui.ShowDialog("Out of " + Names(rare), Names(rare) + " is rare: it comes from steamers, or watch a short video to get 1 now. Totally optional." + more, "thumb:food:" + rare[0],
                     ("Watch video", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); Ads.ShowRewarded(ok => { if (ok) give(); }); })),
                     ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
                 return;
             }
-            ui.ShowDialog("Out of " + Names(common), Names(common) + (common.Count == 1 ? " is" : " are") + " sold in the shop for " + C.rules.ingredientPrice + " coins each.", "#D9A64A",
+            ui.ShowDialog("Out of " + Names(common), Names(common) + (common.Count == 1 ? " is" : " are") + " sold in the shop for " + C.rules.ingredientPrice + " coins each.", "thumb:food:" + common[0],
                 ("Go to the shop", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => { ui.HideMemo(); CloseCook(); OpenShop(); })),
                 ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }

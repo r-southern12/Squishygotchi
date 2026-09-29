@@ -241,6 +241,14 @@ namespace Squishy.Runtime.UI
             var tomb = _tomb = new Frame { Fill = C("#A9A39C"), Corners = new Vector4(22, 22, 6, 6) }.Size(46, 56).Margin(0, 0, 4, 0).In(_memo);
             tomb.Shadows.Add(new Shadow(0, -6, 0, 0, C("#8F8983"), true));
             tomb.style.alignSelf = Align.Center;
+            _dlgPic = new Image { scaleMode = ScaleMode.ScaleToFit }.Size(92, 92).In(_memo);
+            _dlgPic.style.alignSelf = Align.Center;
+            _dlgPic.pickingMode = PickingMode.Ignore;
+            _dlgIcon = new VisualElement().Size(56, 56).In(_memo);
+            _dlgIcon.style.alignSelf = Align.Center;
+            _dlgIcon.style.alignItems = Align.Center;
+            _dlgIcon.style.justifyContent = Justify.Center;
+            _dlgIcon.pickingMode = PickingMode.Ignore;
             _mName = Label(_memo, "", "Gluten", 800, 26).Margin(8, 0, 6, 0);
             _mName.style.unityTextAlign = TextAnchor.MiddleCenter;
             _mName.Wrap();
@@ -311,10 +319,22 @@ namespace Squishy.Runtime.UI
         private VisualElement _memoBtns;
 
         /// <summary>The memorial card (or any centred dialog): a keepsake shape, title, text and buttons.</summary>
-        public void ShowDialog(string name, string meta, string keepsake, params (string label, string bg, string shadow, string color, Action act)[] buttons)
+        private Image _dlgPic;
+        private VisualElement _dlgIcon;
+
+        /// <summary>
+        /// A dialog card. picture: "thumb:KEY" (a rendered model, like the steamer), "icon:NAME" (a drawn icon), a
+        /// colour for the memorial tombstone ("#..."; only the memorial and old-age keepsake use it), or null for none.
+        /// </summary>
+        public void ShowDialog(string name, string meta, string picture, params (string label, string bg, string shadow, string color, Action act)[] buttons)
         {
-            _tomb.Shown(keepsake != null);
-            if (keepsake != null) { _tomb.Fill = C(keepsake); _tomb.MarkDirtyRepaint(); }
+            bool tomb = picture != null && picture.StartsWith("#");
+            _tomb.Shown(tomb);
+            if (tomb) { _tomb.Fill = C(picture); _tomb.MarkDirtyRepaint(); }
+            _dlgPic.Shown(false);
+            _dlgIcon.Shown(false);
+            if (picture != null && picture.StartsWith("thumb:")) { var t = Thumbs.Get(picture.Substring(6)); if (t != null) { _dlgPic.image = t; _dlgPic.Shown(true); } }
+            else if (picture != null && picture.StartsWith("icon:")) { _dlgIcon.Clear(); _dlgIcon.Add(Icons.Make(picture.Substring(5), 48, "#8C7BB0")); _dlgIcon.Shown(true); }
             _memoBtns.Clear();
             foreach (var b in buttons) if (b.label != null) Button(_memoBtns, b.label, b.bg, b.shadow, b.color, 16, 50, 17, b.act, false, 5);
             _memoBtns.Gap(10);

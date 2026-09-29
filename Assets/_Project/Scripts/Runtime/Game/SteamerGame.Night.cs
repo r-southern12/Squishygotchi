@@ -46,7 +46,7 @@ namespace Squishy.Runtime.Game
             string name = Rules.Fav.name;
             ui.ShowDialog("Turning in for the night?",
                 name + " goes to bed and sleeps until morning: Rest fills up overnight, the other needs drain slowly, and your free steamers are collected for you. You can keep playing while it sleeps.",
-                "#8C7BB0",
+                "icon:rest",
                 ("Good night", "#8C7BB0", "#6A5A8E", Hud.Cream, (Action)(() => { ui.HideMemo(); GoToBed(); })),
                 ("Snooze…", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => { ui.HideMemo(); AskSnooze(); })),
                 ("Not tonight", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
@@ -69,7 +69,7 @@ namespace Squishy.Runtime.Game
                     ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "I’ll ask again in " + (mm >= 60 && mm % 60 == 0 ? (mm / 60) + (mm == 60 ? " hour" : " hours") : mm + " minutes"));
                 })));
             }
-            ui.ShowDialog("Snooze for how long?", "I’ll ask about bedtime again after that.", "#8C7BB0", buttons.ToArray());
+            ui.ShowDialog("Snooze for how long?", "I’ll ask about bedtime again after that.", "icon:rest", buttons.ToArray());
         }
 
         private void GoToBed()

@@ -651,9 +651,26 @@ namespace Squishy.Runtime.UI
         }
 
         /// <summary>A rising text popup (the prototype's .floater, 1.1s).</summary>
+        private float _floatFree; // when the next popup can start (they queue instead of printing over each other)
+
         public void FloatAt(Vector2 p, string text, string cls = null)
         {
+            // The sleepy z's float on their own; everything else waits its turn, a short beat apart.
+            if (cls != "z")
+            {
+                float now = Time.realtimeSinceStartup, start = Mathf.Max(now, _floatFree);
+                _floatFree = start + .55f;
+                if (start > now + .01f) { _floaters.schedule.Execute(() => ShowFloat(p, text, cls)).StartingIn((long)((start - now) * 1000)); return; }
+            }
+            ShowFloat(p, text, cls);
+        }
+
+        private void ShowFloat(Vector2 p, string text, string cls)
+        {
             var l = Label(_floaters, text, "Gluten", 800, cls == "z" ? 20 : 17, Cream);
+            l.style.maxWidth = Width * .86f;
+            l.Wrap();
+            l.style.unityTextAlign = TextAnchor.MiddleCenter;
             l.style.position = Position.Absolute;
             l.style.left = p.x;
             l.style.top = p.y;

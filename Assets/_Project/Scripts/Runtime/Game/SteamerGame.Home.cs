@@ -305,10 +305,10 @@ namespace Squishy.Runtime.Game
         private void UseItem(Item it, bool user, RecipeData recipe = null, Activity chainFrom = null)
         {
             if (S.dead) return;
-            if (S.tucked) { if (user) Floater("Holiday pause is on · turn it off in Settings", "bad"); return; }
+            if (S.tucked) { if (user) Floater("Paused · see Settings", "bad"); return; }
             string role = it.a.role;
             // Asleep for the night: it stays in bed (lights and watering still work; the moon wakes it).
-            if (S.asleep && chainFrom == null && !sleepStarting && role != "lamp" && role != "plant") { if (user) FloaterAt(it, "Shh, " + Rules.Fav.name + " is asleep"); return; }
+            if (S.asleep && chainFrom == null && !sleepStarting && role != "lamp" && role != "plant") { if (user) FloaterAt(it, "Shh, asleep"); return; }
             if (role == "seat" && chainFrom == null)
             {
                 var t = items.Find(x => x.a.role == "tea" && Dist(x.tx - it.tx, x.tz - it.tz) < 1.1f);
@@ -583,7 +583,7 @@ namespace Squishy.Runtime.Game
                         int saved = rc.ing[Random.Range(0, rc.ing.Length)];
                         S.pantry[saved]++;
                         var stv = A.it;
-                        Later(1.2f, () => FloaterAt(stv, "Chef's corner: " + C.pantry[saved].name + " saved"));
+                        Later(1.2f, () => FloaterAt(stv, C.pantry[saved].name + " saved"));
                     }
                     foreach (var i in rc.tools)
                     {

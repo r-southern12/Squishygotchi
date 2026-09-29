@@ -32,7 +32,7 @@ namespace Squishy.Runtime.Game
             {
                 // Already in the room when the game opens: one gentle note rather than a stack of cards.
                 combosPrimed = true;
-                if (found.Count > 0) { var names = string.Join(", ", found.Select(c => c.name)); Later(4, () => Floater("Combo" + (found.Count == 1 ? "" : "s") + " in your room: " + names + " · see Comfort")); }
+                if (found.Count > 0) { string msg = found.Count == 1 ? found[0].name + " combo!" : found.Count + " combos found!"; Later(4, () => Floater(msg)); }
                 return;
             }
             foreach (var c in found)
@@ -233,7 +233,7 @@ namespace Squishy.Runtime.Game
                             Glints(new Vector3(pw.x, pw.y + h * .8f, pw.z), "#FFE08A", 5);
                             sfx.Pop();
                             pet.Express(SquishyModel.Mouth.Grin, 3);
-                            Floater(Rules.HasCosmetic(pick.id) ? "Wearing your " + pick.name : "Trying on " + pick.name + " · " + pick.price + " prestige");
+                            Floater((Rules.HasCosmetic(pick.id) ? "Wearing " : "Trying on ") + pick.name);
                         }
                     }
                     if (comboDressed) lift += Mathf.Abs(Mathf.Sin(t * 5)) * .1f;
@@ -279,7 +279,7 @@ namespace Squishy.Runtime.Game
             if (A.act.role == "meditate" && c.calmMinutes > 0)
             {
                 Rules.StartCalm(c.calmMinutes);
-                Floater("Calm · needs drain slower for " + Mathf.RoundToInt(c.calmMinutes) + " min");
+                Floater("Calm for " + Mathf.RoundToInt(c.calmMinutes) + " min");
             }
             if (A.act.role == "concert") { Floater("Encore!"); pet.V += 4; sfx.Chime(); }
             if (!ai.self && !visiting) TaskEvent("combo_" + c.id);
