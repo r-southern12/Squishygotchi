@@ -458,6 +458,9 @@ namespace Squishy.Runtime.Game
             ui.SetPutAwayEnabled(it != null && it.arch != "tomb");
         }
 
+        private Item rideItem; // the piece it was lying or sitting on when Arrange opened
+        private Vector2 rideOff; // where on that piece (in the piece's own turned space)
+
         public void EnterEdit()
         {
             if (S.dead) return;
@@ -472,6 +475,13 @@ namespace Squishy.Runtime.Game
             undo.Clear();
             ui.SetUndoEnabled(false);
             arrangeHave = ComboSnapshot(); // what counts as news while arranging
+            // Lying or sitting on a piece: remember where on it, so it rides along when the piece moves.
+            rideItem = ai.mode == "act" && ai.act != null && ai.act.it != null && (ai.act.act.perch > 0 || ai.act.act.inside || ai.act.night) ? ai.act.it : null;
+            if (rideItem != null)
+            {
+                float dx = ai.x - rideItem.tx, dz = ai.z - rideItem.tz, c = Mathf.Cos(rideItem.ry), s = Mathf.Sin(rideItem.ry);
+                rideOff = new Vector2(dx * c - dz * s, dx * s + dz * c);
+            }
             pet.Held = false;
             ai.seg = null;
             sfx.Tap();
@@ -483,10 +493,15 @@ namespace Squishy.Runtime.Game
             moving = null;
             camS.edge = null;
             RebuildObstacles();
-            FreePet();
-            ai.mode = "idle";
-            ai.act = null;
-            ai.idleT = 1;
+            // Still on its piece (it rode along): carry on (asleep in bed stays asleep). Otherwise start afresh.
+            bool rode = rideItem != null && items.Contains(rideItem) && ai.act != null && ai.act.it == rideItem;
+            bool floorSleep = ai.act != null && ai.act.night && ai.act.it == null;
+            if (!rode)
+            {
+                FreePet();
+                if (!floorSleep) { ai.mode = "idle"; ai.act = null; ai.idleT = 1; }
+            }
+            rideItem = null;
             SetMode("home");
             sfx.Tap();
             WriteSave();

@@ -851,7 +851,19 @@ namespace Squishy.Runtime.Game
             float slowMove = 1 - droop * .55f, extra = 0, lift = 0;
             bool sleeping = ai.mode == "act" && ai.act != null && (ai.act.act.sleep || ai.act.act.closed);
             float hopH = pet.Scale * .9f;
-            if (mode == "edit" || pet.Held) { }
+            if (mode == "edit" || pet.Held)
+            {
+                // Arranging: lying on the bed (asleep or napping) or sitting on something, it rides along when that
+                // piece is moved or lifted, and keeps doing what it was doing.
+                if (mode == "edit" && rideItem != null && items.Contains(rideItem))
+                {
+                    float c = Mathf.Cos(rideItem.ry), s = Mathf.Sin(rideItem.ry);
+                    ai.x = rideItem.tx + rideOff.x * c + rideOff.y * s;
+                    ai.z = rideItem.tz - rideOff.x * s + rideOff.y * c;
+                    lift = rideItem.g.localPosition.y - Y0;
+                    if (sleeping) extra = .18f + .04f * Mathf.Sin(time * 1.6f);
+                }
+            }
             else if (ai.mode == "idle")
             {
                 ai.idleT -= dt;
