@@ -2122,47 +2122,82 @@
   ],
   "roomLevels": [
     {
-      "slots": 12
+      "slots": 15
     },
     {
-      "slots": 13,
+      "slots": 16,
       "cost": 150,
       "need": 4
     },
     {
-      "slots": 14,
-      "cost": 250,
+      "slots": 17,
+      "cost": 200,
       "need": 5
     },
     {
-      "slots": 15,
-      "cost": 400,
+      "slots": 18,
+      "cost": 260,
       "need": 6
     },
     {
-      "slots": 16,
-      "cost": 550,
-      "need": 8
-    },
-    {
-      "slots": 17,
-      "cost": 750,
-      "need": 10
-    },
-    {
-      "slots": 18,
-      "cost": 1000,
-      "need": 12
-    },
-    {
       "slots": 19,
-      "cost": 1300,
-      "need": 14
+      "cost": 330,
+      "need": 7
     },
     {
       "slots": 20,
-      "cost": 1600,
+      "cost": 410,
+      "need": 8
+    },
+    {
+      "slots": 21,
+      "cost": 500,
+      "need": 9
+    },
+    {
+      "slots": 22,
+      "cost": 600,
+      "need": 10
+    },
+    {
+      "slots": 23,
+      "cost": 720,
+      "need": 11
+    },
+    {
+      "slots": 24,
+      "cost": 850,
+      "need": 12
+    },
+    {
+      "slots": 25,
+      "cost": 1000,
+      "need": 13
+    },
+    {
+      "slots": 26,
+      "cost": 1150,
+      "need": 14
+    },
+    {
+      "slots": 27,
+      "cost": 1300,
       "need": 16
+    },
+    {
+      "slots": 28,
+      "cost": 1500,
+      "need": 18
+    },
+    {
+      "slots": 29,
+      "cost": 1700,
+      "need": 20
+    },
+    {
+      "slots": 30,
+      "cost": 2000,
+      "need": 22
     }
   ],
   "activities": [
@@ -2695,6 +2730,16 @@
       "ev": "visit",
       "requires": [
         "friend"
+      ]
+    },
+    {
+      "id": "swap_fav",
+      "text": "Make a different squishy your favourite",
+      "goal": 1,
+      "coins": 25,
+      "ev": "swap_fav",
+      "requires": [
+        "two_squishies"
       ]
     }
   ],

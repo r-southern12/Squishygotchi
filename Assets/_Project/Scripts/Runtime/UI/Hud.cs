@@ -373,7 +373,9 @@ namespace Squishy.Runtime.UI
             _trayTitle.style.textOverflow = TextOverflow.Ellipsis;
             var hb = new VisualElement().Row().In(head);
             hb.style.flexShrink = 0;
-            SmallBtn(hb, "Expand room", () => _g.OnExpand());
+            SmallBtn(hb, "Room level", () => _g.OnExpand());
+            hb.Gap(6);
+            SmallBtn(hb, "Clear", () => _g.OnClearRoom());
             _putAway = SmallBtn(hb, "Put away", () => _g.PutAway());
             hb.Gap(6);
             head.Gap(8);

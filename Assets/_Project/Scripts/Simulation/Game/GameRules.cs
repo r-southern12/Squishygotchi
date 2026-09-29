@@ -570,6 +570,7 @@ namespace Squishy.Simulation.Game
             foreach (var r in d.requires)
             {
                 if (r == "friend" && S.friends.Count > 0) return true;
+                if (r == "two_squishies" && SquishKinds >= 2) return true; // something to swap to
                 if (S.items.Exists(p => p.Arch == r)) return true;
             }
             return false;

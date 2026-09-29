@@ -528,6 +528,36 @@ namespace Squishy.Runtime.Game
             ComboFeedback(sel);
         }
 
+        /// <summary>Start fresh: every piece goes to storage (after a check), down to an empty room if you like.</summary>
+        public void OnClearRoom()
+        {
+            if (mode != "edit") return;
+            int n = items.Count(x => x.arch != "tomb");
+            if (n == 0) { ui.SetHint("The room is already empty"); return; }
+            sfx.Tap();
+            ui.ShowDialog("Put everything away?", "All " + n + " pieces go to storage, so you can start the room fresh. Undo brings them back.", "#D9A64A",
+                ("Put all away", "#6F9A74", "#4C7552", UI.Hud.Cream, (System.Action)(() =>
+                {
+                    ui.HideMemo();
+                    Snap();
+                    if (ai.act != null) FinishActivity();
+                    foreach (var it in items.Where(x => x.arch != "tomb").ToList())
+                    {
+                        S.storage.Add(it.key);
+                        items.Remove(it);
+                        S.items.Remove(it.st);
+                        it.g.gameObject.SetActive(false);
+                    }
+                    Select(null);
+                    RebuildObstacles();
+                    DrawTray();
+                    ComboFeedback(null);
+                    sfx.Drop();
+                    Buzz(20);
+                })),
+                ("Keep them", "#EADCC6", "#CDB999", UI.Hud.Ink, (System.Action)(() => ui.HideMemo())));
+        }
+
         public void PutAway()
         {
             if (sel == null || sel.arch == "tomb") return;

@@ -80,3 +80,16 @@ Technical
 - [ ] Ads: pick a Families-certified network or ship without ads.
 - [ ] Store listing: icon (done), phone screenshots, feature graphic, short and long description.
 - [ ] Final sound and music picks baked in; unused audio removed to shrink the download.
+
+
+## Setting up as a company in New Zealand (owner; check fees and rules with an accountant)
+1. **Decide sole trader or company.** A company (Ltd) keeps your home address off the store page (Google Play shows a physical address for apps that take payments) and limits personal liability. A sole trader is simpler but uses your own name and address.
+2. **Register the company** at companies.govt.nz (NZ Companies Office): reserve a name, then incorporate online (small one-off fees). You get an **NZBN** automatically. Check whether a director ID is required when you register.
+3. **IRD number for the company**: you can ask for it (and GST) on the incorporation form. **GST** only has to be registered once turnover passes NZ$60,000 in 12 months.
+4. **Business bank account** in the company name.
+5. **D-U-N-S number** (free, from Dun & Bradstreet; Apple has a lookup and request page). It can take a week or two. Apple needs it for an organisation account; Google uses it to verify organisations.
+6. **Store accounts as the organisation**: Google Play Console (organisation accounts skip the 12-tester, 14-day closed test that new personal accounts need) and the Apple Developer Program.
+7. **Tax forms in both stores**: US tax forms for a foreign company (the NZ-US tax treaty lowers the US withholding on store payouts). Keep records for the company's NZ tax return, and file the Companies Office annual return each year.
+
+## Friends online: what it needs
+No server of your own: friend codes and visits use Unity Gaming Services (Authentication + Cloud Save), which Unity hosts, with a free tier that covers a small game. The one-time setup is the "Friends online" steps above (create the Unity Cloud project, link it in the editor, switch on Authentication and Cloud Save, add the two Public indexes).

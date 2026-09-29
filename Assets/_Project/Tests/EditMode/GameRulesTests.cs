@@ -282,13 +282,13 @@ namespace Squishy.Tests
         }
 
         [Test]
-        public void Room_Holds_One_More_Piece_Per_Level_Up_To_20_And_Widens_With_Size()
+        public void Room_Holds_One_More_Piece_Per_Level_Up_To_30_And_Widens_With_Size()
         {
             var c = Content();
             var s = GameRules.NewState(c, 11);
             var rules = new GameRules(c, s);
-            Assert.AreEqual(12, rules.ItemSlots(), "the starter room holds 12 pieces");
-            Assert.AreEqual(20, c.roomLevels[c.roomLevels.Length - 1].slots, "20 at most");
+            Assert.AreEqual(15, rules.ItemSlots(), "the starter room holds 15 pieces (12 placed, 3 spare)");
+            Assert.AreEqual(30, c.roomLevels[c.roomLevels.Length - 1].slots, "30 at most");
             for (int i = 1; i < c.roomLevels.Length; i++) Assert.AreEqual(c.roomLevels[i - 1].slots + 1, c.roomLevels[i].slots, "one more piece per level");
             for (int i = 2; i < c.roomLevels.Length; i++) Assert.Greater(c.roomLevels[i].cost, c.roomLevels[i - 1].cost, "slower and slower");
             float r0 = rules.RoomRadius();

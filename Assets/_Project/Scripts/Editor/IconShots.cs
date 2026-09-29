@@ -288,6 +288,21 @@ namespace Squishy.EditorTools
         {
             var game = Squishy.Runtime.Game.SteamerGame.I;
             Debug.Log(game.NavSelfCheck(200));
+            {
+                // Each ingredient model's own size (before the steamer plate stretches it), to set display sizes.
+                var fcontent = (Squishy.Simulation.Game.GameContent)typeof(Squishy.Runtime.Game.SteamerGame).GetField("C", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(game);
+                var tmp = new GameObject("foodSizes").transform;
+                var sb = new System.Text.StringBuilder("FoodSizes:");
+                for (int i = 0; i < fcontent.pantry.Length; i++)
+                {
+                    var fo = Squishy.Runtime.Models.KitchenModels.Food(fcontent, i, tmp);
+                    var b = Squishy.Runtime.Three.Node.LocalBounds(fo, tmp);
+                    sb.Append(" " + fcontent.pantry[i].name + "=" + Mathf.Max(b.size.x, b.size.z).ToString("F3") + "x" + b.size.y.ToString("F3"));
+                    Object.DestroyImmediate(fo.gameObject);
+                }
+                Object.DestroyImmediate(tmp.gameObject);
+                Debug.Log(sb.ToString());
+            }
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             var model = (Squishy.Runtime.Models.SquishyModel)typeof(Squishy.Runtime.Game.SteamerGame).GetField("pet", flags).GetValue(game);
             foreach (Squishy.Runtime.Models.SquishyModel.Mouth m in System.Enum.GetValues(typeof(Squishy.Runtime.Models.SquishyModel.Mouth)))

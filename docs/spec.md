@@ -127,19 +127,26 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 ## Room and placement
 
-The room is the inside of the steamer. Every piece takes space (furniture, stations, toys and decor; a toy swapped for the one out takes none). The room starts with space for 12 and each room level adds one, up to 20, slower and slower. The steamer's width follows the squishy's size (see Size and growth).
+The room is the inside of the steamer. Every piece takes space (furniture, stations, toys and decor; a toy swapped for the one out takes none). The room starts with space for 15 (the 12 starter pieces plus 3 spare) and each room level adds one, up to 30, slower and slower. Any piece can be put away, down to an empty room ("Clear" in Arrange puts everything away after a check; Undo brings it back). The steamer's width follows the squishy's size (see Size and growth).
 
 | Level | Pieces | Squishies in collection | Coins |
 | --- | --- | --- | --- |
-| 1 (start) | 12 | — | — |
-| 2 | 13 | 4 | 150 |
-| 3 | 14 | 5 | 250 |
-| 4 | 15 | 6 | 400 |
-| 5 | 16 | 8 | 550 |
-| 6 | 17 | 10 | 750 |
-| 7 | 18 | 12 | 1,000 |
-| 8 | 19 | 14 | 1,300 |
-| 9 | 20 | 16 | 1,600 |
+| 1 (start) | 15 | — | — |
+| 2 | 16 | 4 | 150 |
+| 3 | 17 | 5 | 200 |
+| 4 | 18 | 6 | 260 |
+| 5 | 19 | 7 | 330 |
+| 6 | 20 | 8 | 410 |
+| 7 | 21 | 9 | 500 |
+| 8 | 22 | 10 | 600 |
+| 9 | 23 | 11 | 720 |
+| 10 | 24 | 12 | 850 |
+| 11 | 25 | 13 | 1,000 |
+| 12 | 26 | 14 | 1,150 |
+| 13 | 27 | 16 | 1,300 |
+| 14 | 28 | 18 | 1,500 |
+| 15 | 29 | 20 | 1,700 |
+| 16 | 30 | 22 | 2,000 |
 
 The Comfort panel shows room progression: current level, pieces used, and what the next level needs.
 
@@ -315,7 +322,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Common tool | 60 |
 | Tool repair | ~half the tool's price, scaled by wear |
 | Accessories | prestige, in the Prestige store (tap the prestige star), not the coin shop |
-| Room level (one more piece each) | 150 rising to 1,600 (plus collection size) |
+| Room level (one more piece each) | 150 rising to 2,000 (plus collection size) |
 
 No furniture is sold in the shop; furniture comes from steamers.
 

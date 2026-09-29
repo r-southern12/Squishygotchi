@@ -458,7 +458,7 @@ namespace Squishy.Runtime.Game
                 var nxt = si + 1 < C.sizes.Length ? C.sizes[si + 1] : null;
                 meta = f.tier + " tier";
                 note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + (nxt != null && nxt.room > C.sizes[si].room ? " · " + nxt.name + " makes the steamer bigger" : "") : "Not found yet. Find it in steamers.";
-                if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
+                if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); TaskEvent("swap_fav"); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {
                     if (S.tucked) Act("Wake up", () => { Wake(); CloseCatalogue(); });
