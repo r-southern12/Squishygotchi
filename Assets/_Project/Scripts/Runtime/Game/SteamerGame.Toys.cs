@@ -227,6 +227,8 @@ namespace Squishy.Runtime.Game
             // One run = climb the ladder, pause at the top, slide down, then hop back round the side (never through
             // the slide). The activity lasts two runs.
             const float Run = 2.4f;
+            // Splash slide, docked onto the tub: off the end of the slide and straight into the bath (no second run).
+            if (SplashDocked(it) && t >= 1.5f) { t = 1.5f; ai.actT = Mathf.Max(ai.actT, ai.act.act.dur); }
             float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry), u = t % Run;
             // The ladder is at the back (z -.23): climb up the outside of it, not through it.
             float back = .23f + PetRadius() * .75f;

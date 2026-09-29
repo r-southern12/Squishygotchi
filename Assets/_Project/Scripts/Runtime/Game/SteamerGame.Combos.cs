@@ -297,7 +297,20 @@ namespace Squishy.Runtime.Game
             EndToys();
             var sh = items.Find(i => i.arch == "shower");
             if (sh != null && sh.parts.curtain != null) sh.parts.openT = 1;
+            bool plop = A.role == "slide" && DockedTub(A.it) == next; // docked: it lands right in the bath
             UseItem(next, !ai.self, null, A);
+            if (plop && ai.act != null && ai.act.chained && ai.spot != null)
+            {
+                ai.x = ai.spot.stand.x;
+                ai.z = ai.spot.stand.y;
+                ai.y = ai.spot.y;
+                ai.path.Clear();
+                ai.seg = null;
+                ai.mode = "act";
+                ai.actT = 0;
+                if (ai.spot.approach.HasValue) ai.perch = ai.spot.approach;
+                StartAct();
+            }
             return ai.act != null && ai.act.chained;
         }
 

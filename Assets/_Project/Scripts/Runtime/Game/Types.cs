@@ -15,6 +15,7 @@ namespace Squishy.Runtime.Game
         public ItemParts parts = new ItemParts();
         public float lift, bx, bv, vx, vz;
         public bool atWall;
+        public bool docked; // a slide docked onto a bathtub while arranging
         public float? grow;
         public float restT; // a ball: how long it has sat still away from home
 

@@ -286,6 +286,7 @@ namespace Squishy.Runtime.Game
                     }
                     else it.atWall = false;
                 }
+                else if (it.arch == "slide" && SnapSlideToTub(it, ref x, ref z)) { }
                 else if (it.a.cat != "Floor" && SnapToPlacedWall(it, ref x, ref z)) { }
                 else if (rr > l - .12f)
                 {
@@ -363,6 +364,7 @@ namespace Squishy.Runtime.Game
                 sfx.Drop();
                 Buzz(10);
                 TaskEvent("arrange");
+                ComboFeedback(it);
                 if (it.a.role == "tea" || it.a.role == "seat")
                 {
                     var t = it.a.role == "tea" ? it : items.Find(x => x.a.role == "tea");
@@ -468,6 +470,7 @@ namespace Squishy.Runtime.Game
             Select(null);
             undo.Clear();
             ui.SetUndoEnabled(false);
+            arrangeHave = ComboSnapshot(); // what counts as news while arranging
             pet.Held = false;
             ai.seg = null;
             sfx.Tap();
@@ -509,6 +512,7 @@ namespace Squishy.Runtime.Game
             RebuildObstacles();
             sfx.Tap();
             Buzz(8);
+            ComboFeedback(null);
         }
 
         public void RotateSelected()
@@ -520,6 +524,7 @@ namespace Squishy.Runtime.Game
             Settle(sel);
             sfx.Snap();
             Buzz(8);
+            ComboFeedback(sel);
         }
 
         public void PutAway()
@@ -533,6 +538,7 @@ namespace Squishy.Runtime.Game
             sel.g.gameObject.SetActive(false);
             Select(null);
             DrawTray();
+            ComboFeedback(null);
             RebuildObstacles();
             sfx.Drop();
         }
@@ -619,6 +625,7 @@ namespace Squishy.Runtime.Game
             DrawTray();
             sfx.Drop();
             Buzz(10);
+            ComboFeedback(it);
         }
 
         private float LimitFor(Item it) { return FLOOR_R - (it.a.circles != null && it.a.circles.Length > 0 ? .2f : it.a.r * .8f); }
@@ -678,6 +685,7 @@ namespace Squishy.Runtime.Game
                 for (int j = i + 1; j < solid.Count; j++)
                 {
                     Item A = solid[i], Bb = solid[j];
+                    if (DockedPair(A, Bb)) continue; // a slide docked onto the tub overlaps it on purpose
                     foreach (var p in WorldCircles(A))
                     foreach (var q in WorldCircles(Bb))
                     {

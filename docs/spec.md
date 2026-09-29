@@ -169,6 +169,8 @@ The Comfort panel shows room progression: current level, slots used, squishy siz
 | Pom-pom den | pom-pom wand, cushion or beanbag, rug | After the chase it flops onto the cushion cuddling the pom-pom; Play and Rest |
 | Dress-up | wardrobe, folding screen | Pops out wearing an accessory for a moment: mostly one it could still earn, sometimes one of yours |
 
+- **While arranging, combos show up on the spot:** when a move makes a combo grow or finishes it, its pieces bounce and sparkle and a note names it with its count ("Tea time 2/3", or "Tea time!" with a chime when done); breaking one says so too. A single piece on its own isn't news. Counted from the room as it was when Arrange opened.
+- **Slide docks onto the bath:** a slide dragged near a bathtub snaps square to its nearest side, facing in, the end of the ramp just over the rim. With the Splash slide it goes down once and lands right in the bath with a splash.
 - Up to 2 sinks per room (bathroom and kitchen).
 - **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
 - **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
