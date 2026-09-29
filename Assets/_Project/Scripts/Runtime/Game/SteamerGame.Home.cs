@@ -133,6 +133,7 @@ namespace Squishy.Runtime.Game
         private void RebuildObstacles()
         {
             obstacles = new List<Obstacle>();
+            navDirty = true;
             foreach (var it in items) { if (it.a.walk || it.arch == "ball") continue; obstacles.AddRange(WorldCircles(it)); }
             ComputeComfort();
             PlaceLamps();
@@ -206,43 +207,13 @@ namespace Squishy.Runtime.Game
             return new Spot { stand = new Vector2(sx, sz), y = 0, face = new Vector2(px, pz) };
         }
 
-        private Obstacle? Blocked(float ax, float az, float bx, float bz, Item skip)
-        {
-            foreach (var o in obstacles)
-            {
-                if (o.it == skip) continue;
-                float dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz;
-                if (l2 == 0) l2 = 1e-6f;
-                float t = ((o.x - ax) * dx + (o.z - az) * dz) / l2;
-                if (t < .03f || t > .97f) continue;
-                float px = ax + dx * t - o.x, pz = az + dz * t - o.z, rr = o.r + PetRadius() + .04f;
-                if (px * px + pz * pz < rr * rr) return o;
-            }
-            return null;
-        }
-
-        private PathPt Detour(float ax, float az, float bx, float bz, Item skip)
-        {
-            var ob = Blocked(ax, az, bx, bz, skip);
-            if (ob == null) return null;
-            var o = ob.Value;
-            float dx = bx - ax, dz = bz - az, l = Mathf.Sqrt(dx * dx + dz * dz);
-            if (l == 0) l = 1;
-            float nx = -dz / l, nz = dx / l;
-            float side = ((o.x - ax) * nx + (o.z - az) * nz) > 0 ? -1 : 1, off = o.r + PetRadius() + .18f;
-            float wx = o.x + nx * off * side, wz = o.z + nz * off * side;
-            if (Mathf.Sqrt(wx * wx + wz * wz) > FLOOR_R - .2f) { wx = o.x - nx * off * side; wz = o.z - nz * off * side; }
-            return new PathPt { x = wx, z = wz, y = 0 };
-        }
-
         private void PlanPath(float tx, float tz, float ty, Vector2? approach, Item skip)
         {
             var pts = new List<PathPt>();
             float cx = ai.x, cz = ai.z;
             if (ai.y > .02f && ai.perch.HasValue) { pts.Add(new PathPt { x = ai.perch.Value.x, z = ai.perch.Value.y, y = 0, big = true }); cx = ai.perch.Value.x; cz = ai.perch.Value.y; }
             float gx = approach.HasValue ? approach.Value.x : tx, gz = approach.HasValue ? approach.Value.y : tz;
-            var w = Detour(cx, cz, gx, gz, skip);
-            if (w != null) { pts.Add(w); var w2 = Detour(w.x, w.z, gx, gz, skip); if (w2 != null) pts.Add(w2); }
+            pts.AddRange(NavWay(cx, cz, gx, gz, skip)); // round tall pieces, over low ones
             if (approach.HasValue) pts.Add(new PathPt { x = approach.Value.x, z = approach.Value.y, y = 0 });
             pts.Add(new PathPt { x = tx, z = tz, y = ty, big = ty > .09f });
             ai.path = pts;
@@ -939,7 +910,7 @@ namespace Squishy.Runtime.Game
             {
                 var p = ai.path[0];
                 ai.path.RemoveAt(0);
-                ai.seg = new Seg { fx = ai.x, fz = ai.z, fy = ai.y, tx = p.x, tz = p.z, ty = p.y, big = p.big, chase = p.chase, d = 0, len = Mathf.Max(.001f, Dist(p.x - ai.x, p.z - ai.z)) };
+                ai.seg = new Seg { fx = ai.x, fz = ai.z, fy = ai.y, tx = p.x, tz = p.z, ty = p.y, big = p.big, chase = p.chase, on = p.on, d = 0, len = Mathf.Max(.001f, Dist(p.x - ai.x, p.z - ai.z)) };
             }
             var s = ai.seg;
             if (s == null) return;
@@ -951,6 +922,7 @@ namespace Squishy.Runtime.Game
             ai.x = s.fx + (s.tx - s.fx) * u;
             ai.z = s.fz + (s.tz - s.fz) * u;
             ai.y = s.fy + (s.ty - s.fy) * u;
+            if (s.chase) PushOutOfFurniture(ball); // chasing the ball: round the furniture, not through it
             YawTo(s.tx, s.tz, dt, 10);
             if (s.big) lift = .4f * Mathf.Sin(Mathf.PI * u);
             else
@@ -980,6 +952,7 @@ namespace Squishy.Runtime.Game
             else if (u >= 1)
             {
                 ai.seg = null;
+                if (s.on != null) { s.on.bv = -6; pet.V += 2.5f; sfx.Hop(); } // landed on a table or stool: it bounces like a tap
                 if (ai.path.Count == 0 && ai.mode == "walk")
                 {
                     pet.V += s.big ? 3 : 1.5f;

@@ -40,12 +40,14 @@ namespace Squishy.Runtime.Game
     {
         public float x, z, y;
         public bool big, chase;
+        public Item on; // a jump that lands on this low piece (it bounces)
     }
 
     public sealed class Seg
     {
         public float fx, fz, fy, tx, tz, ty, d, len;
         public bool big, chase;
+        public Item on;
     }
 
     public sealed class Spot

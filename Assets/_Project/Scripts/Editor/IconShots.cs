@@ -287,6 +287,7 @@ namespace Squishy.EditorTools
         private static void Extras(Bounds bb, Camera cam, Vector3 flat, RenderTexture rt, Texture2D tex, float warm)
         {
             var game = Squishy.Runtime.Game.SteamerGame.I;
+            Debug.Log(game.NavSelfCheck(200));
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             var model = (Squishy.Runtime.Models.SquishyModel)typeof(Squishy.Runtime.Game.SteamerGame).GetField("pet", flags).GetValue(game);
             foreach (Squishy.Runtime.Models.SquishyModel.Mouth m in System.Enum.GetValues(typeof(Squishy.Runtime.Models.SquishyModel.Mouth)))

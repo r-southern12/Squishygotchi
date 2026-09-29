@@ -546,7 +546,9 @@
       "comfort": 2,
       "max": 1,
       "price": 180,
-      "rooms": "bedroom"
+      "rooms": "bedroom",
+      "hop": 0.28,
+      "hopLow": 0.2
     },
     {
       "id": "chair",
@@ -557,7 +559,9 @@
       "comfort": 1,
       "max": 2,
       "price": 60,
-      "rooms": "living|kitchen"
+      "rooms": "living|kitchen",
+      "hop": 0.29,
+      "hopLow": 0.08
     },
     {
       "id": "teatable",
@@ -568,7 +572,9 @@
       "comfort": 1,
       "max": 1,
       "price": 120,
-      "rooms": "living|kitchen"
+      "rooms": "living|kitchen",
+      "hop": 0.356,
+      "hopLow": 0.216
     },
     {
       "id": "stove",
@@ -688,7 +694,9 @@
       "r": 0.2,
       "comfort": 1,
       "price": 50,
-      "rooms": "living"
+      "rooms": "living",
+      "hop": 0.12,
+      "hopLow": 0.12
     },
     {
       "id": "rug",
@@ -836,7 +844,9 @@
       "size": 3,
       "max": 1,
       "price": 260,
-      "rooms": "living|bedroom"
+      "rooms": "living|bedroom",
+      "hop": 0.25,
+      "hopLow": 0.25
     }
   ],
   "tomb": {

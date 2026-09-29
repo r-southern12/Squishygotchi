@@ -182,6 +182,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 - **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
 - **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
 - In squish mode (zoomed right in) taps on furniture are ignored.
+- **Getting about:** the squishy finds its way on a grid over the floor. It walks round tall pieces (stove, fridge, wardrobe, shower, walls) and, when a low piece (table, stool, cushion, bed, beanbag) is in its way, hops up onto it, across and down, and the piece bounces like a tap when it lands; brushing past a low piece's corner is a little hop over it. Chasing the ball, it slides round furniture instead of through it. Nothing is walked through.
 
 **Comfort**
 

@@ -15,6 +15,7 @@ namespace Squishy.Simulation.Game
         /// <summary>Items sharing a slot are swapped for one another (one toy out at a time).</summary>
         public string slot;
         public string rooms; // Arrange tray tabs it shows under ("kitchen|bathroom")
+        public float hop, hopLow; // low pieces the squishy can hop onto: how high it stands on top (low styles)
         public float r;
         /// <summary>Collision circles as flat (x, z, r) triples; empty means one circle of radius r.</summary>
         public float[] circles;
