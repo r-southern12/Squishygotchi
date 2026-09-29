@@ -299,6 +299,19 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Missions_Goal_Starts_Afresh_Monday_And_Thursday()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 2));
+            var wed = new DateTime(2026, 9, 30); // a Wednesday
+            Assert.AreEqual(DayOfWeek.Monday, rules.GoalStart(wed).DayOfWeek, "Wednesday is still Monday's goal");
+            Assert.AreEqual(DayOfWeek.Thursday, rules.GoalStart(wed.AddDays(1)).DayOfWeek, "Thursday starts a new one");
+            Assert.AreEqual(DayOfWeek.Thursday, rules.GoalStart(wed.AddDays(4)).DayOfWeek, "through Sunday");
+            Assert.AreEqual(10, c.rules.goalSteamers);
+            foreach (var t in c.tierRewards) { Assert.AreEqual(0, t.steamers, "tree tiers pay prestige, not steamers"); Assert.Greater(t.prestige, 0); }
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

@@ -288,7 +288,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | --- | --- |
 | Care task | 15–50 coins and 1 steamer each |
 | Task streak | 3 days: +1 steamer; 7 days: +2 steamers |
-| Weekly goal (15 tasks) | +3 steamers |
+| Missions goal (15 missions before it resets; a new goal every Monday and Thursday) | +10 steamers |
 | Free steamer | 1 to claim from the gift chip; refills at each 3-hour reset on the clock (midnight, 3am, 6am...), so the wait is often under 3 hours; it does not stack while away |
 | Bonus steamer | 1 more, refilling at the same 3-hour resets: an optional short video for free players, simply included with the full game |
 | Every 3 hours | 5 at most: 3 from care tasks, the free one and the bonus one. Nothing arrives on its own. |
@@ -296,7 +296,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Tips (it played on its own) | 1–5 coins each, piling up for up to 5 minutes; one squish collects them |
 | Visiting a friend | 3 coins per caring action (they get 2) |
-| Completing a squishy tree tier | 2–5 steamers |
+| Completing a squishy tree tier | 20–60 prestige (not steamers) |
 | Duplicate furniture skin | 20 coins |
 | Duplicate tool / tool skin / steamer skin | 10 / 15 / 30 coins |
 
@@ -433,7 +433,7 @@ Soft-block diorama with a tilt-shift miniature look.
 - [x] Real-money model: free trial with light ads vs one-off paid unlock.
 - [ ] Release pacing: drain hours per need, time at zero before death (current values above are first guesses).
 - [x] Lifespan and old-age prestige.
-- [x] Daily task refresh, streaks, weekly goals.
+- [x] Daily task refresh, streaks, the missions goal (Monday and Thursday).
 - [x] Notification policy.
 - [ ] Launch styles vs later event styles.
 - [x] Friend features for v1: codes, visits, caring for coins.

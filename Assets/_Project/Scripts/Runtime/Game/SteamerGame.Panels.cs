@@ -154,7 +154,17 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s") + " · this week " + Rules.WeekTasks() + "/" + C.rules.weeklyGoal);
+            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s"));
+            // The missions goal, spelled out: how many done, the reward, and when a new one starts.
+            {
+                int got = Rules.GoalTasks(), goal = C.rules.goalMissions;
+                string next = Rules.NextGoalStart().DayOfWeek.ToString();
+                var gbar = Hud.Bar(Mathf.Clamp01(got / (float)goal), 8, "#D9A64A", 0, 6);
+                ui.Rec(body, "steamerbox", "Missions goal: " + Mathf.Min(got, goal) + " of " + goal,
+                    Rules.GoalDone() ? "Done! +" + C.rules.goalSteamers + " steamers collected. A new goal starts " + next + "."
+                                     : "Finish " + goal + " missions before " + next + " for +" + C.rules.goalSteamers + " steamers. A new goal starts every Monday and Thursday.",
+                    null, null, false, gbar);
+            }
             for (int i = 0; i < S.tasks.Count; i++)
             {
                 var t = S.tasks[i];

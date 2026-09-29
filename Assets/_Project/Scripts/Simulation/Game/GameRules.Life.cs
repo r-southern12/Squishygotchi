@@ -197,9 +197,9 @@ namespace Squishy.Simulation.Game
             return true;
         }
 
-        // ---- daily streak and weekly goal ----
+        // ---- daily streak and the missions goal ----
 
-        /// <summary>Called when a task is claimed. Returns a message when a streak or weekly reward is earned.</summary>
+        /// <summary>Called when a task is claimed. Returns a message when a streak or goal reward is earned.</summary>
         public string RecordTaskDone()
         {
             var today = Clock.UtcNow.ToLocalTime().Date;
@@ -212,21 +212,48 @@ namespace Squishy.Simulation.Game
                 if (S.streak % 7 == 0) { SetSteamers(S.steamers + 2); msg = S.streak + "-day streak! +2 steamers"; }
                 else if (S.streak % 7 == 3) { SetSteamers(S.steamers + 1); msg = "3-day streak! +1 steamer"; }
             }
-            var week = WeekStart(today);
-            if (S.weekStart != week.Ticks) { S.weekStart = week.Ticks; S.weekTasks = 0; S.weekClaimed = false; }
+            var start = GoalStart(today);
+            if (S.weekStart != start.Ticks) { S.weekStart = start.Ticks; S.weekTasks = 0; S.weekClaimed = false; }
             S.weekTasks++;
-            if (!S.weekClaimed && S.weekTasks >= R.weeklyGoal)
+            if (!S.weekClaimed && S.weekTasks >= R.goalMissions)
             {
                 S.weekClaimed = true;
-                SetSteamers(S.steamers + R.weeklySteamers);
-                msg = "Weekly goal done! +" + R.weeklySteamers + " steamers";
+                SetSteamers(S.steamers + R.goalSteamers);
+                msg = "Missions goal done! +" + R.goalSteamers + " steamers";
             }
             return msg;
         }
 
-        public int WeekTasks() { return S.weekStart == WeekStart(Clock.UtcNow.ToLocalTime().Date).Ticks ? S.weekTasks : 0; }
+        /// <summary>Missions done towards the current goal.</summary>
+        public int GoalTasks() { return S.weekStart == GoalStart(Clock.UtcNow.ToLocalTime().Date).Ticks ? S.weekTasks : 0; }
 
-        private static DateTime WeekStart(DateTime d) { return d.AddDays(-(((int)d.DayOfWeek + 6) % 7)); }
+        /// <summary>Whether the current goal has been reached (and paid).</summary>
+        public bool GoalDone() { return GoalTasks() >= R.goalMissions && S.weekClaimed; }
+
+        /// <summary>
+        /// The missions goal starts afresh on set days of the week (Monday and Thursday, data), so there's a new one
+        /// midweek as well as at the start of the week.
+        /// </summary>
+        public DateTime GoalStart(DateTime localDay)
+        {
+            var d = localDay.Date;
+            for (int k = 0; k < 7; k++, d = d.AddDays(-1)) if (IsGoalDay(d)) return d;
+            return localDay.Date;
+        }
+
+        /// <summary>When the next goal starts (local date).</summary>
+        public DateTime NextGoalStart()
+        {
+            var d = Clock.UtcNow.ToLocalTime().Date.AddDays(1);
+            for (int k = 0; k < 7; k++, d = d.AddDays(1)) if (IsGoalDay(d)) return d;
+            return d;
+        }
+
+        private bool IsGoalDay(DateTime d)
+        {
+            var days = R.goalResetDays != null && R.goalResetDays.Length > 0 ? R.goalResetDays : new[] { 1 };
+            return Array.IndexOf(days, (int)d.DayOfWeek) >= 0;
+        }
 
         // ---- collection tree ----
 

@@ -84,7 +84,8 @@ namespace Squishy.Simulation.Game
         public float dentRadius, flingHold, flingSpeed; // tactile squish: dent size in the world; hold time and speed of the ping // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;
-        public int weeklyGoal, weeklySteamers;
+        public int goalMissions, goalSteamers; // the missions goal: this many missions before it resets pays these steamers
+        public int[] goalResetDays; // the goal starts afresh on these days of the week (1 = Monday, 4 = Thursday)
         public bool adminTools;
         public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos, musicCredit;
     }

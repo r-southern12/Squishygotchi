@@ -302,9 +302,9 @@ namespace Squishy.Runtime.Game
                 {
                     bool done = Rules.TierClaimed(tier), full = own >= total;
                     var t = tier;
-                    Hud.Button(bar, done ? "Claimed" : full ? "Claim +" + rw.steamers + " steamers" : "Complete: +" + rw.steamers + " steamers", "#6F9A74", "#4C7552", Hud.Cream, 10, 30, 12, () =>
+                    Hud.Button(bar, done ? "Claimed" : full ? "Claim +" + rw.prestige + " prestige" : "Complete: +" + rw.prestige + " prestige", "#6F9A74", "#4C7552", Hud.Cream, 10, 30, 12, () =>
                     {
-                        if (Rules.ClaimTier(t)) { sfx.Chime(); ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .4f), t + " set complete!"); WriteSave(); DrawCatalogue(); }
+                        if (Rules.ClaimTier(t)) { sfx.Chime(); ui.SetPrestige(S.prestige); ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .4f), t + " set complete! +" + rw.prestige + " prestige"); WriteSave(); DrawCatalogue(); }
                     }, done || !full, 3).Pad(0, 10, 0, 10);
                 }
                 VisualElement row = null;

@@ -2786,8 +2786,6 @@
     "prestigePerQol": 250,
     "trialDays": 28,
     "giftHours": 3,
-    "weeklyGoal": 15,
-    "weeklySteamers": 3,
     "adminTools": true,
     "fullUnlockProductId": "full_unlock",
     "adsGameIdAndroid": "",
@@ -2829,7 +2827,13 @@
     "tipStackSeconds": 300,
     "calmDrain": 0.8,
     "comboGap": 0.3,
-    "comboComfort": 2
+    "comboComfort": 2,
+    "goalMissions": 15,
+    "goalSteamers": 10,
+    "goalResetDays": [
+      1,
+      4
+    ]
   },
   "cosmetics": [
     {
@@ -3172,38 +3176,43 @@
   "tierRewards": [
     {
       "tier": "Common",
-      "steamers": 2,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 20
     },
     {
       "tier": "Glitter",
-      "steamers": 3,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 30
     },
     {
       "tier": "Pattern",
-      "steamers": 3,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 30
     },
     {
       "tier": "Galaxy",
-      "steamers": 4,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 40
     },
     {
       "tier": "UV",
-      "steamers": 4,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 40
     },
     {
       "tier": "Holographic",
-      "steamers": 4,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 50
+    },
+    {
+      "tier": "Aquarium",
+      "steamers": 0,
+      "prestige": 50
     },
     {
       "tier": "Legendary",
-      "steamers": 5,
-      "prestige": 0
+      "steamers": 0,
+      "prestige": 60
     }
   ],
   "starter": {
