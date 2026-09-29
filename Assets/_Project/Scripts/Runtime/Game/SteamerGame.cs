@@ -330,6 +330,7 @@ namespace Squishy.Runtime.Game
         private void OnApplicationPause(bool paused)
         {
             if (paused && visiting) EndVisit(true); // never leave the app mid-visit: your own squishy comes back first
+            if (paused && S.overnight == "auto" && !visiting && Rules.CanSleep(System.DateTime.Now) && S.lastNightPrompt != GameRules.NightKey(System.DateTime.Now)) Rules.GoToSleep(System.DateTime.UtcNow, System.DateTime.Now);
             if (paused) { ptrs.Clear(); drag = null; _pausedAt = System.DateTime.UtcNow; WriteSave(); Notifier.Schedule(Rules, comfort); return; }
             Notifier.Clear();
             if (!_pausedAt.HasValue) return;

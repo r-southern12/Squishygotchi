@@ -191,6 +191,26 @@ namespace Squishy.Runtime.Game
             if (S.musicOn && S.soundOn) TrackRow(body);
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
             Toggle(body, "Reminders", S.notificationsOn, v => { S.notificationsOn = v; Notifier.Enabled = v; if (!v) Notifier.Clear(); });
+            // Bedtime: tucked in for the night (Rest fills, the others drain slowly).
+            Hud.Para(body, "Overnight: tucked in for the night, Rest fills up and the other needs drain slowly.", 12, "#6F5F52").Margin(6, 0, 4, 0);
+            var ov = new VisualElement().Row(Align.Center).In(body);
+            ov.style.marginBottom = 8;
+            foreach (var (id, label) in new[] { ("ask", "Ask each evening"), ("auto", "Tuck in by itself"), ("off", "Off") })
+            {
+                bool on = S.overnight == id;
+                var b = Hud.Button(ov, label, on ? "#8C7BB0" : "#EADCC6", on ? "#6A5A8E" : "#CDB999", on ? Hud.Cream : Hud.Ink, 12, 36, 12, () => { S.overnight = id; WriteSave(); OnSettings(); }, false, 3);
+                b.style.flexGrow = 1;
+                b.style.flexBasis = 0;
+                b.Margin(0, 3, 0, 3);
+            }
+            // Holiday pause: only here, never one tap away in the game.
+            if (!S.dead)
+                Toggle(body, "Holiday pause (needs pause while you're away)", S.tucked, v =>
+                {
+                    if (v && !Rules.CanTuck()) { Floater("Too weak to pause now: look after " + Rules.Fav.name + " first", "bad"); OnSettings(); return; }
+                    if (v) Tuck(); else Wake();
+                    OnSettings();
+                });
             if (S.notificationsOn && Notifier.PermissionState() == "blocked")
             {
                 // The phone is blocking them (permission refused): one tap to the setting that allows them.

@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 11;
+        public const int CurrentVersion = 12;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -50,6 +50,13 @@ namespace Squishy.Simulation.Save
             {
                 // v11: rooms start at 15 pieces and go to 30 (were 12 to 20); keep at least the space they had.
                 data.state.roomLv = Math.Max(0, data.state.roomLv - 3);
+            }
+            if (data.version < 12 && data.state != null)
+            {
+                // v12: the pause is now "Holiday pause" in Settings (it was one tap away on the Squishies screen and
+                // got switched on by accident): off to begin with; bedtime gets its own setting.
+                data.state.tucked = false;
+                if (string.IsNullOrEmpty(data.state.overnight)) data.state.overnight = "ask";
             }
             data.version = CurrentVersion;
         }

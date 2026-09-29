@@ -305,7 +305,7 @@ namespace Squishy.Runtime.Game
         private void UseItem(Item it, bool user, RecipeData recipe = null, Activity chainFrom = null)
         {
             if (S.dead) return;
-            if (S.tucked) { if (user) Floater("Tucked in · tap " + Rules.Fav.name + " to wake", "bad"); return; }
+            if (S.tucked) { if (user) Floater("Holiday pause is on · turn it off in Settings", "bad"); return; }
             string role = it.a.role;
             // Asleep for the night: it stays in bed (lights and watering still work; the moon wakes it).
             if (S.asleep && chainFrom == null && !sleepStarting && role != "lamp" && role != "plant") { if (user) FloaterAt(it, "Shh, " + Rules.Fav.name + " is asleep"); return; }
@@ -656,8 +656,9 @@ namespace Squishy.Runtime.Game
             FinishActivity();
         }
 
-        // ---------------- tuck in (pause) ----------------
+        // ---------------- holiday pause (Settings) ----------------
 
+        /// <summary>Holiday pause, from Settings only: every need pauses (Rest still fills) while you're away.</summary>
         public void Tuck()
         {
             if (S.tucked || !Rules.CanTuck()) return;
@@ -669,8 +670,8 @@ namespace Squishy.Runtime.Game
             ai.mode = "idle";
             ui.HideBubble();
             S.tucked = true;
-            Floater("Sleep tight!");
-            ui.SetHint(Rules.Fav.name + " is tucked in · needs are paused");
+            Floater("Holiday pause on");
+            ui.SetHint("Holiday pause · needs are paused · turn it off in Settings");
             sfx.Chime();
             WriteSave();
         }
@@ -681,7 +682,7 @@ namespace Squishy.Runtime.Game
             S.tucked = false;
             ai.idleT = 1.5f;
             pet.V += 3;
-            Floater("Good morning!");
+            Floater("Welcome back!");
             ui.SetHint("");
             sfx.Chime();
             WriteSave();
@@ -808,7 +809,7 @@ namespace Squishy.Runtime.Game
                 pet.Update(dt, .18f + .04f * Mathf.Sin(time * 1.6f), true, 0);
                 zTimer -= dt;
                 if (zTimer <= 0 && mode == "home") { zTimer = 1.6f; Floater("z", "z"); }
-                ui.SetCond("Tucked in", "#8C7BB0");
+                ui.SetCond("Holiday pause", "#8C7BB0");
                 ai.actT += dt;
                 ApplyPetTransform(0, true);
                 AnimateFurniture(dt);
@@ -831,7 +832,8 @@ namespace Squishy.Runtime.Game
             if (died) { Die(); return; }
             float cond = Condition();
             var st = GameRules.Stage(cond);
-            ui.SetCond(st[0], st[1]);
+            if (S.asleep) ui.SetCond("Tucked in", "#8C7BB0"); // asleep for the night
+            else ui.SetCond(st[0], st[1]);
             float droop = Sstep(.5f, .08f, cond);
             pet.Grey = Sstep(.25f, .03f, cond) * .85f;
             if (cond > .5f && mode == "home")

@@ -474,9 +474,6 @@ namespace Squishy.Runtime.Game
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); TaskEvent("swap_fav"); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {
-                    if (S.tucked) Act("Wake up", () => { Wake(); CloseCatalogue(); });
-                    else if (Rules.CanTuck()) Act("Tuck in (pauses needs)", () => { Tuck(); CloseCatalogue(); });
-                    else note = "Too weak to rest now: look after it first. " + note;
                 }
                 if (e.i == S.favIdx) note = "Your favourite · " + note;
             }

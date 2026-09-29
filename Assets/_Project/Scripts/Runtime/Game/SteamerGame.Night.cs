@@ -28,11 +28,16 @@ namespace Squishy.Runtime.Game
                 if (DateTime.UtcNow.Ticks >= S.sleepUntil) { ShowWakeScreen(null); return; } // morning came while playing
                 if ((ai.act == null || !ai.act.night) && drag == null && !pet.Held) SleepNow(); // back to bed after being moved or interrupted
             }
-            if (!can || ui.IntroOn || ui.NightOn || S.lastNightPrompt == GameRules.NightKey(local) || DateTime.UtcNow.Ticks < S.nightSnoozeUntil) { nightAsk = -1; return; }
+            if (!can || ui.IntroOn || ui.NightOn || S.overnight == "off" || S.lastNightPrompt == GameRules.NightKey(local) || DateTime.UtcNow.Ticks < S.nightSnoozeUntil) { nightAsk = -1; return; }
             if (nightAsk < 0) nightAsk = 0;
             nightAsk += dt;
             // After a little while in the game, and never over a panel, a dialog or a drag.
-            if (nightAsk > C.rules.nightAskSeconds && drag == null && !ui.AnyPanelOpen) { nightAsk = -1; AskNight(); }
+            if (nightAsk > C.rules.nightAskSeconds && drag == null && !ui.AnyPanelOpen)
+            {
+                nightAsk = -1;
+                if (S.overnight == "auto") { S.lastNightPrompt = GameRules.NightKey(local); GoToBed(); } // tucked in by itself (the moon wakes it)
+                else AskNight();
+            }
         }
 
         public void OnMoon() { if (S.asleep) ShowWakeScreen(null); else AskNight(); }

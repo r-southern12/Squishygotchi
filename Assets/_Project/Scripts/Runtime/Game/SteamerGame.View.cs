@@ -188,7 +188,7 @@ namespace Squishy.Runtime.Game
             }
             if (onPet)
             {
-                if (S.tucked) { Wake(); return; }
+                if (S.tucked) { Floater("Holiday pause is on · turn it off in Settings"); return; }
                 if (ai.mode == "act" && ai.act != null && ai.act.act.scrub) { drag.scrub = true; return; }
                 if (CloseUp && BeginTactile(p)) return;
                 drag.squish = true;
