@@ -87,9 +87,33 @@ namespace Squishy.Simulation.Game
             foreach (var p in st.room) s.items.Add(new PieceState { key = p.key, x = p.x * st.roomScale, z = p.z * st.roomScale, ry = p.ry });
             s.storage.AddRange(st.storage);
             var rules = new GameRules(c, s);
+            rules.RandomiseStarterStyles();
             for (int i = 0; i < 3; i++) s.tasks.Add(rules.NewTask());
             s.rng = rules._rng.State;
             return s;
+        }
+
+        /// <summary>
+        /// A new game's pieces (in the room and in storage) each come in a random Common style, so every start looks
+        /// different; the pieces you own follow.
+        /// </summary>
+        private void RandomiseStarterStyles()
+        {
+            if (C.Catalogue == null) return;
+            string Pick(string key)
+            {
+                string arch = key.Split(':')[0];
+                var commons = C.Catalogue.FindAll(x => x.arch == arch && x.rarity == "Common");
+                if (commons.Count == 0) return key;
+                string next = commons[Math.Min(commons.Count - 1, (int)(Random() * commons.Count))].key;
+                int o = S.owned.IndexOf(key);
+                if (o >= 0) S.owned[o] = next; else if (!S.owned.Contains(next)) S.owned.Add(next);
+                return next;
+            }
+            foreach (var p in S.items) p.key = Pick(p.key);
+            for (int i = 0; i < S.storage.Count; i++) S.storage[i] = Pick(S.storage[i]);
+            _owned.Clear();
+            foreach (var k in S.owned) _owned.Add(k);
         }
 
         // ---- random ----

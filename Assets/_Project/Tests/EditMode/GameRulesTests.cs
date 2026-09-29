@@ -205,7 +205,9 @@ namespace Squishy.Tests
             var c = Content();
             var rules = new GameRules(c, GameRules.NewState(c, 1));
             Assert.IsEmpty(rules.MissingFor(c.recipes[0]), "congee is always free");
-            Assert.IsEmpty(rules.MissingFor(c.recipes[2]), "pork & chive stir-fry: pork, chives, wok (all in the starter kitchen)");
+            CollectionAssert.Contains(rules.MissingFor(c.recipes[2]), "Wok", "pork & chive stir-fry needs a wok, which starts in steamers");
+            int scramble = System.Array.FindIndex(c.recipes, r => r.name == "Egg & chive scramble");
+            Assert.IsEmpty(rules.MissingFor(c.recipes[scramble]), "egg & chive scramble: egg, chives, spatula (all in the starter kitchen)");
             CollectionAssert.Contains(rules.MissingFor(c.recipes[16]), "Kitchen Lv 4");
             // Only starter recipes are known at first; the rest come from kitchen kits.
             Assert.IsTrue(rules.Knows(0) && rules.Knows(2));
@@ -219,9 +221,9 @@ namespace Squishy.Tests
             var c = Content();
             var rules = new GameRules(c, GameRules.NewState(c, 1));
             foreach (var k in c.skins) Assert.IsFalse(string.IsNullOrEmpty(k.music), k.name + " has a track");
-            CollectionAssert.AreEqual(new[] { 0, 1 }, rules.UnlockedTracks(), "the starter steamers' tracks at first");
+            CollectionAssert.AreEqual(new[] { 0 }, rules.UnlockedTracks(), "the Bamboo steamer's track at first");
             rules.AddOwned("skin:3");
-            CollectionAssert.AreEqual(new[] { 0, 1, 3 }, rules.UnlockedTracks());
+            CollectionAssert.AreEqual(new[] { 0, 3 }, rules.UnlockedTracks());
         }
 
         [Test]
@@ -359,6 +361,32 @@ namespace Squishy.Tests
             tr.StepCare(3600, 0);
             Assert.AreEqual(.5f, t.needs[Needs.Hunger], 1e-5);
             Assert.Greater(t.needs[Needs.Rest], .2f);
+        }
+
+        [Test]
+        public void New_Game_Starts_Bare_With_Random_Common_Pieces()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 21);
+            var rules = new GameRules(c, s);
+            Assert.AreEqual(0, s.coins);
+            Assert.AreEqual(0, s.steamers);
+            Assert.AreEqual(1, s.squishOwned.Count, "one squishy");
+            Assert.IsFalse(s.owned.Exists(k => k.StartsWith("sink:")), "no sink to start");
+            Assert.IsFalse(s.owned.Exists(k => k.StartsWith("tool:") && k != "tool:0"), "spatula only");
+            Assert.IsFalse(s.owned.Exists(k => k == "skin:1"), "Bamboo steamer only");
+            foreach (var t in new[] { "pomwand", "bubbles", "xylophone", "slide" }) Assert.IsFalse(s.owned.Exists(k => k.StartsWith(t + ":")), "the ball is the only toy");
+            var keys = new System.Collections.Generic.List<string>(s.storage);
+            foreach (var p in s.items) keys.Add(p.key);
+            foreach (var k in keys)
+            {
+                Assert.AreEqual("Common", c.Catalogue.Find(x => x.key == k).rarity, k + " is Common");
+                Assert.IsTrue(rules.Owned(k), k + " is owned");
+            }
+            var other = GameRules.NewState(c, 99);
+            bool differs = false;
+            for (int i = 0; i < s.items.Count; i++) differs |= s.items[i].key != other.items[i].key;
+            Assert.IsTrue(differs, "a different start each new game");
         }
 
         [Test]

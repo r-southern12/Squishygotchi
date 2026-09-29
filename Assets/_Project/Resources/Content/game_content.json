@@ -3219,11 +3219,11 @@
     }
   ],
   "starter": {
-    "coins": 248,
-    "steamers": 3,
+    "coins": 0,
+    "steamers": 0,
     "favourite": 0,
     "roomLevel": 0,
-    "age": 3,
+    "age": 0,
     "needs": [
       0.74,
       0.62,
@@ -3236,24 +3236,16 @@
       "teatable:teahouse",
       "stove:nordic",
       "fridge:blockprint",
-      "sink:aegean",
       "tub:aegean",
       "lamp:midcentury",
       "plant:greenhouse",
       "shelf:teahouse",
       "rug:persian",
       "ball:candy",
-      "pomwand:candy",
-      "bubbles:aegean",
-      "xylophone:folk",
-      "slide:cottage",
       "cushion:blockprint",
       "wall:tatami",
       "tool:0",
-      "tool:3",
-      "tool:5",
       "skin:0",
-      "skin:1",
       "food:0",
       "food:1",
       "food:2",
@@ -3376,11 +3368,7 @@
       }
     ],
     "storage": [
-      "wall:tatami",
-      "pomwand:candy",
-      "bubbles:aegean",
-      "xylophone:folk",
-      "slide:cottage"
+      "wall:tatami"
     ]
   },
   "combos": [

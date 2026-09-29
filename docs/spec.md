@@ -286,7 +286,7 @@ Meals are cooked from ingredients using tools. **Snacks are separate**: bought i
 
 ## Economy
 
-Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **prestige** (from lives lived well). New players start with 248 coins, 3 steamers and one Common squishy (Peach); every other squishy is found in steamers.
+Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **prestige** (from lives lived well). New players start with 0 coins, 0 steamers and one Common squishy (Peach, day 0); every other squishy is found in steamers. The starter room (rug, bed, tea table, stool, stove, pantry cupboard, bathtub, lamp, plant, shelf, floor cushion, ball) and the wall panel in storage come in a random Common style each new game. Only the spatula to start (other tools come from steamers or the shop), the Bamboo steamer, and the ball as the only toy (the others are found in steamers). No sink to start.
 
 | Source | Amount |
 | --- | --- |
