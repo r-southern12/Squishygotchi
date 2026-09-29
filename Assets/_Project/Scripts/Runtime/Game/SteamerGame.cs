@@ -200,12 +200,14 @@ namespace Squishy.Runtime.Game
             float f1, f2 = -1;
             if (mode != "unbox")
             {
-                f1 = ViewportY(PetWorld() + Vector3.up * (pet.Scale * .6f));
+                // Arranging: sharp where you're looking (the piece you picked, or the middle of the view), not on the squishy.
+                f1 = mode == "edit" ? (sel != null ? ViewportY(sel.Pos + Vector3.up * .3f) : .5f) : ViewportY(PetWorld() + Vector3.up * (pet.Scale * .6f));
                 if (ai.target != null && (mode == "home" || mode == "visit")) f2 = ViewportY(ai.target.Pos + Vector3.up * .3f);
             }
             else if (ucam.kind == "closed") f1 = ViewportY(new Vector3(0, H * layers * US * .6f, 0));
             else f1 = ViewportY(new Vector3(0, TierY + ucam.half * .5f, 0));
-            float focus = f1, band = mode == "edit" ? .6f : (mode == "unbox" && ucam.kind != "closed") ? .3f : .13f; // narrower reveal band keeps the kitchen soft
+            float focus = f1, band = mode == "edit" ? Mathf.Lerp(1.3f, .6f, camS.ezT) : // zooming in while arranging: the band widens until nothing is blurred
+                (mode == "unbox" && ucam.kind != "closed") ? .3f : .13f; // narrower reveal band keeps the kitchen soft
             if (f2 >= 0) { focus = (f1 + f2) / 2; band = Mathf.Max(band, Mathf.Abs(f1 - f2) / 2 + .08f); }
             focusS += (focus - focusS) * Mathf.Min(1, dt * 5);
             bandS += (band - bandS) * Mathf.Min(1, dt * 4);
