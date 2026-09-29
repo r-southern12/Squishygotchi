@@ -35,45 +35,54 @@ namespace Squishy.Simulation.Game
         }
 
         /// <summary>
-        /// The group filling the most slots: every piece in it within reach of one of them (the anchor), each piece
-        /// used once per combo.
+        /// The group filling the most slots, each piece used once. The pieces must be together: every one right next
+        /// to another in the group (edge to edge within a small gap; on the rug counts), all joined up. They used to
+        /// only need to be within 1.1 of one of them, which in a small room was nearly anywhere (user feedback).
         /// </summary>
         public ComboMatch Match(ComboData c, IList<PieceState> items)
         {
             int n = c.slots.Length;
-            float near = c.near > 0 ? c.near : R.comboNear;
+            float gap = c.gap > 0 ? c.gap : R.comboGap;
             var best = new ComboMatch { combo = c, pieces = new PieceState[n] };
-            var cur = new PieceState[n];
             var cands = new List<PieceState>[n];
-            foreach (var anchor in items)
+            for (int j = 0; j < n; j++)
             {
-                bool fits = false;
-                for (int j = 0; j < n; j++) fits |= Fits(c.slots[j], anchor.Arch);
-                if (!fits) continue;
-                for (int j = 0; j < n; j++)
-                {
-                    cands[j] = new List<PieceState>();
-                    foreach (var p in items) if (Fits(c.slots[j], p.Arch) && Near(anchor, p, near)) cands[j].Add(p);
-                }
-                Search(0, 0, cands, cur, best, anchor);
-                if (best.have == n) break;
+                cands[j] = new List<PieceState>();
+                foreach (var p in items) if (Fits(c.slots[j], p.Arch)) cands[j].Add(p);
             }
+            Search(0, 0, cands, new PieceState[n], best, gap);
             return best;
         }
 
-        private static bool Near(PieceState a, PieceState b, float d)
+        /// <summary>Edge to edge (by footprint radius), these two pieces are within the gap.</summary>
+        public bool Touching(PieceState a, PieceState b, float gap)
         {
+            var ta = C.Type(a.Arch);
+            var tb = C.Type(b.Arch);
             float dx = a.x - b.x, dz = a.z - b.z;
-            return dx * dx + dz * dz <= d * d;
+            return (float)Math.Sqrt(dx * dx + dz * dz) - (ta != null ? ta.r : 0) - (tb != null ? tb.r : 0) <= gap;
         }
 
-        private static void Search(int j, int have, List<PieceState>[] cands, PieceState[] cur, ComboMatch best, PieceState anchor)
+        /// <summary>Whether the chosen pieces form one group, each touching another.</summary>
+        private bool Joined(PieceState[] cur, float gap)
+        {
+            var set = new List<PieceState>();
+            foreach (var p in cur) if (p != null) set.Add(p);
+            if (set.Count <= 1) return true;
+            var reached = new List<PieceState> { set[0] };
+            for (int k = 0; k < reached.Count; k++)
+                foreach (var p in set)
+                    if (!reached.Contains(p) && Touching(reached[k], p, gap)) reached.Add(p);
+            return reached.Count == set.Count;
+        }
+
+        private void Search(int j, int have, List<PieceState>[] cands, PieceState[] cur, ComboMatch best, float gap)
         {
             int n = cur.Length;
             if (have + (n - j) <= best.have) return; // can't beat the best any more
             if (j == n)
             {
-                if (Array.IndexOf(cur, anchor) < 0) return; // a group round this anchor must include it
+                if (!Joined(cur, gap)) return;
                 best.have = have;
                 Array.Copy(cur, best.pieces, n);
                 return;
@@ -82,10 +91,11 @@ namespace Squishy.Simulation.Game
             {
                 if (Array.IndexOf(cur, p) >= 0) continue;
                 cur[j] = p;
-                Search(j + 1, have + 1, cands, cur, best, anchor);
+                Search(j + 1, have + 1, cands, cur, best, gap);
                 cur[j] = null;
+                if (best.have == n) return;
             }
-            Search(j + 1, have, cands, cur, best, anchor);
+            Search(j + 1, have, cands, cur, best, gap);
         }
 
         /// <summary>Combos completed for the first time ever (each is celebrated once).</summary>

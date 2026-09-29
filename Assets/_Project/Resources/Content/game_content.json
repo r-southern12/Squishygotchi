@@ -2780,8 +2780,8 @@
     "taskSteamers": 1,
     "cooksPerLevel": 5,
     "tipStackSeconds": 300,
-    "comboNear": 1.1,
-    "calmDrain": 0.8
+    "calmDrain": 0.8,
+    "comboGap": 0.3
   },
   "cosmetics": [
     {

@@ -267,6 +267,12 @@ namespace Squishy.Tests
             var spa = all.Find(m => m.combo.id == "spa_bath");
             Assert.AreEqual(1, spa.have, "a lone plant is 1 of 2 towards the spa bath");
             Assert.IsNull(spa.pieces[0], "the missing piece stays unknown");
+            // Near is right next to: a tub and a plant a metre apart are not a spa bath; side by side they are.
+            room.Add(new PieceState { key = "tub:" + sty, x = -3, z = -3 });
+            room.Add(new PieceState { key = "plant:" + sty, x = -2, z = -3 });
+            Assert.AreEqual(1, rules.Combos(room).Find(m => m.combo.id == "spa_bath").have, "a metre apart is too far");
+            room[room.Count - 1].x = -2.45f;
+            Assert.IsTrue(rules.Combos(room).Find(m => m.combo.id == "spa_bath").Done, "side by side");
             room[2].x = 3; // the cushion moves away: tea time is 2 of 3
             tea = rules.Combos(room).Find(m => m.combo.id == "tea_time");
             Assert.AreEqual(2, tea.have);

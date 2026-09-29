@@ -346,7 +346,7 @@ namespace Squishy.Runtime.Game
         {
             if (combos.Count == 0) return;
             Hud.Sec(body, "Combos · " + combos.Count(m => m.Done) + " of " + combos.Count);
-            Hud.Para(body, "Some pieces are better together. Put them near each other to find out what they do.", 12, "#6F5F52");
+            Hud.Para(body, "Some pieces are better together. Put them right next to each other (or on the same rug) to find out what they do.", 12, "#6F5F52");
             foreach (var m in combos.OrderByDescending(x => x.Done).ThenByDescending(x => x.have))
             {
                 var row = new Frame().Set(Css.C(m.Done ? "#EEF3E6" : "#FFF9EF"), 12).Col().Pad(7, 10, 7, 10).In(body);

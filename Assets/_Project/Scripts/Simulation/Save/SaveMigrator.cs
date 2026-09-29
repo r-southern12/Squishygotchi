@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 7;
+        public const int CurrentVersion = 8;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -30,6 +30,7 @@ namespace Squishy.Simulation.Save
             }
             if (data.version < 6 && data.state != null) data.state.soundOn = true; // v6: sound was off by default (a browser-prototype habit); switch it on once
             if (data.version < 7 && data.state != null) data.state.musicOn = true; // v7: real music replaced the synth loop; switch it on once
+            if (data.version < 8 && data.state != null && data.state.combosFound != null) data.state.combosFound.Clear(); // v8: combos need their pieces right next to each other; found under the old loose rule doesn't count
             data.version = CurrentVersion;
         }
     }

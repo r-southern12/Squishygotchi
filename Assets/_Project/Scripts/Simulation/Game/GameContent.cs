@@ -38,7 +38,7 @@ namespace Squishy.Simulation.Game
         public string[] slots;
         public int thenSlot;
         public bool chainLeads, passive;
-        public float near, calmMinutes, cookMul, wearSkip, bonusIng;
+        public float gap, calmMinutes, cookMul, wearSkip, bonusIng; // gap: how close the pieces must be (edge to edge); 0 = rules.comboGap
     }
 
     [Serializable] public class RoomLevelData { public float r; public int slots, need, cost; }
@@ -71,7 +71,7 @@ namespace Squishy.Simulation.Game
         public float taskCooldownHours;
         public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
         public float tipStackSeconds;
-        public float comboNear, calmDrain; // combo pieces within this of one another; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
+        public float comboGap, calmDrain; // combo pieces must be this close edge to edge; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
