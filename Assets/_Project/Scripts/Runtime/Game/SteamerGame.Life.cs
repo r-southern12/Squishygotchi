@@ -191,18 +191,8 @@ namespace Squishy.Runtime.Game
             if (S.musicOn && S.soundOn) TrackRow(body);
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
             Toggle(body, "Reminders", S.notificationsOn, v => { S.notificationsOn = v; Notifier.Enabled = v; if (!v) Notifier.Clear(); });
-            // Bedtime: tucked in for the night (Rest fills, the others drain slowly).
-            Hud.Para(body, "Overnight: tucked in for the night, Rest fills up and the other needs drain slowly.", 12, "#6F5F52").Margin(6, 0, 4, 0);
-            var ov = new VisualElement().Row(Align.Center).In(body);
-            ov.style.marginBottom = 8;
-            foreach (var (id, label) in new[] { ("ask", "Ask each evening"), ("auto", "Tuck in by itself"), ("off", "Off") })
-            {
-                bool on = S.overnight == id;
-                var b = Hud.Button(ov, label, on ? "#8C7BB0" : "#EADCC6", on ? "#6A5A8E" : "#CDB999", on ? Hud.Cream : Hud.Ink, 12, 36, 12, () => { S.overnight = id; WriteSave(); OnSettings(); }, false, 3);
-                b.style.flexGrow = 1;
-                b.style.flexBasis = 0;
-                b.Margin(0, 3, 0, 3);
-            }
+            // Bedtime: the evening question to tuck it in (tucking in is always your choice; the moon button works either way).
+            Toggle(body, "Bedtime reminder (asks each evening)", S.overnight != "off", v => { S.overnight = v ? "ask" : "off"; WriteSave(); });
             // Holiday pause: only here, never one tap away in the game.
             if (!S.dead)
                 Toggle(body, "Holiday pause (needs pause while you're away)", S.tucked, v =>

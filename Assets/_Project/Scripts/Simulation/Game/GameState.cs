@@ -9,8 +9,7 @@ namespace Squishy.Simulation.Game
     {
         public int coins, steamers, favIdx, roomLv, age, curSkin;
         public int roomSize;
-        public long wokeNight; // the night it was woken early (with "Tuck in by itself" it then stays awake that night)
-        public string overnight = "ask"; // bedtime: "ask" each evening, "auto" tucked in by itself at night, or "off" // the biggest size a squishy has reached here: the steamer's width follows it and never shrinks back
+        public string overnight = "ask"; // the bedtime reminder: "ask" each evening, or "off" (tucking in is always the player's choice) // the biggest size a squishy has reached here: the steamer's width follows it and never shrinks back
         public List<CountData> squishOwned = new List<CountData>();
         public List<string> owned = new List<string>();
         public int[] pantry, snacks, toolDur, toolSkin, recipeXP;

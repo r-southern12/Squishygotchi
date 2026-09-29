@@ -32,12 +32,7 @@ namespace Squishy.Runtime.Game
             if (nightAsk < 0) nightAsk = 0;
             nightAsk += dt;
             // After a little while in the game, and never over a panel, a dialog or a drag.
-            if (nightAsk > C.rules.nightAskSeconds && drag == null && !ui.AnyPanelOpen)
-            {
-                nightAsk = -1;
-                if (S.overnight == "auto") { S.lastNightPrompt = GameRules.NightKey(local); GoToBed(); } // tucked in by itself (the moon wakes it)
-                else AskNight();
-            }
+            if (nightAsk > C.rules.nightAskSeconds && drag == null && !ui.AnyPanelOpen) { nightAsk = -1; AskNight(); }
         }
 
         public void OnMoon() { if (S.asleep) ShowWakeScreen(null); else AskNight(); }

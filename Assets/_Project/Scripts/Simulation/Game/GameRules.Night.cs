@@ -48,10 +48,8 @@ namespace Squishy.Simulation.Game
 
         public float DrainScaleAt(long utcTicks)
         {
+            // Only a squishy you tucked in rests overnight: left up all night, it wakes needing care.
             bool asleep = S.asleep && utcTicks < S.sleepUntil;
-            // Tucked in automatically (the Overnight setting): every night counts, whether or not the game was open.
-            var local = new DateTime(utcTicks, DateTimeKind.Utc).ToLocalTime();
-            if (!asleep && S.overnight == "auto" && !S.dead && IsNight(local) && NightKey(local) != S.wokeNight) asleep = true;
             RestFill = S.tucked || asleep;
             float s = asleep ? R.nightDrain : 1;
             if (utcTicks < S.calmUntil) s *= R.calmDrain; // a quiet moment in the Quiet corner
@@ -76,7 +74,6 @@ namespace Squishy.Simulation.Game
             var r = new NightReport { slept = TimeSpan.FromTicks(Math.Max(0, utc.Ticks - S.sleepAt)), steamers = Math.Max(0, S.steamers - S.sleepSteamers), early = utc.Ticks < S.sleepUntil - TimeSpan.FromHours(R.nightWakeByHour - R.nightEndHour).Ticks };
             S.onlineReadyAt = NextReset(end, R.giftHours);
             S.asleep = false;
-            if (IsNight(utc.ToLocalTime())) S.wokeNight = NightKey(utc.ToLocalTime()); // woken early: awake for the rest of this night
             S.nightBank = 0;
             return r;
         }
