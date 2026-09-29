@@ -571,7 +571,7 @@ namespace Squishy.Runtime.Game
                 });
                 return;
             }
-            string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.DecorSlots();
+            string title = "Storage (" + S.storage.Count + ") · Pieces " + Rules.ItemCount() + "/" + Rules.ItemSlots();
             // Tabs by room so the list stays short as the collection grows: what's stored, then each room's pieces.
             var stored = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
             var fresh = NewPieces();
@@ -630,8 +630,8 @@ namespace Squishy.Runtime.Game
         /// </summary>
         private List<Squishy.Simulation.Game.CatalogueItem> NewPieces()
         {
-            bool decorFree = DecorCount() < Rules.DecorSlots();
-            return C.Catalogue.Where(c => Rules.Owned(c.key) && (C.IsDecor(c.arch) ? decorFree :
+            bool free = Rules.ItemCount() < Rules.ItemSlots();
+            return C.Catalogue.Where(c => free && Rules.Owned(c.key) && (C.IsDecor(c.arch) ||
                     C.MaxPerRoom(c.arch) > 1 && items.Count(x => x.arch == c.arch) + S.storage.Count(k => k.StartsWith(c.arch + ":")) < C.MaxPerRoom(c.arch)))
                 .OrderBy(c => c.arch).ToList();
         }
@@ -639,7 +639,9 @@ namespace Squishy.Runtime.Game
         private void PlaceFromStorage(int i)
         {
             string key0 = S.storage[i], arch = key0.Split(':')[0];
-            if (C.IsDecor(arch) && DecorCount() >= Rules.DecorSlots()) { ui.SetHint("Decor full (" + Rules.DecorSlots() + "). Expand the room or grow your squishy for more.", true); sfx.Bonk(); Buzz(20); return; }
+            // Every piece takes space (a toy swapped for the one out doesn't need more).
+            bool swaps = items.Any(x => x.arch != "tomb" && x.arch != arch && C.SameSlot(x.arch, arch));
+            if (!swaps && Rules.ItemCount() >= Rules.ItemSlots()) { ui.SetHint("Room full (" + Rules.ItemSlots() + " pieces). Level up the room for more space.", true); sfx.Bonk(); Buzz(20); return; }
             if (!C.IsDecor(arch) && items.Count(x => x.arch == arch) >= C.MaxPerRoom(arch)) { ui.SetHint("Only " + C.MaxPerRoom(arch) + " " + C.Type(arch).name.ToLowerInvariant() + " per room", true); sfx.Bonk(); Buzz(20); return; }
             Snap();
             string key = S.storage[i];
@@ -746,11 +748,23 @@ namespace Squishy.Runtime.Game
 
         // ---------------- room expansion ----------------
 
-        private void ExpandRoom()
+        /// <summary>A room level bought: space for one more piece.</summary>
+        private void LevelUpRoom()
+        {
+            S.roomLv++;
+            sfx.Chime();
+            Buzz(20, 30, 20);
+            ui.SetHint("Room level " + (S.roomLv + 1) + ": space for " + Rules.ItemSlots() + " pieces", true);
+            if (items.Count > 0) foreach (var it in items) it.bv = -3;
+            DrawTray();
+            WriteSave();
+        }
+
+        /// <summary>The squishy reached a bigger size: the steamer grows wider round it.</summary>
+        private void GrowRoom()
         {
             float oldR = HR;
-            S.roomLv++;
-            HR = C.roomLevels[S.roomLv].r;
+            HR = Rules.RoomRadius();
             FLOOR_R = HR * .86f;
             Node.Destroy(homeWall.Group);
             homeWall = new SteamerModel(room, Mathf.RoundToInt(60 * HR / 2.3f), HR);
@@ -761,12 +775,12 @@ namespace Squishy.Runtime.Game
             for (int i = 0; i < 24; i++)
             {
                 float a = i / 24f * Mathf.PI * 2;
-                HPuff(new Vector3(Mathf.Cos(a) * HR, .3f, Mathf.Sin(a) * HR), new Vector3(Mathf.Cos(a) * 1.2f, .8f, Mathf.Sin(a) * 1.2f), .14f, .8f, 2, .4f);
+                Glints(new Vector3(Mathf.Cos(a) * HR, .3f, Mathf.Sin(a) * HR), "#FFE08A", 1);
             }
             shake = .4f;
             sfx.Land();
             Buzz(30, 40, 30);
-            ui.SetHint("Room expanded to level " + (S.roomLv + 1) + "!", true);
+            ui.SetHint(Rules.Fav.name + " is " + C.sizes[Rules.FavSizeIdx].name + " now: the steamer grew bigger!", true);
             DrawTray();
             WriteSave();
         }

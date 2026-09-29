@@ -8,6 +8,7 @@ namespace Squishy.Simulation.Game
     public class GameState
     {
         public int coins, steamers, favIdx, roomLv, age, curSkin;
+        public int roomSize; // the biggest size a squishy has reached here: the steamer's width follows it and never shrinks back
         public List<CountData> squishOwned = new List<CountData>();
         public List<string> owned = new List<string>();
         public int[] pantry, snacks, toolDur, toolSkin, recipeXP;

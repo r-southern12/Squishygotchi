@@ -282,6 +282,23 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Room_Holds_One_More_Piece_Per_Level_Up_To_20_And_Widens_With_Size()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 11);
+            var rules = new GameRules(c, s);
+            Assert.AreEqual(12, rules.ItemSlots(), "the starter room holds 12 pieces");
+            Assert.AreEqual(20, c.roomLevels[c.roomLevels.Length - 1].slots, "20 at most");
+            for (int i = 1; i < c.roomLevels.Length; i++) Assert.AreEqual(c.roomLevels[i - 1].slots + 1, c.roomLevels[i].slots, "one more piece per level");
+            for (int i = 2; i < c.roomLevels.Length; i++) Assert.Greater(c.roomLevels[i].cost, c.roomLevels[i - 1].cost, "slower and slower");
+            float r0 = rules.RoomRadius();
+            s.roomSize = 2;
+            Assert.Greater(rules.RoomRadius(), r0, "a bigger size reached makes the steamer wider");
+            Assert.IsFalse(rules.ReachRoomSize(), "and it never shrinks back for a smaller squishy");
+            Assert.AreEqual(c.sizes[2].room, rules.RoomRadius(), 1e-5);
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

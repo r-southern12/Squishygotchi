@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 9;
+        public const int CurrentVersion = 10;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -39,6 +39,12 @@ namespace Squishy.Simulation.Save
                 data.state.items.RemoveAll(p => old(p.key));
                 data.state.storage.RemoveAll(old);
                 data.state.owned.RemoveAll(old);
+            }
+            if (data.version < 10 && data.state != null)
+            {
+                // v10: room levels became one item space each (12 to 20) and width follows squishy size.
+                int old = data.state.roomLv;
+                data.state.roomLv = old <= 1 ? 0 : old == 2 ? 2 : 4;
             }
             data.version = CurrentVersion;
         }

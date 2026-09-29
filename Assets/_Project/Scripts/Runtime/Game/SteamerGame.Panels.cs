@@ -197,16 +197,15 @@ namespace Squishy.Runtime.Game
             int cc = Mathf.RoundToInt(Rules.ComboComfort(S.items));
             Hud.Para(body, decor + " decor pieces" + (setBonus.Length > 0 ? " + " + setBonus + " set bonus" : "") + (cc > 0 ? " + " + cc + " from combos" : "") + ". Add decor and make combos to raise it.", 12, "#6F5F52");
             // Room progression at a glance.
-            var cur = C.roomLevels[S.roomLv];
-            int bonus = Rules.SizeDecorBonus(Rules.FavSizeIdx);
-            Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length + " · decor " + DecorCount() + "/" + Rules.DecorSlots());
+            Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length + " · pieces " + Rules.ItemCount() + "/" + Rules.ItemSlots());
             if (S.roomLv + 1 < C.roomLevels.Length)
             {
                 var nx = C.roomLevels[S.roomLv + 1];
-                Hud.Para(body, "Next: " + Rules.SquishKinds + "/" + nx.need + " squishies · " + S.coins + "/" + nx.cost + " coins → " + (nx.slots + bonus) + " decor", 12, "#6F5F52");
-                if (Rules.CanExpand()) Hud.Button(body, "Expand now · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; ExpandRoom(); ui.ClosePanel("info"); }, false, 4);
+                Hud.Para(body, "Next: " + Rules.SquishKinds + "/" + nx.need + " squishies · " + S.coins + "/" + nx.cost + " coins → space for " + nx.slots + " pieces", 12, "#6F5F52");
+                if (Rules.CanExpand()) Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; LevelUpRoom(); ui.ClosePanel("info"); }, false, 4);
             }
-            else Hud.Para(body, "Your steamer is at its largest.");
+            else Hud.Para(body, "Your room holds as much as it can.");
+            Hud.Para(body, "The steamer itself grows wider as " + Rules.Fav.name + " grows bigger.", 12, "#6F5F52");
             ComboList(body);
             body.Gap(8);
             ui.OpenPanel("info");
@@ -226,19 +225,17 @@ namespace Squishy.Runtime.Game
 
         public void OnExpand()
         {
-            var cur = C.roomLevels[S.roomLv];
             var nx = S.roomLv + 1 < C.roomLevels.Length ? C.roomLevels[S.roomLv + 1] : null;
-            ui.SetPanelTitle("info", "Expand room");
+            ui.SetPanelTitle("info", "Room level");
             var body = ui.PanelBody("info");
-            int bonus = Rules.SizeDecorBonus(Rules.FavSizeIdx);
-            Big(body, "Level " + (S.roomLv + 1), "Decor space " + DecorCount() + " of " + Rules.DecorSlots() + (bonus > 0 ? " (" + cur.slots + " from the room, +" + bonus + " for " + Rules.Fav.name + "'s " + C.sizes[Rules.FavSizeIdx].name + " size)" : "") + ". Bigger squishies unlock more decor space.");
-            if (nx == null) { Hud.Para(body, "Your steamer is at its largest."); ui.OpenPanel("info"); return; }
+            Big(body, "Level " + (S.roomLv + 1), "Space for " + Rules.ItemSlots() + " pieces (" + Rules.ItemCount() + " in the room). Every piece counts: furniture, stations, toys and decor.");
+            if (nx == null) { Hud.Para(body, "Your room holds as much as it can."); ui.OpenPanel("info"); return; }
             int have = Rules.SquishKinds;
-            Hud.Para(body, "Level " + (S.roomLv + 2) + " makes the steamer wider and gives " + (nx.slots + bonus) + " decor spaces. It needs " + nx.need + " squishies in your collection (you have " + have + ") and " + nx.cost + " coins.");
-            Hud.Button(body, "Expand · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 48, 17, () =>
+            Hud.Para(body, "Level " + (S.roomLv + 2) + " has space for one more piece (" + nx.slots + "). It needs " + nx.need + " squishies in your collection (you have " + have + ") and " + nx.cost + " coins. The steamer itself grows wider as your squishy grows bigger.");
+            Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 48, 17, () =>
             {
                 if (!Spend(nx.cost)) return;
-                ExpandRoom();
+                LevelUpRoom();
                 ui.ClosePanel("info");
             }, have < nx.need || S.coins < nx.cost, 4);
             ui.OpenPanel("info");
@@ -460,7 +457,7 @@ namespace Squishy.Runtime.Game
                 int c = Rules.SquishCount(e.i), si = C.SizeIdxFor(Mathf.Max(1, c));
                 var nxt = si + 1 < C.sizes.Length ? C.sizes[si + 1] : null;
                 meta = f.tier + " tier";
-                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + " · +" + C.sizes[si].decor + " decor space" + (nxt != null ? " (" + nxt.name + ": +" + nxt.decor + ")" : "") : "Not found yet. Find it in steamers.";
+                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + (nxt != null && nxt.room > C.sizes[si].room ? " · " + nxt.name + " makes the steamer bigger" : "") : "Not found yet. Find it in steamers.";
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {

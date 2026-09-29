@@ -100,15 +100,15 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
-**Size and growth:** copies of your favourite from steamers make it grow, and each size adds decor space. Size also unlocks items (trampoline at Jumbo, beanbag at Giant).
+**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). Size also unlocks items (trampoline at Jumbo, beanbag at Giant).
 
-| Size | Copies needed | Relative size | Extra decor slots |
+| Size | Copies needed | Relative size | Steamer width |
 | --- | --- | --- | --- |
-| Mini | 1 | 1× | 0 |
-| Standard | 3 | 1.5× | 1 |
-| Jumbo | 6 | 2.1× | 2 |
-| Giant | 12 | 2.9× | 3 |
-| Super Mega | 25 | 4× | 4 |
+| Mini | 1 | 1× | 0.66× |
+| Standard | 3 | 1.5× | 0.77× |
+| Jumbo | 6 | 2.1× | 0.89× |
+| Giant | 12 | 2.9× | 1× |
+| Super Mega | 25 | 4× | 1× |
 
 **Look:** a wide, soft dome with about 10 rounded pleats fanning straight down from a smooth crown (only a slight curl, no knot or bump), bead eyes with highlights, blush. Glossy material; finishes change colour, gloss, metal, glow, glitter and pattern.
 
@@ -127,16 +127,21 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 ## Room and placement
 
-The room is the inside of the steamer. It starts with one of each station and grows with your collection.
+The room is the inside of the steamer. Every piece takes space (furniture, stations, toys and decor; a toy swapped for the one out takes none). The room starts with space for 12 and each room level adds one, up to 20, slower and slower. The steamer's width follows the squishy's size (see Size and growth).
 
-| Level | Relative width | Decor slots | To unlock |
+| Level | Pieces | Squishies in collection | Coins |
 | --- | --- | --- | --- |
-| 1 | 0.66× | 4 | Not used at launch |
-| 2 (start) | 0.77× | 6 | Starting room |
-| 3 | 0.89× | 9 | 5 squishies in collection + 400 coins |
-| 4 | 1× | 12 | 10 squishies + 1,000 coins |
+| 1 (start) | 12 | — | — |
+| 2 | 13 | 4 | 150 |
+| 3 | 14 | 5 | 250 |
+| 4 | 15 | 6 | 400 |
+| 5 | 16 | 8 | 550 |
+| 6 | 17 | 10 | 750 |
+| 7 | 18 | 12 | 1,000 |
+| 8 | 19 | 14 | 1,300 |
+| 9 | 20 | 16 | 1,600 |
 
-The Comfort panel shows room progression: current level, slots used, squishy size bonus, and what the next level needs.
+The Comfort panel shows room progression: current level, pieces used, and what the next level needs.
 
 **Items, pieces and skins**
 
@@ -307,7 +312,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Common tool | 60 |
 | Tool repair | ~half the tool's price, scaled by wear |
 | Accessories | prestige, in the Prestige store (tap the prestige star), not the coin shop |
-| Room level 3 / 4 | 400 / 1,000 (plus collection size) |
+| Room level (one more piece each) | 150 rising to 1,600 (plus collection size) |
 
 No furniture is sold in the shop; furniture comes from steamers.
 

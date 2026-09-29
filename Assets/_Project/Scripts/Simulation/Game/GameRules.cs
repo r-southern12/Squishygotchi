@@ -228,7 +228,6 @@ namespace Squishy.Simulation.Game
         public int DecorCount() { int n = 0; foreach (var it in S.items) if (C.IsDecor(it.Arch)) n++; return n; }
         public RoomLevelData RoomLevel { get { return C.roomLevels[S.roomLv]; } }
 
-        /// <summary>Decor space: the room level's slots plus a bonus for the favourite's size (you play, it grows, the room gets better).</summary>
         /// <summary>True when the next room level's collection and coin needs are both met.</summary>
         public bool CanExpand()
         {
@@ -237,8 +236,26 @@ namespace Squishy.Simulation.Game
             return SquishKinds >= nx.need && S.coins >= nx.cost;
         }
 
-        public int DecorSlots() { return RoomLevel.slots + SizeDecorBonus(FavSizeIdx); }
-        public int SizeDecorBonus(int sizeIdx) { return C.sizes[sizeIdx].decor; }
+        /// <summary>
+        /// Room space (user design, 29 Sep 2026): every piece counts, not just decor. Each room level holds one more
+        /// (12 to 20); the steamer gets physically wider as the squishy reaches bigger sizes.
+        /// </summary>
+        public int ItemSlots() { return RoomLevel.slots; }
+
+        public int ItemCount() { int n = 0; foreach (var it in S.items) if (it.Arch != C.tomb.id) n++; return n; }
+
+        /// <summary>The steamer's radius: set by the biggest size reached here (it never shrinks back).</summary>
+        public float RoomRadius() { return C.sizes[Math.Max(Math.Min(S.roomSize, C.sizes.Length - 1), FavSizeIdx)].room; }
+
+        /// <summary>Records a bigger size reached; true when that makes the steamer wider.</summary>
+        public bool ReachRoomSize()
+        {
+            int si = FavSizeIdx;
+            if (si <= S.roomSize) return false;
+            float before = RoomRadius();
+            S.roomSize = si;
+            return C.sizes[si].room > before - 1e-4f && C.sizes[si].room > C.sizes[Math.Max(0, si - 1)].room;
+        }
 
         // ---- kitchen ----
         public string ToolKey(int i) { return "tool:" + i; }

@@ -47,9 +47,11 @@ namespace Squishy.Runtime.Game
                 shownPrestige = S.prestige;
                 ui.SetPrestige(S.prestige);
             }
+            // Reached a bigger size: the steamer grows wider round it (back home, not mid-unbox or visiting).
+            if (mode == "home" && !visiting && !S.dead && Rules.ReachRoomSize() && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
             ui.ExpandDot(canExpand && mode == "home");
-            if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can grow! Open Arrange to expand"); sfx.Chime(); }
+            if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Your room can level up: space for one more piece! Open Arrange"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
             StepNight(1);
             if (Rules.OnlineReady()) ui.SetGift("Free!", true);

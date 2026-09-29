@@ -30,7 +30,7 @@ namespace Squishy.Simulation.Game
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
-    [Serializable] public class SizeData { public string name; public float s; public int at, decor; }
+    [Serializable] public class SizeData { public string name; public float s, room; public int at; } // room: the steamer's radius once a squishy reaches this size
     [Serializable] public class TrayRoomData { public string id, name; }
 
     /// <summary>A furniture combo: see GameRules.Combos.</summary>
@@ -44,7 +44,7 @@ namespace Squishy.Simulation.Game
         public float gap, calmMinutes, cookMul, wearSkip, bonusIng; // gap: how close the pieces must be (edge to edge); 0 = rules.comboGap
     }
 
-    [Serializable] public class RoomLevelData { public float r; public int slots, need, cost; }
+    [Serializable] public class RoomLevelData { public int slots, need, cost; } // slots: pieces the room holds (every piece counts)
 
     [Serializable]
     public class ActivityData

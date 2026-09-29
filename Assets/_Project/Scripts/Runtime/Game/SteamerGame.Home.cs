@@ -25,7 +25,7 @@ namespace Squishy.Runtime.Game
 
         private void BuildHome()
         {
-            HR = C.roomLevels[S.roomLv].r;
+            HR = Rules.RoomRadius();
             FLOOR_R = HR * .86f;
             Node.Mesh(home, ThreeGeo.RBox(9, .6f, 9, .2f), ThreeMat.M("#A87A4F"), 0, -.3f, 0, shadow: false);
             room = Node.Group(home, "room");

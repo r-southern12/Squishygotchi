@@ -2082,53 +2082,76 @@
       "name": "Mini",
       "s": 0.1,
       "at": 1,
-      "decor": 0
+      "room": 1.75
     },
     {
       "name": "Standard",
       "s": 0.15,
       "at": 3,
-      "decor": 1
+      "room": 2.05
     },
     {
       "name": "Jumbo",
       "s": 0.21,
       "at": 6,
-      "decor": 2
+      "room": 2.35
     },
     {
       "name": "Giant",
       "s": 0.29,
       "at": 12,
-      "decor": 3
+      "room": 2.65
     },
     {
       "name": "Super Mega",
       "s": 0.4,
       "at": 25,
-      "decor": 4
+      "room": 2.65
     }
   ],
   "roomLevels": [
     {
-      "r": 1.75,
-      "slots": 4
+      "slots": 12
     },
     {
-      "r": 2.05,
-      "slots": 6
+      "slots": 13,
+      "cost": 150,
+      "need": 4
     },
     {
-      "r": 2.35,
-      "slots": 9,
-      "need": 5,
-      "cost": 400
+      "slots": 14,
+      "cost": 250,
+      "need": 5
     },
     {
-      "r": 2.65,
-      "slots": 12,
-      "need": 10,
-      "cost": 1000
+      "slots": 15,
+      "cost": 400,
+      "need": 6
+    },
+    {
+      "slots": 16,
+      "cost": 550,
+      "need": 8
+    },
+    {
+      "slots": 17,
+      "cost": 750,
+      "need": 10
+    },
+    {
+      "slots": 18,
+      "cost": 1000,
+      "need": 12
+    },
+    {
+      "slots": 19,
+      "cost": 1300,
+      "need": 14
+    },
+    {
+      "slots": 20,
+      "cost": 1600,
+      "need": 16
     }
   ],
   "activities": [
@@ -3131,7 +3154,7 @@
     "coins": 248,
     "steamers": 3,
     "favourite": 8,
-    "roomLevel": 1,
+    "roomLevel": 0,
     "age": 3,
     "needs": [
       0.74,
