@@ -3221,7 +3221,7 @@
   "starter": {
     "coins": 248,
     "steamers": 3,
-    "favourite": 8,
+    "favourite": 0,
     "roomLevel": 0,
     "age": 3,
     "needs": [
@@ -3268,19 +3268,7 @@
     ],
     "squishies": [
       {
-        "i": 8,
-        "n": 1
-      },
-      {
         "i": 0,
-        "n": 1
-      },
-      {
-        "i": 4,
-        "n": 1
-      },
-      {
-        "i": 12,
         "n": 1
       }
     ],

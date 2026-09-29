@@ -40,7 +40,8 @@ namespace Squishy.Tests
             var c = Content();
             var rules = new GameRules(c, GameRules.NewState(c, 5));
             var s = rules.S;
-            int a = s.favIdx, b = s.squishOwned.Find(q => q.i != a).i;
+            int a = s.favIdx, b = (a + 1) % c.finishes.Length;
+            s.squishOwned.Add(new CountData { i = b, n = 1 }); // a second squishy to swap to (a new game starts with one)
             s.age = 20;
             rules.SwapFavourite(b);
             Assert.AreEqual(b, s.favIdx);

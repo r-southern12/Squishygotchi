@@ -286,7 +286,7 @@ Meals are cooked from ingredients using tools. **Snacks are separate**: bought i
 
 ## Economy
 
-Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **prestige** (from lives lived well). New players start with 248 coins and 3 steamers.
+Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **prestige** (from lives lived well). New players start with 248 coins, 3 steamers and one Common squishy (Peach); every other squishy is found in steamers.
 
 | Source | Amount |
 | --- | --- |
