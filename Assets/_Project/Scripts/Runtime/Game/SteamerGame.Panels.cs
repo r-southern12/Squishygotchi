@@ -70,6 +70,7 @@ namespace Squishy.Runtime.Game
         private void OpenCook(Item stove)
         {
             if (S.dead) return;
+            if (S.asleep) { FloaterAt(stove, "Shh, " + Rules.Fav.name + " is asleep"); return; }
             cookStoveOpen = stove;
             var list = ui.PanelBody("cook");
             ui.SetPanelSub("cook", "Kitchen level " + Rules.KitchenLvl() + " of 4 · " + Rules.ToolsOwned() + " of " + C.tools.Length + " tools");

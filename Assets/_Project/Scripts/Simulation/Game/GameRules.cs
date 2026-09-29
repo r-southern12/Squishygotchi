@@ -155,12 +155,18 @@ namespace Squishy.Simulation.Game
 
         public bool StepCare(float sdt, float comfort)
         {
-            if (S.tucked) return false;
+            // Tucked in: everything pauses except Rest, which a good sleep fills.
+            if (S.tucked) { S.needs[Needs.Rest] = Math.Min(1f, S.needs[Needs.Rest] + R.nightRestFill * sdt); return false; }
             S.qolSum += Condition() * sdt;
             S.qolTime += sdt;
             float slow = ComfortSlow(comfort);
             float[] decay = { R.decayHunger, R.decayPlay, R.decayRest, R.decayClean };
-            for (int k = 0; k < 4; k++) S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * DrainScale * sdt);
+            for (int k = 0; k < 4; k++)
+            {
+                // Asleep for the night: Rest fills up by morning while the others drain slowly.
+                if (k == Needs.Rest && RestFill) S.needs[k] = Math.Min(1f, S.needs[k] + R.nightRestFill * sdt);
+                else S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * DrainScale * sdt);
+            }
             S.dayT += sdt;
             if (S.dayT > R.dayLength) { S.dayT = 0; S.age++; }
             bool empty = false;

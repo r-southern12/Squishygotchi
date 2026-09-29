@@ -334,6 +334,33 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Asleep_Rest_Fills_While_Others_Drain_Slowly()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 8);
+            var utc = new DateTime(2026, 9, 28, 11, 0, 0, DateTimeKind.Utc);
+            var rules = new GameRules(c, s) { Clock = new ManualClock(utc) };
+            s.needs = new[] { .8f, .8f, .2f, .8f };
+            rules.GoToSleep(utc, new DateTime(2026, 9, 28, 21, 0, 0));
+            for (int i = 0; i < 6 * 60; i++) // six hours, a minute at a time
+            {
+                rules.DrainScale = rules.DrainScaleAt(utc.AddMinutes(i).Ticks);
+                rules.StepCare(60, 0);
+            }
+            Assert.Greater(s.needs[Needs.Rest], .95f, "a night's sleep fills Rest");
+            Assert.Less(s.needs[Needs.Hunger], .8f, "the others still drain");
+            Assert.Greater(s.needs[Needs.Hunger], .8f - c.rules.decayHunger * 6 * 3600 * .5f, "but slowly");
+            // Tucked in: everything pauses except Rest.
+            var t = GameRules.NewState(c, 9);
+            var tr = new GameRules(c, t);
+            t.needs = new[] { .5f, .5f, .2f, .5f };
+            t.tucked = true;
+            tr.StepCare(3600, 0);
+            Assert.AreEqual(.5f, t.needs[Needs.Hunger], 1e-5);
+            Assert.Greater(t.needs[Needs.Rest], .2f);
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

@@ -307,6 +307,8 @@ namespace Squishy.Runtime.Game
             if (S.dead) return;
             if (S.tucked) { if (user) Floater("Tucked in · tap " + Rules.Fav.name + " to wake", "bad"); return; }
             string role = it.a.role;
+            // Asleep for the night: it stays in bed (lights and watering still work; the moon wakes it).
+            if (S.asleep && chainFrom == null && !sleepStarting && role != "lamp" && role != "plant") { if (user) FloaterAt(it, "Shh, " + Rules.Fav.name + " is asleep"); return; }
             if (role == "seat" && chainFrom == null)
             {
                 var t = items.Find(x => x.a.role == "tea" && Dist(x.tx - it.tx, x.tz - it.tz) < 1.1f);
@@ -426,6 +428,7 @@ namespace Squishy.Runtime.Game
 
         private void Autonomous()
         {
+            if (S.asleep) return; // asleep for the night: it stays put (StepNight keeps it in bed)
             float cond = Condition();
             if (cond < .12f) { ai.idleT = 4; ui.ShowBubble(Needs.Names[Rules.LowestNeed()], "Help…", true); return; }
             int low = Rules.LowestNeed();

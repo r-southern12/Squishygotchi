@@ -115,8 +115,10 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 ### Night
 
 - Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night. The prompt can be snoozed (the player picks 15 minutes, 30 minutes or 1 hour, data) and asks again after; "Not tonight" stops it until the next evening.
-- Asleep: needs drain at 35% (data) until 10am at the latest; the free in-game steamer from each 3-hour reset in the night is collected for you. Reminders account for the slower drain and still honour quiet hours.
-- The night screen: a starry sky and the squishy asleep (tap to wake early). The next time the game opens, a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep".
+- Asleep: it goes to its bed in the room and sleeps there (curled up where it is if there's no bed). **Rest fills up** overnight (empty to full in about 6 hours, data); the other needs drain at 35% (data) until 10am at the latest; the free in-game steamer from each 3-hour reset in the night is collected for you. Reminders account for this and still honour quiet hours.
+- **The game stays playable while it sleeps:** squish it (it stays asleep), arrange, open steamers, shop. Tapping furniture doesn't wake it (lights and watering still work); the moon button wakes it early. If morning comes while you're playing, the wake-up screen shows.
+- **Tucked in** (the pause, from the Squishies screen): every need pauses except Rest, which fills.
+- Waking: in the morning (or opening the game while it sleeps) a wake-up screen (sunrise, how long it slept, steamers collected) replaces the title screen; before morning it offers "Back to sleep". Popping out of the app for a few minutes at night doesn't show it.
 
 - **Clear jelly:** some finishes are see-through (firmer at the rim) with things living inside that drift on their own, scatter from a finger press and slosh when squashed or bounced: suspended glitter (Frost, Lilac/Mint/Peach Fizz, Ocean Sparkle, Rainbow Fizz, Moonbeam), glowing motes (the UV glow skins), and the Epic **Aquarium** tier: Koi Pond (koi swim away from your finger), Goldfish Bowl (goldfish and bubbles), Bubble Tea (tapioca pearls that sink and bounce), Snow Globe (snow that swirls). All in data (clear, opacity, inside, insideCount, insideColors).
 

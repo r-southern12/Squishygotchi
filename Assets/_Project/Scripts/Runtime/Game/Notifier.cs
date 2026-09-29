@@ -113,7 +113,9 @@ namespace Squishy.Runtime.Game
             {
                 if (k == trigger) continue;
                 double rate = decay[k] * slow, asleepFor = Math.Min(secs, left);
-                double level = s.needs[k] - rate * (asleepFor * rules.R.nightDrain + (secs - asleepFor));
+                double level = k == Needs.Rest && asleepFor > 0
+                    ? Math.Min(1, s.needs[k] + rules.R.nightRestFill * asleepFor) - rate * (secs - asleepFor) // it rests while asleep
+                    : s.needs[k] - rate * (asleepFor * rules.R.nightDrain + (secs - asleepFor));
                 if (level < LowAt + .1f) list.Add(k);
             }
             return list;
@@ -331,6 +333,13 @@ namespace Squishy.Runtime.Game
                     double rate = decay[k] * slow;
                     if (rate <= 0) continue;
                     double low = Until(s.needs[k] - LowAt, rate, rules), empty = Until(s.needs[k], rate, rules);
+                    if (k == Needs.Rest && s.asleep)
+                    {
+                        // Rest fills while it sleeps: count from waking, with a full(er) Rest.
+                        double left = Math.Max(0, (s.sleepUntil - DateTime.UtcNow.Ticks) / (double)TimeSpan.TicksPerSecond), woke = Math.Min(1, s.needs[k] + rules.R.nightRestFill * left);
+                        low = left + Math.Max(0, woke - LowAt) / rate;
+                        empty = left + woke / rate;
+                    }
                     if (low > 600 && low < firstLow) { firstLow = low; first = k; }
                     if (empty < firstEmpty) { firstEmpty = empty; emptyK = k; }
                 }

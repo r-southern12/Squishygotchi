@@ -332,9 +332,10 @@ namespace Squishy.Runtime.Game
             Notifier.Clear();
             if (!_pausedAt.HasValue) return;
             bool wasDead = S.dead;
+            var away = _pausedAt.Value;
             CatchUp(_pausedAt.Value, System.DateTime.UtcNow);
             _pausedAt = null;
-            if (S.asleep && !S.dead) ShowWakeScreen(null);
+            if (S.asleep && !S.dead && (!Rules.IsNight(System.DateTime.Now) || (System.DateTime.UtcNow - away).TotalMinutes > 30)) ShowWakeScreen(null);
             DrawNeeds();
             UpdateSub();
             if (S.dead && !wasDead) { S.dead = false; Die(); }

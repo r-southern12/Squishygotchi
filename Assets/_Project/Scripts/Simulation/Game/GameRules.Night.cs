@@ -43,8 +43,12 @@ namespace Squishy.Simulation.Game
         }
 
         /// <summary>Drain multiplier at a moment (used while catching up on time away).</summary>
+        /// <summary>Asleep (for the night or tucked in): Rest fills instead of draining. Set with DrainScaleAt.</summary>
+        public bool RestFill;
+
         public float DrainScaleAt(long utcTicks)
         {
+            RestFill = S.tucked || (S.asleep && utcTicks < S.sleepUntil);
             float s = S.asleep && utcTicks < S.sleepUntil ? R.nightDrain : 1;
             if (utcTicks < S.calmUntil) s *= R.calmDrain; // a quiet moment in the Quiet corner
             return s;

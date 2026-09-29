@@ -75,7 +75,8 @@ namespace Squishy.Simulation.Game
         public float taskCooldownHours;
         public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
         public float tipStackSeconds;
-        public float comboGap, calmDrain, comboComfort; // combo pieces must be this close edge to edge; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
+        public float comboGap, calmDrain, comboComfort;
+        public float nightRestFill; // Rest gained per second while asleep for the night or tucked in // combo pieces must be this close edge to edge; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
