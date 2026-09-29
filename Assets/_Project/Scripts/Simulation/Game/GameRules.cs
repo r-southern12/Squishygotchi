@@ -606,9 +606,9 @@ namespace Squishy.Simulation.Game
         {
             var t = S.tasks[i];
             if (!t.done) return false;
-            AddCoins(TaskDef(t).coins);
+            LastRewardMessage = RecordTaskDone(); // the streak first: today's mission already counts towards it
+            AddCoins(TaskCoins(TaskDef(t)));
             SetSteamers(S.steamers + R.taskSteamers); // every task also pays a steamer
-            LastRewardMessage = RecordTaskDone();
             var next = NewTask();
             next.readyAt = NextReset(Clock.UtcNow.Ticks, R.taskCooldownHours); // rate-limited: a new task at the next reset on the clock
             S.tasks[i] = next;

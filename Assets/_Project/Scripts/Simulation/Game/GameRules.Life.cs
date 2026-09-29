@@ -209,8 +209,7 @@ namespace Squishy.Simulation.Game
             {
                 S.streak = last == today.AddDays(-1) ? S.streak + 1 : 1;
                 S.lastTaskDay = today.Ticks;
-                if (S.streak % 7 == 0) { SetSteamers(S.steamers + 2); msg = S.streak + "-day streak! +2 steamers"; }
-                else if (S.streak % 7 == 3) { SetSteamers(S.steamers + 1); msg = "3-day streak! +1 steamer"; }
+                if (StreakBonus() > 0) msg = S.streak + "-day streak! Missions pay +" + (int)Math.Round(StreakBonus() * 100) + "% coins";
             }
             var start = GoalStart(today);
             if (S.weekStart != start.Ticks) { S.weekStart = start.Ticks; S.weekTasks = 0; S.weekClaimed = false; }
@@ -223,6 +222,20 @@ namespace Squishy.Simulation.Game
             }
             return msg;
         }
+
+        /// <summary>The streak as it stands now: days in a row with a mission, broken if yesterday was missed.</summary>
+        public int CurrentStreak()
+        {
+            var today = Clock.UtcNow.ToLocalTime().Date;
+            var last = new DateTime(S.lastTaskDay);
+            return last == today || last == today.AddDays(-1) ? S.streak : 0;
+        }
+
+        /// <summary>A streak is a coin bonus on missions (not steamers): each day after the first adds a little, up to a cap.</summary>
+        public float StreakBonus() { return Math.Min(R.streakBonusMax, Math.Max(0, CurrentStreak() - 1) * R.streakBonusPerDay); }
+
+        /// <summary>What a mission pays with the streak bonus.</summary>
+        public int TaskCoins(TaskData d) { return (int)Math.Round(d.coins * (1 + StreakBonus())); }
 
         /// <summary>Missions done towards the current goal.</summary>
         public int GoalTasks() { return S.weekStart == GoalStart(Clock.UtcNow.ToLocalTime().Date).Ticks ? S.weekTasks : 0; }

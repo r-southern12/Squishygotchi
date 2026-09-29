@@ -154,7 +154,8 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · streak " + S.streak + " day" + (S.streak == 1 ? "" : "s"));
+            int streak = Rules.CurrentStreak(), bonus = Mathf.RoundToInt(Rules.StreakBonus() * 100);
+            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · " + (streak > 0 ? streak + "-day streak" + (bonus > 0 ? ": +" + bonus + "% coins" : ": come back tomorrow for bonus coins") : "a mission a day builds a coin bonus"));
             // The missions goal, spelled out: how many done, the reward, and when a new one starts.
             {
                 int got = Rules.GoalTasks(), goal = C.rules.goalMissions;
@@ -178,12 +179,13 @@ namespace Squishy.Runtime.Game
                 var pr = Hud.Bar(t.prog / d.goal, 8, "#6F9A74", 0, 6);
                 string sub = d.time ? Mathf.FloorToInt(t.prog / 60) + ":" + Mathf.FloorToInt(t.prog % 60).ToString("00") + " of 3:00" : Mathf.FloorToInt(t.prog) + " of " + d.goal;
                 int idx = i;
-                ui.Rec(body, null, d.text, sub + " · +" + d.coins + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : ""), t.done ? "Claim" : "…", () =>
+                ui.Rec(body, null, d.text, sub + " · +" + Rules.TaskCoins(d) + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : ""), t.done ? "Claim" : "…", () =>
                 {
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
-                    ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .58f), "+" + d.coins + " coins" + (C.rules.taskSteamers > 0 ? " · +" + C.rules.taskSteamers + " steamer" : ""));
+                    int c0 = S.coins;
                     Rules.ClaimTask(idx);
+                    ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .58f), "+" + (S.coins - c0) + " coins" + (C.rules.taskSteamers > 0 ? " · +" + C.rules.taskSteamers + " steamer" : ""));
                     if (Rules.LastRewardMessage != null) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .42f), Rules.LastRewardMessage); sfx.Chime(); Rules.LastRewardMessage = null; }
                     ui.TaskDot(Rules.AnyTaskDone());
                     DrawTasks();

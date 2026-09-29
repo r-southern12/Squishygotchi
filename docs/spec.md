@@ -287,7 +287,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Source | Amount |
 | --- | --- |
 | Care task | 15–50 coins and 1 steamer each |
-| Task streak | 3 days: +1 steamer; 7 days: +2 steamers |
+| Mission streak (a mission each day) | Coin bonus on missions: +10% per day after the first, up to +50%; missing a day starts again (no steamers) |
 | Missions goal (15 missions before it resets; a new goal every Monday and Thursday) | +10 steamers |
 | Free steamer | 1 to claim from the gift chip; refills at each 3-hour reset on the clock (midnight, 3am, 6am...), so the wait is often under 3 hours; it does not stack while away |
 | Bonus steamer | 1 more, refilling at the same 3-hour resets: an optional short video for free players, simply included with the full game |

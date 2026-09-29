@@ -181,7 +181,7 @@ namespace Squishy.Tests
         {
             var c = Content();
             var s = GameRules.NewState(c, 3);
-            var clock = new ManualClock(new DateTime(2026, 9, 25, 9, 0, 0, DateTimeKind.Utc));
+            var clock = new ManualClock(new DateTime(2026, 9, 25, 9, 0, 0, DateTimeKind.Local).ToUniversalTime()); // 9am local: all three on one day (no streak bonus)
             var rules = new GameRules(c, s) { Clock = clock };
             int coins = s.coins, steamers = s.steamers, paid = 0;
             for (int k = 0; k < 3; k++)
@@ -309,6 +309,28 @@ namespace Squishy.Tests
             Assert.AreEqual(DayOfWeek.Thursday, rules.GoalStart(wed.AddDays(4)).DayOfWeek, "through Sunday");
             Assert.AreEqual(10, c.rules.goalSteamers);
             foreach (var t in c.tierRewards) { Assert.AreEqual(0, t.steamers, "tree tiers pay prestige, not steamers"); Assert.Greater(t.prestige, 0); }
+        }
+
+        [Test]
+        public void Streak_Is_A_Coin_Bonus_Not_Steamers()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 4);
+            var clock = new ManualClock(new DateTime(2026, 9, 21, 9, 0, 0, DateTimeKind.Utc));
+            var rules = new GameRules(c, s) { Clock = clock };
+            var d = c.tasks[0];
+            for (int day = 0; day < 8; day++)
+            {
+                int steamers = s.steamers;
+                rules.RecordTaskDone();
+                if (day < 6) Assert.AreEqual(steamers, s.steamers - (s.weekClaimed && s.weekTasks == c.rules.goalMissions ? c.rules.goalSteamers : 0), "streak days pay no steamers");
+                clock.Advance(TimeSpan.FromDays(1));
+            }
+            clock.Advance(TimeSpan.FromDays(-1));
+            Assert.AreEqual(c.rules.streakBonusMax, rules.StreakBonus(), 1e-5, "capped");
+            Assert.AreEqual((int)Math.Round(d.coins * (1 + c.rules.streakBonusMax)), rules.TaskCoins(d));
+            clock.Advance(TimeSpan.FromDays(3));
+            Assert.AreEqual(0, rules.StreakBonus(), 1e-5, "a missed day breaks it");
         }
 
         [Test]

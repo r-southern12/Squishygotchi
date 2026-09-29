@@ -2833,7 +2833,9 @@
     "goalResetDays": [
       1,
       4
-    ]
+    ],
+    "streakBonusPerDay": 0.1,
+    "streakBonusMax": 0.5
   },
   "cosmetics": [
     {
