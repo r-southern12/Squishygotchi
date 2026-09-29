@@ -435,7 +435,7 @@ namespace Squishy.Runtime.Game
             if (card.grewTo >= 0) grewTo = card.grewTo;
             if (card.kitchenChanged) DecorateStoves();
             ui.CardCoins(cardCoins, CollectCardCoins);
-            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, layer > 0 ? "Next layer (" + layer + " left)" : S.steamers > 0 ? "Unbox again (" + S.steamers + ")" : "Get steamers");
+            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, layer > 0 ? "Next layer" : S.steamers > 0 ? "Again" : "Get steamers");
             WriteSave();
         }
 
