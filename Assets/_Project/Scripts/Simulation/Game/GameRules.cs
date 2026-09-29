@@ -182,7 +182,7 @@ namespace Squishy.Simulation.Game
             return new[] { "Critical", "#C8412F" };
         }
 
-        /// <summary>Comfort from furnished pieces (wilted plants count less), plus a set bonus for three in one style.</summary>
+        /// <summary>Comfort from furnished pieces (wilted plants count less), plus a set bonus for three in one style, plus each finished combo.</summary>
         public float Comfort(IEnumerable<PieceState> items, out string setBonus)
         {
             float comfort = 0;
@@ -202,7 +202,16 @@ namespace Squishy.Simulation.Game
             foreach (var st in order) if (st.Length > 0 && counts[st] > bestN) { best = st; bestN = counts[st]; }
             setBonus = best != null && bestN >= R.setCount ? C.Style(best).shortName : "";
             if (setBonus.Length > 0) comfort += R.setBonus;
+            comfort += ComboComfort(items);
             return comfort;
+        }
+
+        /// <summary>Comfort from finished furniture combos.</summary>
+        public float ComboComfort(IEnumerable<PieceState> items)
+        {
+            int done = 0;
+            foreach (var m in Combos(new List<PieceState>(items))) if (m.Done) done++;
+            return done * R.comboComfort;
         }
 
         public float HappyRate(float comfort) { return R.happyBase * (1f + comfort / R.happyComfortDivisor); }

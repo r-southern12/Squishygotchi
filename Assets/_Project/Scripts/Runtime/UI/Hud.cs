@@ -377,6 +377,11 @@ namespace Squishy.Runtime.UI
             _putAway = SmallBtn(hb, "Put away", () => _g.PutAway());
             hb.Gap(6);
             head.Gap(8);
+            _trayTabs = new ScrollView(ScrollViewMode.Horizontal).In(tray);
+            _trayTabs.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _trayTabs.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+            _trayTabs.contentContainer.style.flexDirection = FlexDirection.Row;
+            _trayTabs.style.marginBottom = 6;
             _trayList = new ScrollView(ScrollViewMode.Horizontal).In(tray);
             _trayList.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             _trayList.verticalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -391,6 +396,26 @@ namespace Squishy.Runtime.UI
             var b = new Frame().Set(C("#EADCC6"), 10).Pad(5, 10, 5, 10).In(parent);
             Label(b, text, "Figtree", 700, 12);
             return Tap(b, onClick);
+        }
+
+        private ScrollView _trayTabs;
+
+        /// <summary>The Arrange tray's tabs (Stored, Kitchen, Bathroom...); none while a piece is selected.</summary>
+        public void DrawTrayTabs(List<(string id, string label)> tabs, string current, Action<string> onPick)
+        {
+            _trayTabs.Clear();
+            _trayTabs.style.display = tabs == null || tabs.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            if (tabs == null) return;
+            foreach (var t in tabs)
+            {
+                bool on = t.id == current;
+                var b = new Frame().Set(C(on ? "#6F5F52" : "#EADCC6"), 10).Pad(4, 10, 4, 10).In(_trayTabs);
+                b.style.marginRight = 6;
+                b.style.flexShrink = 0;
+                Label(b, t.label, "Figtree", 700, 12, on ? "#FFF9EF" : Ink);
+                string id = t.id;
+                Tap(b, () => onPick(id));
+            }
         }
 
         public void DrawTray(string title, List<(string key, bool owned, bool on, string label)> list, string emptyText, Action<string> onClick)

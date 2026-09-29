@@ -55,19 +55,18 @@ namespace Squishy.Runtime.Game
         }
 
         /// <summary>
-        /// The finished combo this piece starts: as one of its leads, or as a piece with no use of its own (a rug,
-        /// books). If it starts several, any one of them.
+        /// The finished combo tapping this piece starts: any piece of a set starts it (the tub or the slide of a Splash
+        /// slide), except a plant or lamp, which keep their own jobs (watering, lights), and walls. If it's in several
+        /// finished sets, any one of them.
         /// </summary>
         private GameRules.ComboMatch ComboAt(Item it)
         {
-            if (visiting || it == null) return null;
-            bool plain = (string.IsNullOrEmpty(it.a.role) || it.a.role == "decor") && it.a.cat != "Wall";
+            if (visiting || it == null || it.a.role == "plant" || it.a.role == "lamp" || it.a.cat == "Wall") return null;
             GameRules.ComboMatch pick = null;
             int n = 0;
             foreach (var m in combos)
             {
                 if (!m.Done || m.combo.passive || System.Array.IndexOf(m.pieces, it.st) < 0) continue;
-                if (!IsLead(m, it) && !plain) continue;
                 if (Random.Range(0, ++n) == 0) pick = m;
             }
             return pick;
@@ -206,14 +205,13 @@ namespace Squishy.Runtime.Game
                     }
                     break;
                 case "shake":
-                    // A quick wobble that flings the drops off, then a puff of steam.
+                    // A quick wobble that flings the drops off.
                     extra = .16f * Mathf.Sin(t * 34) * (1 - t / A.act.dur);
                     if (Random.value < dt * 30)
                     {
                         float a = Rnd(0, Mathf.PI * 2), sp = Rnd(.8f, 1.6f);
                         drops.Spawn(new Vector3(pw.x, pw.y + .5f * h, pw.z), new Vector3(Mathf.Cos(a) * sp, Rnd(.3f, 1.2f), Mathf.Sin(a) * sp), .016f, .5f, 0, -5);
                     }
-                    if (Random.value < dt * 5) HPuff(new Vector3(pw.x + Rnd(-.15f, .15f), pw.y + h * .9f, pw.z + Rnd(-.15f, .15f)), new Vector3(0, .5f, 0), .06f, 1, 1.8f, .35f);
                     break;
                 case "cuddle":
                     extra = .06f * Mathf.Sin(t * 2.2f);
@@ -222,6 +220,8 @@ namespace Squishy.Runtime.Game
                     break;
                 case "dressup":
                 {
+                    // Showing off: it turns to face you.
+                    if (cam != null) { var cp = ThreeWorld(cam.transform); YawTo(cp.x, cp.z, dt, 8); }
                     // Pops into the wardrobe, out again wearing something, a happy hop, then back to normal.
                     if (!comboDressed && t > .5f && t < A.act.dur - .6f)
                     {
@@ -230,7 +230,7 @@ namespace Squishy.Runtime.Game
                         {
                             comboDressed = true;
                             pet.SetCosmetics(pick.slot == "hat" ? pick : Rules.Cosmetic(S.hat), pick.slot == "face" ? pick : Rules.Cosmetic(S.face), pick.slot == "neck" ? pick : Rules.Cosmetic(S.neck));
-                            HPuff(new Vector3(pw.x, pw.y + h * .8f, pw.z), new Vector3(0, .6f, 0), .1f, .6f, 2.2f, .5f);
+                            Glints(new Vector3(pw.x, pw.y + h * .8f, pw.z), "#FFE08A", 5);
                             sfx.Pop();
                             pet.Express(SquishyModel.Mouth.Grin, 3);
                             Floater(Rules.HasCosmetic(pick.id) ? "Wearing your " + pick.name : "Trying on " + pick.name + " · " + pick.price + " prestige");
@@ -241,7 +241,7 @@ namespace Squishy.Runtime.Game
                     {
                         comboDressed = false;
                         RefreshCosmetics();
-                        HPuff(new Vector3(pw.x, pw.y + h * .8f, pw.z), new Vector3(0, .6f, 0), .1f, .6f, 2.2f, .5f);
+                        Glints(new Vector3(pw.x, pw.y + h * .8f, pw.z), "#FFE08A", 3);
                         sfx.Pop();
                     }
                     break;
@@ -358,7 +358,7 @@ namespace Squishy.Runtime.Game
         private void ComboList(VisualElement body)
         {
             if (combos.Count == 0) return;
-            Hud.Sec(body, "Combos · " + combos.Count(m => m.Done) + " of " + combos.Count);
+            Hud.Sec(body, "Combos · " + combos.Count(m => m.Done) + " of " + combos.Count + " · +" + Mathf.RoundToInt(C.rules.comboComfort) + " comfort each");
             Hud.Para(body, "Some pieces are better together. Put them right next to each other (or on the same rug) to find out what they do.", 12, "#6F5F52");
             foreach (var m in combos.OrderByDescending(x => x.Done).ThenByDescending(x => x.have))
             {

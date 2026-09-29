@@ -14,6 +14,7 @@ namespace Squishy.Simulation.Game
         public string id, name, cat, role, face;
         /// <summary>Items sharing a slot are swapped for one another (one toy out at a time).</summary>
         public string slot;
+        public string rooms; // Arrange tray tabs it shows under ("kitchen|bathroom")
         public float r;
         /// <summary>Collision circles as flat (x, z, r) triples; empty means one circle of radius r.</summary>
         public float[] circles;
@@ -30,6 +31,8 @@ namespace Squishy.Simulation.Game
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
     [Serializable] public class SizeData { public string name; public float s; public int at, decor; }
+    [Serializable] public class TrayRoomData { public string id, name; }
+
     /// <summary>A furniture combo: see GameRules.Combos.</summary>
     [Serializable]
     public class ComboData
@@ -71,7 +74,7 @@ namespace Squishy.Simulation.Game
         public float taskCooldownHours;
         public int cooksPerLevel; // cooks of one recipe to raise it a level (a star)
         public float tipStackSeconds;
-        public float comboGap, calmDrain; // combo pieces must be this close edge to edge; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
+        public float comboGap, calmDrain, comboComfort; // combo pieces must be this close edge to edge; drain multiplier while calm // tips pile up in the coin over its head for this long before it stops adding more
         public float squishPlayGain, squishPlayGainCritical, scrubGain, tuckMinCondition, selfPlayChance;
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
@@ -126,6 +129,7 @@ namespace Squishy.Simulation.Game
         public StarterData starter;
         public CosmeticData[] cosmetics;
         public ComboData[] combos;
+        public TrayRoomData[] trayRooms;
         public TierRewardData[] tierRewards;
 
         [NonSerialized] public List<CatalogueItem> Catalogue;

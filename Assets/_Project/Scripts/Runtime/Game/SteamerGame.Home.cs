@@ -36,6 +36,8 @@ namespace Squishy.Runtime.Game
             homeSteam = new ParticlePool(70, ThreeGeo.Ico1(), SteamMat(), false, HomeLayer);
             fxPool = new ParticlePool(160, ThreeGeo.Plane(1, 1), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, Textures.Glint(), true, false), true, HomeLayer) { Glint = true }; // star glints, not blobs
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);
+            // Bath bubbles: clear, round, swelling in and popping (they were white puffs that read as clouds).
+            bathBubbles = new ParticlePool(60, ThreeGeo.Sph(1, 14, 10), ThreeMat.Basic(ThreeMat.Lin("#E8F7FB"), .3f, ThreeMat.Blend.Alpha, depthWrite: false), false, HomeLayer);
             foreach (var st in S.items) AddItem(st);
             pet = new SquishyModel(room, .1f);
             selRingMat = ThreeMat.Basic(ThreeMat.Lin("#FFD27A"), .9f, ThreeMat.Blend.Alpha, depthWrite: false);
@@ -299,7 +301,6 @@ namespace Squishy.Runtime.Game
             // A thin stream straight down into the tea (it stops at the tea's surface).
             if (tilt > .9f && Random.value < dt * 45)
                 drops.Spawn(sp, new Vector3((to.x - sp.x) * 2, -.25f, (to.z - sp.z) * 2), .011f, .12f, 0, -6, floor: to.y + .046f, col: ThreeMat.Hex("#B8793F"));
-            if (tilt < .1f && Random.value < dt * 1.5f) HPuff(new Vector3(sp.x, sp.y + .03f, sp.z), new Vector3(0, .35f, 0), .03f, .9f, 1.4f, .22f);
         }
 
         /// <summary>Puts each tea table's cups in front of the seats round it (and sets the pot back down).</summary>
@@ -405,6 +406,7 @@ namespace Squishy.Runtime.Game
             else
             {
                 var s = SpotOf(it, act);
+                if (role == "dressup") s.face = null; // it faces you, not the wardrobe
                 ai.spot = s;
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, s.y, s.approach, it);
@@ -1100,7 +1102,7 @@ namespace Squishy.Runtime.Game
                 float h = 1.46f * pet.Scale * pet.StageScale;
                 lift = .19f - ai.y - .2f * h + .012f * Mathf.Sin(t * 2.4f); // .19 = the water line; only the bottom fifth is under
                 extra = .04f * Mathf.Sin(t * 6);
-                if (Random.value < dt * 8) { var wp = ThreeWorld(it.parts.water); HPuff(new Vector3(wp.x + Rnd(-.18f, .18f), wp.y + .04f, wp.z + Rnd(-.12f, .12f)), new Vector3(0, Rnd(.4f, .9f), 0), Rnd(.03f, .06f), Rnd(.6f, 1), 1, .2f); }
+                if (Random.value < dt * 7) { var wp = ThreeWorld(it.parts.water); bathBubbles.Spawn(new Vector3(wp.x + Rnd(-.2f, .2f), wp.y + .03f, wp.z + Rnd(-.13f, .13f)), new Vector3(Rnd(-.03f, .03f), Rnd(.08f, .22f), Rnd(-.03f, .03f)), Rnd(.014f, .032f), Rnd(1.2f, 2.2f), 1.5f, .03f); }
             }
             else if (A.role == "shower" && it != null)
             {
@@ -1138,7 +1140,7 @@ namespace Squishy.Runtime.Game
                 bl.restT = busy ? 0 : bl.restT + dt;
                 if (bl.restT < 3) continue;
                 bl.restT = 0;
-                HPuff(new Vector3(bl.tx, Y0 + .1f, bl.tz), new Vector3(0, .5f, 0), .05f, .35f, 3, .25f);
+                Glints(new Vector3(bl.tx, Y0 + .1f, bl.tz), "#FFF3D6", 2);
                 bl.tx = bl.st.hx;
                 bl.tz = bl.st.hz;
                 bl.g.localPosition = new Vector3(bl.tx, bl.g.localPosition.y, bl.tz);

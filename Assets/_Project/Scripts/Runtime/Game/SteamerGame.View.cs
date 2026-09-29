@@ -3,6 +3,7 @@ using System.Linq;
 using Squishy.Runtime.Models;
 using Squishy.Runtime.Three;
 using Squishy.Runtime.World;
+using Squishy.Simulation.Game;
 using UnityEngine;
 using static Squishy.Runtime.Game.Ease;
 
@@ -553,6 +554,7 @@ namespace Squishy.Runtime.Game
                 var cur = sel;
                 var skinTiles = shown.Select(c => (c.key, Rules.Owned(c.key), c.key == cur.key, c.name)).ToList();
                 skinTiles.Insert(0, ("__back", true, false, "Back")); // back to storage and new pieces
+                ui.DrawTrayTabs(null, null, null);
                 ui.DrawTray(C.Type(sel.arch).name + " skins · " + got.Count + " of " + all.Count, skinTiles, null, key =>
                 {
                     if (key == "__back") { Select(null); DrawTray(); sfx.Tap(); return; }
@@ -570,16 +572,30 @@ namespace Squishy.Runtime.Game
                 return;
             }
             string title = "Storage (" + S.storage.Count + ") · Decor " + DecorCount() + "/" + Rules.DecorSlots();
-            var list = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
-            // Free decor slots: any decor you own can go in as a new piece (expanding the room adds slots to fill).
-            if (DecorCount() < Rules.DecorSlots())
+            // Tabs by room so the list stays short as the collection grows: what's stored, then each room's pieces.
+            var stored = S.storage.Select((k, i) => (k + "#" + i, true, false, "Place " + C.Cat(k).name)).ToList();
+            var fresh = NewPieces();
+            var skins = Enumerable.Range(0, C.skins.Length).Where(i => i == 0 || Rules.Owned("skin:" + i)).ToList();
+            var tabs = new List<(string id, string label)>();
+            if (stored.Count > 0) tabs.Add(("stored", "Stored " + stored.Count));
+            foreach (var r in C.trayRooms ?? new TrayRoomData[0])
             {
-                var decor = C.Catalogue.Where(c => C.IsDecor(c.arch) && Rules.Owned(c.key)).OrderBy(c => c.arch).ToList();
-                if (decor.Count > 0) { list.Add(("__new", true, false, "New decor")); foreach (var c in decor) list.Add((c.key + "#new", true, false, "New " + c.name)); }
+                int n = stored.Count(e => InRoom(e.Item1, r.id)) + fresh.Count(c => InRoom(c.key, r.id));
+                if (n > 0) tabs.Add((r.id, r.name + " " + n));
+            }
+            if (skins.Count > 1) tabs.Add(("steamer", "Steamer"));
+            if (trayTab == null || !tabs.Any(t => t.id == trayTab)) trayTab = tabs.Count > 0 ? tabs[0].id : null;
+            ui.DrawTrayTabs(tabs, trayTab, id => { trayTab = id; DrawTray(); sfx.Tap(); });
+            var list = new List<(string, bool, bool, string)>();
+            if (trayTab == "stored") list.AddRange(stored);
+            else if (trayTab != null && trayTab != "steamer")
+            {
+                list.AddRange(stored.Where(e => InRoom(e.Item1, trayTab)));
+                var here = fresh.Where(c => InRoom(c.key, trayTab)).ToList();
+                if (here.Count > 0) { list.Add(("__new", true, false, "New")); foreach (var c in here) list.Add((c.key + "#new", true, false, "New " + c.name)); }
             }
             // The steamer itself: pick a skin for the room right here.
-            var skins = Enumerable.Range(0, C.skins.Length).Where(i => i == 0 || Rules.Owned("skin:" + i)).ToList();
-            if (skins.Count > 1) { list.Add(("__steamer", true, false, "Steamers")); foreach (int i in skins) list.Add(("skin:" + i + "#s", true, C.skins[i] == curSkin, C.skins[i].name + "|" + C.skins[i].a + "|" + C.skins[i].b)); }
+            if (trayTab == "steamer" && skins.Count > 1) { foreach (int i in skins) list.Add(("skin:" + i + "#s", true, C.skins[i] == curSkin, C.skins[i].name + "|" + C.skins[i].a + "|" + C.skins[i].b)); }
             if (list.Count == 0) { ui.DrawTray(title, list, "Empty. Get more from steamers.", null); return; }
             ui.DrawTray(title, list, null, key =>
             {
@@ -598,6 +614,26 @@ namespace Squishy.Runtime.Game
                 }
                 PlaceFromStorage(int.Parse(key.Substring(key.IndexOf('#') + 1)));
             });
+        }
+
+        private string trayTab;
+
+        private bool InRoom(string key, string room)
+        {
+            var t = C.Type(key.Split(':')[0].Split('#')[0]);
+            return t != null && GameRules.Fits(t.rooms, room);
+        }
+
+        /// <summary>
+        /// Pieces you can add fresh: any decor you own while decor slots are free, and a second of the types that
+        /// allow more than one per room (a sink for the bathroom and one for the kitchen, a second stool).
+        /// </summary>
+        private List<Squishy.Simulation.Game.CatalogueItem> NewPieces()
+        {
+            bool decorFree = DecorCount() < Rules.DecorSlots();
+            return C.Catalogue.Where(c => Rules.Owned(c.key) && (C.IsDecor(c.arch) ? decorFree :
+                    C.MaxPerRoom(c.arch) > 1 && items.Count(x => x.arch == c.arch) + S.storage.Count(k => k.StartsWith(c.arch + ":")) < C.MaxPerRoom(c.arch)))
+                .OrderBy(c => c.arch).ToList();
         }
 
         private void PlaceFromStorage(int i)

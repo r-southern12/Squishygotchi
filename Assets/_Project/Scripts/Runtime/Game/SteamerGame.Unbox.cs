@@ -343,6 +343,9 @@ namespace Squishy.Runtime.Game
                 var bb = Node.LocalBounds(obj, holder);
                 float wide = R * US * 2 * (reward.type == "item" ? .68f : .8f), tall = R * US * 1.3f; // furniture stands taller, so a little narrower (tables overhung the rim)
                 float k = Mathf.Min(wide / Mathf.Max(.01f, Mathf.Max(bb.size.x, bb.size.z)), tall / Mathf.Max(.01f, bb.size.y));
+                // Furniture keeps its size relative to other furniture (a stool filled the steamer like a bed would):
+                // one shared scale where the biggest pieces fill it, small ones a little larger than true so they still show.
+                if (reward.type == "item") k = Mathf.Min(k, wide / .9f * 1.35f);
                 obj.localScale *= k;
                 bb = Node.LocalBounds(obj, holder);
                 obj.localPosition += new Vector3(-bb.center.x, .045f * (R * US * .95f / .36f) - bb.min.y, -bb.center.z); // on the (scaled) plate

@@ -151,12 +151,12 @@ The Comfort panel shows room progression: current level, slots used, squishy siz
 - Select an item to swap its skin from a strip of unlocked skins. Put items away into Storage and place them back.
 - Wall panels and folding screens divide the room. The shower curtain draws closed while in use.
 - **Stations form by nearness:** tea time needs a seat anywhere near the table.
-- **Combos:** pieces placed right next to one another make a set: each piece within a small gap (0.3, edge to edge) of another piece in the set, all joined up; standing on the rug counts. The squishy uses the set for a richer activity. A piece can count towards several combos at once (the same table and stool make Tea time with a cushion, and the Dinner table with a stove). A finished combo takes precedence over its piece's own use (tap its main piece, or a piece with no use of its own like the rug or books); on its own the squishy picks finished combos half the time when it plays. Each is celebrated the first time it's made. The Comfort panel lists them by name with a count (2/3) and the pieces found so far; the missing ones stay a mystery.
+- **Combos:** pieces placed right next to one another make a set: each piece within a small gap (0.3, edge to edge) of another piece in the set, all joined up; standing on the rug counts. The squishy uses the set for a richer activity. A piece can count towards several combos at once (the same table and stool make Tea time with a cushion, and the Dinner table with a stove). A finished combo takes precedence over its pieces' own use: tapping any piece of the set starts it (the tub or the slide of a Splash slide), except a plant or lamp, which keep their jobs (watering, lights); on its own the squishy picks finished combos half the time when it plays. Each is celebrated the first time it's made. The Comfort panel lists them by name with a count (2/3) and the pieces found so far; the missing ones stay a mystery.
 
 | Combo | Pieces | What it does |
 | --- | --- | --- |
 | Quiet corner | cushion, rug, plant | Sits very still, eyes shut, breathing slowly; Rest, then needs drain 20% slower for 30 min |
-| Reading nook | beanbag or cushion, books, lamp | Reads a little book; Rest and Play |
+| Reading nook | beanbag or cushion, shelf (the bookcase), lamp | Reads a little book; Rest and Play |
 | Tea time | tea table, 2 seats (stool or cushion) | Tea for two: the pot pours for each cup in turn; more Rest and Hunger. With one seat it's plain tea. |
 | Dinner table | stove, tea table, stool | After cooking it carries the dish to the table and eats sitting down; a little Play on top |
 | Chef's corner | stove, fridge, sink | Cooking is quicker, tools wear half as fast, 20% chance an ingredient is saved |
@@ -164,21 +164,23 @@ The Comfort panel shows room progression: current level, slots used, squishy siz
 | Steamed Clean | shower, rug, dividing wall | After the shower it steps onto the rug and shakes dry; extra Clean |
 | Splash slide | slide, bathtub | Down the slide and into the bath with a splash; Clean and Play |
 | Playground | trampoline, ball, rug | Bounces, then kicks the ball (or the other way round); big Play |
-| Concert | xylophone, pouf or cushion, rug | Plays a whole tune, then an encore bounce; Play |
+| Concert | xylophone, cushion, rug | Plays a whole tune, then an encore bounce; Play |
 | Bubble garden | bubble wand, plant, rug | More bubbles, drifting towards the plant; Play |
 | Pom-pom den | pom-pom wand, cushion or beanbag, rug | After the chase it flops onto the cushion cuddling the pom-pom; Play and Rest |
 | Dress-up | wardrobe, folding screen | Pops out wearing an accessory for a moment: mostly one it could still earn, sometimes one of yours |
 
 - **While arranging, combos show up on the spot:** when a move makes a combo grow or finishes it, its pieces bounce and sparkle and a note names it with its count ("Tea time 2/3", or "Tea time!" with a chime when done); breaking one says so too. A single piece on its own isn't news. Counted from the room as it was when Arrange opened.
 - **Slide docks onto the bath:** a slide dragged near a bathtub snaps square to its nearest side, facing in, the end of the ramp just over the rim. With the Splash slide it goes down once and lands right in the bath with a splash.
-- Up to 2 sinks per room (bathroom and kitchen).
+- Up to 2 sinks per room (bathroom and kitchen). A second sink or stool can be added fresh from the tray (the New pieces).
+- **Arrange tray tabs:** Stored, then Kitchen, Bathroom, Bedroom, Living, Play, Decor, Walls and Steamer (a piece can sit under two, like the sink); each shows what's stored for that room and the New pieces you can add, so the list stays short as the collection grows.
+- **Dress-up** turns to face you. **Shaking dry** flings droplets only. **Bath bubbles** are small, clear and pop.
 - **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
 - **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
 - In squish mode (zoomed right in) taps on furniture are ignored.
 
 **Comfort**
 
-- Each decor piece adds Comfort (see Items). Three pieces from one style add a +3 set bonus. Wilted plants count less.
+- Each decor piece adds Comfort (see Items). Three pieces from one style add a +3 set bonus. Each finished furniture combo adds +2. Wilted plants count less.
 - Comfort slows need drain by 2% per point, up to 40%.
 - Happy income: 1 coin a minute × (1 + Comfort ÷ 20) while Happy.
 

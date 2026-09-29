@@ -46,7 +46,7 @@ namespace Squishy.Runtime.Game
         private float HR, FLOOR_R;
         private SteamerModel homeWall;
         private SteamerSkinData curSkin;
-        private ParticlePool homeSteam, drops, unSteam, confetti;
+        private ParticlePool homeSteam, drops, unSteam, confetti, bathBubbles;
         private readonly List<Item> items = new List<Item>();
         private List<Obstacle> obstacles = new List<Obstacle>();
         private float comfort;
@@ -180,6 +180,7 @@ namespace Squishy.Runtime.Game
                 HomeCamera(dt);
                 homeSteam.Update(dt, true, cam);
                 drops.Update(dt, true, cam);
+                bathBubbles?.Update(dt, true, cam);
                 fxPool?.Update(dt, true, cam); // sized motes that swell in and fade out (the other mode ignores size)
                 if (pet != null && (drag == null || !drag.tactile) && pet.Holding) pet.ReleaseAll(); // no finger on it: dents always rise back
                 CheckFlingHold();

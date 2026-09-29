@@ -183,7 +183,7 @@ namespace Squishy.Runtime.Game
         {
             var b = bubbles[k];
             bubbles.RemoveAt(k);
-            HPuff(b.p, new Vector3(0, .3f, 0), .04f, .3f, 3, .2f);
+            Glints(b.p, "#E8F7FB", 2); // a bubble pops into a couple of glints, not a puff of steam
             Node.Destroy(b.t);
             sfx.Snap();
             if (gain > 0) GainPlay(gain);
@@ -227,9 +227,23 @@ namespace Squishy.Runtime.Game
             // One run = climb the ladder, pause at the top, slide down, then hop back round the side (never through
             // the slide). The activity lasts two runs.
             const float Run = 2.4f;
-            // Splash slide, docked onto the tub: off the end of the slide and straight into the bath (no second run).
-            if (SplashDocked(it) && t >= 1.5f) { t = 1.5f; ai.actT = Mathf.Max(ai.actT, ai.act.act.dur); }
             float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry), u = t % Run;
+            // Splash slide, docked onto the tub: one run, down the slide and on into the water in one go.
+            var dock = SplashDocked(it) ? DockedTub(it) : null;
+            if (dock != null && t >= 1f)
+            {
+                var bath = SpotOf(dock, C.Activity("splash") ?? C.Activity("bath"));
+                Vector2 top0 = new Vector2(it.tx - dx * .12f, it.tz - dz * .12f);
+                float k = Mathf.Clamp01((t - 1f) / .55f);
+                var p = Vector2.Lerp(top0, bath.stand, k);
+                ai.x = p.x;
+                ai.z = p.y;
+                ai.y = Mathf.Lerp(.47f, bath.y, k) + .07f * Mathf.Sin(k * Mathf.PI);
+                extra = -.1f;
+                petYawY = Mathf.Atan2(bath.stand.x - top0.x, bath.stand.y - top0.y);
+                if (k >= 1) ai.actT = Mathf.Max(ai.actT, ai.act.act.dur); // in: the splash takes over
+                return;
+            }
             // The ladder is at the back (z -.23): climb up the outside of it, not through it.
             float back = .23f + PetRadius() * .75f;
             Vector2 foot = new Vector2(it.tx - dx * back, it.tz - dz * back), top = new Vector2(it.tx - dx * .12f, it.tz - dz * .12f), end = new Vector2(it.tx + dx * .42f, it.tz + dz * .42f);

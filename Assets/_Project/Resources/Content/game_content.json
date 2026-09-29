@@ -545,7 +545,8 @@
       "face": "x",
       "comfort": 2,
       "max": 1,
-      "price": 180
+      "price": 180,
+      "rooms": "bedroom"
     },
     {
       "id": "chair",
@@ -555,7 +556,8 @@
       "r": 0.17,
       "comfort": 1,
       "max": 2,
-      "price": 60
+      "price": 60,
+      "rooms": "living|kitchen"
     },
     {
       "id": "teatable",
@@ -565,7 +567,8 @@
       "r": 0.36,
       "comfort": 1,
       "max": 1,
-      "price": 120
+      "price": 120,
+      "rooms": "living|kitchen"
     },
     {
       "id": "stove",
@@ -576,7 +579,8 @@
       "face": "z",
       "comfort": 0,
       "max": 1,
-      "price": 200
+      "price": 200,
+      "rooms": "kitchen"
     },
     {
       "id": "fridge",
@@ -587,7 +591,8 @@
       "face": "z",
       "comfort": 0,
       "max": 1,
-      "price": 120
+      "price": 120,
+      "rooms": "kitchen"
     },
     {
       "id": "sink",
@@ -598,7 +603,8 @@
       "face": "z",
       "comfort": 0,
       "max": 2,
-      "price": 120
+      "price": 120,
+      "rooms": "kitchen|bathroom"
     },
     {
       "id": "tub",
@@ -617,7 +623,8 @@
         0.15,
         0,
         0.22
-      ]
+      ],
+      "rooms": "bathroom"
     },
     {
       "id": "shower",
@@ -628,7 +635,8 @@
       "face": "z",
       "comfort": 0,
       "max": 1,
-      "price": 220
+      "price": 220,
+      "rooms": "bathroom"
     },
     {
       "id": "lamp",
@@ -637,7 +645,8 @@
       "role": "lamp",
       "r": 0.14,
       "comfort": 2,
-      "price": 80
+      "price": 80,
+      "rooms": "bedroom|living"
     },
     {
       "id": "plant",
@@ -646,7 +655,8 @@
       "role": "plant",
       "r": 0.2,
       "comfort": 2,
-      "price": 60
+      "price": 60,
+      "rooms": "decor"
     },
     {
       "id": "shelf",
@@ -656,7 +666,8 @@
       "r": 0.24,
       "face": "z",
       "comfort": 2,
-      "price": 90
+      "price": 90,
+      "rooms": "decor|living"
     },
     {
       "id": "wardrobe",
@@ -666,7 +677,8 @@
       "r": 0.28,
       "face": "z",
       "comfort": 2,
-      "price": 140
+      "price": 140,
+      "rooms": "bedroom"
     },
     {
       "id": "cushion",
@@ -675,7 +687,8 @@
       "role": "lounge",
       "r": 0.2,
       "comfort": 1,
-      "price": 50
+      "price": 50,
+      "rooms": "living"
     },
     {
       "id": "rug",
@@ -685,7 +698,8 @@
       "r": 0.62,
       "walk": true,
       "comfort": 1,
-      "price": 70
+      "price": 70,
+      "rooms": "living|decor"
     },
     {
       "id": "wall",
@@ -706,7 +720,8 @@
       ],
       "face": "z",
       "comfort": 0,
-      "price": 60
+      "price": 60,
+      "rooms": "walls"
     },
     {
       "id": "screen",
@@ -727,7 +742,8 @@
       ],
       "face": "z",
       "comfort": 1,
-      "price": 90
+      "price": 90,
+      "rooms": "walls|bedroom"
     },
     {
       "id": "ball",
@@ -738,7 +754,8 @@
       "comfort": 0,
       "max": 1,
       "slot": "toy",
-      "price": 40
+      "price": 40,
+      "rooms": "play"
     },
     {
       "id": "pomwand",
@@ -749,7 +766,8 @@
       "comfort": 0,
       "max": 1,
       "slot": "toy",
-      "price": 60
+      "price": 60,
+      "rooms": "play"
     },
     {
       "id": "bubbles",
@@ -760,7 +778,8 @@
       "comfort": 0,
       "max": 1,
       "slot": "toy",
-      "price": 60
+      "price": 60,
+      "rooms": "play"
     },
     {
       "id": "xylophone",
@@ -771,7 +790,8 @@
       "comfort": 0,
       "max": 1,
       "slot": "toy",
-      "price": 80
+      "price": 80,
+      "rooms": "play"
     },
     {
       "id": "slide",
@@ -791,7 +811,8 @@
       "comfort": 0,
       "max": 1,
       "slot": "toy",
-      "price": 120
+      "price": 120,
+      "rooms": "play"
     },
     {
       "id": "trampoline",
@@ -802,7 +823,8 @@
       "comfort": 0,
       "size": 2,
       "max": 1,
-      "price": 300
+      "price": 300,
+      "rooms": "play"
     },
     {
       "id": "beanbag",
@@ -813,62 +835,8 @@
       "comfort": 2,
       "size": 3,
       "max": 1,
-      "price": 260
-    },
-    {
-      "id": "vase",
-      "name": "Flower vase",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.15,
-      "comfort": 1,
-      "price": 60
-    },
-    {
-      "id": "lantern",
-      "name": "Paper lantern",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.14,
-      "comfort": 2,
-      "price": 80
-    },
-    {
-      "id": "sidetable",
-      "name": "Side table",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.17,
-      "comfort": 1,
-      "price": 70
-    },
-    {
-      "id": "easel",
-      "name": "Painting easel",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.17,
-      "face": "z",
-      "comfort": 2,
-      "price": 90
-    },
-    {
-      "id": "pouf",
-      "name": "Floor pouf",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.18,
-      "comfort": 1,
-      "price": 60
-    },
-    {
-      "id": "books",
-      "name": "Book stack",
-      "cat": "Decor",
-      "role": "decor",
-      "r": 0.14,
-      "comfort": 1,
-      "price": 50
+      "price": 260,
+      "rooms": "living|bedroom"
     }
   ],
   "tomb": {
@@ -2781,7 +2749,8 @@
     "cooksPerLevel": 5,
     "tipStackSeconds": 300,
     "calmDrain": 0.8,
-    "comboGap": 0.3
+    "comboGap": 0.3,
+    "comboComfort": 2
   },
   "cosmetics": [
     {
@@ -3354,12 +3323,12 @@
       "name": "Reading nook",
       "slots": [
         "beanbag|cushion",
-        "books",
+        "shelf",
         "lamp"
       ],
       "lead": "beanbag|cushion",
       "act": "read",
-      "text": "It curls up with a little book. Rest and Play."
+      "text": "It curls up by the bookcase with a little book. Rest and Play."
     },
     {
       "id": "tea_time",
@@ -3453,7 +3422,7 @@
       "name": "Concert",
       "slots": [
         "xylophone",
-        "pouf|cushion",
+        "cushion",
         "rug"
       ],
       "lead": "xylophone",
@@ -3495,6 +3464,36 @@
       "lead": "wardrobe",
       "act": "dressup",
       "text": "It pops out of the wardrobe wearing an accessory for a moment: one of yours, or one it could earn."
+    }
+  ],
+  "trayRooms": [
+    {
+      "id": "kitchen",
+      "name": "Kitchen"
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom"
+    },
+    {
+      "id": "bedroom",
+      "name": "Bedroom"
+    },
+    {
+      "id": "living",
+      "name": "Living"
+    },
+    {
+      "id": "play",
+      "name": "Play"
+    },
+    {
+      "id": "decor",
+      "name": "Decor"
+    },
+    {
+      "id": "walls",
+      "name": "Walls"
     }
   ]
 }

@@ -194,7 +194,8 @@ namespace Squishy.Runtime.Game
             int decor = items.Count(i => i.a.comfort > 0);
             int slow = Mathf.RoundToInt(Mathf.Min(C.rules.comfortSlowMax, comfort * C.rules.comfortSlowPerPoint) * 100);
             Big(body, Mathf.RoundToInt(comfort).ToString(), "Needs drain " + slow + "% slower · about " + Mathf.RoundToInt(Rules.HappyRate(comfort) * 60) + " coins an hour while Happy");
-            Hud.Para(body, decor + " decor pieces" + (setBonus.Length > 0 ? " + " + setBonus + " set bonus" : "") + ". Add decor to raise it.", 12, "#6F5F52");
+            int cc = Mathf.RoundToInt(Rules.ComboComfort(S.items));
+            Hud.Para(body, decor + " decor pieces" + (setBonus.Length > 0 ? " + " + setBonus + " set bonus" : "") + (cc > 0 ? " + " + cc + " from combos" : "") + ". Add decor and make combos to raise it.", 12, "#6F5F52");
             // Room progression at a glance.
             var cur = C.roomLevels[S.roomLv];
             int bonus = Rules.SizeDecorBonus(Rules.FavSizeIdx);
