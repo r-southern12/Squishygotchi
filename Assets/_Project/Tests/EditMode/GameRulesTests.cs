@@ -295,10 +295,16 @@ namespace Squishy.Tests
             for (int i = 1; i < c.roomLevels.Length; i++) Assert.AreEqual(c.roomLevels[i - 1].slots + 1, c.roomLevels[i].slots, "one more piece per level");
             for (int i = 2; i < c.roomLevels.Length; i++) Assert.Greater(c.roomLevels[i].cost, c.roomLevels[i - 1].cost, "slower and slower");
             float r0 = rules.RoomRadius();
-            s.roomSize = 2;
-            Assert.Greater(rules.RoomRadius(), r0, "a bigger size reached makes the steamer wider");
-            Assert.IsFalse(rules.ReachRoomSize(), "and it never shrinks back for a smaller squishy");
-            Assert.AreEqual(c.sizes[2].room, rules.RoomRadius(), 1e-5);
+            s.squishOwned.Clear();
+            s.squishOwned.Add(new CountData { i = 0, n = c.steamerSizes[2].at - 1 });
+            s.squishOwned.Add(new CountData { i = 1, n = 1 }); // duplicates and different ones all count
+            Assert.IsTrue(rules.ReachRoomSize(), "enough squishies in total widen the steamer");
+            Assert.Greater(rules.RoomRadius(), r0);
+            Assert.AreEqual(c.steamerSizes[2].room, rules.RoomRadius(), 1e-5);
+            s.squishOwned.Clear();
+            s.squishOwned.Add(new CountData { i = 0, n = 1 });
+            Assert.IsFalse(rules.ReachRoomSize(), "and it never shrinks back");
+            Assert.AreEqual(c.steamerSizes[2].room, rules.RoomRadius(), 1e-5);
         }
 
         [Test]
@@ -395,14 +401,11 @@ namespace Squishy.Tests
             var c = Content();
             var s = GameRules.NewState(c, 3);
             var rules = new GameRules(c, s);
-            Assert.AreEqual(1, rules.ToySlots(), "one toy at Mini");
-            int prev = 1;
-            for (int i = 1; i < c.sizes.Length; i++)
+            Assert.AreEqual(1, rules.ToySlots(), "one toy in the smallest steamer");
+            for (int i = 1; i < c.steamerSizes.Length; i++)
             {
                 s.roomSize = i;
-                bool wider = c.sizes[i].room > c.sizes[i - 1].room;
-                Assert.AreEqual(prev + (wider ? 1 : 0), rules.ToySlots(), c.sizes[i].name + ": one more only when the steamer grows");
-                prev = rules.ToySlots();
+                Assert.AreEqual(i + 1, rules.ToySlots(), c.steamerSizes[i].name + ": one more each time the steamer grows");
             }
         }
 

@@ -234,6 +234,8 @@ namespace Squishy.Runtime.Game
             // The room.
             Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length);
             Hud.Para(body, Rules.ItemCount() + " of " + Rules.ItemSlots() + " pieces · " + Rules.ToysOut() + " of " + Rules.ToySlots() + " toys out", 13, "#6F5F52");
+            var nextW = Rules.NextSteamerSize();
+            if (nextW != null) Hud.Para(body, "Bigger steamer at " + nextW.at + " squishies (you have " + Rules.SquishTotal + ") · +1 toy", 12, "#6F5F52");
             if (S.roomLv + 1 < C.roomLevels.Length)
             {
                 var nx = C.roomLevels[S.roomLv + 1];
@@ -496,7 +498,7 @@ namespace Squishy.Runtime.Game
                 int c = Rules.SquishCount(e.i), si = C.SizeIdxFor(Mathf.Max(1, c));
                 var nxt = si + 1 < C.sizes.Length ? C.sizes[si + 1] : null;
                 meta = f.tier + " tier";
-                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + (nxt != null && nxt.room > C.sizes[si].room ? " · " + nxt.name + " makes the steamer bigger (+1 toy)" : "") : "Not found yet. Find it in steamers.";
+                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") : "Not found yet. Find it in steamers.";
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); TaskEvent("swap_fav"); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {

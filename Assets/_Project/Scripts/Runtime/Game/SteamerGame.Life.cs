@@ -47,7 +47,7 @@ namespace Squishy.Runtime.Game
                 shownPrestige = S.prestige;
                 ui.SetPrestige(S.prestige);
             }
-            // Reached a bigger size: the steamer grows wider round it (back home, not mid-unbox or visiting).
+            // Enough squishies owned: the steamer grows wider (back home, not mid-unbox or visiting).
             if (mode == "home" && !visiting && !S.dead && Rules.ReachRoomSize() && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
             ui.ExpandDot(false); // no dot on Arrange (user feedback: it stayed on and wasn't needed); the one-off note below says when a level is ready

@@ -143,6 +143,9 @@ namespace Squishy.Simulation.Game
 
         public void RemoveSquish(int i) { S.squishOwned.RemoveAll(q => q.i == i); }
         public int SquishKinds { get { return S.squishOwned.Count; } }
+
+        /// <summary>Squishies owned in total, duplicates included (what widens the steamer).</summary>
+        public int SquishTotal { get { int n = 0; foreach (var q in S.squishOwned) n += q.n; return n; } }
         public int FavSizeIdx { get { return C.SizeIdxFor(Math.Max(1, SquishCount(S.favIdx))); } }
         public FinishData Fav { get { return C.finishes[S.favIdx]; } }
 
@@ -275,13 +278,16 @@ namespace Squishy.Simulation.Game
         public int ItemCount() { int n = 0; foreach (var it in S.items) if (it.Arch != C.tomb.id) n++; return n; }
 
         /// <summary>The steamer's radius: set by the biggest size reached here (it never shrinks back).</summary>
-        public float RoomRadius() { return C.sizes[RoomSizeIdx].room; }
+        public float RoomRadius() { return C.steamerSizes[RoomSizeIdx].room; }
 
-        /// <summary>The biggest size reached here (the steamer's width and toy room follow it).</summary>
-        public int RoomSizeIdx { get { return Math.Max(Math.Min(S.roomSize, C.sizes.Length - 1), FavSizeIdx); } }
+        /// <summary>The steamer's width: from squishies owned in total (duplicates count), and it never shrinks back.</summary>
+        public int RoomSizeIdx { get { return Math.Max(Math.Min(S.roomSize, C.steamerSizes.Length - 1), C.SteamerIdxFor(SquishTotal)); } }
+
+        /// <summary>The next steamer width, or null at the widest.</summary>
+        public SteamerSizeData NextSteamerSize() { return RoomSizeIdx + 1 < C.steamerSizes.Length ? C.steamerSizes[RoomSizeIdx + 1] : null; }
 
         /// <summary>Toys that can be out at once: one, and one more each time the steamer grows wider (data).</summary>
-        public int ToySlots() { return Math.Max(1, C.sizes[RoomSizeIdx].toys); }
+        public int ToySlots() { return Math.Max(1, C.steamerSizes[RoomSizeIdx].toys); }
 
         /// <summary>Toys out in the room now.</summary>
         public int ToysOut()
@@ -291,14 +297,14 @@ namespace Squishy.Simulation.Game
             return n;
         }
 
-        /// <summary>Records a bigger size reached; true when that makes the steamer wider.</summary>
+        /// <summary>Records a wider steamer reached (enough squishies owned in total); true when it just got wider.</summary>
         public bool ReachRoomSize()
         {
-            int si = FavSizeIdx;
+            int si = C.SteamerIdxFor(SquishTotal);
             if (si <= S.roomSize) return false;
-            float before = RoomRadius();
+            float before = C.steamerSizes[Math.Min(S.roomSize, C.steamerSizes.Length - 1)].room;
             S.roomSize = si;
-            return C.sizes[si].room > before - 1e-4f && C.sizes[si].room > C.sizes[Math.Max(0, si - 1)].room;
+            return C.steamerSizes[si].room > before + 1e-4f;
         }
 
         // ---- kitchen ----

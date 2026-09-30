@@ -2093,37 +2093,27 @@
     {
       "name": "Mini",
       "s": 0.1,
-      "at": 1,
-      "room": 1.75,
-      "toys": 1
+      "at": 1
     },
     {
       "name": "Standard",
       "s": 0.15,
-      "at": 3,
-      "room": 2.05,
-      "toys": 2
+      "at": 3
     },
     {
       "name": "Jumbo",
       "s": 0.21,
-      "at": 6,
-      "room": 2.35,
-      "toys": 3
+      "at": 6
     },
     {
       "name": "Giant",
       "s": 0.29,
-      "at": 12,
-      "room": 2.65,
-      "toys": 4
+      "at": 12
     },
     {
       "name": "Super Mega",
       "s": 0.4,
-      "at": 25,
-      "room": 2.65,
-      "toys": 4
+      "at": 25
     }
   ],
   "roomLevels": [
@@ -3667,6 +3657,32 @@
     {
       "id": "walls",
       "name": "Walls"
+    }
+  ],
+  "steamerSizes": [
+    {
+      "name": "Small",
+      "at": 1,
+      "room": 1.75,
+      "toys": 1
+    },
+    {
+      "name": "Medium",
+      "at": 10,
+      "room": 2.05,
+      "toys": 2
+    },
+    {
+      "name": "Large",
+      "at": 25,
+      "room": 2.35,
+      "toys": 3
+    },
+    {
+      "name": "Extra large",
+      "at": 50,
+      "room": 2.65,
+      "toys": 4
     }
   ]
 }

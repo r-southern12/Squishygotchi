@@ -100,7 +100,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
-**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). No item needs a size (the beanbag and trampoline locks were removed 1 Oct 2026; both stay Epic).
+**Size and growth:** copies of your favourite from steamers make it grow (bigger means squishier). **Steamer width** comes from squishies owned in total, duplicates included: Small to start, Medium at 10, Large at 25, Extra large at 50 (data; decided 1 Oct 2026). It never shrinks back. No item needs a size (the beanbag and trampoline locks were removed 1 Oct 2026; both stay Epic).
 
 | Size | Copies needed | Relative size | Steamer width |
 | --- | --- | --- | --- |
@@ -159,7 +159,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 
 - Each item type (bed, lamp, stove…) is a **piece**. Its look is a **skin**, one of 24 styles.
 - Steamers mostly unlock **skins**. A skin for a type you don't own yet also gives you that piece.
-- **Stations** are limited to one each per room (stools two). **Decor** is limited by room slots plus the size bonus. **Toys:** one can be out at first, and one more each time the steamer grows wider (Mini 1, Standard 2, Jumbo 3, Giant 4; data). With toy room full, placing another sends the longest-out toy to storage.
+- **Stations** are limited to one each per room (stools two). **Decor** is limited by room slots plus the size bonus. **Toys:** one can be out at first, and one more each time the steamer grows wider (Small 1, Medium 2, Large 3, Extra large 4; data). With toy room full, placing another sends the longest-out toy to storage.
 
 **Arrange mode**
 

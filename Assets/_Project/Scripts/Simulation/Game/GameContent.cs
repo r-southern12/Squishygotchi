@@ -32,7 +32,10 @@ namespace Squishy.Simulation.Game
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
-    [Serializable] public class SizeData { public string name; public float s, room; public int at, toys; } // room: the steamer's radius once a squishy reaches this size; toys: how many toys can be out at once
+    [Serializable] public class SizeData { public string name; public float s; public int at; } // a squishy's size from copies of it
+
+    /// <summary>The steamer's width, reached by squishies owned in total (duplicates count): its radius and how many toys can be out.</summary>
+    [Serializable] public class SteamerSizeData { public string name; public float room; public int at, toys; }
     [Serializable] public class TrayRoomData { public string id, name; }
 
     /// <summary>A furniture combo: see GameRules.Combos.</summary>
@@ -178,6 +181,16 @@ namespace Squishy.Simulation.Game
         public string TierColor(string tier) { foreach (var t in tiers) if (t.tier == tier) return t.color; return "#D8C7AE"; }
 
         /// <summary>Squishy size index for a number of copies.</summary>
+        public SteamerSizeData[] steamerSizes;
+
+        /// <summary>The steamer width for a number of squishies owned in total.</summary>
+        public int SteamerIdxFor(int total)
+        {
+            int i = 0;
+            if (steamerSizes != null) for (int k = 0; k < steamerSizes.Length; k++) if (total >= steamerSizes[k].at) i = k;
+            return i;
+        }
+
         public int SizeIdxFor(int copies)
         {
             int i = 0;

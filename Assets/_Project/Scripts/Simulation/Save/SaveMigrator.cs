@@ -5,7 +5,7 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 12;
+        public const int CurrentVersion = 13;
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -57,6 +57,12 @@ namespace Squishy.Simulation.Save
                 // got switched on by accident): off to begin with; bedtime gets its own setting.
                 data.state.tucked = false;
                 if (string.IsNullOrEmpty(data.state.overnight)) data.state.overnight = "ask";
+            }
+            if (data.version < 13 && data.state != null)
+            {
+                // v13: roomSize is now the steamer width (from squishies owned in total), not the favourite's size.
+                // Same widths in the same order; Super Mega was as wide as Giant: keep the width they had.
+                data.state.roomSize = Math.Min(data.state.roomSize, 3);
             }
             data.version = CurrentVersion;
         }
