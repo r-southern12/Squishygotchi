@@ -374,6 +374,13 @@ namespace Squishy.EditorTools
                 Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch_small");
                 model.EndPinch();
                 for (int i = 0; i < 100; i++) model.Update(.05f, 0, false, 0);
+                // Fingers placed close together (the usual pinch): it should still pinch up a clear fold.
+                model.BeginPinch(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(-.09f, .45f, .88f).normalized)), model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(.09f, .45f, .88f).normalized)));
+                model.SetPinch(.9f);
+                for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch_tiny");
+                model.EndPinch();
+                for (int i = 0; i < 100; i++) model.Update(.05f, 0, false, 0);
                 model.SetSupport(.45f, true);
                 for (int i = 0; i < 30; i++) model.Update(.05f, 0, false, 0);
                 Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 4, 1.5f, 30, warm, "drape");
