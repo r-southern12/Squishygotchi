@@ -286,28 +286,39 @@ namespace Squishy.Simulation.Game
         /// <summary>The steamer's radius (its size, bought).</summary>
         public float RoomRadius() { return CurrentSteamer.room; }
 
-        /// <summary>The steamer size bought so far (it never shrinks back).</summary>
-        public int RoomSizeIdx { get { return Math.Max(0, Math.Min(S.roomSize, C.steamerSizes.Length - 1)); } }
+        /// <summary>The steamer size: the one bought, then any prestige sizes earned by full lives on top (it never shrinks back).</summary>
+        public int RoomSizeIdx
+        {
+            get
+            {
+                int i = Math.Max(0, Math.Min(S.roomSize, C.steamerSizes.Length - 1)), full = FullLives();
+                while (i + 1 < C.steamerSizes.Length && C.steamerSizes[i + 1].lives > 0 && full >= C.steamerSizes[i + 1].lives) i++;
+                return i;
+            }
+        }
+
+        /// <summary>Squishies that lived to old age (a full life: the prestige reward).</summary>
+        public int FullLives() { int n = 0; foreach (var l in S.lives) if (l.cause == "Old age") n++; return n; }
 
         public SteamerSizeData CurrentSteamer { get { return C.steamerSizes[RoomSizeIdx]; } }
 
         /// <summary>The next steamer size, or null at the biggest.</summary>
         public SteamerSizeData NextSteamerSize() { return RoomSizeIdx + 1 < C.steamerSizes.Length ? C.steamerSizes[RoomSizeIdx + 1] : null; }
 
+        /// <summary>The next size is one you buy with coins (not a full-life reward), and you have the coins.</summary>
         public bool CanBuySteamerSize()
         {
             var nx = NextSteamerSize();
-            return nx != null && S.coins >= nx.coins && S.prestige >= nx.prestige;
+            return nx != null && nx.lives <= 0 && S.coins >= nx.coins;
         }
 
-        /// <summary>Buys the next steamer size (Medium with coins; the bigger ones with prestige).</summary>
+        /// <summary>Buys the next steamer size with coins (Medium). Full-life rewards earned already follow at once.</summary>
         public bool BuySteamerSize()
         {
             if (!CanBuySteamerSize()) return false;
-            var nx = NextSteamerSize();
-            S.coins -= nx.coins;
-            S.prestige -= nx.prestige;
+            S.coins -= NextSteamerSize().coins;
             S.roomSize = RoomSizeIdx + 1;
+            S.roomSize = RoomSizeIdx; // keep any rewards now reached
             return true;
         }
 

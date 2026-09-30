@@ -255,8 +255,13 @@ namespace Squishy.Runtime.Game
             bool blocked = Rules.ExpandNeedsBiggerSteamer();
             Hud.Sec(body, (blocked ? "Full for this steamer" : "Bigger steamer")).Margin(10, 0, 0, 0);
             Hud.Para(body, nw.name + ": wider, " + nw.toys + " toys out, up to " + nw.maxSlots + " pieces", 12, "#6F5F52");
-            string price = nw.prestige > 0 ? nw.prestige + " prestige" : nw.coins + " coins";
-            Hud.Button(body, nw.name + " steamer · " + price, "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 44, 16, () =>
+            if (nw.lives > 0)
+            {
+                int full = Rules.FullLives();
+                Hud.Para(body, "A prestige reward: yours after " + nw.lives + " full " + (nw.lives == 1 ? "life" : "lives") + " (squishies that live to old age) · " + Mathf.Min(full, nw.lives) + " of " + nw.lives, 12, "#8C7BB0");
+                return;
+            }
+            Hud.Button(body, nw.name + " steamer · " + nw.coins + " coins", "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 44, 16, () =>
             {
                 if (!Rules.BuySteamerSize()) { sfx.Bonk(); return; }
                 ui.ClosePanel("info");

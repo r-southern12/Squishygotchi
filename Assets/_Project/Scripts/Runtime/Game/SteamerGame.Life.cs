@@ -85,16 +85,21 @@ namespace Squishy.Runtime.Game
             var body = ui.PanelBody("info");
             Big(body, S.prestige + " prestige", "Earned from a full life and growing up well.");
             Hud.Para(body, Rules.Fav.name + ": day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + " · care " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "% · about " + Rules.ProjectedPrestige() + " at old age", 13, "#6F5F52");
-            var nw = Rules.NextSteamerSize();
-            if (nw != null && nw.prestige > 0)
+            // Prestige rewards: bigger steamers for full lives.
+            bool anyReward = false;
+            foreach (var sz in C.steamerSizes) if (sz.lives > 0) anyReward = true;
+            if (anyReward)
             {
-                Hud.Sec(body, "Steamer");
-                ui.Rec(body, "steamerbox", nw.name + " steamer", "Wider · " + nw.toys + " toys out · up to " + nw.maxSlots + " pieces", nw.prestige.ToString(), () =>
+                Hud.Sec(body, "Full-life rewards");
+                int full = Rules.FullLives();
+                for (int k = 0; k < C.steamerSizes.Length; k++)
                 {
-                    if (!Rules.BuySteamerSize()) { sfx.Bonk(); return; }
-                    ui.ClosePanels();
-                    GrowRoom();
-                }, !Rules.CanBuySteamerSize());
+                    var sz = C.steamerSizes[k];
+                    if (sz.lives <= 0) continue;
+                    bool have = Rules.RoomSizeIdx >= k;
+                    string state = have ? "Yours" : full >= sz.lives ? "Unlocked · needs the " + C.steamerSizes[k - 1].name + " steamer first" : Mathf.Min(full, sz.lives) + " of " + sz.lives + " full " + (sz.lives == 1 ? "life" : "lives");
+                    ui.Rec(body, "steamerbox", sz.name + " steamer", state + " · " + sz.toys + " toys out · up to " + sz.maxSlots + " pieces", null, null, false);
+                }
             }
             ShopCosmetics(body);
             body.Gap(8);
@@ -111,7 +116,9 @@ namespace Squishy.Runtime.Game
             ai.mode = "dead";
             ai.act = null;
             ui.HideBubble();
+            int sizeBefore = Rules.RoomSizeIdx;
             var rec = Rules.EndLife(true, "Old age");
+            grewFromLife = Rules.RoomSizeIdx > sizeBefore ? Rules.CurrentSteamer.name : null;
             sfx.Chime();
             _dying = true;
             Later(2.4f, () =>
@@ -131,12 +138,14 @@ namespace Squishy.Runtime.Game
             });
         }
 
+        private string grewFromLife; // a full life just earned a bigger steamer (its name), for the life card
+
         private void ShowLifeCard(LifeRecord rec)
         {
             bool old = rec.cause == "Old age";
             string title = old ? rec.name + " lived a full life" : rec.name + " has passed away";
             string meta = old
-                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · +" + rec.prestige + " prestige. Its keepsake stays in the room, and a baby " + rec.name + " is ready to start a new life."
+                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · +" + rec.prestige + " prestige." + (grewFromLife != null ? " Reward: your steamer grows to " + grewFromLife + "!" : "") + " Its keepsake stays in the room, and a baby " + rec.name + " is ready to start a new life."
                 : rec.cause + " for too long. Its tombstone stays in the room, and all your things carry over to your next squishy.";
             ui.ShowHud(false);
             if (old) ui.ShowDialog(title, meta, "#D9B45A", ("Meet the new baby", "#6F9A74", "#4C7552", Hud.Cream, (Action)NewBaby));

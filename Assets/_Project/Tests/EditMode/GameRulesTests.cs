@@ -307,11 +307,23 @@ namespace Squishy.Tests
             Assert.AreEqual(0, s.coins);
             Assert.Greater(rules.RoomRadius(), r0, "and the steamer is wider");
             s.coins = 100000;
+            s.prestige = 100000;
             Assert.IsTrue(rules.CanExpand(), "room levels carry on");
-            Assert.IsFalse(rules.BuySteamerSize(), "Large needs prestige, not coins");
-            s.prestige = c.steamerSizes[2].prestige;
-            Assert.IsTrue(rules.BuySteamerSize());
-            Assert.AreEqual(0, s.prestige);
+            Assert.IsFalse(rules.BuySteamerSize(), "Large can't be bought, with coins or prestige");
+            Assert.AreEqual(1, rules.RoomSizeIdx);
+            s.lives.Add(new LifeRecord { cause = "Neglect" });
+            Assert.AreEqual(1, rules.RoomSizeIdx, "only a full life counts");
+            s.lives.Add(new LifeRecord { cause = "Old age" });
+            Assert.AreEqual(2, rules.RoomSizeIdx, "Large is the reward for a full life");
+            s.lives.Add(new LifeRecord { cause = "Old age" });
+            Assert.AreEqual(3, rules.RoomSizeIdx, "Extra large for two");
+            var s2 = GameRules.NewState(c, 5);
+            var r2 = new GameRules(c, s2);
+            s2.lives.Add(new LifeRecord { cause = "Old age" });
+            Assert.AreEqual(0, r2.RoomSizeIdx, "the reward waits for Medium");
+            s2.coins = c.steamerSizes[1].coins;
+            Assert.IsTrue(r2.BuySteamerSize());
+            Assert.AreEqual(2, r2.RoomSizeIdx, "and comes straight after it");
             Assert.AreEqual(c.steamerSizes[c.steamerSizes.Length - 1].maxSlots, c.roomLevels[c.roomLevels.Length - 1].slots, "the biggest steamer reaches the last level");
         }
 

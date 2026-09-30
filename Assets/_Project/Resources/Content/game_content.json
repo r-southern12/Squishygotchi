@@ -3678,14 +3678,14 @@
       "room": 2.35,
       "toys": 3,
       "maxSlots": 26,
-      "prestige": 150
+      "lives": 1
     },
     {
       "name": "Extra large",
       "room": 2.65,
       "toys": 4,
       "maxSlots": 30,
-      "prestige": 300
+      "lives": 2
     }
   ]
 }

@@ -35,10 +35,11 @@ namespace Squishy.Simulation.Game
     [Serializable] public class SizeData { public string name; public float s; public int at; } // a squishy's size from copies of it
 
     /// <summary>
-    /// A steamer size, bought (user design, 1 Oct 2026): its radius, how many toys can be out, the most pieces its room
-    /// levels reach, and its price (Medium in coins, reachable in the first life; the bigger ones in prestige).
+    /// A steamer size (user design, 1 Oct 2026): its radius, how many toys can be out and the most pieces its room levels
+    /// reach. Bought with coins (Medium, reachable in the first life), or a prestige reward for full lives (lives: how
+    /// many squishies must have lived to old age; Large 1, Extra large 2), granted as soon as the size before it is had.
     /// </summary>
-    [Serializable] public class SteamerSizeData { public string name; public float room; public int toys, maxSlots, coins, prestige; }
+    [Serializable] public class SteamerSizeData { public string name; public float room; public int toys, maxSlots, coins, lives; }
     [Serializable] public class TrayRoomData { public string id, name; }
 
     /// <summary>A furniture combo: see GameRules.Combos.</summary>
