@@ -190,7 +190,7 @@ namespace Squishy.EditorTools
                     foreach (var it in items)
                         if ((string)it.GetType().GetProperty("arch").GetValue(it) == "tub")
                         {
-                            typeof(Squishy.Runtime.Game.SteamerGame).GetMethod("UseItem", flags).Invoke(game, new object[] { it, true, null });
+                            typeof(Squishy.Runtime.Game.SteamerGame).GetMethod("UseItem", flags).Invoke(game, new object[] { it, true, null, null });
                             _bathAt = f;
                             _tub = ((Transform)it.GetType().GetField("g").GetValue(it));
                         }

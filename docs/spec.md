@@ -189,7 +189,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 - **Slide docks onto the bath:** a slide dragged near a bathtub snaps square to its nearest side, facing in, the end of the ramp just over the rim. With the Splash slide it goes down once and lands right in the bath with a splash.
 - Up to 2 sinks per room (bathroom and kitchen). A second sink or stool can be added fresh from the tray (the New pieces).
 - **Arrange tray tabs:** Stored, then Kitchen, Bathroom, Bedroom, Living, Play, Decor, Walls and Steamer (a piece can sit under two, like the sink); each shows what's stored for that room and the New pieces you can add, so the list stays short as the collection grows.
-- **Dress-up** turns to face you. **Shaking dry** flings droplets only. **Bath bubbles** are small, clear and pop.
+- **Dress-up** turns to face you. **Shaking dry** flings droplets only. **Bath bubbles** are small, clear and pop; scrubbing makes clear foam bubbles; the **Spa bath** is lots more (and bigger) clear bubbles, no petals. Steam (cooking, opening steamers) is soft, see-through and round; the old faceted white puffs are gone everywhere (landings, the ball hitting the wall, keepsakes use soft glints or nothing).
 - **Tea:** the teapot lifts, turns its spout to the squishy's cup and pours; cups and saucers sit in front of the seats round the table.
 - **Ball:** after play, a ball left away from where it was placed pops back there after 3 seconds.
 - In squish mode (zoomed right in) taps on furniture are ignored. Zoomed in close, any piece between the camera and the squishy is hidden until it's out of the way.

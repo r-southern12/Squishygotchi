@@ -115,7 +115,7 @@ namespace Squishy.Runtime.Game
                 for (int i = 0; i < 16; i++)
                 {
                     float a = i / 16f * Mathf.PI * 2;
-                    HPuff(new Vector3(ai.x + Mathf.Cos(a) * .15f, Y0 + .1f, ai.z + Mathf.Sin(a) * .15f), new Vector3(Mathf.Cos(a) * .5f, .9f, Mathf.Sin(a) * .5f), .08f, 1.2f, 2, .5f);
+                    if (i % 2 == 0) Glints(new Vector3(ai.x + Mathf.Cos(a) * .2f, Y0 + .2f, ai.z + Mathf.Sin(a) * .2f), "#FFE08A", 1);
                 }
                 ShowLifeCard(rec);
             });

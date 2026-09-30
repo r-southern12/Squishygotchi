@@ -125,18 +125,8 @@ namespace Squishy.Runtime.Game
                     break;
                 }
                 case "spa":
-                {
-                    // Petals floating round it on the water.
-                    var cols = new[] { "#F2B8C6", "#FFF1E0", "#E8828F" };
-                    for (int k = 0; k < 7; k++)
-                    {
-                        var p = Prop("petal");
-                        Node.Mesh(p, ThreeGeo.Sph(.028f, 10, 6), ThreeMat.M(cols[k % 3]), 0, 0, 0, shadow: false).localScale = new Vector3(1, .25f, .7f);
-                        Node.SetLayer(p, HomeLayer);
-                    }
                     Floater("Aaah…");
                     break;
-                }
                 case "splash":
                 {
                     // In with a big splash.
@@ -172,6 +162,7 @@ namespace Squishy.Runtime.Game
         {
             if (A.combo == null) return;
             var pw = PetWorld();
+            var it0 = A.it;
             float h = pet.Scale * pet.StageScale;
             Vector3 front = new Vector3(Mathf.Sin(petYawY), 0, Mathf.Cos(petYawY));
             switch (A.act.role)
@@ -197,11 +188,11 @@ namespace Squishy.Runtime.Game
                     if (Random.value < dt * 2) Glints(new Vector3(pw.x, pw.y + h * .9f, pw.z), "#F2A7B8", 1);
                     break;
                 case "spa":
-                    for (int k = 0; k < comboProps.Count; k++)
+                    // A spa bath: lots of clear bubbles rising round it (bigger than a plain bath's).
+                    if (it0 != null && it0.parts.water != null && Random.value < dt * 16)
                     {
-                        float a = k / (float)comboProps.Count * Mathf.PI * 2 + t * .25f, r = PetRadius() + .06f + .03f * Mathf.Sin(t + k);
-                        comboProps[k].localPosition = new Vector3(pw.x + Mathf.Cos(a) * r, Y0 + .19f, pw.z + Mathf.Sin(a) * r);
-                        comboProps[k].localRotation = Quaternion.Euler(0, a * Mathf.Rad2Deg * 1.5f, 0);
+                        var wp = ThreeWorld(it0.parts.water);
+                        bathBubbles.Spawn(new Vector3(wp.x + Rnd(-.22f, .22f), wp.y + .03f, wp.z + Rnd(-.14f, .14f)), new Vector3(Rnd(-.04f, .04f), Rnd(.1f, .28f), Rnd(-.04f, .04f)), Rnd(.022f, .045f), Rnd(1.4f, 2.4f), 1.5f, .03f);
                     }
                     break;
                 case "shake":

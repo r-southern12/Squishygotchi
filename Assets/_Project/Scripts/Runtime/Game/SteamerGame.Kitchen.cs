@@ -89,7 +89,7 @@ namespace Squishy.Runtime.Game
                 Node.Mesh(k, Cyl(.18f, .45f, .4f, 16), M("#3F4447"), lx, 3.4f, Z + 1.2f, shadow: false);
                 Node.Mesh(k, Sph(.16f, 12, 8), glow, lx, 3.25f, Z + 1.2f, shadow: false);
             }
-            bgSteam = new ParticlePool(60, Ico1(), SteamMat(), false, UnboxLayer);
+            bgSteam = new ParticlePool(60, ThreeGeo.Sph(1, 14, 10), SteamMat(), false, UnboxLayer);
         }
 
         /// <summary>The kitchen's gentle loop: flickering flames, rising steam, swaying utensils.</summary>

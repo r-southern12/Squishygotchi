@@ -33,7 +33,8 @@ namespace Squishy.Runtime.Game
             curSkin = C.skins[Mathf.Clamp(S.curSkin, 0, C.skins.Length - 1)];
             homeWall.Skin(curSkin);
             UpdateMusic();
-            homeSteam = new ParticlePool(70, ThreeGeo.Ico1(), SteamMat(), false, HomeLayer);
+            // Steam (cooking): soft, see-through, round wisps (the faceted white puffs read as golf balls).
+            homeSteam = new ParticlePool(70, ThreeGeo.Sph(1, 14, 10), SteamMat(), false, HomeLayer);
             fxPool = new ParticlePool(160, ThreeGeo.Plane(1, 1), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, Textures.Glint(), true, false), true, HomeLayer) { Glint = true }; // star glints, not blobs
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);
             // Bath bubbles: clear, round, swelling in and popping (they were white puffs that read as clouds).
@@ -48,12 +49,8 @@ namespace Squishy.Runtime.Game
             ai.x = 0; ai.z = .3f;
         }
 
-        private static Material SteamMat()
-        {
-            var m = ThreeMat.Lambert(ThreeMat.Lin("#FFFBF2"), ThreeMat.Lin("#FFF1DA") * .4f);
-            m.SetFloat("_ReceiveShadows", 0);
-            return m;
-        }
+        /// <summary>Steam: soft, see-through and round (faceted white puffs read as golf balls).</summary>
+        private static Material SteamMat() { return ThreeMat.Basic(ThreeMat.Lin("#FFFBF4"), .3f, ThreeMat.Blend.Alpha, depthWrite: false); }
 
         private static Material WaterMat()
         {
@@ -714,7 +711,7 @@ namespace Squishy.Runtime.Game
                 for (int i = 0; i < 12; i++)
                 {
                     float a = i / 12f * Mathf.PI * 2;
-                    HPuff(new Vector3(ai.x + Mathf.Cos(a) * .15f, Y0 + .08f, ai.z + Mathf.Sin(a) * .15f), new Vector3(Mathf.Cos(a) * .8f, .5f, Mathf.Sin(a) * .8f), .07f, .7f, 3, .3f);
+                    if (i % 3 == 0) Glints(new Vector3(ai.x + Mathf.Cos(a) * .2f, Y0 + .15f, ai.z + Mathf.Sin(a) * .2f), "#E8E2DA", 1);
                 }
                 ShowLifeCard(rec);
             });
@@ -1156,7 +1153,7 @@ namespace Squishy.Runtime.Game
                     {
                         bl.vx = (bl.vx - 2 * dot * nx) * .85f;
                         bl.vz = (bl.vz - 2 * dot * nz) * .85f;
-                        if (sp > .5f) { sfx.Bonk(); HPuff(new Vector3(nx * lim, Y0 + .1f, nz * lim), new Vector3(0, .4f, 0), .05f, .35f, 3, .2f); }
+                        if (sp > .5f) { sfx.Bonk(); Glints(new Vector3(nx * lim, Y0 + .1f, nz * lim), "#FFF3D6", 1); }
                     }
                     bx = nx * lim;
                     bz = nz * lim;

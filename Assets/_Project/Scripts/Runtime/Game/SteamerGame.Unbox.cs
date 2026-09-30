@@ -78,7 +78,7 @@ namespace Squishy.Runtime.Game
             Node.Mesh(plate, ThreeGeo.Cyl(.36f, .33f, .04f, 32), ThreeMat.M("#F4EBDD"), 0, .02f, 0);
             Node.Mesh(plate, ThreeGeo.Torus(.35f, .018f, 6, 40), ThreeMat.M("#D9A64A"), 0, .04f, 0, shadow: false).RotX(Mathf.PI / 2);
             plate.gameObject.SetActive(false);
-            unSteam = new ParticlePool(110, ThreeGeo.Ico1(), SteamMat(), false, UnboxLayer);
+            unSteam = new ParticlePool(110, ThreeGeo.Sph(1, 14, 10), SteamMat(), false, UnboxLayer);
             confetti = new ParticlePool(80, ThreeGeo.PlaneMirrored(.12f, .17f), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Opaque, null, true), true, UnboxLayer);
             raysMat = ThreeMat.Basic(ThreeMat.Lin("#FFE3A8"), 0, ThreeMat.Blend.Additive, Textures.Rays(), false, false);
             raysMat.renderQueue = 3100;

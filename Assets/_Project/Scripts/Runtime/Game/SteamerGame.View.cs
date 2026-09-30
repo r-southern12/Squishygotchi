@@ -317,7 +317,8 @@ namespace Squishy.Runtime.Game
                         TaskEvent("scrub");
                     }
                     var pp = PetWorld();
-                    HPuff(new Vector3(pp.x + Rnd(-.1f, .1f), pp.y + pet.Scale * .9f, pp.z + Rnd(-.1f, .1f)), new Vector3(Rnd(-.3f, .3f), .5f, Rnd(-.3f, .3f)), Rnd(.03f, .05f), .6f, 2, .2f);
+                    // Scrubbing makes clear foam bubbles (the old white puffs read as golf balls).
+                    for (int k = 0; k < 2; k++) bathBubbles.Spawn(new Vector3(pp.x + Rnd(-.12f, .12f), pp.y + pet.Scale * Rnd(.5f, .9f), pp.z + Rnd(-.12f, .12f)), new Vector3(Rnd(-.08f, .08f), Rnd(.1f, .25f), Rnd(-.08f, .08f)), Rnd(.016f, .03f), Rnd(.9f, 1.6f), 1.5f, .03f);
                 }
                 return;
             }

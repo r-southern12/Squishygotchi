@@ -276,7 +276,6 @@ namespace Squishy.Runtime.Game
             sfx.Land();
             Buzz(Mathf.RoundToInt(6 + strength * 14));
             var p = PetWorld();
-            for (int i = 0; i < 3; i++) HPuff(new Vector3(p.x + Rnd(-.1f, .1f), p.y + .02f, p.z + Rnd(-.1f, .1f)), new Vector3(Rnd(-.3f, .3f), .2f, Rnd(-.3f, .3f)), .03f, .5f);
             SquishFx(p + Vector3.up * pet.Scale * .4f, Mathf.RoundToInt(3 + strength * 6), .45f);
         }
 
