@@ -93,9 +93,11 @@ namespace Squishy.Runtime.Game
         private bool sleepStarting;
 
         /// <summary>Off to bed (or, with no bed, curled up where it is), asleep until it wakes.</summary>
-        private void SleepNow()
+        /// <param name="inBed">Straight into bed without walking there (opening the game while it's tucked in).</param>
+        private void SleepNow(bool inBed = false)
         {
             if (!S.asleep || S.dead) return;
+            if (inBed && ai.act != null && ai.act.night && ai.mode == "walk") { PutInBed(); return; }
             if (ai.act != null && ai.act.night && (ai.mode == "act" || ai.mode == "walk")) { ui.SetHint(Rules.Fav.name + " is asleep till morning · keep playing, or tap the moon to wake it"); return; } // already in bed (or on the way)
             var bed = NearestRole("bed");
             sleepStarting = true;
@@ -111,8 +113,25 @@ namespace Squishy.Runtime.Game
                 ai.actT = 0;
                 ai.self = false;
             }
+            if (inBed) PutInBed();
             ui.ShowBubble("rest", "Asleep for the night", false);
             ui.SetHint(Rules.Fav.name + " is asleep till morning · keep playing, or tap the moon to wake it");
+        }
+
+        /// <summary>Already lying in its bed, asleep (no walk across the room).</summary>
+        private void PutInBed()
+        {
+            if (ai.act == null || !ai.act.night || ai.spot == null || ai.mode != "walk") return;
+            ai.x = ai.spot.stand.x;
+            ai.z = ai.spot.stand.y;
+            ai.y = ai.spot.y;
+            ai.path.Clear();
+            ai.seg = null;
+            if (ai.spot.approach.HasValue) ai.perch = ai.spot.approach;
+            if (ai.spot.face.HasValue) petYawY = Mathf.Atan2(ai.spot.face.Value.x - ai.x, ai.spot.face.Value.y - ai.z);
+            ai.mode = "act";
+            ai.actT = 0;
+            StartAct();
         }
 
         /// <summary>Opening the game while asleep: the wake-up screen instead of the title screen.</summary>

@@ -588,7 +588,7 @@ namespace Squishy.Runtime.Game
         {
             var A = ai.act;
             if (A == null) return;
-            if (!ai.self && !visiting) TaskEvent("act_" + A.role); // missions: "go down the slide", "bath time"...
+            if (!ai.self && !visiting && !A.night) TaskEvent("act_" + A.role); // (bedtime isn't a nap mission) missions: "go down the slide", "bath time"...
             if (A.role == "lamp" && A.it != null)
             {
                 A.it.st.lampOn = !A.it.st.lampOn;

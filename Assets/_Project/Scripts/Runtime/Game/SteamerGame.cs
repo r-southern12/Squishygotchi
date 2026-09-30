@@ -98,7 +98,7 @@ namespace Squishy.Runtime.Game
             Notifier.Init();
             Notifier.Clear();
             GoOnline(); // friends: anonymous sign-in and sharing your room (fails soft offline)
-            if (S.asleep) ShowWakeScreen(AfterIntro); // after a night's sleep: the wake-up screen, not the title
+            if (S.asleep) { SleepNow(inBed: true); ShowWakeScreen(AfterIntro); } // after a night's sleep: already in bed behind the wake-up screen, not the title
             else ui.ShowIntro(AfterIntro);
         }
 
