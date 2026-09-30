@@ -234,6 +234,20 @@ namespace Squishy.Simulation.Game
         /// <summary>A streak is a coin bonus on missions (not steamers): each day after the first adds a little, up to a cap.</summary>
         public float StreakBonus() { return Math.Min(R.streakBonusMax, Math.Max(0, CurrentStreak() - 1) * R.streakBonusPerDay); }
 
+        /// <summary>The streak the next mission counts in (today's first mission after yesterday's adds a day).</summary>
+        public int UpcomingStreak()
+        {
+            var today = Clock.UtcNow.ToLocalTime().Date;
+            var last = new DateTime(S.lastTaskDay);
+            return last == today ? S.streak : last == today.AddDays(-1) ? S.streak + 1 : 1;
+        }
+
+        /// <summary>The coin bonus the next mission will pay.</summary>
+        public float UpcomingStreakBonus() { return Math.Min(R.streakBonusMax, Math.Max(0, UpcomingStreak() - 1) * R.streakBonusPerDay); }
+
+        /// <summary>What a mission will pay when claimed, streak bonus included.</summary>
+        public int UpcomingTaskCoins(TaskData d) { return (int)Math.Round(d.coins * (1 + UpcomingStreakBonus())); }
+
         /// <summary>What a mission pays with the streak bonus.</summary>
         public int TaskCoins(TaskData d) { return (int)Math.Round(d.coins * (1 + StreakBonus())); }
 

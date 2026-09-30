@@ -155,16 +155,32 @@ namespace Squishy.Runtime.Game
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
-            int streak = Rules.CurrentStreak(), bonus = Mathf.RoundToInt(Rules.StreakBonus() * 100);
-            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer · " + (streak > 0 ? streak + "-day streak" + (bonus > 0 ? ": +" + bonus + "% coins" : ": come back tomorrow for bonus coins") : "a mission a day builds a coin bonus"));
+            ui.SetPanelSub("tasks", "Each pays coins + " + C.rules.taskSteamers + " steamer");
+            // The streak bonus, big and clear: a coin, what missions pay extra now, and what tomorrow brings.
+            {
+                int streak = Rules.UpcomingStreak(), bonus = Mathf.RoundToInt(Rules.UpcomingStreakBonus() * 100), max = Mathf.RoundToInt(C.rules.streakBonusMax * 100);
+                int tomorrow = Mathf.RoundToInt(Mathf.Min(C.rules.streakBonusMax, streak * C.rules.streakBonusPerDay) * 100);
+                bool doneToday = Rules.CurrentStreak() > 0 && new System.DateTime(S.lastTaskDay) == System.DateTime.Now.Date;
+                var card = new Frame().Set(Css.C("#FFF1CC"), 16).Row(Align.Center).Pad(10, 14, 10, 12).In(body);
+                card.style.marginBottom = 8;
+                card.Add(Icons.Make("coin", 38));
+                var col = new VisualElement().In(card);
+                col.style.flexGrow = 1;
+                col.style.marginLeft = 12;
+                Css.Label(col, bonus > 0 ? "+" + bonus + "% coins" : "Streak bonus", "Gluten", 800, 19);
+                string line = bonus >= max ? streak + "-day streak · top bonus"
+                    : doneToday ? streak + "-day streak · tomorrow +" + tomorrow + "%"
+                    : bonus > 0 ? streak + "-day streak · keep it going today"
+                    : "A mission a day adds +" + Mathf.RoundToInt(C.rules.streakBonusPerDay * 100) + "%, up to +" + max + "%";
+                Css.Label(col, line, "Figtree", 600, 12, Hud.Muted).Wrap();
+            }
             // The missions goal, spelled out: how many done, the reward, and when a new one starts.
             {
                 int got = Rules.GoalTasks(), goal = C.rules.goalMissions;
                 string next = Rules.NextGoalStart().DayOfWeek.ToString();
                 var gbar = Hud.Bar(Mathf.Clamp01(got / (float)goal), 8, "#D9A64A", 0, 6);
                 ui.Rec(body, "steamerbox", "Missions goal: " + Mathf.Min(got, goal) + " of " + goal,
-                    Rules.GoalDone() ? "Done! +" + C.rules.goalSteamers + " steamers collected. A new goal starts " + next + "."
-                                     : "Finish " + goal + " missions before " + next + " for +" + C.rules.goalSteamers + " steamers. A new goal starts every Monday and Thursday.",
+                    Rules.GoalDone() ? "Done! +" + C.rules.goalSteamers + " steamers · new goal " + next : "+" + C.rules.goalSteamers + " steamers · new goal " + next,
                     null, null, false, gbar);
             }
             for (int i = 0; i < S.tasks.Count; i++)
@@ -180,7 +196,7 @@ namespace Squishy.Runtime.Game
                 var pr = Hud.Bar(t.prog / d.goal, 8, "#6F9A74", 0, 6);
                 string sub = d.time ? Mathf.FloorToInt(t.prog / 60) + ":" + Mathf.FloorToInt(t.prog % 60).ToString("00") + " of 3:00" : Mathf.FloorToInt(t.prog) + " of " + d.goal;
                 int idx = i;
-                ui.Rec(body, null, d.text, sub + " · +" + Rules.TaskCoins(d) + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : ""), t.done ? "Claim" : "…", () =>
+                ui.Rec(body, null, d.text, sub + " · +" + Rules.UpcomingTaskCoins(d) + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : ""), t.done ? "Claim" : "…", () =>
                 {
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
