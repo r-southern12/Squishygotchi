@@ -339,7 +339,7 @@ namespace Squishy.Runtime.Game
             if (S.tucked) { if (user) Floater("Paused · see Settings", "bad"); return; }
             string role = it.a.role;
             // Tucked in for the night: it stays in bed; tapping any piece (lights and plants too) is ignored. The moon wakes it.
-            if (S.asleep && chainFrom == null && !sleepStarting) { if (user) FloaterAt(it, "Shh, asleep"); return; }
+            if (S.asleep && chainFrom == null && !sleepStarting) { if (user) FloaterAt(it, "Shh, " + Rules.Fav.name + " is asleep"); return; }
             if (role == "seat" && chainFrom == null)
             {
                 var t = items.Find(x => x.a.role == "tea" && Dist(x.tx - it.tx, x.tz - it.tz) < 1.1f);
