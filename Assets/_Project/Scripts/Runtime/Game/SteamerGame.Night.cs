@@ -98,7 +98,7 @@ namespace Squishy.Runtime.Game
         {
             if (!S.asleep || S.dead) return;
             if (inBed && ai.act != null && ai.act.night && ai.mode == "walk") { PutInBed(); return; }
-            if (ai.act != null && ai.act.night && (ai.mode == "act" || ai.mode == "walk")) { ui.SetHint(Rules.Fav.name + " is asleep till morning · keep playing, or tap the moon to wake it"); return; } // already in bed (or on the way)
+            if (ai.act != null && ai.act.night && (ai.mode == "act" || ai.mode == "walk")) { ui.SetHint(AsleepHint); return; } // already in bed (or on the way)
             var bed = NearestRole("bed");
             sleepStarting = true;
             if (bed != null) UseItem(bed, true);
@@ -115,8 +115,10 @@ namespace Squishy.Runtime.Game
             }
             if (inBed) PutInBed();
             ui.ShowBubble("rest", "Asleep for the night", false);
-            ui.SetHint(Rules.Fav.name + " is asleep till morning · keep playing, or tap the moon to wake it");
+            ui.SetHint(AsleepHint);
         }
+
+        private string AsleepHint { get { return Rules.Fav.name + " is asleep until morning\nTap the moon to wake it"; } }
 
         /// <summary>Already lying in its bed, asleep (no walk across the room).</summary>
         private void PutInBed()
