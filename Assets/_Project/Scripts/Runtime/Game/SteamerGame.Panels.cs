@@ -44,7 +44,7 @@ namespace Squishy.Runtime.Game
             var inside = new System.Text.StringBuilder("Inside a steamer: ");
             for (int k = 0; k < o.kinds.Count; k++) inside.Append(k > 0 ? ", " : "").Append(o.kinds[k].Key.ToLowerInvariant()).Append(" ").Append(P(o.kinds[k].Value));
             ui.SetOdds(new[] { ("Common", P(1 - R.pRare - R.pEpic - R.pLegendary)), ("Rare", P(R.pRare)), ("Epic", P(R.pEpic)), ("Legendary", P(R.pLegendary)) },
-                "With pity counted, each prize is Common " + P(o.common) + ", Rare " + P(o.rare) + ", Epic " + P(o.epic) + ", Legendary " + P(o.legendary) + ". Rare or better is guaranteed at least once every " + R.pityRare + " prizes, Epic or better once every " + R.pityEpic + ", and a Legendary once every " + R.pityLegendary + ".",
+                "With pity counted, each prize is Common " + P(o.common) + ", Rare " + P(o.rare) + ", Epic " + P(o.epic) + ", Legendary " + P(o.legendary) + ".",
                 "Some steamers are stacked: 2 layers (" + P(R.pTwoLayers) + ") or 3 layers (" + P(R.pThreeLayers) + "), each with its own prize at these odds.",
                 inside + ".",
                 "Squishies: " + P(R.favouriteChance) + " of the time it's a copy of your favourite (copies make it grow). Otherwise it's one you don't have yet, until you have every squishy of that rarity.",

@@ -158,6 +158,7 @@ namespace Squishy.Runtime.UI
             var odds = Modal(Chip(row1, 12).Row().Pad(0, 12, 0, 12).Size(null, 36), "unbox");
             odds.style.flexShrink = 0;
             _oddsBtnLbl = Label(odds, "Odds", "Figtree", 700, 13);
+            _oddsBtnLbl.schedule.Execute(RollOddsLabel).Every(2800);
             Tap(odds, () => _g.OnOdds());
             // Gift steamer: ready every few hours.
             _gift = Chip(row1, -1).Row().Pad(4, 10, 4, 6);

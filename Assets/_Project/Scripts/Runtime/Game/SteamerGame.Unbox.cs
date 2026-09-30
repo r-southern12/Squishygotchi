@@ -200,7 +200,10 @@ namespace Squishy.Runtime.Game
 
         private void UpdatePity()
         {
-            ui.SetPity("Rare or better within " + (C.rules.pityRare - S.sinceRare) + " · Epic or better within " + (C.rules.pityEpic - S.sinceEpic) + " · Legendary within " + (C.rules.pityLegendary - S.sinceLegendary), "Odds · Rare in " + (C.rules.pityRare - S.sinceRare));
+            var R = C.rules;
+            int r = R.pityRare - S.sinceRare, e = R.pityEpic - S.sinceEpic, l = R.pityLegendary - S.sinceLegendary;
+            ui.SetPity(new[] { "Odds · Rare in " + r, "Odds · Epic in " + e, "Odds · Legendary in " + l },
+                new[] { ("Rare or better", r, R.pityRare, "#5B8FB0"), ("Epic or better", e, R.pityEpic, "#8C7BB0"), ("Legendary", l, R.pityLegendary, "#C99426") });
         }
 
         private void SetLayers(int n)

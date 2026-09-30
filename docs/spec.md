@@ -340,7 +340,7 @@ No furniture is sold in the shop; furniture comes from steamers.
 | Epic | 5% |
 | Legendary | 1% |
 
-- **Pity:** Rare+ guaranteed within 10 prizes; Epic+ within 50; Legendary within 100. A pity pull is always a squishy of that rarity (never a kit or furniture). Counter shown on the Odds button. Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
+- **Pity:** Rare+ guaranteed within 10 prizes; Epic+ within 50; Legendary within 100. A pity pull is always a squishy of that rarity (never a kit or furniture). The Odds button rolls through all three countdowns ("Rare in 8", "Epic in 48", "Legendary in 82"); the Odds panel shows each with a bar, then the rates, with the rest folded under "Details". Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
 - **Never paid:** steamers, coins or anything that turns into pulls are never sold for real money (keeps us clear of paid loot-box laws and suits a young audience). Duplicates refund coins: a coin on the reveal card (and on each duplicate in Open 10) that the player taps to collect; anything not tapped is collected on leaving.
 - **Stacked steamers:** 15% have 2 tiers and 5% have 3, each with its own prize.
 - **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (25% chance to be a copy of your favourite, never for Legendary; otherwise one you don't own yet, until every squishy of that rarity is collected), tool skins, steamer skins.

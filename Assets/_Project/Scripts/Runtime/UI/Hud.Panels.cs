@@ -64,10 +64,21 @@ namespace Squishy.Runtime.UI
         }
 
         /// <summary>The odds screen, filled from the measured rules (SteamerGame.OnOdds).</summary>
+        private VisualElement _pityBox;
+        private string[] _oddsLabels;
+        private int _oddsLabelAt;
+
+        /// <summary>
+        /// The odds panel: the three pity countdowns at the top (a bar each), the rates, and the rest folded away under
+        /// "Details" (it was a wall of text).
+        /// </summary>
         public void SetOdds(IEnumerable<(string tier, string pct)> rows, params string[] notes)
         {
             var ob = _panelBody["odds"];
             ob.Clear();
+            _panelSub["odds"].text = "";
+            _pityBox = new VisualElement().In(ob);
+            _pityBox.style.marginBottom = 8;
             foreach (var (tier, pct) in rows)
             {
                 var tr = new VisualElement().Row(Align.Center, Justify.SpaceBetween).Pad(6, 4, 6, 4).In(ob);
@@ -76,7 +87,14 @@ namespace Squishy.Runtime.UI
                 Label(tr, tier, "Figtree", 400, 14);
                 Label(tr, pct, "Figtree", 700, 14);
             }
-            foreach (var n in notes) Para(ob, n, 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
+            var details = new VisualElement().In(ob);
+            var head = new VisualElement().Row(Align.Center, Justify.SpaceBetween).Pad(10, 4, 6, 4).In(ob);
+            head.PlaceBehind(details);
+            var hl = Label(head, "Details", "Figtree", 700, 14);
+            var hs = Label(head, "Show", "Figtree", 700, 13, Muted);
+            details.Shown(false);
+            foreach (var n in notes) Para(details, n, 12.5f, "#6F5F52").Margin(4, 0, 0, 0);
+            Tap(head, () => { bool on = details.style.display == DisplayStyle.None; details.Shown(on); hs.text = on ? "Hide" : "Show"; });
         }
 
         public VisualElement PanelBody(string id) { var b = _panelBody[id]; b.Clear(); return b.contentContainer; }
@@ -101,7 +119,33 @@ namespace Squishy.Runtime.UI
         public void ClosePanel(string id) { _panels[id].Shown(false); }
         public void ClosePanels() { foreach (var k in PanelIds) _panels[k].Shown(false); }
 
-        public void SetPity(string text, string oddsBtn) { _panelSub["odds"].text = text; _oddsBtnLbl.text = oddsBtn; }
+        /// <summary>
+        /// The pity countdowns: the Odds button rolls through them ("Rare in 8", "Epic in 48", "Legendary in 82"), and the
+        /// odds panel shows each with a bar filling towards its guarantee.
+        /// </summary>
+        public void SetPity(string[] buttonLabels, (string label, int left, int of, string colour)[] bars)
+        {
+            _oddsLabels = buttonLabels;
+            if (_oddsLabels != null && _oddsLabels.Length > 0) _oddsBtnLbl.text = _oddsLabels[_oddsLabelAt % _oddsLabels.Length];
+            if (_pityBox == null) return;
+            _pityBox.Clear();
+            foreach (var b in bars)
+            {
+                var r = new VisualElement().Row(Align.Center, Justify.SpaceBetween).In(_pityBox);
+                r.style.marginTop = 6;
+                Label(r, b.label, "Figtree", 600, 13);
+                Label(r, "in " + b.left, "Figtree", 700, 13, b.colour);
+                _pityBox.Add(Bar(Mathf.Clamp01((b.of - b.left) / (float)Mathf.Max(1, b.of)), 6, b.colour, 0, 3));
+            }
+        }
+
+        /// <summary>Every few seconds the Odds button shows the next countdown.</summary>
+        private void RollOddsLabel()
+        {
+            if (_oddsLabels == null || _oddsLabels.Length == 0) return;
+            _oddsLabelAt = (_oddsLabelAt + 1) % _oddsLabels.Length;
+            _oddsBtnLbl.text = _oddsLabels[_oddsLabelAt];
+        }
 
         public static Label Para(VisualElement parent, string text, float size = 13.5f, string color = "#4F4036")
         {
