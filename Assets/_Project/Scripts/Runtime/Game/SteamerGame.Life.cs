@@ -50,7 +50,7 @@ namespace Squishy.Runtime.Game
             // Reached a bigger size: the steamer grows wider round it (back home, not mid-unbox or visiting).
             if (mode == "home" && !visiting && !S.dead && Rules.ReachRoomSize() && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
-            ui.ExpandDot(canExpand && mode == "home");
+            ui.ExpandDot(false); // no dot on Arrange (user feedback: it stayed on and wasn't needed); the one-off note below says when a level is ready
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Room can level up!"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
             StepNight(1);
