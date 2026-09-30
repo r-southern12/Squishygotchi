@@ -379,6 +379,10 @@ namespace Squishy.EditorTools
                 model.SetPinch(.9f);
                 for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
                 Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch_tiny");
+                // The same pinch dragged sideways while held (as fingers do): it should nudge, not pull out a flap.
+                model.DragPinch(Vector3.ClampMagnitude(new Vector3(model.Scale * model.StageScale * .4f, 0, 0), model.Scale * model.StageScale * .25f) * .6f);
+                for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch_drag");
                 model.EndPinch();
                 for (int i = 0; i < 100; i++) model.Update(.05f, 0, false, 0);
                 model.SetSupport(.45f, true);

@@ -265,7 +265,7 @@ namespace Squishy.Runtime.Models
         }
 
         /// <summary>How far each fingertip carries the skin towards the other (they can nearly meet).</summary>
-        private float PinchTravel() { return _pinch * Mathf.Min(_pinchHalf * .92f, .6f); }
+        private float PinchTravel() { return _pinch * Mathf.Min(_pinchHalf * .75f, .5f); } // a quarter of the gap stays, so the pinched skin bunches rather than creasing
 
         /// <summary>How much of this point the pinch holds: the band of skin across the fingers, fading a fingertip's width either side.</summary>
         private float PinchGrip(Vector3 b)
@@ -294,10 +294,12 @@ namespace Squishy.Runtime.Models
             // Closing: between the fingers the skin is carried towards the middle (more the nearer a finger); beyond them it fades.
             float kClose = along <= h ? along / h : Mathf.Exp(-(along - h) * (along - h) / (r * r));
             var close = -_pinchAxis * Mathf.Sign(signed) * travel * kClose * kPerp;
-            // The fold: the squeezed skin between them rises (strong even for a small pinch).
+            // The fold: the squeezed skin between them rises in a soft, rounded bump (a tall narrow ridge made a sharp fin).
             var outDir = (b - Core).normalized;
+            float rf = r * 1.5f, kFold = Mathf.Exp(-perp * perp / (rf * rf));
             float inside = along <= h ? 1 - (along / h) * (along / h) : 0;
-            float fold = _pinch * (.12f + .7f * travel) * inside * kPerp;
+            inside = inside * inside * (3 - 2 * inside); // smooth at the edges
+            float fold = _pinch * Mathf.Min(.2f, .06f + .5f * travel) * inside * kFold;
             // Under each fingertip it presses in a little.
             float pad = Mathf.Exp(-(along - h) * (along - h) / (r * r * .5f)) * kPerp;
             float press = _pinch * .1f * pad * (1 - inside);
