@@ -19,7 +19,8 @@ namespace Squishy.Simulation.Game
         public float r;
         /// <summary>Collision circles as flat (x, z, r) triples; empty means one circle of radius r.</summary>
         public float[] circles;
-        public int comfort, size, max, price;
+        public int comfort, max, price;
+        public string rarity; // fixed rarity for every style of this type (beanbag, trampoline: Epic); empty: from the style
         public bool walk;
     }
 
@@ -161,7 +162,7 @@ namespace Squishy.Simulation.Game
             {
                 string key = a.id + ":" + s.id;
                 uint hv = Hash(key) % 100;
-                string rar = a.size > 0 ? "Epic" : hv < 70 ? "Common" : hv < 92 ? "Rare" : "Epic";
+                string rar = !string.IsNullOrEmpty(a.rarity) ? a.rarity : hv < 70 ? "Common" : hv < 92 ? "Rare" : "Epic";
                 var it = new CatalogueItem { key = key, arch = a.id, style = s.id, rarity = rar, cat = a.cat, name = s.shortName + " " + (a.id == "plant" && !string.IsNullOrEmpty(s.plantName) ? s.plantName : a.name) };
                 Catalogue.Add(it);
                 _catByKey[key] = it;

@@ -829,10 +829,10 @@
       "role": "bounce",
       "r": 0.36,
       "comfort": 0,
-      "size": 2,
       "max": 1,
       "price": 300,
-      "rooms": "play"
+      "rooms": "play",
+      "rarity": "Epic"
     },
     {
       "id": "beanbag",
@@ -841,12 +841,12 @@
       "role": "lounge",
       "r": 0.36,
       "comfort": 2,
-      "size": 1,
       "max": 1,
       "price": 260,
       "rooms": "living|bedroom",
       "hop": 0.25,
-      "hopLow": 0.25
+      "hopLow": 0.25,
+      "rarity": "Epic"
     }
   ],
   "tomb": {

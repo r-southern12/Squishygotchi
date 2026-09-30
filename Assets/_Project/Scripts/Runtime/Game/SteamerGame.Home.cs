@@ -358,7 +358,6 @@ namespace Squishy.Runtime.Game
             if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
             var act = !string.IsNullOrEmpty(comboAct) ? C.Activity(comboAct) ?? C.Activity(role) : C.Activity(role);
             if (act == null) return;
-            if (it.a.size > 0 && Rules.FavSizeIdx < it.a.size) { FloaterAt(it, "Needs " + C.sizes[it.a.size].name + " size", "bad"); return; }
             if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat nearby", "bad"); return; }
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
@@ -429,7 +428,7 @@ namespace Squishy.Runtime.Game
             {
                 if (role == "snack" && !S.snacks.Any(n => n > 0)) continue;
                 var it = NearestRole(role);
-                if (it != null && !(it.a.size > 0 && Rules.FavSizeIdx < it.a.size)) { UseItem(it, false); if (ai.act != null) return; }
+                if (it != null) { UseItem(it, false); if (ai.act != null) return; }
             }
             string label = need == Needs.Clean ? "Grooming" : need == Needs.Hunger ? "Nibbling crumbs" : need == Needs.Rest ? "Dozing" : "Wiggling";
             ai.act = new Activity { role = "makeDo", act = new ActivityData { label = label, need = Needs.Names[need], dur = 4, rate = .06f } };
@@ -471,7 +470,7 @@ namespace Squishy.Runtime.Game
             {
                 // Content and bored: it wanders off to play or lounge on its own (a chance to catch it and earn a tip).
                 var fun = items.FindAll(i => (System.Array.IndexOf(PlayRoles, i.a.role) >= 0 || i.a.role == "lounge" || i.a.role == "seat" || i.a.role == "bounce" || StartsCombo(i))
-                    && !(i.a.size > 0 && Rules.FavSizeIdx < i.a.size));
+                    );
                 // Finished combos are favourites: half the time it picks one of those.
                 var fav = fun.FindAll(StartsCombo);
                 if (fav.Count > 0 && Random.value < .5f) fun = fav;

@@ -100,7 +100,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
-**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). Size also unlocks items (beanbag at Standard, trampoline at Jumbo).
+**Size and growth:** copies of your favourite from steamers make it grow, and reaching a bigger size makes the steamer physically wider (it never shrinks back, even for the next squishy). No item needs a size (the beanbag and trampoline locks were removed 1 Oct 2026; both stay Epic).
 
 | Size | Copies needed | Relative size | Steamer width |
 | --- | --- | --- | --- |
@@ -213,7 +213,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 | Bed | Furniture | Nap. Lamp off gives a full rest; lamp on, half | Rest | 2 |
 | Stool (max 2) | Furniture | Seat for tea time | — | 1 |
 | Floor cushion | Furniture | Lounging; also a tea seat | Rest | 1 |
-| Beanbag | Furniture | Lounging; needs Standard size | Rest | 2 |
+| Beanbag | Furniture | Lounging | Rest | 2 |
 | Tea table | Station | Tea time, sitting on a nearby seat | Rest, Hunger | 1 |
 | Stove | Station | Opens the Cook menu | Hunger | 0 |
 | Pantry cupboard | Station | Snack from your snack stock, up to 60% | Hunger | 0 |
@@ -225,7 +225,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 | Bubble wand | Toy | Pop the bubbles it blows | Play | 0 |
 | Toy xylophone | Toy | Tap the bars to play; it bops along | Play | 0 |
 | Slide | Toy | It climbs and slides | Play | 0 |
-| Trampoline | Toy | Bouncing; needs Jumbo size | Play | 0 |
+| Trampoline | Toy | Bouncing | Play | 0 |
 | Lamp | Decor | Lights on or off (affects naps) | — | 2 |
 | Plant | Decor | Wilts unless watered | — | 2 |
 | Shelf | Decor | Decor | — | 2 |

@@ -562,7 +562,7 @@ namespace Squishy.Runtime.Game
                     { "lounge", "Lounging (Rest)" }, { "wand", "Wave the pom-pom and it chases (Play)" }, { "bubbles", "Bubbles to chase and pop (Play)" }, { "music", "Tap the bars to make it dance (Play)" }, { "slide", "Climbs up and slides down (Play)" }, { "decor", "Decor" },
                 };
                 string role = !string.IsNullOrEmpty(a.role) && roles.TryGetValue(a.role, out var rr) ? rr : a.cat == "Wall" ? "Divides the room" : "Decor";
-                note = role + (a.comfort > 0 ? " · +" + a.comfort + " comfort" : "") + (a.size > 0 ? " · needs " + C.sizes[a.size].name + " size" : "");
+                note = role + (a.comfort > 0 ? " · +" + a.comfort + " comfort" : "");
                 if (!Rules.StyleActive(s)) note += " · Event style: in steamers in " + string.Join(", ", s.eventMonths.Select(mo => new System.DateTime(2000, mo, 1).ToString("MMMM")));
                 var inRoom = items.Find(i => i.key == c.key);
                 var piece = items.Find(i => i.arch == c.arch);
