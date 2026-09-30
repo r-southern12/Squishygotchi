@@ -56,8 +56,9 @@ one squishy's life or four weeks, then unlock the full game once. No ads in the 
 ## Release checklist (owner)
 
 Business and accounts
-- [ ] Decide: publish as an individual or as a company (a company keeps your home address off the store page and limits personal liability; see notes below).
-- [ ] If a company: register it, get a business bank account, and a free D-U-N-S number (Apple requires one for organisation accounts; Google uses it to verify organisations).
+- [x] Decide: publish as an individual or as a company. **Decided 1 Oct 2026: as an individual** (no company, D-U-N-S number or business bank account needed).
+- [x] ~~Company, business bank account, D-U-N-S~~: not needed for an individual.
+- [ ] Line up at least 12 Android testers early: new personal Google Play accounts must run a closed test with 12+ testers opted in for 14 days in a row before publishing.
 - [ ] Google Play Console account (one-off fee). New *personal* accounts must run a closed test with at least 12 testers for 14 days before they can publish; organisation accounts skip this.
 - [ ] Apple Developer Program (yearly fee), plus a Mac or Unity Build Automation for iOS builds.
 - [ ] Payout and tax details in both stores (needed for the full-game unlock purchase and any ad revenue).
@@ -82,7 +83,7 @@ Technical
 - [ ] Final sound and music picks baked in; unused audio removed to shrink the download.
 
 
-## Setting up as a company in New Zealand (owner; check fees and rules with an accountant)
+## Setting up as a company in New Zealand (not used: publishing as an individual; kept for reference)
 1. **Decide sole trader or company.** A company (Ltd) keeps your home address off the store page (Google Play shows a physical address for apps that take payments) and limits personal liability. A sole trader is simpler but uses your own name and address.
 2. **Register the company** at companies.govt.nz (NZ Companies Office): reserve a name, then incorporate online (small one-off fees). You get an **NZBN** automatically. Check whether a director ID is required when you register.
 3. **IRD number for the company**: you can ask for it (and GST) on the incorporation form. **GST** only has to be registered once turnover passes NZ$60,000 in 12 months.
