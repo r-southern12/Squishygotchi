@@ -407,6 +407,25 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void A_Pity_Pull_Is_Always_A_Squishy()
+        {
+            var c = Content();
+            int pity = 0;
+            for (int seed = 1; seed <= 40; seed++)
+            {
+                var s = GameRules.NewState(c, (ulong)seed);
+                var rules = new GameRules(c, s);
+                s.sinceRare = c.rules.pityRare - 1;
+                var rw = rules.RollReward();
+                if (rules.LastWasPity) { pity++; Assert.AreEqual("sq", rw.type, "Rare pity gives a squishy"); }
+                s.sinceEpic = c.rules.pityEpic - 1;
+                rw = rules.RollReward();
+                if (rules.LastWasPity) { pity++; Assert.AreEqual("sq", rw.type, "Epic pity gives a squishy"); } // (a natural Epic or better needs no pity)
+            }
+            Assert.Greater(pity, 20, "pity stepped in");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
@@ -507,9 +526,9 @@ namespace Squishy.Tests
             clock.Advance(TimeSpan.FromHours(10)); // 7am
             var r = rules.WakeUp(clock.UtcNow);
             Assert.IsFalse(s.asleep);
-            int online = 1 + GameRules.ResetsBetween(utc.Ticks, utc.AddHours(10).Ticks, c.rules.giftHours); // the free one waiting at bedtime, then one per reset
-            Assert.AreEqual(online, s.steamers - before);
-            Assert.AreEqual(s.steamers - before, r.steamers);
+            int night = GameRules.ResetsBetween(utc.Ticks, utc.AddHours(10).Ticks, c.rules.giftHours); // one per reset in the night
+            Assert.AreEqual(1 + night, s.steamers - before, "the free one waiting at bedtime (handed over then) plus the night's");
+            Assert.AreEqual(night, r.steamers, "the wake-up screen counts only the night's own");
         }
 
         [Test]

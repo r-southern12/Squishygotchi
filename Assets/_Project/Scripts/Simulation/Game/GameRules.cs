@@ -335,9 +335,11 @@ namespace Squishy.Simulation.Game
         {
             double r = Random();
             string rar = r < R.pLegendary ? "Legendary" : r < R.pLegendary + R.pEpic ? "Epic" : r < R.pLegendary + R.pEpic + R.pRare ? "Rare" : "Common";
+            LastWasPity = true;
             if (R.pityLegendary > 0 && S.sinceLegendary >= R.pityLegendary - 1 && GameContent.RarityRank(rar) < 3) rar = "Legendary";
             else if (S.sinceEpic >= R.pityEpic - 1 && GameContent.RarityRank(rar) < 2) rar = "Epic";
             else if (S.sinceRare >= R.pityRare - 1 && GameContent.RarityRank(rar) < 1) rar = "Rare";
+            else LastWasPity = false;
             S.sinceRare = GameContent.RarityRank(rar) >= 1 ? 0 : S.sinceRare + 1;
             S.sinceEpic = GameContent.RarityRank(rar) >= 2 ? 0 : S.sinceEpic + 1;
             S.sinceLegendary = GameContent.RarityRank(rar) >= 3 ? 0 : S.sinceLegendary + 1;
@@ -351,9 +353,13 @@ namespace Squishy.Simulation.Game
             return r < R.pThreeLayers ? 3 : r < R.pThreeLayers + R.pTwoLayers ? 2 : 1;
         }
 
+        /// <summary>Whether the last rarity roll was lifted by pity.</summary>
+        public bool LastWasPity;
+
         public Reward RollReward()
         {
             string rar = RollRarity();
+            if (LastWasPity) return Sq(rar); // a pity pull is always a squishy of that rarity (not a kit or furniture)
             double r = Random();
             if (rar == "Legendary") return Random() < .5 ? Sq(rar) : Skin(rar); // any legendary squishy, not just the last one listed
             if (rar == "Common")

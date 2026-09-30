@@ -82,10 +82,11 @@ namespace Squishy.Runtime.Game
             ai.seg = null;
             ai.mode = "idle";
             ui.HideBubble();
-            Rules.GoToSleep(DateTime.UtcNow, DateTime.Now);
+            int given = Rules.GoToSleep(DateTime.UtcNow, DateTime.Now);
             WriteSave();
             sfx.Chime();
             Floater("Sweet dreams, " + Rules.Fav.name);
+            if (given > 0) ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+1 free steamer");
             SleepNow();
         }
 
@@ -95,6 +96,7 @@ namespace Squishy.Runtime.Game
         private void SleepNow()
         {
             if (!S.asleep || S.dead) return;
+            if (ai.act != null && ai.act.night && (ai.mode == "act" || ai.mode == "walk")) { ui.SetHint(Rules.Fav.name + " is asleep till morning · keep playing, or tap the moon to wake it"); return; } // already in bed (or on the way)
             var bed = NearestRole("bed");
             sleepStarting = true;
             if (bed != null) UseItem(bed, true);

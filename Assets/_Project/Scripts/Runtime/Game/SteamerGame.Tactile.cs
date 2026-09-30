@@ -198,7 +198,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Called every frame: a squish held long enough pings the squishy out from under the finger.</summary>
         private void CheckFlingHold()
         {
-            if (drag == null || !drag.squish || drag.flung || S.tucked || S.dead) return;
+            if (drag == null || !drag.squish || drag.flung || S.tucked || S.asleep || S.dead) return; // asleep in bed: squishable, never pinged out of it
             if (Time.realtimeSinceStartup - drag.t0 < C.rules.flingHold) return;
             drag.flung = true;
             pet.Held = false;

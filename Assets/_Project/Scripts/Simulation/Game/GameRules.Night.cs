@@ -27,19 +27,23 @@ namespace Squishy.Simulation.Game
 
         public bool CanSleep(DateTime local) { return !S.dead && !S.asleep && !S.tucked && IsNight(local); }
 
-        public void GoToSleep(DateTime utc, DateTime local)
+        /// <summary>Tucks it in for the night. Returns 1 if the free steamer waiting at bedtime was handed over.</summary>
+        public int GoToSleep(DateTime utc, DateTime local)
         {
-            if (S.asleep) return;
+            if (S.asleep) return 0;
             S.asleep = true;
             S.sleepAt = utc.Ticks;
             var wake = local.Date.AddHours(R.nightWakeByHour);
             if (local.Hour >= R.nightEndHour) wake = wake.AddDays(1); // evening: tomorrow morning
             S.sleepUntil = utc.Ticks + (wake - local).Ticks;
             S.sleepSteamers = S.steamers;
-            // The free steamer waiting now is collected straight away; the rest as the night goes by.
-            S.nightBank = OnlineReady() ? 1 : 0;
+            // The free steamer waiting now is handed over straight away; the night's own are banked for the morning.
+            int now = OnlineReady() ? 1 : 0;
+            if (now > 0) SetSteamers(S.steamers + 1);
+            S.nightBank = 0;
             S.onlineReadyAt = NextReset(utc.Ticks, R.giftHours);
             S.lastNightPrompt = NightKey(local);
+            return now;
         }
 
         /// <summary>Drain multiplier at a moment (used while catching up on time away).</summary>
@@ -61,7 +65,7 @@ namespace Squishy.Simulation.Game
         {
             if (!S.asleep) return 0;
             long end = Math.Min(utc.Ticks, S.sleepUntil);
-            return S.nightBank + ResetsBetween(S.sleepAt, end, R.giftHours) + Math.Max(0, S.steamers - S.sleepSteamers);
+            return S.nightBank + ResetsBetween(S.sleepAt, end, R.giftHours); // only the free ones the night brought (not ones earned playing after bedtime)
         }
 
         public NightReport WakeUp(DateTime utc)
@@ -70,8 +74,9 @@ namespace Squishy.Simulation.Game
             long end = Math.Min(utc.Ticks, S.sleepUntil);
             int windows = ResetsBetween(S.sleepAt, end, R.giftHours); // the free one refilled (and was collected) at each reset in the night
             S.nightBank += windows;
-            SetSteamers(S.steamers + S.nightBank);
-            var r = new NightReport { slept = TimeSpan.FromTicks(Math.Max(0, utc.Ticks - S.sleepAt)), steamers = Math.Max(0, S.steamers - S.sleepSteamers), early = utc.Ticks < S.sleepUntil - TimeSpan.FromHours(R.nightWakeByHour - R.nightEndHour).Ticks };
+            int got = S.nightBank;
+            SetSteamers(S.steamers + got);
+            var r = new NightReport { slept = TimeSpan.FromTicks(Math.Max(0, utc.Ticks - S.sleepAt)), steamers = got, early = utc.Ticks < S.sleepUntil - TimeSpan.FromHours(R.nightWakeByHour - R.nightEndHour).Ticks };
             S.onlineReadyAt = NextReset(end, R.giftHours);
             S.asleep = false;
             S.nightBank = 0;

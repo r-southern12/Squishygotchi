@@ -115,6 +115,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 ### Night
 
 - Between 8pm and 7am (data) the game offers, once a night after a short while in the game, to turn in for the night; a moon button offers it any time at night. The prompt can be snoozed (the player picks 15 minutes, 30 minutes or 1 hour, data) and asks again after; "Not tonight" stops it until the next evening.
+- Going to bed hands over the free steamer if one is waiting; the wake-up screen counts only the free steamers the night brought. Asleep in bed it can be squished but never pinged out of bed; its face is eyes shut with the little "w" mouth.
 - Asleep: it goes to its bed in the room and sleeps there (curled up where it is if there's no bed). **Rest fills up** overnight (empty to full in about 6 hours, data); the other needs drain at 35% (data) until 10am at the latest; the free in-game steamer from each 3-hour reset in the night is collected for you. Reminders account for this and still honour quiet hours.
 - **Arranging around it:** lying on the bed (asleep or napping) or sitting on a cushion or stool, it rides along when that piece is moved, lifted or turned in Arrange, and carries on afterwards (asleep stays asleep).
 - **The game stays playable while it sleeps:** squish it (it stays asleep), arrange, open steamers, shop. Tapping furniture doesn't wake it (lights and watering still work); the moon button wakes it early. If morning comes while you're playing, the wake-up screen shows.
@@ -339,7 +340,7 @@ No furniture is sold in the shop; furniture comes from steamers.
 | Epic | 5% |
 | Legendary | 1% |
 
-- **Pity:** Rare+ guaranteed within 10 prizes; Epic+ within 50; Legendary within 100. Counter shown on the Odds button. Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
+- **Pity:** Rare+ guaranteed within 10 prizes; Epic+ within 50; Legendary within 100. A pity pull is always a squishy of that rarity (never a kit or furniture). Counter shown on the Odds button. Odds always visible. The odds screen is generated from the rules themselves (base rates, rates with pity, what's inside, favourite-copy share), so it can never drift from the game.
 - **Never paid:** steamers, coins or anything that turns into pulls are never sold for real money (keeps us clear of paid loot-box laws and suits a young audience). Duplicates refund coins: a coin on the reveal card (and on each duplicate in Open 10) that the player taps to collect; anything not tapped is collected on leaving.
 - **Stacked steamers:** 15% have 2 tiers and 5% have 3, each with its own prize.
 - **Contents:** furniture skins, kitchen kits (Common and Rare), Rare ingredients, squishies (25% chance to be a copy of your favourite, never for Legendary; otherwise one you don't own yet, until every squishy of that rarity is collected), tool skins, steamer skins.

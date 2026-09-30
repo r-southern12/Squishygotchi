@@ -118,7 +118,7 @@ namespace Squishy.Runtime.Models
             else if (_exprT > 0) { m = _expr; if (m == Mouth.Grin) e = EyeMode.Happy; }
             else if (Chewing) m = Mathf.Repeat(_faceT * 4.5f, 1) < .5f ? Mouth.Oh : Mouth.Cat;
             else if (droop > .6f || Grey > .3f) m = Mouth.Frown;
-            else if (closed) m = Mouth.Sleep;
+            else if (closed) m = Mouth.Cat; // asleep: eyes shut and the little "w" mouth (not a smile)
             else if (droop > .25f) m = Mouth.Flat;
             else
             {
