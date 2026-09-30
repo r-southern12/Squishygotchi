@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Squishy.Simulation.Game
 {
-    [Serializable] public class LifeRecord { public string name, cause; public int finish, days, prestige; public float qol; }
+    [Serializable] public class LifeRecord { public string name, cause; public int finish, days, prestige, mistakes; public float qol; }
     [Serializable]
     public class CosmeticData
     {
@@ -40,8 +40,11 @@ namespace Squishy.Simulation.Game
 
         public static string StageName(Life s) { return s == Life.Baby ? "Baby" : s == Life.Young ? "Young" : s == Life.Adult ? "Adult" : "Elder"; }
 
-        /// <summary>What this life would earn at old age if care stays as it has been.</summary>
-        public int ProjectedPrestige() { return (int)Math.Round(R.prestigeBase + R.prestigePerQol * QualityOfLife()); }
+        /// <summary>What this life would earn at old age if care stays as it has been (care mistakes so far included).</summary>
+        public int ProjectedPrestige() { return (int)Math.Round((R.prestigeBase + R.prestigePerQol * QualityOfLife()) * MistakeFactor()); }
+
+        /// <summary>What's left of the old-age prestige after this life's care mistakes (5% each, never below half).</summary>
+        public float MistakeFactor() { return Math.Max(R.careMistakeFloor, 1 - R.careMistakePenalty * S.careMistakes); }
 
         /// <summary>
         /// Growing up well: a little prestige on reaching each new life stage, scaled by the care given so far. Most
@@ -66,8 +69,8 @@ namespace Squishy.Simulation.Game
         public LifeRecord EndLife(bool oldAge, string cause)
         {
             float q = QualityOfLife();
-            int award = oldAge ? (int)Math.Round(R.prestigeBase + R.prestigePerQol * q) : 0;
-            var rec = new LifeRecord { name = Fav.name, finish = S.favIdx, days = S.age, qol = q, cause = cause, prestige = award };
+            int award = oldAge ? (int)Math.Round((R.prestigeBase + R.prestigePerQol * q) * MistakeFactor()) : 0;
+            var rec = new LifeRecord { name = Fav.name, finish = S.favIdx, days = S.age, qol = q, cause = cause, prestige = award, mistakes = S.careMistakes };
             S.lives.Add(rec);
             S.prestige += award;
             S.dead = true;
@@ -88,6 +91,7 @@ namespace Squishy.Simulation.Game
             S.dayT = 0;
             S.qolSum = 0;
             S.qolTime = 0;
+            ResetCareMistakes(0);
             S.tucked = false;
             for (int k = 0; k < 4; k++) S.needs[k] = .75f;
             S.stageAwarded = 0;
@@ -102,7 +106,7 @@ namespace Squishy.Simulation.Game
         {
             if (next == S.favIdx || SquishCount(next) == 0) return;
             S.lifeOf.RemoveAll(l => l.i == S.favIdx);
-            S.lifeOf.Add(new LifeState { i = S.favIdx, age = S.age, dayT = S.dayT, qolSum = S.qolSum, qolTime = S.qolTime, stageAwarded = S.stageAwarded });
+            S.lifeOf.Add(new LifeState { i = S.favIdx, age = S.age, dayT = S.dayT, qolSum = S.qolSum, qolTime = S.qolTime, stageAwarded = S.stageAwarded, careMistakes = S.careMistakes });
             var mine = S.lifeOf.Find(l => l.i == next);
             if (mine != null) S.lifeOf.Remove(mine);
             else mine = new LifeState { i = next, age = 1 };
@@ -112,6 +116,41 @@ namespace Squishy.Simulation.Game
             S.qolSum = mine.qolSum;
             S.qolTime = mine.qolTime;
             S.stageAwarded = mine.stageAwarded;
+            S.careMistakes = mine.careMistakes; // the room's needs carry over, so an empty spell in progress keeps counting
+        }
+
+        private void ResetCareMistakes(int n)
+        {
+            S.careMistakes = n;
+            S.emptyFor = new float[4];
+            S.mistakeCounted = new bool[4];
+        }
+
+        /// <summary>Care mistakes made since last asked (for a note in the game), and which need the last one was.</summary>
+        public int NewMistakes, LastMistakeNeed = -1;
+
+        /// <summary>
+        /// Care mistakes (user request, 1 Oct 2026): a need sitting empty for careMistakeSeconds while awake is one
+        /// mistake, counted once until that need is looked after again. Called from StepCare.
+        /// </summary>
+        private void StepCareMistakes(float sdt, bool asleep)
+        {
+            if (S.emptyFor == null || S.emptyFor.Length != 4) S.emptyFor = new float[4];
+            if (S.mistakeCounted == null || S.mistakeCounted.Length != 4) S.mistakeCounted = new bool[4];
+            for (int k = 0; k < 4; k++)
+            {
+                if (S.needs[k] > 0f) S.emptyFor[k] = 0;
+                if (S.needs[k] > R.careMistakeReset) S.mistakeCounted[k] = false;
+                if (S.needs[k] > 0f || asleep || R.careMistakeSeconds <= 0) continue;
+                S.emptyFor[k] += sdt;
+                if (!S.mistakeCounted[k] && S.emptyFor[k] >= R.careMistakeSeconds)
+                {
+                    S.mistakeCounted[k] = true;
+                    S.careMistakes++;
+                    NewMistakes++;
+                    LastMistakeNeed = k;
+                }
+            }
         }
 
         /// <summary>Total prestige earned and average quality of life across finished lives (the lifetime tally).</summary>

@@ -4,7 +4,7 @@ First exported 25 Sep 2026 from the design doc "Squishy Dumpling Pet — Game Co
 
 ## Pitch
 
-A Tamagotchi-style mobile game. Your favourite squishy dumpling lives inside a 3D bamboo steamer that you furnish and decorate. It needs daily care, grows up over a 30–60 day life, grows in size as you collect copies of it, and can die if it's neglected.
+A Tamagotchi-style mobile game. Your favourite squishy dumpling lives inside a 3D bamboo steamer that you furnish and decorate. It needs daily care, grows up over a 14–21 day life, grows in size as you collect copies of it, and can die if it's neglected.
 
 Mystery steamers, earned from care tasks or bought with coins, hold furniture skins, kitchen kits, new recipes and new squishies. A bigger collection unlocks a bigger room, the room holds more decor, and decor makes care easier. A squishy that lives a full life earns prestige for cosmetics.
 
@@ -92,7 +92,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 **Life, death and generations**
 
-- **Lifespan** is 30–60 days, longer the better its average quality of life. Life stages show in its look: **Baby** (first 3 days: smaller, paler, bigger eyes, a cowlick curl), **Young**, **Adult**, **Elder** (softly faded, fluffy white brows, slower bounce).
+- **Lifespan** is 14–21 days, longer the better its average quality of life. Life stages show in its look: **Baby** (first 3 days: smaller, paler, bigger eyes, a cowlick curl), **Young**, **Adult**, **Elder** (softly faded, fluffy white brows, slower bounce).
 - **Each squishy has its own life.** Making another squishy the favourite puts the current one's life (age, quality of life, stage prestige) aside and resumes the other's, or starts it as a baby. Needs belong to the room, so swapping never escapes neglect.
 - **Old age:** it drifts off for good, leaves a golden keepsake, and earns prestige: 20 + 80 × quality of life (up to 100; a good life about 85, a few accessories). A **baby of the same type** then starts a new life, keeping its copies and size.
 - **Neglect** (a need at zero for 12 h): it dies and leaves a tombstone. No prestige.
@@ -383,6 +383,9 @@ Culture sets: everyday domestic objects and patterns only, never sacred or cerem
 
 ### Accessory colours (1 Oct 2026)
 Once you own an accessory you can wear it in any of its colours, and change it any time: a row of colour dots under it in the Prestige store. Most use a shared palette; a few have their own short list (pearls, halo, tiara, crown, monocle, freckles, moustache, sprout). Friends see the colours you picked. Colour variants are one accessory each (merged 1 Oct 2026: teal party hat, daisy crown, navy beret, red bow, mustard beanie, straw hat, green scarf became colours of the party hat, flower crown, beret, bow, beanie, sun hat and scarf); anyone who owned a variant keeps that accessory in that colour, and owning both refunds the variant's prestige. The rebuilt accessories: head-covering hats sit over the dumpling's folds, and everything worn bends with presses and pinches except the springy bits (the sprout's leaves and bunny ears sway and settle). New: Eye patch (face) and Tie (neck).
+
+### Lifespan and care mistakes (1 Oct 2026)
+A squishy lives 14 to 21 days (longer the better its quality of life). A **care mistake** is a need left empty for 30 minutes while it's awake (not asleep for the night or on holiday pause); it counts once, until that need is looked after again (above 10%). Each mistake takes 5% off the prestige for a full life, never below half. A short note says when one happens ("Care mistake: Nebula was hungry too long", or how many happened while you were away); the Prestige store shows this life's mistakes and the projected prestige, and the life card lists them. All numbers are data.
 
 ## Friends
 

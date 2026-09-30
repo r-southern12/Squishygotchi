@@ -47,6 +47,14 @@ namespace Squishy.Runtime.Game
                 shownPrestige = S.prestige;
                 ui.SetPrestige(S.prestige);
             }
+            // Care mistakes: a short note when one happens (or several happened while away).
+            if (Rules.NewMistakes > 0 && !S.dead && !visiting && mode == "home")
+            {
+                int k = Rules.LastMistakeNeed;
+                string word = k == Needs.Hunger ? "hungry" : k == Needs.Play ? "bored" : k == Needs.Rest ? "tired" : "grubby";
+                Floater(Rules.NewMistakes == 1 ? "Care mistake: " + Rules.Fav.name + " was " + word + " too long" : Rules.NewMistakes + " care mistakes while you were away", "bad");
+                Rules.NewMistakes = 0;
+            }
             // A bigger steamer bought: it grows wider (back home, not mid-unbox or visiting).
             if (mode == "home" && !visiting && !S.dead && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
@@ -84,7 +92,7 @@ namespace Squishy.Runtime.Game
             ui.SetPanelTitle("info", "Prestige store");
             var body = ui.PanelBody("info");
             Big(body, S.prestige + " prestige", "Earned from a full life and growing up well.");
-            Hud.Para(body, Rules.Fav.name + ": day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + " · care " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "% · about " + Rules.ProjectedPrestige() + " at old age", 13, "#6F5F52");
+            Hud.Para(body, Rules.Fav.name + ": day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + " · care " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "%" + (S.careMistakes > 0 ? " · " + S.careMistakes + " care mistake" + (S.careMistakes == 1 ? "" : "s") + " (−" + Mathf.RoundToInt((1 - Rules.MistakeFactor()) * 100) + "%)" : "") + " · about " + Rules.ProjectedPrestige() + " at old age", 13, "#6F5F52");
             // Prestige rewards: bigger steamers for full lives.
             bool anyReward = false;
             foreach (var sz in C.steamerSizes) if (sz.lives > 0) anyReward = true;
@@ -145,7 +153,7 @@ namespace Squishy.Runtime.Game
             bool old = rec.cause == "Old age";
             string title = old ? rec.name + " lived a full life" : rec.name + " has passed away";
             string meta = old
-                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · +" + rec.prestige + " prestige." + (grewFromLife != null ? " Reward: your steamer grows to " + grewFromLife + "!" : "") + " Its keepsake stays in the room, and a baby " + rec.name + " is ready to start a new life."
+                ? rec.days + " days · quality of life " + Mathf.RoundToInt(rec.qol * 100) + "% · " + (rec.mistakes > 0 ? rec.mistakes + " care mistake" + (rec.mistakes == 1 ? "" : "s") + " · " : "") + "+" + rec.prestige + " prestige." + (grewFromLife != null ? " Reward: your steamer grows to " + grewFromLife + "!" : "") + " Its keepsake stays in the room, and a baby " + rec.name + " is ready to start a new life."
                 : rec.cause + " for too long. Its tombstone stays in the room, and all your things carry over to your next squishy.";
             ui.ShowHud(false);
             if (old) ui.ShowDialog(title, meta, "#D9B45A", ("Meet the new baby", "#6F9A74", "#4C7552", Hud.Cream, (Action)NewBaby));

@@ -31,6 +31,9 @@ namespace Squishy.Simulation.Game
 
         // Life cycle and meta progression.
         public float qolSum, qolTime;
+        public int careMistakes; // this life's care mistakes
+        public float[] emptyFor = new float[4]; // how long each need has sat empty (awake)
+        public bool[] mistakeCounted = new bool[4]; // this empty spell already counted
         public List<LifeState> lifeOf = new List<LifeState>(); // each squishy type's own life while it isn't the favourite
         public int prestige;
         public List<LifeRecord> lives = new List<LifeRecord>();
@@ -115,5 +118,5 @@ namespace Squishy.Simulation.Game
 {
     /// <summary>A squishy type's own life, kept while another squishy is the favourite.</summary>
     [System.Serializable]
-    public class LifeState { public int i, age, stageAwarded; public float dayT, qolSum, qolTime; }
+    public class LifeState { public int i, age, stageAwarded, careMistakes; public float dayT, qolSum, qolTime; }
 }

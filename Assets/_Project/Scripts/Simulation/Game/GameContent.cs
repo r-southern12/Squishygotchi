@@ -89,7 +89,10 @@ namespace Squishy.Simulation.Game
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
         public int visitCoins, visitHostCoins;
-        public int neighbourMax, neighbourActiveDays, neighbourOffer; // neighbours: random players (no code) you can add, found among those who played in the last few days
+        public int neighbourMax, neighbourActiveDays, neighbourOffer;
+        // Care mistakes: a need left empty this long (seconds, awake) is one mistake, counted once until the need is above
+        // careMistakeReset again; each takes careMistakePenalty off the old-age prestige, never below careMistakeFloor of it.
+        public float careMistakeSeconds, careMistakePenalty, careMistakeFloor, careMistakeReset; // neighbours: random players (no code) you can add, found among those who played in the last few days
         public float visitFeed, visitPet; // how much a friend's snack and squish top up Hunger and Play
         public float dentRadius, flingHold, flingSpeed; // tactile squish: dent size in the world; hold time and speed of the ping // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far

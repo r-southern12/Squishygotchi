@@ -547,6 +547,36 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void A_Need_Left_Empty_Half_An_Hour_Is_One_Care_Mistake()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 2);
+            var rules = new GameRules(c, s);
+            for (int k = 0; k < 4; k++) s.needs[k] = 1;
+            s.needs[Needs.Hunger] = 0;
+            float before = rules.ProjectedPrestige();
+            for (int i = 0; i < 29; i++) rules.StepCare(60, 0);
+            Assert.AreEqual(0, s.careMistakes, "not yet: under half an hour");
+            for (int i = 0; i < 60; i++) rules.StepCare(60, 0);
+            Assert.AreEqual(1, s.careMistakes, "one mistake, however long it stays empty");
+            Assert.AreEqual(1, rules.NewMistakes);
+            s.needs[Needs.Hunger] = .05f;
+            rules.StepCare(1, 0);
+            s.needs[Needs.Hunger] = 0;
+            for (int i = 0; i < 40; i++) rules.StepCare(60, 0);
+            Assert.AreEqual(1, s.careMistakes, "a crumb doesn't reset it: it has to be looked after");
+            s.needs[Needs.Hunger] = .5f;
+            rules.StepCare(1, 0);
+            s.needs[Needs.Hunger] = 0;
+            rules.RestFill = true; // asleep for the night doesn't count
+            for (int i = 0; i < 40; i++) { rules.RestFill = true; rules.StepCare(60, 0); }
+            Assert.AreEqual(1, s.careMistakes);
+            Assert.AreEqual(1 - c.rules.careMistakePenalty, rules.MistakeFactor(), 1e-5);
+            s.careMistakes = 40;
+            Assert.AreEqual(c.rules.careMistakeFloor, rules.MistakeFactor(), 1e-5, "never below half");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

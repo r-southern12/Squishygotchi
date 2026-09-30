@@ -194,6 +194,7 @@ namespace Squishy.Simulation.Game
                 if (k == Needs.Rest && RestFill) S.needs[k] = Math.Min(1f, S.needs[k] + R.nightRestFill * sdt);
                 else S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * DrainScale * sdt);
             }
+            StepCareMistakes(sdt, RestFill);
             S.dayT += sdt;
             if (S.dayT > R.dayLength) { S.dayT = 0; S.age++; }
             bool empty = false;
