@@ -94,9 +94,9 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 
 - **Lifespan** is 30–60 days, longer the better its average quality of life. Life stages show in its look: **Baby** (first 3 days: smaller, paler, bigger eyes, a cowlick curl), **Young**, **Adult**, **Elder** (softly faded, fluffy white brows, slower bounce).
 - **Each squishy has its own life.** Making another squishy the favourite puts the current one's life (age, quality of life, stage prestige) aside and resumes the other's, or starts it as a baby. Needs belong to the room, so swapping never escapes neglect.
-- **Old age:** it drifts off for good, leaves a golden keepsake, and earns prestige: 50 + 250 × quality of life (up to 300). A **baby of the same type** then starts a new life, keeping its copies and size.
+- **Old age:** it drifts off for good, leaves a golden keepsake, and earns prestige: 20 + 80 × quality of life (up to 100; a good life about 85, a few accessories). A **baby of the same type** then starts a new life, keeping its copies and size.
 - **Neglect** (a need at zero for 12 h): it dies and leaves a tombstone. No prestige.
-- **Growing up well:** on reaching Young, Adult and Elder it earns a little prestige (up to 10, 15, 20) scaled by care so far. Most prestige comes at the end.
+- **Growing up well:** on reaching Young, Adult and Elder it earns a little prestige (up to 5, 8, 12) scaled by care so far. Most prestige comes at the end.
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
@@ -301,7 +301,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Happy income | 1 coin/min while Happy, scaled by Comfort |
 | Tips (it played on its own) | 1–5 coins each, piling up for up to 5 minutes; one squish collects them |
 | Visiting a friend | 3 coins per caring action (they get 2) |
-| Completing a squishy tree tier | 20–60 prestige (not steamers) |
+| Completing a squishy tree tier | 10–30 prestige (not steamers) |
 | Duplicate furniture skin | 20 coins |
 | Duplicate tool / tool skin / steamer skin | 10 / 15 / 30 coins |
 

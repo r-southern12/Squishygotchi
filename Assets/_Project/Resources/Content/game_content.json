@@ -2787,8 +2787,8 @@
     "lifespanMinDays": 30,
     "lifespanMaxDays": 60,
     "babyDays": 3,
-    "prestigeBase": 50,
-    "prestigePerQol": 250,
+    "prestigeBase": 20,
+    "prestigePerQol": 80,
     "trialDays": 28,
     "giftHours": 3,
     "adminTools": true,
@@ -2802,9 +2802,9 @@
     "tipMin": 1,
     "tipMax": 5,
     "stagePrestige": [
-      10,
-      15,
-      20
+      5,
+      8,
+      12
     ],
     "energySeconds": 60,
     "visitCoins": 3,
@@ -3185,42 +3185,42 @@
     {
       "tier": "Common",
       "steamers": 0,
-      "prestige": 20
+      "prestige": 10
     },
     {
       "tier": "Glitter",
       "steamers": 0,
-      "prestige": 30
+      "prestige": 15
     },
     {
       "tier": "Pattern",
       "steamers": 0,
-      "prestige": 30
+      "prestige": 15
     },
     {
       "tier": "Galaxy",
       "steamers": 0,
-      "prestige": 40
+      "prestige": 20
     },
     {
       "tier": "UV",
       "steamers": 0,
-      "prestige": 40
+      "prestige": 20
     },
     {
       "tier": "Holographic",
       "steamers": 0,
-      "prestige": 50
+      "prestige": 25
     },
     {
       "tier": "Aquarium",
       "steamers": 0,
-      "prestige": 50
+      "prestige": 25
     },
     {
       "tier": "Legendary",
       "steamers": 0,
-      "prestige": 60
+      "prestige": 30
     }
   ],
   "starter": {
