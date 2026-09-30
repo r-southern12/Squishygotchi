@@ -100,7 +100,7 @@ Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, C
 - The player then picks the next favourite from their collection. **Everything carries over**: items, skins, coins, room level, kitchen, recipes.
 - **Prestige** buys accessories (42: hats, glasses and face pieces, neck pieces), worn in the room and shown in pictures. Their prices are balanced so a good life buys a few.
 
-**Size and growth:** copies of your favourite from steamers make it grow (bigger means squishier). **Steamer width** comes from squishies owned in total, duplicates included: Small to start, Medium at 10, Large at 25, Extra large at 50 (data; decided 1 Oct 2026). It never shrinks back. No item needs a size (the beanbag and trampoline locks were removed 1 Oct 2026; both stay Epic).
+**Size and growth:** copies of your favourite from steamers make it grow (bigger means squishier). **Steamer size** is bought (decided 1 Oct 2026): Small to start; Medium for 1,000 coins (reachable in the first life); Large for 150 prestige and Extra large for 300 prestige (prestige comes from full lives). Each size is wider, allows one more toy out, and lets room levels go further: Small up to 18 pieces, Medium 22, Large 26, Extra large 30. Room levels (one more piece each, coins) can be bought up to the steamer's limit; then the next level waits for a bigger steamer. Sizes never shrink back. All numbers are data. No item needs a size (the beanbag and trampoline locks were removed 1 Oct 2026; both stay Epic).
 
 | Size | Copies needed | Relative size | Steamer width |
 | --- | --- | --- | --- |

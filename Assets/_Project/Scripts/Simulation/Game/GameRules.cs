@@ -261,30 +261,55 @@ namespace Squishy.Simulation.Game
         public int DecorCount() { int n = 0; foreach (var it in S.items) if (C.IsDecor(it.Arch)) n++; return n; }
         public RoomLevelData RoomLevel { get { return C.roomLevels[S.roomLv]; } }
 
-        /// <summary>True when the next room level's collection and coin needs are both met.</summary>
+        /// <summary>True when the next room level's collection and coin needs are met and this steamer has room for it.</summary>
         public bool CanExpand()
         {
             if (S.roomLv + 1 >= C.roomLevels.Length) return false;
             var nx = C.roomLevels[S.roomLv + 1];
-            return SquishKinds >= nx.need && S.coins >= nx.cost;
+            return nx.slots <= SlotCap() && SquishKinds >= nx.need && S.coins >= nx.cost;
         }
 
+        /// <summary>The most pieces this steamer's room levels go to (a bigger steamer goes further).</summary>
+        public int SlotCap() { return CurrentSteamer.maxSlots > 0 ? CurrentSteamer.maxSlots : int.MaxValue; }
+
+        /// <summary>The next room level is past what this steamer holds: it needs the next steamer size first.</summary>
+        public bool ExpandNeedsBiggerSteamer() { return S.roomLv + 1 < C.roomLevels.Length && C.roomLevels[S.roomLv + 1].slots > SlotCap(); }
+
         /// <summary>
-        /// Room space (user design, 29 Sep 2026): every piece counts, not just decor. Each room level holds one more
-        /// (12 to 20); the steamer gets physically wider as the squishy reaches bigger sizes.
+        /// Room space (user design, 29 Sep 2026): every piece counts, not just decor. Each room level holds one more,
+        /// up to what the steamer size allows; a bigger steamer is bought (1 Oct 2026).
         /// </summary>
         public int ItemSlots() { return RoomLevel.slots; }
 
         public int ItemCount() { int n = 0; foreach (var it in S.items) if (it.Arch != C.tomb.id) n++; return n; }
 
-        /// <summary>The steamer's radius: set by the biggest size reached here (it never shrinks back).</summary>
-        public float RoomRadius() { return C.steamerSizes[RoomSizeIdx].room; }
+        /// <summary>The steamer's radius (its size, bought).</summary>
+        public float RoomRadius() { return CurrentSteamer.room; }
 
-        /// <summary>The steamer's width: from squishies owned in total (duplicates count), and it never shrinks back.</summary>
-        public int RoomSizeIdx { get { return Math.Max(Math.Min(S.roomSize, C.steamerSizes.Length - 1), C.SteamerIdxFor(SquishTotal)); } }
+        /// <summary>The steamer size bought so far (it never shrinks back).</summary>
+        public int RoomSizeIdx { get { return Math.Max(0, Math.Min(S.roomSize, C.steamerSizes.Length - 1)); } }
 
-        /// <summary>The next steamer width, or null at the widest.</summary>
+        public SteamerSizeData CurrentSteamer { get { return C.steamerSizes[RoomSizeIdx]; } }
+
+        /// <summary>The next steamer size, or null at the biggest.</summary>
         public SteamerSizeData NextSteamerSize() { return RoomSizeIdx + 1 < C.steamerSizes.Length ? C.steamerSizes[RoomSizeIdx + 1] : null; }
+
+        public bool CanBuySteamerSize()
+        {
+            var nx = NextSteamerSize();
+            return nx != null && S.coins >= nx.coins && S.prestige >= nx.prestige;
+        }
+
+        /// <summary>Buys the next steamer size (Medium with coins; the bigger ones with prestige).</summary>
+        public bool BuySteamerSize()
+        {
+            if (!CanBuySteamerSize()) return false;
+            var nx = NextSteamerSize();
+            S.coins -= nx.coins;
+            S.prestige -= nx.prestige;
+            S.roomSize = RoomSizeIdx + 1;
+            return true;
+        }
 
         /// <summary>Toys that can be out at once: one, and one more each time the steamer grows wider (data).</summary>
         public int ToySlots() { return Math.Max(1, C.steamerSizes[RoomSizeIdx].toys); }
@@ -295,16 +320,6 @@ namespace Squishy.Simulation.Game
             int n = 0;
             foreach (var it in S.items) { var t = C.Type(it.Arch); if (t != null && t.slot == "toy") n++; }
             return n;
-        }
-
-        /// <summary>Records a wider steamer reached (enough squishies owned in total); true when it just got wider.</summary>
-        public bool ReachRoomSize()
-        {
-            int si = C.SteamerIdxFor(SquishTotal);
-            if (si <= S.roomSize) return false;
-            float before = C.steamerSizes[Math.Min(S.roomSize, C.steamerSizes.Length - 1)].room;
-            S.roomSize = si;
-            return C.steamerSizes[si].room > before + 1e-4f;
         }
 
         // ---- kitchen ----

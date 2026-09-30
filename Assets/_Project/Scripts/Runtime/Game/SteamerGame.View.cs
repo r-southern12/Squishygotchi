@@ -807,7 +807,7 @@ namespace Squishy.Runtime.Game
             WriteSave();
         }
 
-        /// <summary>Enough squishies owned in total: the steamer grows wider.</summary>
+        /// <summary>A bigger steamer bought: it grows wider.</summary>
         private void GrowRoom()
         {
             float oldR = HR;
@@ -827,7 +827,8 @@ namespace Squishy.Runtime.Game
             shake = .4f;
             sfx.Land();
             Buzz(30, 40, 30);
-            ui.SetHint(Rules.SquishTotal + " squishies: your steamer grew bigger, with room for " + Rules.ToySlots() + " toys out!", true);
+            ui.SetHint(Rules.CurrentSteamer.name + " steamer! Room for " + Rules.ToySlots() + " toys out and up to " + Rules.SlotCap() + " pieces", true);
+            ui.SetCoins(S.coins);
             DrawTray();
             WriteSave();
         }

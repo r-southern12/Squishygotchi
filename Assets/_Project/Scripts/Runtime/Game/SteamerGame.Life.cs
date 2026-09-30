@@ -47,8 +47,8 @@ namespace Squishy.Runtime.Game
                 shownPrestige = S.prestige;
                 ui.SetPrestige(S.prestige);
             }
-            // Enough squishies owned: the steamer grows wider (back home, not mid-unbox or visiting).
-            if (mode == "home" && !visiting && !S.dead && Rules.ReachRoomSize() && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
+            // A bigger steamer bought: it grows wider (back home, not mid-unbox or visiting).
+            if (mode == "home" && !visiting && !S.dead && Rules.RoomRadius() > HR + .01f) { GrowRoom(); }
             bool canExpand = Rules.CanExpand();
             ui.ExpandDot(false); // no dot on Arrange (user feedback: it stayed on and wasn't needed); the one-off note below says when a level is ready
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Room can level up!"); sfx.Chime(); }
@@ -85,6 +85,17 @@ namespace Squishy.Runtime.Game
             var body = ui.PanelBody("info");
             Big(body, S.prestige + " prestige", "Earned from a full life and growing up well.");
             Hud.Para(body, Rules.Fav.name + ": day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + " · care " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "% · about " + Rules.ProjectedPrestige() + " at old age", 13, "#6F5F52");
+            var nw = Rules.NextSteamerSize();
+            if (nw != null && nw.prestige > 0)
+            {
+                Hud.Sec(body, "Steamer");
+                ui.Rec(body, "steamerbox", nw.name + " steamer", "Wider · " + nw.toys + " toys out · up to " + nw.maxSlots + " pieces", nw.prestige.ToString(), () =>
+                {
+                    if (!Rules.BuySteamerSize()) { sfx.Bonk(); return; }
+                    ui.ClosePanels();
+                    GrowRoom();
+                }, !Rules.CanBuySteamerSize());
+            }
             ShopCosmetics(body);
             body.Gap(8);
             if (fresh) { ui.OpenPanel("info"); sfx.Tap(); }

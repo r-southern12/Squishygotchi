@@ -34,8 +34,11 @@ namespace Squishy.Simulation.Game
     [Serializable] public class SnackData { public string name, color, shape; }
     [Serializable] public class SizeData { public string name; public float s; public int at; } // a squishy's size from copies of it
 
-    /// <summary>The steamer's width, reached by squishies owned in total (duplicates count): its radius and how many toys can be out.</summary>
-    [Serializable] public class SteamerSizeData { public string name; public float room; public int at, toys; }
+    /// <summary>
+    /// A steamer size, bought (user design, 1 Oct 2026): its radius, how many toys can be out, the most pieces its room
+    /// levels reach, and its price (Medium in coins, reachable in the first life; the bigger ones in prestige).
+    /// </summary>
+    [Serializable] public class SteamerSizeData { public string name; public float room; public int toys, maxSlots, coins, prestige; }
     [Serializable] public class TrayRoomData { public string id, name; }
 
     /// <summary>A furniture combo: see GameRules.Combos.</summary>
@@ -182,14 +185,6 @@ namespace Squishy.Simulation.Game
 
         /// <summary>Squishy size index for a number of copies.</summary>
         public SteamerSizeData[] steamerSizes;
-
-        /// <summary>The steamer width for a number of squishies owned in total.</summary>
-        public int SteamerIdxFor(int total)
-        {
-            int i = 0;
-            if (steamerSizes != null) for (int k = 0; k < steamerSizes.Length; k++) if (total >= steamerSizes[k].at) i = k;
-            return i;
-        }
 
         public int SizeIdxFor(int copies)
         {

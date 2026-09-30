@@ -294,17 +294,25 @@ namespace Squishy.Tests
             Assert.AreEqual(30, c.roomLevels[c.roomLevels.Length - 1].slots, "30 at most");
             for (int i = 1; i < c.roomLevels.Length; i++) Assert.AreEqual(c.roomLevels[i - 1].slots + 1, c.roomLevels[i].slots, "one more piece per level");
             for (int i = 2; i < c.roomLevels.Length; i++) Assert.Greater(c.roomLevels[i].cost, c.roomLevels[i - 1].cost, "slower and slower");
+            // Room levels go as far as this steamer allows; then the next steamer size must be bought.
+            for (int i = 0; i < c.finishes.Length && i < 30; i++) if (rules.SquishCount(i) == 0) s.squishOwned.Add(new CountData { i = i, n = 1 });
+            s.coins = 100000;
+            int cap = rules.SlotCap();
+            s.roomLv = System.Array.FindIndex(c.roomLevels, l => l.slots == cap);
+            Assert.IsFalse(rules.CanExpand(), "full for the Small steamer");
+            Assert.IsTrue(rules.ExpandNeedsBiggerSteamer());
             float r0 = rules.RoomRadius();
-            s.squishOwned.Clear();
-            s.squishOwned.Add(new CountData { i = 0, n = c.steamerSizes[2].at - 1 });
-            s.squishOwned.Add(new CountData { i = 1, n = 1 }); // duplicates and different ones all count
-            Assert.IsTrue(rules.ReachRoomSize(), "enough squishies in total widen the steamer");
-            Assert.Greater(rules.RoomRadius(), r0);
-            Assert.AreEqual(c.steamerSizes[2].room, rules.RoomRadius(), 1e-5);
-            s.squishOwned.Clear();
-            s.squishOwned.Add(new CountData { i = 0, n = 1 });
-            Assert.IsFalse(rules.ReachRoomSize(), "and it never shrinks back");
-            Assert.AreEqual(c.steamerSizes[2].room, rules.RoomRadius(), 1e-5);
+            s.coins = c.steamerSizes[1].coins;
+            Assert.IsTrue(rules.BuySteamerSize(), "Medium is bought with coins");
+            Assert.AreEqual(0, s.coins);
+            Assert.Greater(rules.RoomRadius(), r0, "and the steamer is wider");
+            s.coins = 100000;
+            Assert.IsTrue(rules.CanExpand(), "room levels carry on");
+            Assert.IsFalse(rules.BuySteamerSize(), "Large needs prestige, not coins");
+            s.prestige = c.steamerSizes[2].prestige;
+            Assert.IsTrue(rules.BuySteamerSize());
+            Assert.AreEqual(0, s.prestige);
+            Assert.AreEqual(c.steamerSizes[c.steamerSizes.Length - 1].maxSlots, c.roomLevels[c.roomLevels.Length - 1].slots, "the biggest steamer reaches the last level");
         }
 
         [Test]

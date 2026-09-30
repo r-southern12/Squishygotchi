@@ -60,8 +60,8 @@ namespace Squishy.Simulation.Save
             }
             if (data.version < 13 && data.state != null)
             {
-                // v13: roomSize is now the steamer width (from squishies owned in total), not the favourite's size.
-                // Same widths in the same order; Super Mega was as wide as Giant: keep the width they had.
+                // v13: roomSize is now the steamer size bought, not the favourite's size. Same widths in the same
+                // order (Super Mega was as wide as Giant): keep the width they had.
                 data.state.roomSize = Math.Min(data.state.roomSize, 3);
             }
             data.version = CurrentVersion;

@@ -234,18 +234,34 @@ namespace Squishy.Runtime.Game
             // The room.
             Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length);
             Hud.Para(body, Rules.ItemCount() + " of " + Rules.ItemSlots() + " pieces · " + Rules.ToysOut() + " of " + Rules.ToySlots() + " toys out", 13, "#6F5F52");
-            var nextW = Rules.NextSteamerSize();
-            if (nextW != null) Hud.Para(body, "Bigger steamer at " + nextW.at + " squishies (you have " + Rules.SquishTotal + ") · +1 toy", 12, "#6F5F52");
-            if (S.roomLv + 1 < C.roomLevels.Length)
+            if (S.roomLv + 1 < C.roomLevels.Length && !Rules.ExpandNeedsBiggerSteamer())
             {
                 var nx = C.roomLevels[S.roomLv + 1];
                 if (Rules.CanExpand()) Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; LevelUpRoom(); ui.ClosePanel("info"); }, false, 4);
                 else Hud.Para(body, "Next level: " + nx.cost + " coins" + (Rules.SquishKinds < nx.need ? " and " + nx.need + " squishies" : ""), 13, "#6F5F52");
             }
+            SteamerOffer(body);
             ComboList(body);
             body.Gap(8);
             ui.OpenPanel("info");
             sfx.Tap();
+        }
+
+        /// <summary>The next steamer size: its price and what it brings (Medium in coins, the bigger ones in prestige).</summary>
+        private void SteamerOffer(VisualElement body)
+        {
+            var nw = Rules.NextSteamerSize();
+            if (nw == null) return;
+            bool blocked = Rules.ExpandNeedsBiggerSteamer();
+            Hud.Sec(body, (blocked ? "Full for this steamer" : "Bigger steamer")).Margin(10, 0, 0, 0);
+            Hud.Para(body, nw.name + ": wider, " + nw.toys + " toys out, up to " + nw.maxSlots + " pieces", 12, "#6F5F52");
+            string price = nw.prestige > 0 ? nw.prestige + " prestige" : nw.coins + " coins";
+            Hud.Button(body, nw.name + " steamer · " + price, "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 44, 16, () =>
+            {
+                if (!Rules.BuySteamerSize()) { sfx.Bonk(); return; }
+                ui.ClosePanel("info");
+                GrowRoom();
+            }, !Rules.CanBuySteamerSize(), 4);
         }
 
         private static void Pill(VisualElement parent, string text)
@@ -275,7 +291,14 @@ namespace Squishy.Runtime.Game
             Big(body, "Level " + (S.roomLv + 1), "Space for " + Rules.ItemSlots() + " pieces (" + Rules.ItemCount() + " in the room). Every piece counts: furniture, stations, toys and decor.");
             if (nx == null) { Hud.Para(body, "Your room holds as much as it can."); ui.OpenPanel("info"); return; }
             int have = Rules.SquishKinds;
-            Hud.Para(body, "Level " + (S.roomLv + 2) + " has space for one more piece (" + nx.slots + "). It needs " + nx.need + " squishies in your collection (you have " + have + ") and " + nx.cost + " coins. The steamer itself grows wider as your squishy grows bigger.");
+            if (Rules.ExpandNeedsBiggerSteamer())
+            {
+                Hud.Para(body, "This steamer holds " + Rules.SlotCap() + " pieces at most. A bigger steamer holds more.");
+                SteamerOffer(body);
+                ui.OpenPanel("info");
+                return;
+            }
+            Hud.Para(body, "Level " + (S.roomLv + 2) + ": one more piece (" + nx.slots + ") · " + nx.cost + " coins" + (have < nx.need ? " · needs " + nx.need + " squishies (you have " + have + ")" : ""));
             Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 48, 17, () =>
             {
                 if (!Spend(nx.cost)) return;

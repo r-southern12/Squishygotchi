@@ -3662,27 +3662,30 @@
   "steamerSizes": [
     {
       "name": "Small",
-      "at": 1,
       "room": 1.75,
-      "toys": 1
+      "toys": 1,
+      "maxSlots": 18
     },
     {
       "name": "Medium",
-      "at": 10,
       "room": 2.05,
-      "toys": 2
+      "toys": 2,
+      "maxSlots": 22,
+      "coins": 1000
     },
     {
       "name": "Large",
-      "at": 25,
       "room": 2.35,
-      "toys": 3
+      "toys": 3,
+      "maxSlots": 26,
+      "prestige": 150
     },
     {
       "name": "Extra large",
-      "at": 50,
       "room": 2.65,
-      "toys": 4
+      "toys": 4,
+      "maxSlots": 30,
+      "prestige": 300
     }
   ]
 }

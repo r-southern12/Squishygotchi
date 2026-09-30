@@ -10,7 +10,7 @@ namespace Squishy.Simulation.Game
     [Serializable]
     public class RoomSnapshot
     {
-        public int version = 1, favIdx, copies, roomLv, curSkin, age;
+        public int version = 1, favIdx, copies, roomLv, roomSize, curSkin, age;
         public string code, avatar, hat, face, neck;
         public float[] needs;
         public List<PieceState> items = new List<PieceState>();
@@ -24,7 +24,7 @@ namespace Squishy.Simulation.Game
         {
             var s = new RoomSnapshot
             {
-                favIdx = S.favIdx, copies = Math.Max(1, SquishCount(S.favIdx)), roomLv = S.roomLv, curSkin = S.curSkin, age = S.age,
+                favIdx = S.favIdx, copies = Math.Max(1, SquishCount(S.favIdx)), roomLv = S.roomLv, roomSize = S.roomSize, curSkin = S.curSkin, age = S.age,
                 code = EnsureFriendCode(), avatar = S.avatar, hat = S.hat, face = S.face, neck = S.neck,
                 needs = (float[])S.needs.Clone(),
             };
@@ -42,7 +42,7 @@ namespace Squishy.Simulation.Game
             int fav = Math.Max(0, Math.Min(c.finishes.Length - 1, snap.favIdx));
             var s = new GameState
             {
-                favIdx = fav, roomLv = Math.Max(0, Math.Min(c.roomLevels.Length - 1, snap.roomLv)), curSkin = snap.curSkin, age = Math.Max(1, snap.age),
+                favIdx = fav, roomLv = Math.Max(0, Math.Min(c.roomLevels.Length - 1, snap.roomLv)), roomSize = Math.Max(0, Math.Min(c.steamerSizes.Length - 1, snap.roomSize)), curSkin = snap.curSkin, age = Math.Max(1, snap.age),
                 hat = snap.hat ?? "", face = snap.face ?? "", neck = snap.neck ?? "",
                 needs = snap.needs != null && snap.needs.Length == 4 ? (float[])snap.needs.Clone() : new[] { .7f, .7f, .7f, .7f },
                 pantry = new int[c.pantry.Length], snacks = new int[c.snacks.Length], toolDur = new int[c.tools.Length],
