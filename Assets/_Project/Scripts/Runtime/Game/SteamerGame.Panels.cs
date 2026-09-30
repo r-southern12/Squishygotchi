@@ -277,7 +277,7 @@ namespace Squishy.Runtime.Game
                 int k = i;
                 var uses = new List<string>();
                 for (int r = 0; r < C.recipes.Length; r++) if (Rules.Knows(r) && System.Array.IndexOf(C.recipes[r].ing, i) >= 0) uses.Add(C.recipes[r].name);
-                ui.Rec(body, "food:" + i, C.pantry[i].name, "You have " + S.pantry[i] + (uses.Count > 0 ? " · for " + string.Join(", ", uses) : ""), R.ingredientPrice.ToString(),
+                ui.Rec(body, "food:" + i, C.pantry[i].name, "You have " + S.pantry[i] + (uses.Count > 0 ? " · for " + string.Join(", ", uses) : " · for a recipe you haven't found yet"), R.ingredientPrice.ToString(),
                     () => { if (Spend(R.ingredientPrice)) { Rules.AddIngredient(k, 1); OpenShop(); } }, S.coins < R.ingredientPrice);
             }
             Hud.Sec(body, "Kitchen tools");
