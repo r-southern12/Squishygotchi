@@ -199,7 +199,9 @@ namespace Squishy.Runtime.Game
                 float dx = -px, dz = -pz, l = Mathf.Sqrt(dx * dx + dz * dz);
                 if (l == 0) l = 1;
                 if (it.a.face == "z") { dx = Mathf.Sin(it.ry); dz = Mathf.Cos(it.ry); l = 1; }
-                return new Spot { approach = new Vector2(px + dx / l * (rr + .18f), pz + dz / l * (rr + .18f)), stand = new Vector2(px, pz), y = act.perch > 0 ? act.perch : .06f };
+                var approach = new Vector2(px + dx / l * (rr + .18f), pz + dz / l * (rr + .18f));
+                if (string.IsNullOrEmpty(it.a.face) && !act.inside) approach = NearestSide(it) ?? approach; // no front: the nearest clear side
+                return new Spot { approach = approach, stand = new Vector2(px, pz), y = act.perch > 0 ? act.perch : .06f };
             }
             return new Spot { stand = new Vector2(sx, sz), y = 0, face = new Vector2(px, pz) };
         }
@@ -232,14 +234,21 @@ namespace Squishy.Runtime.Game
 
         private static float Dist(float dx, float dz) { return Mathf.Sqrt(dx * dx + dz * dz); }
 
-        /// <summary>Sitting on a seat, facing the table.</summary>
+        /// <summary>
+        /// Sitting on a seat, facing the table. It hops on from whichever clear side of the seat is nearest to where it
+        /// is (user feedback: it always went round the far side, the long way, even with the stool against a wall),
+        /// never through the table; it hops off the same way.
+        /// </summary>
         private Spot SeatSpot(Item seat, Item table)
         {
             float dx = seat.tx - table.tx, dz = seat.tz - table.tz, l = Dist(dx, dz);
             if (l == 0) l = 1;
+            var away = new Vector2(dx / l, dz / l);
+            var approach = NearestSide(seat, -away) ?? new Vector2(seat.tx, seat.tz) + away * .32f;
+            var at = new Vector2(seat.tx, seat.tz);
             var st = C.Style(seat.style);
             bool low = seat.a.role == "lounge" || (st != null && st.low);
-            return new Spot { approach = new Vector2(seat.tx + dx / l * .32f, seat.tz + dz / l * .32f), stand = new Vector2(seat.tx, seat.tz), y = low ? .1f : .28f, face = new Vector2(table.tx, table.tz) };
+            return new Spot { approach = approach, stand = at, y = low ? .1f : .28f, face = new Vector2(table.tx, table.tz) };
         }
 
         /// <summary>
@@ -294,6 +303,31 @@ namespace Squishy.Runtime.Game
                 }
                 if (!(ai.act != null && ai.act.it == table)) { Node.Rot(table.parts.pot, 0, 0, 0); table.parts.pot.localPosition = new Vector3(0, table.parts.potY, 0); }
             }
+        }
+
+        /// <summary>
+        /// Where to hop on from: the clear side of a piece nearest to the squishy (inside the room, not in another
+        /// piece), never from the "not" direction (the table's side). Null if nowhere is clear.
+        /// </summary>
+        private Vector2? NearestSide(Item it, Vector2? not = null)
+        {
+            Vector2 at = new Vector2(it.tx, it.tz), from = new Vector2(ai.x, ai.z);
+            float reach = it.a.r + PetRadius() + .04f, lim = FLOOR_R - .15f, bestD = float.MaxValue;
+            Vector2? best = null;
+            for (int k = 0; k < 16; k++)
+            {
+                float ang = k * Mathf.PI / 8;
+                var dir = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang));
+                if (not.HasValue && Vector2.Dot(dir, not.Value) > .45f) continue;
+                var p = at + dir * reach;
+                if (p.magnitude > lim) continue;
+                bool blocked = false;
+                foreach (var o in obstacles) if (o.it != it && Dist(p.x - o.x, p.y - o.z) < o.r + PetRadius() * .8f) { blocked = true; break; }
+                if (blocked) continue;
+                float d = Vector2.Distance(p, from);
+                if (d < bestD) { bestD = d; best = p; }
+            }
+            return best;
         }
 
         private bool SeatNear(Item t) { return items.Any(it => (it.a.role == "seat" || it.a.role == "lounge") && Dist(it.tx - t.tx, it.tz - t.tz) < 1.1f); }
