@@ -288,7 +288,7 @@ namespace Squishy.Runtime.Game
             string size = C.sizes[C.SizeIdxFor(Rules.SquishCount(i))].name;
             int age = i == S.favIdx ? S.age : -1;
             if (age < 0) { var life = S.lifeOf.Find(l => l.i == i); age = life != null ? life.age : -1; }
-            return size + " · " + (age >= 0 ? "Day " + age : "not raised yet");
+            return age >= 0 ? size + " · Day " + age : size; // one never raised just shows its size
         }
 
         private void DrawTree(VisualElement grid)

@@ -400,6 +400,8 @@ namespace Squishy.Runtime.Game
             ui.Tabs.Shown(!squishies);
             ui.Tabs.Clear();
             foreach (var (id, label) in TabList) { string t = id; ui.Tab(label, id == tab, () => { tab = t; selKey = null; DrawCatalogue(); }); }
+            // Owned only: a toggle chip right after the tabs, always in view (it scrolled away inside the list).
+            ui.Tab("Owned only", ownedOnly, () => { ownedOnly = !ownedOnly; selKey = null; DrawCatalogue(); sfx.Tap(); });
             bool styled = tab == "furniture" || tab == "walls";
             ui.ChipScroll.Shown(styled);
             ui.Chips.Clear();
@@ -420,11 +422,6 @@ namespace Squishy.Runtime.Game
             int own = list.Count(e => e.own);
             ui.CatCount.text = own + " of " + list.Count + (styled ? " skins" : "") + " found" + (tab == "furniture" && styleF == "all" ? " · " + C.styles.Length + " styles" : "");
             if (tab == "recipes") ui.CatCount.text = Rules.KnownRecipes() + " of " + C.recipes.Length + " recipes discovered";
-            // Owned-only filter: with hundreds of skins, finding your own things must be one tap.
-            var bar = new VisualElement().Row(Align.Center, Justify.FlexEnd).In(grid);
-            bar.style.marginBottom = 8;
-            Hud.Button(bar, ownedOnly ? "Owned only · on" : "Owned only · off", ownedOnly ? "#6F9A74" : "#EADCC6", ownedOnly ? "#4C7552" : "#CDB999",
-                ownedOnly ? Hud.Cream : Hud.Ink, 99, 32, 13, () => { ownedOnly = !ownedOnly; selKey = null; DrawCatalogue(); sfx.Tap(); }).Size(150, null);
             if (ownedOnly) list = list.Where(e => e.own).ToList();
             if (list.Count == 0) Hud.Para(grid, ownedOnly ? "Nothing owned here yet. Open steamers to find some!" : "Nothing here yet.", 13, "#6F5F52");
             VisualElement row = null;
