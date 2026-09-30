@@ -482,6 +482,28 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Accessory_Colours_Are_Picked_From_Its_Choices_Once_Owned()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var rules = new GameRules(c, s);
+            var tie = rules.Cosmetic("tie");
+            Assert.IsNotNull(tie);
+            Assert.AreEqual(tie.color, rules.CosmeticColor("tie"), "its own colour to start");
+            Assert.IsFalse(rules.SetCosmeticColor("tie", "#E86A92"), "not owned yet");
+            s.cosmetics.Add("tie");
+            Assert.IsTrue(rules.SetCosmeticColor("tie", "#E86A92"));
+            Assert.AreEqual("#E86A92", rules.Worn("tie").color);
+            Assert.AreEqual(tie.color, rules.Cosmetic("tie").color, "the content itself is untouched");
+            Assert.IsFalse(rules.SetCosmeticColor("tie", "#123456"), "only its choices");
+            Assert.IsTrue(rules.SetCosmeticColor("tie", tie.color), "and back again, any time");
+            Assert.AreEqual(0, s.cosColors.Count);
+            s.cosmetics.Add("pearls");
+            Assert.IsFalse(rules.SetCosmeticColor("pearls", "#E86A92"), "pearls have their own short list");
+            Assert.IsTrue(rules.SetCosmeticColor("pearls", "#2B2B2B"));
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

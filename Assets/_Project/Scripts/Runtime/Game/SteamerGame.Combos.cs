@@ -220,7 +220,7 @@ namespace Squishy.Runtime.Game
                         if (pick != null)
                         {
                             comboDressed = true;
-                            pet.SetCosmetics(pick.slot == "hat" ? pick : Rules.Cosmetic(S.hat), pick.slot == "face" ? pick : Rules.Cosmetic(S.face), pick.slot == "neck" ? pick : Rules.Cosmetic(S.neck));
+                            pet.SetCosmetics(pick.slot == "hat" ? Rules.Worn(pick.id) : Rules.Worn(S.hat), pick.slot == "face" ? Rules.Worn(pick.id) : Rules.Worn(S.face), pick.slot == "neck" ? Rules.Worn(pick.id) : Rules.Worn(S.neck));
                             Glints(new Vector3(pw.x, pw.y + h * .8f, pw.z), "#FFE08A", 5);
                             sfx.Pop();
                             pet.Express(SquishyModel.Mouth.Grin, 3);

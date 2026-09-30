@@ -91,6 +91,7 @@ namespace Squishy.Simulation.Game
         public int[] goalResetDays; // the goal starts afresh on these days of the week (1 = Monday, 4 = Thursday)
         public bool adminTools;
         public string fullUnlockProductId, adsGameIdAndroid, adsGameIdIos, musicCredit;
+        public string[] cosmeticColors; // the shared palette players pick accessory colours from
     }
 
     [Serializable]

@@ -381,6 +381,9 @@ Culture sets: everyday domestic objects and patterns only, never sacred or cerem
 | Holographic | Epic | 4 | Opal, Prism, Pearl, Oil Slick |
 | Legendary | Legendary | 6 | Golden Ticket, Violet Sparkle (the icon squishy), Rose Gold, Moonbeam, Cosmic Pearl, Candy Floss |
 
+### Accessory colours (1 Oct 2026)
+Once you own an accessory you can wear it in any of its colours, and change it any time: a row of colour dots under it in the Prestige store. Most use a shared palette; a few have their own short list (pearls, halo, tiara, crown, monocle, freckles, moustache, sprout). Friends see the colours you picked. The rebuilt accessories: head-covering hats sit over the dumpling's folds, and everything worn bends with presses and pinches except the springy bits (the sprout's leaves and bunny ears sway and settle). New: Eye patch (face) and Tie (neck).
+
 ## Friends
 
 Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Decided 27 Sep 2026.

@@ -225,6 +225,7 @@ namespace Squishy.Runtime.Models
             StepTactile(dt);
             StepInside(dt, x);
             StepCowlick(dt, x);
+            StepAccessories(dt, x);
             bool beads = _eyeMode == EyeMode.Beads;
             foreach (var e in _eyes) e.localScale = beads ? new Vector3(_eyeW, 1.08f * EyeOpen * _eyeW + .02f, .45f) : Vector3.zero;
             if (Grey != _g)

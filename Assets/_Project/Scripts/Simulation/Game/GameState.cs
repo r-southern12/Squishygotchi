@@ -36,6 +36,7 @@ namespace Squishy.Simulation.Game
         public List<LifeRecord> lives = new List<LifeRecord>();
         public List<string> cosmetics = new List<string>();
         public string hat = "", face = "", neck = "";
+        public List<CosColor> cosColors = new List<CosColor>(); // colours picked for accessories
         public bool premium;
         public long onlineReadyAt; // when the next free in-game steamer can be claimed
         public bool asleep; // turned in for the night
@@ -95,6 +96,9 @@ namespace Squishy.Simulation.Game
 namespace Squishy.Simulation.Game
 {
     /// <summary>A friend you've visited: their cloud player id, code and what their squishy looked like last time.</summary>
+    [System.Serializable]
+    public class CosColor { public string id, color; }
+
     [System.Serializable]
     public class FriendData { public string code, id, avatar; public int finish; public bool neighbour; } // neighbour: found at random (not by code)
 

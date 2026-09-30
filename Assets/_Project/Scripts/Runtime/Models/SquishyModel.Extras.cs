@@ -85,155 +85,54 @@ namespace Squishy.Runtime.Models
         public void SetCosmetics(CosmeticData hat, CosmeticData face, CosmeticData neck = null)
         {
             foreach (var t in new[] { _hat, _face, _neck }) if (t != null) { t.gameObject.SetActive(false); Node.Destroy(t); } // hidden now: Destroy waits for the frame end
+            _springs.Clear();
+            ClearHatSkins();
+            int springs = _springs.Count;
             _hat = hat != null ? Hat(hat) : null;
+            bool springy = _springs.Count > springs;
             _face = face != null ? Face(face) : null;
             _neck = neck != null ? Neck(neck) : null;
             int layer = Pivot.gameObject.layer;
             foreach (var t in new[] { _hat, _face, _neck }) if (t != null) Node.SetLayer(t, layer);
+            // Worn things bend with presses and pinches like the body (the springy sprout and bunny ears ride it instead).
+            if (_hat != null && !springy) SkinHat(_hat);
+            if (_face != null) SkinHat(_face);
+            if (_neck != null) SkinHat(_neck);
             if (Fin != null && Fin.clear) FrontParts(true); // accessories draw over a clear body too
-        }
-
-        private const float HatScale = 1.7f;
-
-        private Transform Hat(CosmeticData c)
-        {
-            var g = Node.Group(Body, c.id);
-            g.localPosition = ShapeAt(Vector3.up) + new Vector3(0, -.04f, 0);
-            Material col = M(c.color), cream = M("#FFF7EC"), gold = M("#D9B45A"), green = M("#7DBA5E");
-            switch (c.kind)
-            {
-                case "cone":
-                    Node.Mesh(g, Cyl(.01f, .22f, .42f, 16), col, 0, .2f, 0, shadow: false);
-                    Node.Mesh(g, Sph(.06f, 10, 8), cream, 0, .43f, 0, shadow: false);
-                    g.RotZ(-.18f);
-                    break;
-                case "flowers":
-                    Node.Mesh(g, Torus(.3f, .035f, 6, 24), M("#8FAE7E"), 0, .02f, 0, shadow: false).RotX(Mathf.PI / 2);
-                    for (int i = 0; i < 7; i++)
-                    {
-                        float a = i / 7f * Mathf.PI * 2;
-                        Node.Mesh(g, Sph(.06f, 8, 6), i % 2 == 0 ? col : M("#FFF1A8"), Mathf.Cos(a) * .3f, .05f, Mathf.Sin(a) * .3f, shadow: false);
-                    }
-                    break;
-                case "beret":
-                    Node.Mesh(g, Sph(.34f, 16, 8), col, .05f, .02f, 0, shadow: false).Scale(1, .28f, 1);
-                    Node.Mesh(g, Cyl(.02f, .02f, .06f, 6), col, .05f, .1f, 0, shadow: false);
-                    g.RotZ(-.2f);
-                    break;
-                case "chef":
-                    Node.Mesh(g, Cyl(.2f, .2f, .16f, 16), col, 0, .06f, 0, shadow: false);
-                    Node.Mesh(g, Sph(.26f, 14, 10), col, 0, .26f, 0, shadow: false).Scale(1, .75f, 1);
-                    break;
-                case "bow":
-                    Node.Mesh(g, Sph(.1f, 10, 8), col, -.1f, .05f, .12f, shadow: false).Scale(1.2f, .8f, .6f);
-                    Node.Mesh(g, Sph(.1f, 10, 8), col, .1f, .05f, .12f, shadow: false).Scale(1.2f, .8f, .6f);
-                    Node.Mesh(g, Sph(.045f, 8, 6), cream, 0, .05f, .14f, shadow: false);
-                    break;
-                case "beanie":
-                    Node.Mesh(g, Sph(.44f, 18, 12), col, 0, -.1f, 0, shadow: false).Scale(1, .62f, 1);
-                    Node.Mesh(g, Torus(.42f, .065f, 8, 28), col, 0, -.2f, 0, shadow: false).RotX(Mathf.PI / 2);
-                    Node.Mesh(g, Sph(.11f, 12, 9), cream, 0, .2f, 0, shadow: false);
-                    break;
-                case "tophat":
-                    Node.Mesh(g, Cyl(.34f, .34f, .03f, 20), col, 0, 0, 0, shadow: false);
-                    Node.Mesh(g, Cyl(.2f, .2f, .36f, 18), col, 0, .19f, 0, shadow: false);
-                    Node.Mesh(g, Cyl(.205f, .205f, .06f, 18), M("#C8674E"), 0, .06f, 0, shadow: false);
-                    break;
-                case "sunhat":
-                    Node.Mesh(g, Cyl(.46f, .5f, .03f, 24), col, 0, 0, 0, shadow: false);
-                    Node.Mesh(g, Sph(.22f, 14, 10), col, 0, .06f, 0, shadow: false).Scale(1, .7f, 1);
-                    Node.Mesh(g, Cyl(.225f, .225f, .05f, 18), M("#E86A92"), 0, .05f, 0, shadow: false);
-                    break;
-                case "cap":
-                    Node.Mesh(g, Sph(.42f, 18, 12), col, 0, -.1f, 0, shadow: false).Scale(1, .58f, 1);
-                    Node.Mesh(g, RBox(.42f, .035f, .3f, .015f), col, 0, -.15f, .42f, shadow: false).RotX(-.12f);
-                    Node.Mesh(g, Sph(.045f, 8, 6), cream, 0, .15f, 0, shadow: false);
-                    break;
-                case "ears_cat":
-                case "ears_bunny":
-                case "ears_bear":
-                    for (int k = 0; k < 2; k++)
-                    {
-                        float sx = k == 0 ? -1 : 1;
-                        var e = Node.Group(g, "ear", sx * .27f, -.04f, 0);
-                        if (c.kind == "ears_cat")
-                        {
-                            Node.Mesh(e, Cyl(.015f, .15f, .24f, 4), col, 0, .1f, 0, shadow: false);
-                            Node.Mesh(e, Cyl(.01f, .08f, .15f, 4), M("#F3A6BD"), 0, .08f, .045f, shadow: false);
-                            e.RotZ(-sx * .3f);
-                        }
-                        else if (c.kind == "ears_bunny")
-                        {
-                            Node.Mesh(e, Sph(.09f, 10, 8), col, 0, .25f, 0, shadow: false).Scale(1, 2.8f, .6f);
-                            Node.Mesh(e, Sph(.05f, 8, 6), M("#F3A6BD"), 0, .25f, .04f, shadow: false).Scale(1, 3.4f, .4f);
-                            e.RotZ(-sx * .2f);
-                        }
-                        else
-                        {
-                            Node.Mesh(e, Sph(.14f, 12, 9), col, 0, .09f, 0, shadow: false).Scale(1, 1, .65f);
-                            Node.Mesh(e, Sph(.08f, 10, 8), M("#E7C9A8"), 0, .09f, .06f, shadow: false).Scale(1, 1, .45f);
-                        }
-                    }
-                    break;
-                case "sprout":
-                    Node.Mesh(g, Cyl(.012f, .012f, .16f, 5), green, 0, .08f, 0, shadow: false);
-                    Node.Mesh(g, Sph(.07f, 8, 6), col, -.06f, .17f, 0, shadow: false).Scale(1.4f, .5f, .8f).RotZ(.4f);
-                    Node.Mesh(g, Sph(.07f, 8, 6), col, .06f, .17f, 0, shadow: false).Scale(1.4f, .5f, .8f).RotZ(-.4f);
-                    break;
-                case "cherry":
-                    Node.Mesh(g, Sph(.07f, 10, 8), col, -.1f, 0, .15f, shadow: false);
-                    Node.Mesh(g, Sph(.07f, 10, 8), col, .02f, -.02f, .18f, shadow: false);
-                    Node.Mesh(g, Cyl(.008f, .008f, .16f, 4), green, -.04f, .08f, .15f, shadow: false).RotZ(.5f);
-                    break;
-                case "conical":
-                    Node.Mesh(g, Cyl(.02f, .48f, .2f, 20), col, 0, .08f, 0, shadow: false);
-                    Node.Mesh(g, Torus(.47f, .02f, 5, 24), M("#A97E47"), 0, -.02f, 0, shadow: false).RotX(Mathf.PI / 2);
-                    break;
-                case "wizard":
-                    Node.Mesh(g, Cyl(.36f, .38f, .03f, 20), col, 0, 0, 0, shadow: false);
-                    Node.Mesh(g, Cyl(.01f, .2f, .55f, 16), col, 0, .28f, 0, shadow: false).RotZ(-.15f);
-                    Node.Mesh(g, Cyl(.05f, .05f, .01f, 5), gold, .05f, .28f, .15f, shadow: false).RotX(Mathf.PI / 2);
-                    break;
-                case "pirate":
-                    Node.Mesh(g, Sph(.34f, 16, 10), col, 0, .04f, 0, shadow: false).Scale(1.25f, .45f, .7f);
-                    Node.Mesh(g, Sph(.05f, 8, 6), cream, 0, .1f, .22f, shadow: false);
-                    break;
-                case "tiara":
-                    for (int i = 0; i <= 6; i++)
-                    {
-                        float a = (i / 6f - .5f) * 2.1f, x = Mathf.Sin(a) * .34f, z = Mathf.Cos(a) * .34f;
-                        Node.Mesh(g, Sph(.04f, 8, 6), gold, x, -.04f, z, shadow: false);
-                        if (i < 6)
-                        {
-                            float a2 = ((i + .5f) / 6f - .5f) * 2.1f;
-                            Node.Rot(Node.Mesh(g, Cyl(.03f, .03f, .13f, 6), gold, Mathf.Sin(a2) * .34f, -.04f, Mathf.Cos(a2) * .34f, shadow: false), 0, a2, Mathf.PI / 2); // lies along the arc
-                        }
-                        float h = i == 3 ? .24f : i % 2 == 1 ? .16f : .1f;
-                        Node.Mesh(g, Cyl(0, .05f, h, 6), col, x, -.03f + h / 2, z, shadow: false);
-                    }
-                    Node.Mesh(g, Sph(.06f, 10, 8), M("#F48FB1", "#F48FB1"), 0, .05f, .36f, shadow: false);
-                    break;
-                case "halo":
-                    Node.Mesh(g, Torus(.26f, .035f, 8, 28), M(c.color, c.color), 0, .3f, -.03f, shadow: false).RotX(Mathf.PI / 2 - .45f);
-                    break;
-                default: // crown
-                    Node.Mesh(g, Cyl(.24f, .24f, .12f, 20), col, 0, .04f, 0, shadow: false);
-                    for (int i = 0; i < 6; i++)
-                    {
-                        float a = i / 6f * Mathf.PI * 2;
-                        Node.Mesh(g, Cyl(.005f, .06f, .12f, 4), col, Mathf.Cos(a) * .22f, .15f, Mathf.Sin(a) * .22f, shadow: false);
-                        Node.Mesh(g, Sph(.025f, 6, 5), M(i % 2 == 0 ? "#E8505B" : "#5FA7D9"), Mathf.Cos(a) * .245f, .05f, Mathf.Sin(a) * .245f, shadow: false);
-                    }
-                    break;
-            }
-            g.localScale = Vector3.one * HatScale; // hats were modelled at a quarter of the width: too small on the wide dome
-            return g;
         }
 
         private Transform Face(CosmeticData c)
         {
             var g = Node.Group(Body, c.id);
             var mat = M(c.color);
+            if (c.kind == "eyepatch")
+            {
+                // A patch over one eye, on a strap that runs up across the forehead and round the head (over the folds).
+                var dp = new Vector3(.36f, .1f, .93f).normalized;
+                var p = ShapeAt(dp);
+                var n = p - new Vector3(0, -.1f, 0);
+                n.y *= 1.3f;
+                n.Normalize();
+                var patch = Node.Mesh(g, Sph(.1f, 24, 16), mat, 0, 0, 0, shadow: false);
+                patch.localPosition = p + n * .022f;
+                patch.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
+                patch.localScale = new Vector3(1.7f, 1.5f, .34f);
+                var side = Vector3.Cross(Vector3.up, dp).normalized;
+                var upPerp = (Vector3.up - dp * Vector3.Dot(Vector3.up, dp)).normalized;
+                var bb = (side * Mathf.Cos(35 * Mathf.Deg2Rad) - upPerp * Mathf.Sin(35 * Mathf.Deg2Rad)).normalized;
+                Vector3? prevQ = null;
+                for (int s = 0; s <= 72; s++)
+                {
+                    float t = s / 72f * Mathf.PI * 2;
+                    if (t < .2f || t > Mathf.PI * 2 - .2f) { prevQ = null; continue; } // under the patch
+                    var dir = (dp * Mathf.Cos(t) + bb * Mathf.Sin(t)).normalized;
+                    var q = RidgePoint(dir);
+                    q += (q - new Vector3(0, -.1f, 0)).normalized * .016f;
+                    if (prevQ.HasValue) Stick(g, prevQ.Value, q, .014f, mat);
+                    prevQ = q;
+                }
+                return g;
+            }
             if (c.kind == "moustache")
             {
                 var p = ShapeAt(new Vector3(0, .075f, 1).normalized);
@@ -245,9 +144,9 @@ namespace Squishy.Runtime.Models
                 for (int k = 0; k < 6; k++)
                 {
                     float sx = k < 3 ? -1 : 1;
-                    var p = ShapeAt(new Vector3(sx * (.48f + (k % 3) * .05f), .03f + (k % 2) * .04f, .86f).normalized);
+                    var p = ShapeAt(new Vector3(sx * (.46f + (k % 3) * .07f), .02f + (k % 2) * .05f, .86f).normalized);
                     var n = (p - new Vector3(0, -.1f, 0)).normalized;
-                    var f = Node.Mesh(g, Circle(.018f, 8), mat, 0, 0, 0, shadow: false);
+                    var f = Node.Mesh(g, Circle(.03f, 10), mat, 0, 0, 0, shadow: false);
                     f.localPosition = p + n * .007f;
                     f.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
                 }
@@ -360,22 +259,56 @@ namespace Squishy.Runtime.Models
             switch (c.kind)
             {
                 case "scarf":
-                    Node.Mesh(g, Torus(r * .98f, .08f, 8, 32), mat, 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2);
-                    Node.Mesh(g, RBox(.14f, .3f, .05f, .03f), mat, .18f, front.y - .15f, front.z + .02f, shadow: false).RotZ(-.15f);
+                {
+                    // A soft knitted wrap, knotted at the front to one side, with two fringed ends hanging out over the body.
+                    Node.Mesh(g, Torus(r * .99f, .075f, 10, 48), mat, 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2).Scale(1, 1, 1.25f);
+                    float a = .5f;
+                    var outward = new Vector3(Mathf.Sin(a), 0, Mathf.Cos(a));
+                    var knot = Node.Group(g, "knot", outward.x * r * 1.06f, front.y - .01f, outward.z * r * 1.06f);
+                    knot.localRotation = Quaternion.LookRotation(outward) * Quaternion.AngleAxis(-18, Vector3.right);
+                    knot.localScale = Vector3.one * 1.4f;
+                    Node.Mesh(knot, Sph(.085f, 14, 10), mat, 0, 0, .02f, shadow: false).Scale(1.1f, 1, .8f);
+                    var fringe = M(Shade(c.color, .85f));
+                    foreach (var tail in new[] { new Vector3(-.05f, -.02f, .12f), new Vector3(.06f, .03f, -.3f) }) // (x, z, tilt)
+                    {
+                        var tg = Node.Group(knot, "tail", tail.x, -.03f, tail.y);
+                        tg.RotZ(tail.z);
+                        Node.Mesh(tg, RBox(.13f, .26f, .045f, .02f), mat, 0, -.13f, 0, shadow: false);
+                        for (int k = 0; k < 4; k++) Node.Mesh(tg, Cyl(.011f, .011f, .06f, 6), fringe, -.045f + k * .03f, -.29f, 0, shadow: false);
+                    }
                     break;
+                }
                 case "bowtie":
                     for (int k = 0; k < 2; k++) Node.Mesh(g, Cyl(.015f, .13f, .2f, 4), mat, k == 0 ? -.1f : .1f, front.y, front.z + .06f, shadow: false).RotZ(k == 0 ? -Mathf.PI / 2 : Mathf.PI / 2);
                     Node.Mesh(g, Sph(.06f, 10, 8), mat, 0, front.y, front.z + .09f, shadow: false);
                     break;
                 case "pearls":
-                    for (int i = 0; i < 26; i++)
+                    for (int i = 0; i < 52; i++)
                     {
-                        float a = i / 26f * Mathf.PI * 2;
+                        float a = i / 52f * Mathf.PI * 2;
                         Node.Mesh(g, Sph(.052f, 10, 8), mat, Mathf.Cos(a) * r * 1.01f, front.y - .02f, Mathf.Sin(a) * r * 1.01f, shadow: false);
                     }
                     break;
                 case "bandana":
-                    Node.Mesh(g, Torus(r * .98f, .05f, 6, 32), mat, 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2);
+                {
+                    Node.Mesh(g, Torus(r * 1.0f, .045f, 8, 36), mat, 0, front.y + .01f, 0, shadow: false).RotX(Mathf.PI / 2).Scale(1, 1, 1.7f);
+                    Node.Mesh(g, Kerchief(), mat, 0, 0, 0, shadow: false);
+                    var dot = M("#FFF7EC");
+                    foreach (var d in new[] { new Vector2(.12f, -.55f), new Vector2(.12f, 0), new Vector2(.12f, .55f), new Vector2(.4f, -.3f), new Vector2(.4f, .3f), new Vector2(.68f, 0), new Vector2(.14f, -.95f), new Vector2(.14f, .95f) })
+                    {
+                        var p = KerchiefPoint(d.x, d.y, .043f, out var n);
+                        var f = Node.Mesh(g, Circle(.028f, 10), dot, 0, 0, 0, shadow: false);
+                        f.localPosition = p;
+                        f.localRotation = Quaternion.FromToRotation(Vector3.forward, n);
+                    }
+                    // The knot at the back, with two short ends.
+                    var back = ShapeAt(new Vector3(0, -.16f, -1).normalized);
+                    Node.Mesh(g, Sph(.065f, 10, 8), mat, 0, back.y + .01f, back.z - .06f, shadow: false);
+                    for (int k = 0; k < 2; k++) Node.Mesh(g, RBox(.07f, .15f, .025f, .012f), mat, k == 0 ? -.05f : .05f, back.y - .07f, back.z - .07f, shadow: false).RotZ(k == 0 ? -.4f : .4f);
+                    break;
+                }
+                case "tie": // user favourite (the old bandana look, 1 Oct 2026): a band with a pointed blade hanging at the front
+                    Node.Mesh(g, Torus(r * .98f, .05f, 8, 40), mat, 0, front.y, 0, shadow: false).RotX(Mathf.PI / 2);
                     Node.Mesh(g, Cyl(.01f, .2f, .22f, 3), mat, 0, front.y - .1f, front.z - .02f, shadow: false).RotX(-Mathf.PI / 2 + .3f);
                     break;
                 case "bell":
@@ -385,19 +318,72 @@ namespace Squishy.Runtime.Models
                     Node.Mesh(g, Sph(.02f, 6, 5), M("#6B4A1E"), 0, front.y - .17f, front.z + .16f, shadow: false);
                     break;
                 default: // lei
-                    for (int i = 0; i < 18; i++)
+                    for (int i = 0; i < 22; i++)
                     {
                         // Little five-petal flowers round the neck, each facing outwards.
-                        float a = i / 18f * Mathf.PI * 2;
+                        float a = i / 22f * Mathf.PI * 2;
                         var fl = Node.Group(g, "flower", Mathf.Cos(a) * r * 1.02f, front.y - .02f, Mathf.Sin(a) * r * 1.02f);
                         fl.localRotation = Quaternion.FromToRotation(Vector3.forward, new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)));
                         var pm = M(i % 3 == 0 ? "#F3A6BD" : i % 3 == 1 ? c.color : "#FFF1A8");
-                        for (int k = 0; k < 5; k++) { float pa = k * Mathf.PI * 2 / 5; Node.Mesh(fl, Sph(.045f, 8, 6), pm, Mathf.Cos(pa) * .05f, Mathf.Sin(pa) * .05f, 0, shadow: false).Scale(1, 1, .5f); }
-                        Node.Mesh(fl, Sph(.03f, 8, 6), M("#F2C230"), 0, 0, .015f, shadow: false);
+                        for (int k = 0; k < 5; k++) { float pa = k * Mathf.PI * 2 / 5; Node.Mesh(fl, Sph(.052f, 8, 6), pm, Mathf.Cos(pa) * .058f, Mathf.Sin(pa) * .058f, 0, shadow: false).Scale(1, 1, .5f); }
+                        Node.Mesh(fl, Sph(.034f, 8, 6), M("#F2C230"), 0, 0, .015f, shadow: false);
                     }
                     break;
             }
             return g;
+        }
+
+        /// <summary>A point on the outside of the folds (the ridges) in a direction, so straps bridge the pleats.</summary>
+        private static Vector3 RidgePoint(Vector3 dir)
+        {
+            dir.Normalize();
+            float hz = Mathf.Sqrt(Mathf.Max(0, 1 - dir.y * dir.y));
+            if (hz < 1e-3f) return ShapeAt(dir);
+            float th = Mathf.PI / 10 - Twist(dir.y);
+            var r = ShapeAt(new Vector3(hz * Mathf.Cos(th), dir.y, hz * Mathf.Sin(th)));
+            float R = new Vector2(r.x, r.z).magnitude;
+            return new Vector3(dir.x / hz * R, r.y, dir.z / hz * R);
+        }
+
+        /// <summary>
+        /// A point on the bandana's kerchief: t runs from the band (0) down to the point (1), u across (-1 to 1).
+        /// It lies on the body, lifted a little, and narrows to the point.
+        /// </summary>
+        private Vector3 KerchiefPoint(float t, float u, float lift, out Vector3 n)
+        {
+            float half = .95f * (1 - t), yd = -.16f - .38f * t;
+            float th = u * half;
+            var p = ShapeAt(new Vector3(Mathf.Sin(th), yd, Mathf.Cos(th)).normalized);
+            n = (p - new Vector3(0, -.1f, 0)).normalized;
+            return p + n * lift;
+        }
+
+        /// <summary>The bandana's folded triangle, both sides (built for this body's shape).</summary>
+        private Mesh Kerchief()
+        {
+            const int R = 8, Cc = 16;
+            var verts = new List<Vector3>();
+            var tris = new List<int>();
+            for (int side = 0; side < 2; side++)
+            {
+                int start = verts.Count;
+                for (int i = 0; i <= R; i++)
+                    for (int j = 0; j <= Cc; j++)
+                        verts.Add(KerchiefPoint(i / (float)R, j / (float)Cc * 2 - 1, .035f, out _));
+                for (int i = 0; i < R; i++)
+                    for (int j = 0; j < Cc; j++)
+                    {
+                        int a = start + i * (Cc + 1) + j, b = a + 1, c2 = a + Cc + 1, d = c2 + 1;
+                        if (side == 0) { tris.Add(a); tris.Add(c2); tris.Add(b); tris.Add(b); tris.Add(c2); tris.Add(d); }
+                        else { tris.Add(a); tris.Add(b); tris.Add(c2); tris.Add(b); tris.Add(d); tris.Add(c2); }
+                    }
+            }
+            var m = new Mesh { name = "kerchief" };
+            m.SetVertices(verts);
+            m.SetTriangles(tris, 0);
+            m.RecalculateNormals();
+            m.RecalculateBounds();
+            return m;
         }
     }
 }

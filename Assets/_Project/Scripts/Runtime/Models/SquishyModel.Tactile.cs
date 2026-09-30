@@ -241,7 +241,7 @@ namespace Squishy.Runtime.Models
             _drapeApplied = _drape;
             if (_dents.Count == 0 && _pinch <= 0 && _drape <= 0)
             {
-                if (_tDirty) { _tMesh.vertices = _tBase; _tMesh.normals = _tNorm; _tMesh.RecalculateBounds(); _tDirty = false; RideSurface(true); }
+                if (_tDirty) { _tMesh.vertices = _tBase; _tMesh.normals = _tNorm; _tMesh.RecalculateBounds(); _tDirty = false; RideSurface(true); DeformHat(true); }
                 return;
             }
             // The volume pressed in (roughly depth x area of each bowl) comes back out as a swell over the rest.
@@ -256,6 +256,7 @@ namespace Squishy.Runtime.Models
                 _tWork[v] = Displaced(b);
             }
             _tMesh.vertices = _tWork;
+            DeformHat(false);
             _tMesh.RecalculateNormals();
             var n = _tMesh.normals;
             for (int v = 0; v < n.Length; v++) if (_tRep[v] != v) n[_tRep[v]] += n[v];
@@ -340,7 +341,7 @@ namespace Squishy.Runtime.Models
             _riders.RemoveAll(r => r.t == null);
             foreach (Transform c in Body)
             {
-                if (c == _inside || c == _backing) continue;
+                if (c == _inside || c == _backing || Skinned(c)) continue; // skinned accessories bend with the body instead
                 if (c.localPosition.sqrMagnitude > .04f) AddRider(c, c.localPosition);
                 else if (c.GetComponent<MeshFilter>() == null) foreach (Transform g in c) if (g.localPosition.sqrMagnitude > .04f) AddRider(g, g.localPosition); // groups at the centre (brows)
             }

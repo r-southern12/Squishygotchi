@@ -70,12 +70,12 @@ namespace Squishy.Runtime.Game
             int grewUp = visiting ? 0 : Rules.AwardStagePrestige();
             if (grewUp > 0) Later(1.2f, () => Floater(Rules.Fav.name + " is growing up well · +" + grewUp + " prestige"));
             pet.SetStage(st);
-            pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck));
+            pet.SetCosmetics(Rules.Worn(S.hat), Rules.Worn(S.face), Rules.Worn(S.neck));
             UpdateSub();
             if (!visiting) Notifier.RefreshPictures(Rules); // widget and notification pictures follow your squishy
         }
 
-        private void RefreshCosmetics() { pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck)); Notifier.RefreshPictures(Rules); }
+        private void RefreshCosmetics() { pet.SetCosmetics(Rules.Worn(S.hat), Rules.Worn(S.face), Rules.Worn(S.neck)); Notifier.RefreshPictures(Rules); }
 
         /// <summary>The Prestige store (tap the prestige star): accessories bought with prestige, what it is and how to earn more.</summary>
         public void OnPrestige()
@@ -265,6 +265,14 @@ namespace Squishy.Runtime.Game
             {
                 bool own = Rules.HasCosmetic(c.id), worn = S.hat == c.id || S.face == c.id || S.neck == c.id;
                 var id = c.id;
+                VisualElement dots = null;
+                if (own)
+                {
+                    dots = new VisualElement().Row(Align.Center);
+                    dots.style.flexWrap = Wrap.Wrap;
+                    dots.style.marginTop = 5;
+                    ColourDots(dots, c, worn);
+                }
                 ui.Rec(body, null, c.name, (c.slot == "hat" ? "Hat" : c.slot == "neck" ? "Neck" : "Face") + (own ? worn ? " · wearing" : " · owned" : ""),
                     own ? (worn ? "Take off" : "Wear") : c.price.ToString(),
                     () =>
@@ -275,7 +283,30 @@ namespace Squishy.Runtime.Game
                         sfx.Snap();
                         WriteSave();
                         OnPrestige();
-                    }, !own && S.prestige < c.price, null, true);
+                    }, !own && S.prestige < c.price, dots, true);
+            }
+        }
+
+        /// <summary>An owned accessory's colours: tap one to wear it in that colour (change it any time).</summary>
+        private void ColourDots(VisualElement row, CosmeticData c, bool worn)
+        {
+            row.Clear();
+            string cur = Rules.CosmeticColor(c.id);
+            foreach (var hex in Rules.CosmeticChoices(c))
+            {
+                string h = hex;
+                ColorUtility.TryParseHtmlString(h, out var col);
+                bool light = col.r * .3f + col.g * .59f + col.b * .11f > .6f;
+                var dot = Hud.Button(row, h == cur ? "✓" : "", h, "#" + ColorUtility.ToHtmlStringRGB(col * .75f), light ? Hud.Ink : Hud.Cream, 99, 26, 13, () =>
+                {
+                    if (!Rules.SetCosmeticColor(c.id, h)) return;
+                    if (worn) RefreshCosmetics();
+                    sfx.Tap();
+                    WriteSave();
+                    ColourDots(row, c, worn);
+                }, false, 2).Size(26, null);
+                dot.style.marginRight = 5;
+                dot.style.marginBottom = 5;
             }
         }
 

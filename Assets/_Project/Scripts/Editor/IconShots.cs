@@ -127,6 +127,65 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_COS") == "1")
+            {
+                // Every prestige accessory on the squishy: a front sheet and a three-quarter sheet (7 across).
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                if (f < 150) return;
+                if (f == 150) { game.enabled = false; return; } // stand still
+                EditorApplication.update -= Tick;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var petM = (Squishy.Runtime.Models.SquishyModel)T.GetField("pet", flags).GetValue(game);
+                var content = (Squishy.Simulation.Game.GameContent)T.GetField("C", flags | System.Reflection.BindingFlags.Public).GetValue(game);
+                var cam = Camera.main;
+                var cpet = FindPet();
+                petM.SetCosmetics(null, null, null);
+                petM.SetFinish(content.finishes[System.Environment.GetEnvironmentVariable("ICONSHOTS_FIN") != null ? int.Parse(System.Environment.GetEnvironmentVariable("ICONSHOTS_FIN")) : 0]);
+                petM.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Smile, 5);
+                petM.Update(0, 0, false, 0);
+                var bb0 = Bounds(cpet);
+                var flat = cam.transform.position - bb0.center;
+                flat.y = 0;
+                flat.Normalize();
+                FaceTowards(cpet, flat);
+                bb0 = Bounds(cpet);
+                bb0.center += Vector3.up * bb0.size.y * .25f; // room above for hats
+                float warm = Shader.GetGlobalFloat("_PostWarm");
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                Directory.CreateDirectory(Dir);
+                const int C7 = 7, T2 = 300;
+                var only = System.Environment.GetEnvironmentVariable("ICONSHOTS_ONLY");
+                var list = content.cosmetics.Where(x => string.IsNullOrEmpty(only) || only.Split(',').Contains(x.id)).ToArray();
+                int rows = (list.Length + C7 - 1) / C7;
+                var small = new RenderTexture(T2, T2, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                Shot(cam, rt, tex, bb0, flat, 8, 1.9f, 30, warm, "_cell"); // warm-up: the first render came out off-colour
+                foreach (var view in new[] { ("front", 0f, 8f), ("side", 50f, 22f) })
+                {
+                    var dir = Quaternion.AngleAxis(view.Item2, Vector3.up) * flat;
+                    var sheet = new Texture2D(T2 * C7, T2 * rows, TextureFormat.RGBA32, false, false);
+                    for (int i = 0; i < list.Length; i++)
+                    {
+                        var cd = list[i];
+                        petM.SetCosmetics(cd.slot == "hat" ? cd : null, cd.slot == "face" ? cd : null, cd.slot == "neck" ? cd : null);
+                        petM.Update(0, 0, false, 0);
+                        var bbc = bb0;
+                        if (cd.slot == "neck") bbc.center -= Vector3.up * bb0.size.y * .45f;
+                        Shot(cam, rt, tex, bbc, dir, view.Item3, System.Environment.GetEnvironmentVariable("ICONSHOTS_FILL") != null ? float.Parse(System.Environment.GetEnvironmentVariable("ICONSHOTS_FILL"), System.Globalization.CultureInfo.InvariantCulture) : 1.9f, 30, warm, "_cell");
+                        Graphics.Blit(rt, small);
+                        var pa = RenderTexture.active;
+                        RenderTexture.active = small;
+                        sheet.ReadPixels(new Rect(0, 0, T2, T2), (i % C7) * T2, (rows - 1 - i / C7) * T2);
+                        RenderTexture.active = pa;
+                    }
+                    sheet.Apply();
+                    File.WriteAllBytes("Library/IconChecks/cos_" + view.Item1 + ".png", sheet.EncodeToPNG());
+                }
+                Debug.Log("IconShots: cosmetics " + string.Join(", ", list.Select(x => x.id)));
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FX") == "1")
             {
                 // The rarity sparkles: a glitter squishy squished a few times, photographed mid-shimmer.

@@ -2845,7 +2845,26 @@
     ],
     "streakBonusPerDay": 0.1,
     "streakBonusMax": 0.5,
-    "nightRestFill": 0.0000463
+    "nightRestFill": 0.0000463,
+    "cosmeticColors": [
+      "#C8674E",
+      "#E86A92",
+      "#F3A6BD",
+      "#D8412F",
+      "#F2A03D",
+      "#D9A64A",
+      "#7DBA5E",
+      "#6FA58E",
+      "#6E9C9A",
+      "#3C8DBC",
+      "#2F4A6E",
+      "#8C7BB0",
+      "#5145B8",
+      "#A0724E",
+      "#3B2A20",
+      "#1E1A1F",
+      "#FFFFFF"
+    ]
   },
   "cosmetics": [
     {
@@ -2998,7 +3017,15 @@
       "slot": "hat",
       "kind": "sprout",
       "color": "#7DBA5E",
-      "price": 15
+      "price": 15,
+      "colors": [
+        "#7DBA5E",
+        "#5E9C48",
+        "#A8C66C",
+        "#6FA58E",
+        "#E1B96A",
+        "#C8674E"
+      ]
     },
     {
       "id": "cherry_clip",
@@ -3038,7 +3065,14 @@
       "slot": "hat",
       "kind": "tiara",
       "color": "#E7E0F4",
-      "price": 100
+      "price": 100,
+      "colors": [
+        "#E7E0F4",
+        "#D9B45A",
+        "#C0C4CC",
+        "#E8A0A8",
+        "#A8D8F0"
+      ]
     },
     {
       "id": "halo",
@@ -3046,7 +3080,13 @@
       "slot": "hat",
       "kind": "halo",
       "color": "#FFE08A",
-      "price": 120
+      "price": 120,
+      "colors": [
+        "#FFE08A",
+        "#FFFFFF",
+        "#F3A6BD",
+        "#A8D8F0"
+      ]
     },
     {
       "id": "gold_crown",
@@ -3054,7 +3094,13 @@
       "slot": "hat",
       "kind": "crown",
       "color": "#D9B45A",
-      "price": 150
+      "price": 150,
+      "colors": [
+        "#D9B45A",
+        "#C0C4CC",
+        "#E0A98F",
+        "#3B2A20"
+      ]
     },
     {
       "id": "round_glasses",
@@ -3102,7 +3148,12 @@
       "slot": "face",
       "kind": "monocle",
       "color": "#D9B45A",
-      "price": 45
+      "price": 45,
+      "colors": [
+        "#D9B45A",
+        "#C0C4CC",
+        "#3B2A20"
+      ]
     },
     {
       "id": "thick_glasses",
@@ -3118,7 +3169,13 @@
       "slot": "face",
       "kind": "freckles",
       "color": "#C8674E",
-      "price": 15
+      "price": 15,
+      "colors": [
+        "#C8674E",
+        "#A0724E",
+        "#E88AA6",
+        "#8C5A2A"
+      ]
     },
     {
       "id": "moustache",
@@ -3126,7 +3183,23 @@
       "slot": "face",
       "kind": "moustache",
       "color": "#5A3A26",
-      "price": 25
+      "price": 25,
+      "colors": [
+        "#5A3A26",
+        "#1E1A1F",
+        "#C8674E",
+        "#E1B96A",
+        "#B8B0A8",
+        "#FFFFFF"
+      ]
+    },
+    {
+      "id": "eye_patch",
+      "name": "Eye patch",
+      "slot": "face",
+      "kind": "eyepatch",
+      "color": "#1E1A1F",
+      "price": 30
     },
     {
       "id": "scarf",
@@ -3154,17 +3227,32 @@
     },
     {
       "id": "pearls",
-      "name": "Pearl necklace",
+      "name": "Necklace",
       "slot": "neck",
       "kind": "pearls",
       "color": "#F4F1EA",
-      "price": 50
+      "price": 50,
+      "colors": [
+        "#F4F1EA",
+        "#F3D6DC",
+        "#E7E0F4",
+        "#2B2B2B",
+        "#D9B45A"
+      ]
     },
     {
       "id": "bandana",
       "name": "Bandana",
       "slot": "neck",
       "kind": "bandana",
+      "color": "#3C8DBC",
+      "price": 20
+    },
+    {
+      "id": "tie",
+      "name": "Tie",
+      "slot": "neck",
+      "kind": "tie",
       "color": "#3C8DBC",
       "price": 20
     },

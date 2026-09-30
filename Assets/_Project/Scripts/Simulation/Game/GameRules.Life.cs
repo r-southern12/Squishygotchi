@@ -4,7 +4,15 @@ using System.Collections.Generic;
 namespace Squishy.Simulation.Game
 {
     [Serializable] public class LifeRecord { public string name, cause; public int finish, days, prestige; public float qol; }
-    [Serializable] public class CosmeticData { public string id, name, slot, kind, color; public int price; }
+    [Serializable]
+    public class CosmeticData
+    {
+        public string id, name, slot, kind, color;
+        public int price;
+        public string[] colors; // the colours the player can pick for it (empty: the shared accessory palette)
+
+        public CosmeticData WithColor(string hex) { var c = (CosmeticData)MemberwiseClone(); c.color = hex; return c; }
+    }
     [Serializable] public class TierRewardData { public string tier; public int steamers, prestige; }
 
     /// <summary>
@@ -119,6 +127,43 @@ namespace Squishy.Simulation.Game
 
         public CosmeticData Cosmetic(string id) { foreach (var c in C.cosmetics) if (c.id == id) return c; return null; }
         public bool HasCosmetic(string id) { return S.cosmetics.Contains(id); }
+
+        /// <summary>The colours an accessory comes in: its own first, then its palette (or the shared one).</summary>
+        public List<string> CosmeticChoices(CosmeticData c)
+        {
+            var l = new List<string> { c.color };
+            var pal = c.colors != null && c.colors.Length > 0 ? c.colors : R.cosmeticColors;
+            if (pal != null) foreach (var h in pal) if (!l.Contains(h)) l.Add(h);
+            return l;
+        }
+
+        /// <summary>The colour the player picked for an accessory (its own colour until they pick another).</summary>
+        public string CosmeticColor(string id)
+        {
+            var c = Cosmetic(id);
+            if (c == null) return null;
+            var e = S.cosColors.Find(x => x.id == id);
+            return e != null && CosmeticChoices(c).Contains(e.color) ? e.color : c.color;
+        }
+
+        /// <summary>Picks a colour for an owned accessory (one of its choices). Any time, as often as you like.</summary>
+        public bool SetCosmeticColor(string id, string hex)
+        {
+            var c = Cosmetic(id);
+            if (c == null || !HasCosmetic(id) || !CosmeticChoices(c).Contains(hex)) return false;
+            S.cosColors.RemoveAll(x => x.id == id);
+            if (hex != c.color) S.cosColors.Add(new CosColor { id = id, color = hex });
+            return true;
+        }
+
+        /// <summary>An accessory as worn: in the colour the player picked.</summary>
+        public CosmeticData Worn(string id)
+        {
+            var c = Cosmetic(id);
+            if (c == null) return null;
+            string col = CosmeticColor(id);
+            return col == c.color ? c : c.WithColor(col);
+        }
 
         public bool BuyCosmetic(string id)
         {

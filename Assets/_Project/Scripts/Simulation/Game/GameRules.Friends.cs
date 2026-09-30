@@ -14,6 +14,7 @@ namespace Squishy.Simulation.Game
         public string code, avatar, hat, face, neck;
         public float[] needs;
         public List<PieceState> items = new List<PieceState>();
+        public List<CosColor> colors = new List<CosColor>(); // accessory colours
     }
 
     /// <summary>Friends: snapshots for visiting, a stand-in state to host a visit in, and coins for being visited.</summary>
@@ -28,6 +29,7 @@ namespace Squishy.Simulation.Game
                 needs = (float[])S.needs.Clone(),
             };
             foreach (var p in S.items) s.items.Add(new PieceState { key = p.key, x = p.x, z = p.z, ry = p.ry, wilt = p.wilt, lampOn = p.lampOn });
+            foreach (var cc in S.cosColors) s.colors.Add(new CosColor { id = cc.id, color = cc.color });
             return s;
         }
 
@@ -47,6 +49,8 @@ namespace Squishy.Simulation.Game
                 toolSkin = new int[c.tools.Length], recipeXP = new int[c.recipes.Length], trialStart = DateTime.UtcNow.Ticks, premium = true,
             };
             s.squishOwned.Add(new CountData { i = fav, n = Math.Max(1, snap.copies) });
+            if (snap.colors != null) foreach (var cc in snap.colors) if (cc != null) s.cosColors.Add(new CosColor { id = cc.id, color = cc.color });
+            foreach (var id in new[] { s.hat, s.face, s.neck }) if (!string.IsNullOrEmpty(id)) s.cosmetics.Add(id); // worn, so its colour applies
             foreach (var p in snap.items)
                 if (p != null && !string.IsNullOrEmpty(p.key) && (p.key.StartsWith("tomb") || c.Catalogue.Exists(e => e.key == p.key || p.key.StartsWith(e.arch + ":"))))
                     s.items.Add(new PieceState { key = p.key, x = p.x, z = p.z, ry = p.ry, wilt = p.wilt, lampOn = p.lampOn });

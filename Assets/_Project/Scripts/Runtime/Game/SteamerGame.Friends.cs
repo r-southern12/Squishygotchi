@@ -304,7 +304,7 @@ namespace Squishy.Runtime.Game
             shownStage = (GameRules.Life)(-1);
             SetPet(S.favIdx);
             ApplyLook();
-            pet.SetCosmetics(Rules.Cosmetic(S.hat), Rules.Cosmetic(S.face), Rules.Cosmetic(S.neck));
+            pet.SetCosmetics(Rules.Worn(S.hat), Rules.Worn(S.face), Rules.Worn(S.neck));
             RebuildObstacles();
             ComputeComfort();
             DrawNeeds();
