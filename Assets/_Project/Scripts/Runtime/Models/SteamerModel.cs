@@ -85,7 +85,7 @@ namespace Squishy.Runtime.Models
             Finish(_capMat, sk, 1);
             Finish(_bandMat, sk, 1);
             for (int i = 0; i < _n; i++)
-                _slatMats[i].SetVector("_BaseColor", OffsetHsl(i % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f));
+                _slatMats[i].SetVector("_BaseColor", OffsetHsl((i / Mathf.Max(1, sk.stripe)) % 2 != 0 ? sk.a : sk.b, 0, 0, ((i * 37) % 7 - 3) * .008f)); // stripe: slats per band (Candy stripe: bold bands)
             _capMat.SetVector("_BaseColor", Lin(sk.a));
             _bandMat.SetVector("_BaseColor", Lin(sk.t));
             // The woven base takes the skin's tones, lifted towards cream so the floor stays light.

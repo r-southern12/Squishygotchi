@@ -123,6 +123,13 @@ namespace Squishy.Runtime.Game
             else if (kind == "food") { obj = KitchenModels.Food(_c, int.Parse(parts[1]), _root); obj.RotY(.5f); }
             else if (kind == "dish") obj = KitchenModels.Dish(_c, int.Parse(parts[1]), _root);
             else if (kind == "snack") obj = KitchenModels.Snack(_c, int.Parse(parts[1]), _root);
+            else if (kind == "skin")
+            {
+                // A steamer skin: the open room steamer (no lid) in its colours and pattern, as it will look round your room.
+                obj = Node.Group(_root, "skin");
+                new SteamerModel(obj, 60).Skin(_c.skins[int.Parse(parts[1])]);
+                obj.RotY(.4f);
+            }
             else if (kind == "steamerbox")
             {
                 obj = Node.Group(_root, "steamerbox");

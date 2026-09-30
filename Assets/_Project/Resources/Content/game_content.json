@@ -1752,12 +1752,13 @@
     },
     {
       "name": "Candy stripe",
-      "a": "#F7C3D3",
-      "b": "#FFFFFF",
+      "a": "#EE7FA6",
+      "b": "#FFF8FA",
       "t": "#E86A92",
       "rarity": "Epic",
       "music": "hotchocolate",
-      "musicName": "Hot Chocolate"
+      "musicName": "Hot Chocolate",
+      "stripe": 3
     }
   ],
   "toolSkins": [

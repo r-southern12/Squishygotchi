@@ -445,7 +445,7 @@ namespace Squishy.Simulation.Game
         {
             var card = new RewardCard { isNew = true, dot = "#D8C7AE" };
             card.key = rw.type == "sq" ? "sq:" + rw.i : rw.type == "item" ? rw.key : rw.type == "food" ? "food:" + rw.i : rw.type == "tool" ? "tool:" + rw.i
-                : rw.type == "tskin" ? "tskin:" + rw.i + ":" + rw.j : rw.type == "kit" ? "dish:" + rw.i : "steamerbox"; // the model to show it in 3D
+                : rw.type == "tskin" ? "tskin:" + rw.i + ":" + rw.j : rw.type == "kit" ? "dish:" + rw.i : rw.type == "skin" ? "skin:" + rw.i : "steamerbox"; // the model to show it in 3D (a steamer skin shows as the room steamer in that skin)
             if (rw.type == "sq")
             {
                 var f = C.finishes[rw.i];

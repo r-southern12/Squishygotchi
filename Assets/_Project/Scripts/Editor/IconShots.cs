@@ -474,6 +474,9 @@ namespace Squishy.EditorTools
                 var tea = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < 4 && i < content.styles.Length; i++) tea.Add("teatable:" + content.styles[i * 5 % content.styles.Length].id);
                 ThumbSheet("tea", tea, 2);
+                var skinKeys = new System.Collections.Generic.List<string>();
+                for (int i = 0; i < content.skins.Length; i++) skinKeys.Add("skin:" + i);
+                ThumbSheet("skins", skinKeys, 5);
                 // Mid-pour close-ups from three sides (512 px each): the tipped spout should end over the cup.
                 Squishy.Runtime.Models.ItemModels.PreviewPour = 1;
                 var live = Squishy.Runtime.Game.Thumbs.LiveBegin("teatable:" + content.styles[1].id);
