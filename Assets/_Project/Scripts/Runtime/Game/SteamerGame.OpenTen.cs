@@ -70,23 +70,35 @@ namespace Squishy.Runtime.Game
             ustate = "openten";
             ui.ShowHud(false);
             yield return new WaitForSecondsRealtime(.25f);
+            // No flashes and no counting popups (too much): the steamer boils harder and harder and each one bursts
+            // with a little confetti (a bit more for Epic and Legendary).
             for (int n = 0; n < perSteamer.Count; n++)
             {
                 int best = 0;
                 foreach (var c in perSteamer[n]) best = Mathf.Max(best, GameContent.RarityRank(c.tier.Split(' ')[0]));
-                shake = best >= 2 ? .8f : .35f;
-                flash = best >= 2 ? .8f : .3f;
+                shake = best >= 2 ? .25f : .12f;
                 sfx.Pop();
                 if (best >= 2) Later(.08f, () => sfx.Chime());
-                Buzz(best >= 2 ? 40 : 12);
-                TenBurst(best >= 3 ? 70 : best >= 2 ? 45 : 22);
-                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), (n + 1) + " / " + OpenMany + (best >= 3 ? "  Legendary!" : best >= 2 ? "  Epic!" : ""));
-                yield return new WaitForSecondsRealtime(best >= 2 ? .5f : .26f);
+                Buzz(best >= 2 ? 25 : 10);
+                TenBoil(n / (float)perSteamer.Count);
+                TenBurst(best >= 3 ? 30 : best >= 2 ? 20 : 10);
+                yield return new WaitForSecondsRealtime(best >= 2 ? .45f : .28f);
             }
             yield return new WaitForSecondsRealtime(.35f);
             var cards = new List<RewardCard>();
             foreach (var s in perSteamer) cards.AddRange(s);
             ShowManyResults(cards);
+        }
+
+        /// <summary>The steamer boiling: soft steam rolling up from under the lid, more as the run goes on.</summary>
+        private void TenBoil(float k)
+        {
+            int puffs = 8 + Mathf.RoundToInt(k * 10);
+            for (int i = 0; i < puffs; i++)
+            {
+                float a = Rnd(0, Mathf.PI * 2), r = Rnd(.4f, .95f) * R;
+                UPuffL(new Vector3(Mathf.Cos(a) * r, H * layers + .15f, Mathf.Sin(a) * r), new Vector3(Mathf.Cos(a) * .6f, Rnd(1.6f, 2.8f), Mathf.Sin(a) * .6f), Rnd(.18f, .3f), Rnd(.9f, 1.4f), 1.6f, .5f);
+            }
         }
 
         private void TenBurst(int count)

@@ -266,6 +266,7 @@ namespace Squishy.Runtime.Game
 
         public void HoldStart()
         {
+            if (mode == "unbox" && S.steamers <= 0 && (ustate == "closed" || ustate == "charging")) { Floater("No steamers left", "bad"); sfx.Bonk(); keepHeld = false; return; }
             if (mode == "unbox") keepHeld = true;
             if (mode == "unbox" && (ustate == "closed" || ustate == "charging")) { holding = true; ustate = "charging"; ui.MainDown(true); }
         }
@@ -282,12 +283,13 @@ namespace Squishy.Runtime.Game
         private void StepKeepHeld()
         {
             if (!keepHeld) return;
-            if (ustate == "closed" && !holding) { holding = true; ustate = "charging"; ui.MainDown(true); }
+            if (ustate == "closed" && !holding && S.steamers > 0) { holding = true; ustate = "charging"; ui.MainDown(true); }
             else if (ustate == "card" && Time.time - cardShownAt > 1.4f && (layer > 0 || S.steamers > 0)) CardAgain();
         }
 
         private void Pop()
         {
+            if (S.steamers <= 0) { holding = false; keepHeld = false; charge = 0; ustate = "closed"; sfx.Hum(0); ui.MainDown(false); Floater("No steamers left", "bad"); return; }
             ustate = "pop";
             ust = 0;
             charge = 0;
