@@ -426,6 +426,21 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Kits_Only_Teach_Recipes_You_Dont_Know()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 17);
+            var rules = new GameRules(c, s);
+            for (int n = 0; n < 2000; n++)
+            {
+                var rw = rules.RollReward();
+                if (rw.type == "kit") Assert.IsFalse(rules.Knows(rw.i), "a kit for a known recipe: " + c.recipes[rw.i].name);
+            }
+            for (int i = 0; i < c.recipes.Length; i++) rules.AddOwned(rules.RecipeKey(i));
+            for (int n = 0; n < 2000; n++) Assert.AreNotEqual("kit", rules.RollReward().type, "every recipe known: no more kits");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

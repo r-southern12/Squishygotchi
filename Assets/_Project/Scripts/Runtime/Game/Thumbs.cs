@@ -67,8 +67,10 @@ namespace Squishy.Runtime.Game
             Post.ThumbMode(true);
             _pet.ThumbBacking(true);
             var req = new UniversalRenderPipeline.SingleCameraRequest { destination = _rt };
+            float scale = FullRes();
             if (RenderPipeline.SupportsRenderRequest(_cam, req)) RenderPipeline.SubmitRenderRequest(_cam, req);
             else _cam.Render();
+            RestoreRes(scale);
             Post.ThumbMode(false);
             _pet.ThumbBacking(false);
             _game.RestoreLamps();
@@ -140,6 +142,20 @@ namespace Squishy.Runtime.Game
         private static float _liveYaw, _liveBase, _liveR;
         private static Vector3 _liveCtr;
 
+        /// <summary>Thumbnails and the live view render at full resolution, whatever the game's adaptive resolution is doing.</summary>
+        private static float FullRes()
+        {
+            if (!(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)) return -1;
+            float was = urp.renderScale;
+            urp.renderScale = 1;
+            return was;
+        }
+
+        private static void RestoreRes(float was)
+        {
+            if (was > 0 && GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp) urp.renderScale = was;
+        }
+
         public static RenderTexture LiveBegin(string key)
         {
             if (_cam == null) return null;
@@ -151,7 +167,14 @@ namespace Squishy.Runtime.Game
             var bb = Node.LocalBounds(_live, _root.parent);
             _liveCtr = bb.center;
             _liveR = Mathf.Max(Mathf.Sqrt(bb.size.x * bb.size.x + bb.size.z * bb.size.z), bb.size.y) * .55f + .02f; // room to turn
-            if (_liveRT == null) _liveRT = new RenderTexture(512, 512, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { antiAliasing = 4 };
+            if (key.StartsWith("sq:"))
+            {
+                // A squishy fills the view (the loose framing left it small and blurry once enlarged).
+                var body = Node.LocalBounds(_pet.Body, _root.parent);
+                _liveCtr = body.center;
+                _liveR = Mathf.Max(body.size.x, Mathf.Max(body.size.y, body.size.z)) * .5f + .01f;
+            }
+            if (_liveRT == null) _liveRT = new RenderTexture(1024, 1024, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) { antiAliasing = 4 };
             _liveYaw = 0;
             LiveStep(0);
             return _liveRT;
@@ -171,8 +194,10 @@ namespace Squishy.Runtime.Game
             Post.ThumbMode(true);
             _pet.ThumbBacking(true);
             var req = new UniversalRenderPipeline.SingleCameraRequest { destination = _liveRT };
+            float scale = FullRes();
             if (RenderPipeline.SupportsRenderRequest(_cam, req)) RenderPipeline.SubmitRenderRequest(_cam, req);
             else { _cam.targetTexture = _liveRT; _cam.Render(); _cam.targetTexture = _rt; }
+            RestoreRes(scale);
             Post.ThumbMode(false);
             _pet.ThumbBacking(false);
             _game.RestoreLamps();

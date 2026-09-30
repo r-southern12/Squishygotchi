@@ -495,6 +495,20 @@ namespace Squishy.EditorTools
                     Squishy.Runtime.Game.Thumbs.LiveEnd();
                 }
                 Squishy.Runtime.Models.ItemModels.PreviewPour = -1;
+                // The Open 10 live 3D view of a squishy (it was small and blurry): saved at full size.
+                var liveSq = Squishy.Runtime.Game.Thumbs.LiveBegin("sq:57");
+                if (liveSq != null)
+                {
+                    var srgb2 = new RenderTexture(liveSq.width, liveSq.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                    Graphics.Blit(liveSq, srgb2);
+                    var pa2 = RenderTexture.active;
+                    RenderTexture.active = srgb2;
+                    var t2 = new Texture2D(liveSq.width, liveSq.height, TextureFormat.RGBA32, false, false);
+                    t2.ReadPixels(new Rect(0, 0, liveSq.width, liveSq.height), 0, 0);
+                    RenderTexture.active = pa2;
+                    File.WriteAllBytes("Library/IconChecks/live_sq.png", t2.EncodeToPNG());
+                    Squishy.Runtime.Game.Thumbs.LiveEnd();
+                }
             }
 
             {

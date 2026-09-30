@@ -364,9 +364,9 @@ namespace Squishy.Simulation.Game
             if (rar == "Legendary") return Random() < .5 ? Sq(rar) : Skin(rar); // any legendary squishy, not just the last one listed
             if (rar == "Common")
             {
-                if (r < .52) return Item(rar);
-                if (r < .86) return Kit(rar); // kitchen kits replace loose common ingredients and single tools
-                if (r < .96) return Sq(rar);
+                if (r < .55) return Item(rar);
+                if (r < .70) return Kit(rar); // a kit teaches a recipe you don't know yet (then it's yours to level up)
+                if (r < .95) return Sq(rar);
                 return ToolSkin(rar);
             }
             if (rar == "Rare")
@@ -409,12 +409,12 @@ namespace Squishy.Simulation.Game
         /// <summary>A recipe kit: its tools plus ingredients. Common steamers give easier recipes.</summary>
         private Reward Kit(string rar)
         {
+            // Only recipes you don't know yet: once learned, a recipe is yours to level up by cooking, never from steamers.
+            // With nothing left to learn at this rarity, it's a squishy instead.
             var o = new List<int>();
             for (int k = 0; k < C.recipes.Length; k++)
-                if (C.recipes[k].tools.Length > 0 && (rar != "Common" || C.recipes[k].lvl <= 2)) o.Add(k);
-            // Steamers are how you learn recipes: favour ones you don't know yet.
-            var unknown = o.FindAll(k => !Knows(k));
-            if (unknown.Count > 0 && Random() < .75) o = unknown;
+                if (C.recipes[k].tools.Length > 0 && (rar != "Common" || C.recipes[k].lvl <= 2) && !Knows(k)) o.Add(k);
+            if (o.Count == 0) return Sq(rar);
             return new Reward { type = "kit", i = Pick(o), rar = rar };
         }
 

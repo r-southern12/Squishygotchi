@@ -279,7 +279,7 @@ Meals are cooked from ingredients using tools. **Snacks are separate**: bought i
 
 - **Kitchen level** from tools owned: 2 at 2 tools, 3 at 4, 4 at 6. Tools hang on a rack above the stove; the stove gains pots and a hood as it levels.
 - **Wear:** each cook uses one use of every tool in the recipe. Broken tools block recipes until repaired in the shop.
-- **Kitchen kits** (steamers): a recipe's tools plus ingredients, and they teach the recipe if it's new (unknown recipes are favoured).
+- **Kitchen kits** (steamers): only for recipes you don't know yet: the recipe's tools plus ingredients, and they teach it. Once learned, a recipe is yours to level up by cooking; steamers never give a kit for it again. With every recipe known (at that rarity), the prize is a squishy instead. Kits are rarer than before (about 15% of Common prizes).
 - **Ingredients** (shop): Common ingredients are sold one at a time (8 coins each), so you only buy what you're out of. Rare and better are never sold: they drop from steamers, or tapping Cook while out of one offers 1 of each missing rare ingredient for an optional short video (free with the full game). Tapping Cook while out of a Common one points you to the shop.
 - **Ingredients (19):** Flour, Cabbage, Chives, Ginger, Mushroom, Prawn, Tofu, Egg, Black sesame, Pork, Bok choy, Chili, Red bean paste, Lotus seeds, Soy sauce, Potato, Cheese, Kimchi, Sugar.
 - **Snacks (5):** Rice cracker, Apple slices, Mochi bite, Egg tart, Sesame ball; 3 coins; eaten at the pantry cupboard; Hunger to 60% max.
