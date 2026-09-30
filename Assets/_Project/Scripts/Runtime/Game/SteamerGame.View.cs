@@ -532,11 +532,12 @@ namespace Squishy.Runtime.Game
             ComboFeedback(null);
         }
 
-        public void RotateSelected()
+        /// <summary>Turns the selected piece an eighth of a turn, either way (dir 1 or -1).</summary>
+        public void RotateSelected(int dir = 1)
         {
             if (sel == null) return;
             Snap();
-            sel.ry += Mathf.PI / 4;
+            sel.ry += Mathf.Sign(dir) * Mathf.PI / 4;
             sel.bv = -4;
             Settle(sel);
             sfx.Snap();

@@ -43,6 +43,7 @@ namespace Squishy.Runtime.UI
             { "catalogue", new[] { F(RectPath(4, 3, 15, 18, 3), "#C8674E"), F(RectPath(7, 6, 9, 5, 1.5f), "#F7F0E4"), S("M7 14h9M7 17h6", "#F7F0E4", 1.8f) } },
             { "edit", new[] { FS("M4 20h4L19 9l-4-4L4 16z", "#E9BE66", 2.2f, "#33261D"), S("M13.5 6.5l4 4", "#33261D", 2.2f) } },
             { "rotate", new[] { S("M20 12a8 8 0 1 1-2.3-5.7", "#33261D", 2.2f), S("M20 4v5h-5", "#33261D", 2.2f) } },
+            { "rotate_left", new[] { S("M4 12a8 8 0 1 0 2.3-5.7", "#33261D", 2.2f), S("M4 4v5h5", "#33261D", 2.2f) } },
             { "tilt", new[] { FS("M3 16l9 4 9-4-9-4z", "#E9BE66", 2.2f, "#33261D"), S("M12 3v6M9 6l3-3 3 3", "#33261D", 2.2f) } },
             { "close", new[] { S("M6 6l12 12M18 6L6 18", "currentColor", 2.4f) } },
             { "lock", new[] { F(RectPath(2, 5, 8, 6, 1.5f), "#6F5F52"), S("M4 5V4a2 2 0 0 1 4 0v1", "#6F5F52", 1.4f) } },

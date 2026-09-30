@@ -163,7 +163,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 **Arrange mode**
 
 - Drag any item anywhere. Items dropped on each other slide apart; nothing is ever refused.
-- Push an item to the wall and it snaps there, facing the room. Turn 45° with a button, or twist two fingers for 15° steps. Undo is always available.
+- Push an item to the wall and it snaps there, facing the room. Turn 45° either way with the two Turn buttons (one each side of Done), or twist two fingers for 15° steps. Undo is always available.
 - Select an item to swap its skin from a strip of unlocked skins. Put items away into Storage and place them back.
 - Wall panels and folding screens divide the room. The shower curtain draws closed while in use.
 - **Stations form by nearness:** tea time needs a seat anywhere near the table.

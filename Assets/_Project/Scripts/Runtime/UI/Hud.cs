@@ -42,7 +42,7 @@ namespace Squishy.Runtime.UI
         private Label _comfortLbl;
         private Label _giftLbl;
         private Label _name, _sub, _coins, _condTx, _hint, _mainLbl, _badge, _fps, _tiltLbl, _trayTitle, _oddsBtnLbl, _pityTx;
-        private Frame _condDot, _comfort, _main, _taskDot, _bubble, _undo, _rot, _putAway, _snd;
+        private Frame _condDot, _comfort, _main, _taskDot, _bubble, _undo, _rot, _rotL, _putAway, _snd;
         private Glyph _sndIcon, _viewIcon, _bIcon, _ring;
         private Label _bText;
         private readonly Frame[] _bars = new Frame[4], _barFill = new Frame[4];
@@ -232,13 +232,14 @@ namespace Squishy.Runtime.UI
             controls[0].Add(_taskDot);
             Side(controls, "shop", "Shop", () => _g.OnShop(), "home", out _);
             _undo = Side(controls, "undo", "Undo", () => _g.Undo(), "edit", out _);
+            _rotL = Side(controls, "rotate_left", "Turn", () => _g.RotateSelected(-1), "edit", out _); // turn either way
             Spacer(controls);
             BuildMain(controls);
             Side(controls, "catalogue", "Catalogue", () => _g.OnCatalogue(), "home", out _);
             var editBtn = Side(controls, "edit", "Arrange", () => _g.EnterEdit(), "home", out _);
             _expandDot = new Frame().Set(C("#6F9A74"), -1, new Shadow(0, 0, 0, 2, C(Cream))).Size(14, 14).Abs(null, -3, -3).Shown(false);
             editBtn.Add(_expandDot);
-            _rot = Side(controls, "rotate", "Turn", () => _g.RotateSelected(), "edit", out _);
+            _rot = Side(controls, "rotate", "Turn", () => _g.RotateSelected(1), "edit", out _);
             Side(controls, "gift", "Open 10", () => _g.OpenTen(), "unbox", out _);
             // Squish mode: the bottom bar gives way to one clear way out.
             _squishBar = new VisualElement().Row(Align.Center, Justify.Center).NoPick().In(_bottom);
@@ -570,7 +571,7 @@ namespace Squishy.Runtime.UI
         public void SetComfort(string s) { _comfortLbl.text = s; }
         public void SetTiltLabel(string s) { _tiltLbl.text = s; }
         public void SetUndoEnabled(bool on) { Enable(_undo, on); }
-        public void SetRotEnabled(bool on) { Enable(_rot, on); }
+        public void SetRotEnabled(bool on) { Enable(_rot, on); Enable(_rotL, on); }
         public void SetPutAwayEnabled(bool on) { Enable(_putAway, on); }
 
         public void SetCond(string text, string color)
