@@ -110,11 +110,14 @@ namespace Squishy.Runtime.Models
 
         // ---- pinch and squeeze (two fingers, zoomed in) ----
         private bool _pinchOn;
-        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis, _pinchShift, _pinchShiftT;
-        private float _pinch, _pinchT, _pinchHalf, _pinchReach;
+        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis, _pinchShift, _pinchShiftT, _pinchN, _pinchC;
+        private float _pinch, _pinchT, _pinchHalf, _pinchReach, _bodyR;
 
-        /// <summary>Two fingers on the squishy: it squeezes between them (see SetPinch) and balloons out elsewhere.</summary>
-        public void BeginPinch(Vector3 worldA, Vector3 worldB)
+        /// <summary>
+        /// Two fingers on the squishy: like a rubber band round it where you pinch (see PinchMove). The band wraps round
+        /// through both fingers, across your line of sight (worldView: the camera's forward).
+        /// </summary>
+        public void BeginPinch(Vector3 worldA, Vector3 worldB, Vector3? worldView = null)
         {
             EnsureTactileMesh();
             _pinchA = Body.InverseTransformPoint(worldA);
@@ -124,7 +127,15 @@ namespace Squishy.Runtime.Models
             var ab = _pinchB - _pinchA;
             _pinchHalf = Mathf.Max(.06f, ab.magnitude / 2);
             _pinchAxis = ab.sqrMagnitude > 1e-6f ? ab.normalized : Vector3.right;
-            _pinchReach = Mathf.Clamp(.26f + _pinchHalf * .12f, .26f, .4f); // a fingertip's width: only the skin under the fingers is pinched (user feedback: it squeezed the whole body)
+            var view = worldView.HasValue ? Body.InverseTransformDirection(worldView.Value).normalized : Vector3.forward;
+            var n = Vector3.Cross(_pinchAxis, view);
+            if (n.sqrMagnitude < 1e-4f) n = Vector3.Cross(_pinchAxis, Vector3.up);
+            if (n.sqrMagnitude < 1e-4f) n = Vector3.up;
+            _pinchN = n.normalized; // the band's plane holds the line between the fingers and the line of sight
+            _pinchC = Core - _pinchN * Vector3.Dot(Core - _pinchMid, _pinchN); // the band's centre: the body's middle, on that plane
+            if (_bodyR <= 0 && _tBase != null) foreach (var v in _tBase) _bodyR = Mathf.Max(_bodyR, (v - Core).magnitude);
+            if (_bodyR <= 0) _bodyR = 1;
+            _pinchReach = Mathf.Max(.1f, _bodyR * .22f); // the band's width
             _pinchShift = _pinchShiftT = Vector3.zero;
             _pinchOn = true;
             _pinchT = 0;
@@ -238,7 +249,6 @@ namespace Squishy.Runtime.Models
             float volume = 0;
             foreach (var d in _dents) { _limit = Mathf.Max(_limit, d.max); volume += d.depth * d.r * d.r; }
             // A squeeze displaces a lot: nearly all of the pinched bit goes into the rest of the squishy.
-            if (_pinch > 0) volume += _pinch * (.02f + PinchTravel() * _pinchReach * _pinchReach * 4); // the squeezed volume swells the rest a little
             _swell = Mathf.Min(.3f, volume * .55f);
             for (int v = 0; v < _tBase.Length; v++)
             {
@@ -264,47 +274,28 @@ namespace Squishy.Runtime.Models
             return _pinch > 0 ? p + PinchMove(a) : p;
         }
 
-        /// <summary>How far each fingertip carries the skin towards the other (they can nearly meet).</summary>
-        private float PinchTravel() { return _pinch * Mathf.Min(_pinchHalf * .75f, .5f); } // a quarter of the gap stays, so the pinched skin bunches rather than creasing
-
-        /// <summary>How much of this point the pinch holds: the band of skin across the fingers, fading a fingertip's width either side.</summary>
+        /// <summary>How much this point is in the band (1 on the band's line round the body, fading either side).</summary>
         private float PinchGrip(Vector3 b)
         {
-            var d = b - _pinchMid;
-            float along = Mathf.Abs(Vector3.Dot(d, _pinchAxis)), perp = (d - _pinchAxis * Vector3.Dot(d, _pinchAxis)).magnitude, r = _pinchReach;
-            float kAlong = along <= _pinchHalf ? 1 : Mathf.Exp(-(along - _pinchHalf) * (along - _pinchHalf) / (r * r));
-            return Mathf.Exp(-perp * perp / (r * r)) * kAlong;
+            float d = Vector3.Dot(b - _pinchC, _pinchN);
+            return Mathf.Exp(-d * d / (_pinchReach * _pinchReach));
         }
 
         /// <summary>
-        /// A strong pinch, but only where the fingers are (user feedback: first it squashed the whole body, then it had
-        /// no strength). The skin between the fingertips closes towards the middle and bunches up into a fold that
-        /// rises even when the fingers start close together; each fingertip presses in a little; skin further than a
-        /// fingertip's width from the fingers doesn't move, apart from the gentle swell of displaced volume.
-        /// Dragging both fingers carries the pinched bit along.
+        /// The pinch as a rubber band round the squishy (user design, 30 Sep 2026): the whole body cinches in to a waist
+        /// where you pinch, the fluid inside is squeezed into the two halves either side, which swell and push apart
+        /// (a peanut, a figure 8), and it all stays one attached body. Dragging both fingers moves the band, bending it.
         /// </summary>
         private Vector3 PinchMove(Vector3 b)
         {
-            var d = b - _pinchMid;
-            float signed = Vector3.Dot(d, _pinchAxis), along = Mathf.Abs(signed);
-            float perp = (d - _pinchAxis * signed).magnitude, r = _pinchReach, h = Mathf.Max(.02f, _pinchHalf);
-            float kPerp = Mathf.Exp(-perp * perp / (r * r));
-            if (kPerp < 1e-3f) return Vector3.zero;
-            float travel = PinchTravel();
-            // Closing: between the fingers the skin is carried towards the middle (more the nearer a finger); beyond them it fades.
-            float kClose = along <= h ? along / h : Mathf.Exp(-(along - h) * (along - h) / (r * r));
-            var close = -_pinchAxis * Mathf.Sign(signed) * travel * kClose * kPerp;
-            // The fold: the squeezed skin between them rises in a soft, rounded bump (a tall narrow ridge made a sharp fin).
-            var outDir = (b - Core).normalized;
-            float rf = r * 1.5f, kFold = Mathf.Exp(-perp * perp / (rf * rf));
-            float inside = along <= h ? 1 - (along / h) * (along / h) : 0;
-            inside = inside * inside * (3 - 2 * inside); // smooth at the edges
-            float fold = _pinch * Mathf.Min(.2f, .06f + .5f * travel) * inside * kFold;
-            // Under each fingertip it presses in a little.
-            float pad = Mathf.Exp(-(along - h) * (along - h) / (r * r * .5f)) * kPerp;
-            float press = _pinch * .1f * pad * (1 - inside);
-            float hold = Mathf.Min(1, kPerp * (along <= h ? 1 : kClose));
-            return close + outDir * (fold - press) + _pinchShift * hold;
+            var rel = b - _pinchC;
+            float d = Vector3.Dot(rel, _pinchN);
+            var radial = rel - _pinchN * d; // out from the band's centre, across the band
+            float w = _pinchReach, k = Mathf.Exp(-d * d / (w * w)), side = 1 - k;
+            var waist = -radial * (_pinch * .62f * k); // cinched in, down to about a third of the width at a full squeeze
+            var swell = radial * (_pinch * .16f * side); // the halves fill out with what was squeezed from the middle
+            var apart = _pinchN * (Mathf.Sign(d) * _pinch * .18f * _bodyR * Mathf.SmoothStep(0, 1, Mathf.Abs(d) / (w * 2))); // and push apart
+            return waist + swell + apart + _pinchShift * (k + .3f * side);
         }
 
         // ---- the face rides the surface ----

@@ -241,7 +241,7 @@ namespace Squishy.Runtime.Game
                         if (mplane.Raycast(r0, out float t0) && mplane.Raycast(r1, out float t1)) pet.DragPinch(Vector3.ClampMagnitude(r1.GetPoint(t1) - r0.GetPoint(t0), pet.Scale * pet.StageScale * .25f) * .6f); // a nudge, not a stretch (it pulled out a flap)
                         return;
                     }
-                    if (dq < pinch0 - 8) { squeezing = true; squeezeArm = false; squeezeLast = 0; pet.BeginPinch(sqA, sqB); sfx.Press(); Buzz(8); return; }
+                    if (dq < pinch0 - 8) { squeezing = true; squeezeArm = false; squeezeLast = 0; pet.BeginPinch(sqA, sqB, cam.transform.forward); sfx.Press(); Buzz(8); return; }
                     if (dq > pinch0 + 8 && !squishMode) squeezeArm = false; // spreading: it's a zoom after all (not in squish mode)
                     else return;
                 }
