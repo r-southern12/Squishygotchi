@@ -75,7 +75,7 @@ Technical
 - [ ] Final app ID (package name): cannot be changed after the first upload.
 - [ ] Release signing key (Android keystore) created and backed up in two safe places.
 - [ ] Set adminTools false in game_content.json; remove test-only content.
-- [ ] Link the Unity Cloud project (Friends) and set Cloud Save indexes.
+- [x] Link the Unity Cloud project (Friends) and set Cloud Save indexes (done 1 Oct 2026: project Squishiotchi, anonymous sign-in, indexes `code` and `visitTo`).
 - [ ] Set up the full-game unlock product in both stores and test a purchase.
 - [ ] Ads: pick a Families-certified network or ship without ads.
 - [ ] Store listing: icon (done), phone screenshots, feature graphic, short and long description.
