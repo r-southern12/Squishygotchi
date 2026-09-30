@@ -2853,7 +2853,9 @@
       "#A0724E",
       "#3B2A20",
       "#1E1A1F",
-      "#FFFFFF"
+      "#FFFFFF",
+      "#E1B96A",
+      "#E7D8BD"
     ]
   },
   "cosmetics": [
@@ -2866,14 +2868,6 @@
       "price": 15
     },
     {
-      "id": "party_hat_teal",
-      "name": "Teal party hat",
-      "slot": "hat",
-      "kind": "cone",
-      "color": "#6E9C9A",
-      "price": 15
-    },
-    {
       "id": "flower_crown",
       "name": "Flower crown",
       "slot": "hat",
@@ -2882,27 +2876,11 @@
       "price": 30
     },
     {
-      "id": "daisy_crown",
-      "name": "Daisy crown",
-      "slot": "hat",
-      "kind": "flowers",
-      "color": "#FFFFFF",
-      "price": 30
-    },
-    {
       "id": "beret",
       "name": "Beret",
       "slot": "hat",
       "kind": "beret",
       "color": "#C8674E",
-      "price": 20
-    },
-    {
-      "id": "beret_navy",
-      "name": "Navy beret",
-      "slot": "hat",
-      "kind": "beret",
-      "color": "#2F4A6E",
       "price": 20
     },
     {
@@ -2915,34 +2893,18 @@
     },
     {
       "id": "bow",
-      "name": "Lilac bow",
+      "name": "Bow",
       "slot": "hat",
       "kind": "bow",
       "color": "#8C7BB0",
       "price": 15
     },
     {
-      "id": "bow_red",
-      "name": "Red bow",
-      "slot": "hat",
-      "kind": "bow",
-      "color": "#D8412F",
-      "price": 15
-    },
-    {
       "id": "beanie",
-      "name": "Mint beanie",
+      "name": "Beanie",
       "slot": "hat",
       "kind": "beanie",
       "color": "#6FA58E",
-      "price": 20
-    },
-    {
-      "id": "beanie_mustard",
-      "name": "Mustard beanie",
-      "slot": "hat",
-      "kind": "beanie",
-      "color": "#D9A64A",
       "price": 20
     },
     {
@@ -2959,14 +2921,6 @@
       "slot": "hat",
       "kind": "sunhat",
       "color": "#E7D8BD",
-      "price": 35
-    },
-    {
-      "id": "straw_hat",
-      "name": "Straw hat",
-      "slot": "hat",
-      "kind": "sunhat",
-      "color": "#E1B96A",
       "price": 35
     },
     {
@@ -3193,18 +3147,10 @@
     },
     {
       "id": "scarf",
-      "name": "Red scarf",
+      "name": "Scarf",
       "slot": "neck",
       "kind": "scarf",
       "color": "#C8674E",
-      "price": 25
-    },
-    {
-      "id": "scarf_green",
-      "name": "Green scarf",
-      "slot": "neck",
-      "kind": "scarf",
-      "color": "#6FA58E",
       "price": 25
     },
     {

@@ -382,7 +382,7 @@ Culture sets: everyday domestic objects and patterns only, never sacred or cerem
 | Legendary | Legendary | 6 | Golden Ticket, Violet Sparkle (the icon squishy), Rose Gold, Moonbeam, Cosmic Pearl, Candy Floss |
 
 ### Accessory colours (1 Oct 2026)
-Once you own an accessory you can wear it in any of its colours, and change it any time: a row of colour dots under it in the Prestige store. Most use a shared palette; a few have their own short list (pearls, halo, tiara, crown, monocle, freckles, moustache, sprout). Friends see the colours you picked. The rebuilt accessories: head-covering hats sit over the dumpling's folds, and everything worn bends with presses and pinches except the springy bits (the sprout's leaves and bunny ears sway and settle). New: Eye patch (face) and Tie (neck).
+Once you own an accessory you can wear it in any of its colours, and change it any time: a row of colour dots under it in the Prestige store. Most use a shared palette; a few have their own short list (pearls, halo, tiara, crown, monocle, freckles, moustache, sprout). Friends see the colours you picked. Colour variants are one accessory each (merged 1 Oct 2026: teal party hat, daisy crown, navy beret, red bow, mustard beanie, straw hat, green scarf became colours of the party hat, flower crown, beret, bow, beanie, sun hat and scarf); anyone who owned a variant keeps that accessory in that colour, and owning both refunds the variant's prestige. The rebuilt accessories: head-covering hats sit over the dumpling's folds, and everything worn bends with presses and pinches except the springy bits (the sprout's leaves and bunny ears sway and settle). New: Eye patch (face) and Tie (neck).
 
 ## Friends
 
@@ -447,7 +447,7 @@ Soft-block diorama with a tilt-shift miniature look.
 - [x] Lifespan and old-age prestige.
 - [x] Daily task refresh, streaks, the missions goal (Monday and Thursday).
 - [x] Notification policy.
-- [ ] Launch styles vs later event styles.
+- [x] Launch styles vs later event styles: all 24 current styles ship at launch; anything new is a later event (1 Oct 2026).
 - [x] Friend features for v1: codes, visits, caring for coins.
 - [x] Squishy character design.
 - [ ] Server-side time and cloud save of your own game.

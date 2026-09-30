@@ -5,7 +5,14 @@ namespace Squishy.Simulation.Save
     /// <summary>Upgrades older saves. v1 and v2 predate the faithful prototype port and start a fresh game.</summary>
     public sealed class SaveMigrator
     {
-        public const int CurrentVersion = 13;
+        public const int CurrentVersion = 14;
+
+        /// <summary>v14: colour variants merged into one accessory each (old id, the one it became, its colour, its price).</summary>
+        private static readonly (string from, string to, string color, int price)[] MergedAccessories =
+        {
+            ("party_hat_teal", "party_hat", "#6E9C9A", 15), ("daisy_crown", "flower_crown", "#FFFFFF", 30), ("beret_navy", "beret", "#2F4A6E", 20),
+            ("bow_red", "bow", "#D8412F", 15), ("beanie_mustard", "beanie", "#D9A64A", 20), ("straw_hat", "sun_hat", "#E1B96A", 35), ("scarf_green", "scarf", "#6FA58E", 25),
+        };
 
         public static SaveMigrator CreateDefault() { return new SaveMigrator(); }
 
@@ -57,6 +64,28 @@ namespace Squishy.Simulation.Save
                 // got switched on by accident): off to begin with; bedtime gets its own setting.
                 data.state.tucked = false;
                 if (string.IsNullOrEmpty(data.state.overnight)) data.state.overnight = "ask";
+            }
+            if (data.version < 14 && data.state != null)
+            {
+                // v14: the colour variants are one accessory each now, in any colour. Owning a variant means owning the
+                // accessory in that colour (worn still, if it was); owning both refunds the variant's prestige.
+                var s = data.state;
+                foreach (var m in MergedAccessories)
+                {
+                    s.cosColors.RemoveAll(x => x.id == m.from);
+                    bool wearing = s.hat == m.from || s.face == m.from || s.neck == m.from;
+                    if (s.hat == m.from) s.hat = m.to;
+                    if (s.face == m.from) s.face = m.to;
+                    if (s.neck == m.from) s.neck = m.to;
+                    if (!s.cosmetics.Remove(m.from)) continue;
+                    if (s.cosmetics.Contains(m.to)) s.prestige += m.price;
+                    else s.cosmetics.Add(m.to);
+                    if (wearing || !s.cosColors.Exists(x => x.id == m.to))
+                    {
+                        s.cosColors.RemoveAll(x => x.id == m.to);
+                        s.cosColors.Add(new Game.CosColor { id = m.to, color = m.color });
+                    }
+                }
             }
             if (data.version < 13 && data.state != null)
             {

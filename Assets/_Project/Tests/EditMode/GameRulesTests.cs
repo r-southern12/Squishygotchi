@@ -527,6 +527,26 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Colour_Variants_Merge_Into_One_Accessory_In_That_Colour()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            s.cosmetics.AddRange(new[] { "beret", "beret_navy", "straw_hat" });
+            s.hat = "straw_hat";
+            s.prestige = 0;
+            var data = new Squishy.Simulation.Save.SaveData { version = 13, state = s };
+            Squishy.Simulation.Save.SaveMigrator.CreateDefault().Migrate(data);
+            var rules = new GameRules(c, s);
+            Assert.IsFalse(s.cosmetics.Contains("beret_navy") || s.cosmetics.Contains("straw_hat"));
+            Assert.IsTrue(rules.HasCosmetic("sun_hat"));
+            Assert.AreEqual("sun_hat", s.hat, "still wearing it");
+            Assert.AreEqual("#E1B96A", rules.Worn("sun_hat").color, "in the straw colour");
+            Assert.AreEqual(20, s.prestige, "owning both berets refunds the navy one");
+            Assert.AreEqual(c.cosmetics.Length, new System.Collections.Generic.HashSet<string>(System.Array.ConvertAll(c.cosmetics, x => x.id)).Count);
+            Assert.IsNull(rules.Cosmetic("party_hat_teal"), "the variants are gone from the store");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
