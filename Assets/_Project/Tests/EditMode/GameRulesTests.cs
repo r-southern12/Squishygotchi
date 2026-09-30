@@ -461,6 +461,27 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Full_Game_Collects_Twice_As_Many_Overnight()
+        {
+            var c = Content();
+            var utc = new DateTime(2026, 10, 1, 9, 30, 0, DateTimeKind.Utc);
+            var local = utc.ToLocalTime().Date.AddHours(22.5); // 10:30pm local
+            utc = local.ToUniversalTime();
+            int[] got = new int[2];
+            for (int k = 0; k < 2; k++)
+            {
+                var s = GameRules.NewState(c, 1);
+                s.premium = k == 1;
+                var rules = new GameRules(c, s);
+                s.onlineReadyAt = s.bonusReadyAt = utc.AddHours(1).Ticks; // nothing waiting at bedtime
+                rules.GoToSleep(utc, local);
+                got[k] = rules.WakeUp(utc.AddHours(9.5)).steamers;
+            }
+            Assert.Greater(got[0], 0);
+            Assert.AreEqual(got[0] * 2, got[1], "the bonus steamer is collected overnight too with the full game");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

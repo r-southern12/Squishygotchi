@@ -27,7 +27,10 @@ namespace Squishy.Simulation.Game
 
         public bool CanSleep(DateTime local) { return !S.dead && !S.asleep && !S.tucked && IsNight(local); }
 
-        /// <summary>Tucks it in for the night. Returns 1 if the free steamer waiting at bedtime was handed over.</summary>
+        /// <summary>Free steamers each reset brings overnight: the free one, plus the bonus one with the full game (no video needed).</summary>
+        private int PerNightReset { get { return S.premium ? 2 : 1; } }
+
+        /// <summary>Tucks it in for the night. Returns how many steamers waiting at bedtime were handed over.</summary>
         public int GoToSleep(DateTime utc, DateTime local)
         {
             if (S.asleep) return 0;
@@ -39,9 +42,10 @@ namespace Squishy.Simulation.Game
             S.sleepSteamers = S.steamers;
             // The free steamer waiting now is handed over straight away; the night's own are banked for the morning.
             int now = OnlineReady() ? 1 : 0;
-            if (now > 0) SetSteamers(S.steamers + 1);
-            S.nightBank = 0;
             S.onlineReadyAt = NextReset(utc.Ticks, R.giftHours);
+            if (S.premium && BonusReady()) { now++; S.bonusReadyAt = NextReset(utc.Ticks, R.giftHours); } // full game: the bonus one too
+            if (now > 0) SetSteamers(S.steamers + now);
+            S.nightBank = 0;
             S.lastNightPrompt = NightKey(local);
             return now;
         }
@@ -65,7 +69,7 @@ namespace Squishy.Simulation.Game
         {
             if (!S.asleep) return 0;
             long end = Math.Min(utc.Ticks, S.sleepUntil);
-            return S.nightBank + ResetsBetween(S.sleepAt, end, R.giftHours); // only the free ones the night brought (not ones earned playing after bedtime)
+            return S.nightBank + ResetsBetween(S.sleepAt, end, R.giftHours) * PerNightReset; // only the free ones the night brought (not ones earned playing after bedtime)
         }
 
         public NightReport WakeUp(DateTime utc)
@@ -73,11 +77,12 @@ namespace Squishy.Simulation.Game
             if (!S.asleep) return null;
             long end = Math.Min(utc.Ticks, S.sleepUntil);
             int windows = ResetsBetween(S.sleepAt, end, R.giftHours); // the free one refilled (and was collected) at each reset in the night
-            S.nightBank += windows;
+            S.nightBank += windows * PerNightReset;
             int got = S.nightBank;
             SetSteamers(S.steamers + got);
             var r = new NightReport { slept = TimeSpan.FromTicks(Math.Max(0, utc.Ticks - S.sleepAt)), steamers = got, early = utc.Ticks < S.sleepUntil - TimeSpan.FromHours(R.nightWakeByHour - R.nightEndHour).Ticks };
             S.onlineReadyAt = NextReset(end, R.giftHours);
+            if (S.premium && windows > 0) S.bonusReadyAt = NextReset(end, R.giftHours); // its bonus ones were collected too
             S.asleep = false;
             S.nightBank = 0;
             return r;

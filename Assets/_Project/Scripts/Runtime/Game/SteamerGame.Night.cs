@@ -86,7 +86,7 @@ namespace Squishy.Runtime.Game
             WriteSave();
             sfx.Chime();
             Floater("Sweet dreams, " + Rules.Fav.name);
-            if (given > 0) ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+1 free steamer");
+            if (given > 0) ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), "+" + given + " free steamer" + (given == 1 ? "" : "s"));
             SleepNow();
         }
 
