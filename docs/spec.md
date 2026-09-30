@@ -385,11 +385,14 @@ Culture sets: everyday domestic objects and patterns only, never sacred or cerem
 
 Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Decided 27 Sep 2026.
 
-- **Friend codes** (like `ABCD-2345`) are the only way to find someone. There's no search, no list of strangers, no chat and no personal details: friends see each other's squishy, room and code only.
+- **Friend codes** (like `ABCD-2345`) add a friend; there's no limit on friends added by code.
+- **Neighbours** (1 Oct 2026): up to 20 players you don't know. "Find neighbours" shows 3 at random from players who played in the last 3 days (no ranking, no search; never you or anyone already on your lists); tap Add. Remove one to make room. They visit and care exactly like friends. Adding a neighbour's code makes them a friend. Settings > "Let other players find my room" (on by default) takes you out of the pool; anyone who already has you keeps you.
+- No chat and no personal details: friends and neighbours see each other's squishy, room and code only. A visit is signed with the visitor's squishy name (your own name stays on your phone).
 - **Visiting:** enter a code (or pick a friend you've visited before). Their room and squishy load into your steamer while yours is set aside untouched; time away is caught up when you go home. Their squishy doesn't drain while you visit.
 - **Caring on a visit:** squish them, give a snack from your own stock, water a plant. Each kind, once per visit: 3 coins for you, and 2 for your friend, paid when they next open the game ("A friend visited and looked after…").
 - **Your shared room** is refreshed every few minutes and when you open the game.
-- **Setup (owner):** link the project to a Unity Cloud project, turn on Authentication (anonymous) and Cloud Save, and add Cloud Save indexes on the public player keys `code` and `visitTo` (see `docs/release.md`).
+- **Setup (owner):** link the project to a Unity Cloud project, turn on Authentication (anonymous) and Cloud Save, and add Cloud Save indexes on the public player keys `code`, `visitTo` and `lastSeen` (see `docs/release.md`).
+- **To do:** visits need more to do (1 Oct 2026: visiting felt underwhelming).
 - Later ideas: stickers / preset reactions on visits, one-way gifting of duplicates (no trading), leaving a flower at a friend's keepsake.
 
 ## Notifications and widget
@@ -430,7 +433,7 @@ Soft-block diorama with a tilt-shift miniature look.
 - **Paid unlock:** a one-off purchase removes ads and limits; the bonus steamer is included without a video.
 - Coins are earned by playing; steamers can be bought with coins. Accessories cost prestige, which only comes from caring.
 - Odds published; pity guarantee. No forced ads.
-- Young players: check Apple Kids Category, Google Families policy and under-13 privacy law before release. No chat; friend codes only.
+- Young players: check Apple Kids Category, Google Families policy and under-13 privacy law before release. No chat; friend codes and random neighbours only (no free text is shared).
 - IP: original characters and packaging only. Check "Squishiotchi" for trademark conflicts before release.
 
 ## Open questions

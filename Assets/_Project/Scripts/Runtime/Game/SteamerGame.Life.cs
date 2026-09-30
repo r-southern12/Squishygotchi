@@ -189,6 +189,7 @@ namespace Squishy.Runtime.Game
             Toggle(body, "Music", S.musicOn, v => { S.musicOn = v; sfx.MusicOn = v; });
             if (S.musicOn && S.soundOn) TrackRow(body);
             Toggle(body, "Vibration", S.hapticsOn, v => { S.hapticsOn = v; Haptics.Enabled = v; if (v) Buzz(20); });
+            Toggle(body, "Let other players find my room", !S.hideRoom, v => { S.hideRoom = !v; WriteSave(); if (Online.Ready) _ = Online.Publish(Rules.Snapshot(), v); });
             Toggle(body, "Reminders", S.notificationsOn, v => { S.notificationsOn = v; Notifier.Enabled = v; if (!v) Notifier.Clear(); });
             // Bedtime: the evening question to tuck it in (tucking in is always your choice; the moon button works either way).
             Toggle(body, "Bedtime reminder (asks each evening)", S.overnight != "off", v => { S.overnight = v ? "ask" : "off"; WriteSave(); });

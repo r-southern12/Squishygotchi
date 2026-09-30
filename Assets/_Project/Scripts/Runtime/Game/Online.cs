@@ -15,7 +15,7 @@ namespace Squishy.Runtime.Game
     /// Friends online (Unity Gaming Services): an anonymous sign-in (no account, no email), and public Cloud Save
     /// player data holding your friend code, a snapshot of your room and squishy, and your latest visit. Friends
     /// find each other by code and never see personal details. Needs the project linked to a Unity Cloud project
-    /// with Authentication and Cloud Save on, and Cloud Save indexes on the public keys "code" and "visitTo"
+    /// with Authentication and Cloud Save on, and Cloud Save indexes on the public keys "code", "visitTo" and "lastSeen"
     /// (docs/release.md). Everything fails soft: without a connection the game simply plays offline.
     /// </summary>
     public static class Online
@@ -24,7 +24,7 @@ namespace Squishy.Runtime.Game
         public static string PlayerId { get; private set; }
         public static string Status { get; private set; } = "Connecting…";
 
-        private const string KCode = "code", KRoom = "room", KVisitTo = "visitTo", KVisitAt = "visitAt", KVisitActs = "visitActs", KVisitWhat = "visitWhat", KVisitName = "visitName";
+        private const string KCode = "code", KRoom = "room", KVisitTo = "visitTo", KVisitAt = "visitAt", KVisitActs = "visitActs", KVisitWhat = "visitWhat", KVisitName = "visitName", KSeen = "lastSeen";
         private static Task _init;
 
         public static Task Init()
@@ -53,8 +53,11 @@ namespace Squishy.Runtime.Game
             }
         }
 
-        /// <summary>Shares your friend code and a snapshot of your room so friends can visit.</summary>
-        public static async Task Publish(RoomSnapshot snap)
+        /// <summary>
+        /// Shares your friend code and a snapshot of your room so friends can visit, and when you last played so
+        /// other active players can find you as a neighbour (0 when you've switched that off in Settings).
+        /// </summary>
+        public static async Task Publish(RoomSnapshot snap, bool findable)
         {
             if (!Ready) return;
             try
@@ -63,6 +66,7 @@ namespace Squishy.Runtime.Game
                 {
                     { KCode, snap.code },
                     { KRoom, JsonUtility.ToJson(snap) },
+                    { KSeen, findable ? DateTimeOffset.UtcNow.ToUnixTimeSeconds() : 0L },
                 }, new Unity.Services.CloudSave.Models.Data.Player.SaveOptions(new PublicWriteAccessClassOptions()));
             }
             catch (Exception e) { Debug.LogWarning("Online publish: " + e.Message); }
@@ -85,6 +89,31 @@ namespace Squishy.Runtime.Game
             }
             catch (Exception e) { Debug.LogWarning("Online find: " + e.Message); }
             return null;
+        }
+
+        /// <summary>
+        /// Random players who played in the last few days (never you, never anyone in skip): up to count of them, each
+        /// with their room. There's no ranking: it's a fresh random pick every time.
+        /// </summary>
+        public static async Task<List<(string id, RoomSnapshot room)>> Strangers(int count, int activeDays, HashSet<string> skip)
+        {
+            var list = new List<(string, RoomSnapshot)>();
+            if (!Ready || count <= 0) return list;
+            try
+            {
+                long since = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - activeDays * 86400L;
+                int sample = Math.Min(50, count + skip.Count + 1);
+                var query = new Query(new List<FieldFilter> { new FieldFilter(KSeen, since, FieldFilter.OpOptions.GE, true) }, new HashSet<string> { KRoom }, 0, sample, sample);
+                var found = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
+                foreach (var e in found)
+                {
+                    if (e.Id == PlayerId || skip.Contains(e.Id) || list.Count >= count) continue;
+                    foreach (var item in e.Data)
+                        if (item.Key == KRoom) { var room = JsonUtility.FromJson<RoomSnapshot>(item.Value.GetAs<string>()); if (room != null) list.Add((e.Id, room)); }
+                }
+            }
+            catch (Exception e) { Debug.LogWarning("Online strangers: " + e.Message); }
+            return list;
         }
 
         /// <summary>A friend's latest room, by player id.</summary>

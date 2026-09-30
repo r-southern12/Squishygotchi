@@ -12,6 +12,8 @@ namespace Squishy.Runtime.Game
     /// replace yours on screen (your own game state is set aside untouched, and time away is caught up on return).
     /// You can pet their squishy, give it one of your snacks and water their plants: each earns you a few coins and
     /// earns them some too, paid when they next open the game. No chat and no personal details, ever.
+    /// Neighbours (user request, 1 Oct 2026): besides friends by code (no limit), up to 20 random players who
+    /// played in the last 3 days, picked from a fresh random sample (no ranking). They visit and care just like friends.
     /// </summary>
     public sealed partial class SteamerGame
     {
@@ -22,6 +24,8 @@ namespace Squishy.Runtime.Game
         private readonly HashSet<string> visitDone = new HashSet<string>();
         private DateTime visitStart;
         private float publishT = 30;
+        private List<(string id, RoomSnapshot room)> neighbourPicks = new List<(string, RoomSnapshot)>();
+        private bool findingNeighbours;
 
         private GameRules Own { get { return visiting ? ownRules : Rules; } }
 
@@ -31,7 +35,7 @@ namespace Squishy.Runtime.Game
         {
             await Online.Init();
             if (!Online.Ready) return;
-            await Online.Publish(Own.Snapshot());
+            await Online.Publish(Own.Snapshot(), !Own.S.hideRoom);
             var visitors = await Online.Visitors();
             var gifts = new List<GameRules.VisitGift>();
             foreach (var v in visitors) { var g = Own.CreditVisit(v.id, v.at, v.acts, v.what, v.name); if (g != null) gifts.Add(g); }
@@ -49,7 +53,7 @@ namespace Squishy.Runtime.Game
             publishT -= dt;
             if (publishT > 0 || visiting) return;
             publishT = 300;
-            if (Online.Ready) _ = Online.Publish(Own.Snapshot());
+            if (Online.Ready) _ = Online.Publish(Own.Snapshot(), !Own.S.hideRoom);
             else GoOnline();
         }
 
@@ -74,20 +78,76 @@ namespace Squishy.Runtime.Game
             Hud.Button(body, "Visit", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => VisitByCode(field.value), !Online.Ready, 3).Margin(8, 0, 0, 0);
             if (!Online.Ready) Hud.Para(body, Online.Status, 12, "#8E3322").Margin(8, 0, 0, 0);
 
-            if (S.friends.Count > 0)
+            var real = S.friends.FindAll(f => !f.neighbour);
+            if (real.Count > 0)
             {
                 Hud.Sec(body, "Your friends").Margin(12, 0, 0, 0);
-                foreach (var f in S.friends)
+                foreach (var f in real) FriendRow(body, f, "Code " + f.code);
+            }
+
+            // Neighbours: random players who've played lately.
+            Hud.Sec(body, "Neighbours · " + Rules.NeighbourCount() + " of " + C.rules.neighbourMax).Margin(12, 0, 0, 0);
+            Hud.Para(body, "Players who've played in the last " + C.rules.neighbourActiveDays + " days.", 12, "#6F5F52").Margin(0, 0, 6, 0);
+            foreach (var f in S.friends.FindAll(x => x.neighbour)) FriendRow(body, f, null);
+            if (neighbourPicks.Count > 0)
+            {
+                Hud.Sec(body, "Say hello").Margin(8, 0, 0, 0);
+                foreach (var p in neighbourPicks)
                 {
-                    var fr = f;
-                    string name = C.finishes[Mathf.Clamp(f.finish, 0, C.finishes.Length - 1)].name;
-                    ui.Rec(body, "sq:" + Mathf.Clamp(f.finish, 0, C.finishes.Length - 1), name + "'s steamer", "Code " + f.code, "Visit", () => VisitFriend(fr), !Online.Ready);
+                    var pick = p;
+                    int fi = Mathf.Clamp(p.room.favIdx, 0, C.finishes.Length - 1);
+                    ui.Rec(body, "sq:" + fi, C.finishes[fi].name + "'s steamer", "Room level " + (p.room.roomLv + 1), "Add", () => AddNeighbour(pick), !Online.Ready || Rules.NeighboursFull());
                 }
             }
-            Hud.Para(body, "On a visit you can pet their squishy, give it a snack and water their plants: a few coins for you both. No chat, ever.", 12, "#6F5F52").Margin(12, 0, 0, 0);
+            if (Rules.NeighboursFull()) Hud.Para(body, "That's " + C.rules.neighbourMax + " neighbours. Remove one to add another.", 12, "#6F5F52");
+            else Hud.Button(body, findingNeighbours ? "Looking…" : "Find neighbours", "#8C7BB0", "#6A5A8E", Hud.Cream, 14, 44, 16, FindNeighbours, !Online.Ready || findingNeighbours, 3).Margin(6, 0, 0, 0);
+            Hud.Para(body, "On a visit you can squish them, give a snack and water a plant: a few coins for you both. No chat, ever.", 12, "#6F5F52").Margin(12, 0, 0, 0);
             ui.OpenPanel("info");
             sfx.Tap();
             if (!Online.Ready) GoOnline();
+        }
+
+        /// <summary>One friend or neighbour: visit, or remove.</summary>
+        private void FriendRow(VisualElement body, FriendData f, string sub)
+        {
+            var fr = f;
+            int fi = Mathf.Clamp(f.finish, 0, C.finishes.Length - 1);
+            var remove = Hud.Button(null, "Remove", "#EADCC6", "#CDB999", Hud.Ink, 10, 26, 12, () => AskRemoveFriend(fr), false, 2).Margin(4, 0, 0, 0);
+            remove.style.alignSelf = Align.FlexStart;
+            ui.Rec(body, "sq:" + fi, C.finishes[fi].name + "'s steamer", sub, "Visit", () => VisitFriend(fr), !Online.Ready, remove);
+        }
+
+        private void AskRemoveFriend(FriendData f)
+        {
+            string name = C.finishes[Mathf.Clamp(f.finish, 0, C.finishes.Length - 1)].name;
+            ui.ShowDialog("Remove " + name + "?", f.neighbour ? "You can find new neighbours any time." : "You can add them again with their code.", "sq:" + Mathf.Clamp(f.finish, 0, C.finishes.Length - 1),
+                ("Remove", "#C8674E", "#8E4332", Hud.Cream, (Action)(() => { ui.HideMemo(); Rules.RemoveFriend(f.id); WriteSave(); OnFriends(); })),
+                ("Keep", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
+        }
+
+        /// <summary>A fresh random handful of recently active players (never you or anyone you already have).</summary>
+        private async void FindNeighbours()
+        {
+            if (findingNeighbours || !Online.Ready) return;
+            findingNeighbours = true;
+            OnFriends();
+            var skip = new HashSet<string>();
+            foreach (var f in S.friends) skip.Add(f.id);
+            neighbourPicks = await Online.Strangers(C.rules.neighbourOffer, C.rules.neighbourActiveDays, skip);
+            findingNeighbours = false;
+            if (visiting) return;
+            if (neighbourPicks.Count == 0) { Floater("No one new around right now · try again later"); sfx.Bonk(); }
+            OnFriends();
+        }
+
+        private void AddNeighbour((string id, RoomSnapshot room) pick)
+        {
+            if (!Rules.AddNeighbour(pick.id, pick.room)) { Floater("Can't add more neighbours", "bad"); sfx.Bonk(); return; }
+            neighbourPicks.RemoveAll(p => p.id == pick.id);
+            WriteSave();
+            sfx.Chime();
+            Floater(C.finishes[Mathf.Clamp(pick.room.favIdx, 0, C.finishes.Length - 1)].name + " is your neighbour now");
+            OnFriends();
         }
 
         private async void VisitByCode(string code)
@@ -98,7 +158,7 @@ namespace Squishy.Runtime.Game
             Floater("Looking for your friend…");
             var found = await Online.Find(code);
             if (!found.HasValue) { Floater("No steamer found with that code", "bad"); sfx.Bonk(); return; }
-            Rules.RememberFriend(found.Value.id, found.Value.room);
+            Rules.RememberFriend(found.Value.id, found.Value.room, true);
             WriteSave();
             StartVisit(found.Value.id, found.Value.room);
         }
@@ -185,7 +245,7 @@ namespace Squishy.Runtime.Game
             ui.SetCoins(ownRules.S.coins);
             sfx.Coin();
             Floater("+" + C.rules.visitCoins + " coins · your friend gets some too");
-            _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone), ownRules.S.playerName);
+            _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone), ownRules.Fav.name); // the squishy's name: your own name stays on the phone
         }
 
         private void VisitSnack()

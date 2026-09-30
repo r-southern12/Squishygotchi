@@ -88,14 +88,37 @@ namespace Squishy.Simulation.Game
             return coins;
         }
 
-        public void RememberFriend(string id, RoomSnapshot snap)
+        /// <param name="byCode">Found by their friend code: a real friend (a neighbour you then add by code becomes one).</param>
+        public void RememberFriend(string id, RoomSnapshot snap, bool byCode = false)
         {
             if (string.IsNullOrEmpty(id)) return;
             var f = S.friends.Find(x => x.id == id);
             if (f == null) S.friends.Add(f = new FriendData { id = id });
+            if (byCode) f.neighbour = false;
             f.code = snap.code;
             f.avatar = snap.avatar;
             f.finish = snap.favIdx;
         }
+
+        /// <summary>Neighbours you have (random players, not added by code).</summary>
+        public int NeighbourCount()
+        {
+            int n = 0;
+            foreach (var f in S.friends) if (f.neighbour) n++;
+            return n;
+        }
+
+        public bool NeighboursFull() { return NeighbourCount() >= R.neighbourMax; }
+
+        /// <summary>Adds a random player as a neighbour. False if they're already on your lists or you have the most neighbours.</summary>
+        public bool AddNeighbour(string id, RoomSnapshot snap)
+        {
+            if (string.IsNullOrEmpty(id) || snap == null || S.friends.Exists(x => x.id == id) || NeighboursFull()) return false;
+            S.friends.Add(new FriendData { id = id, neighbour = true });
+            RememberFriend(id, snap);
+            return true;
+        }
+
+        public void RemoveFriend(string id) { S.friends.RemoveAll(x => x.id == id); }
     }
 }

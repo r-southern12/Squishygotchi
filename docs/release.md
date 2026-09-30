@@ -44,7 +44,7 @@ one squishy's life or four weeks, then unlock the full game once. No ads in the 
 2. In the Unity editor: Edit > Project Settings > Services, pick your organisation and link this project to it
    (this writes the project ID into ProjectSettings; commit that change).
 3. In the dashboard for that project, turn on **Authentication** (anonymous sign-in) and **Cloud Save**.
-4. Cloud Save > Player Data > Indexes: add two **Public** indexes, key `code` (string) and key `visitTo` (string).
+4. Cloud Save > Player Data > Indexes: add two **Public** indexes, key `code` (string), key `visitTo` (string) and key `lastSeen` (number).
    These let friend codes be looked up and visits be found.
 5. The next build then shows Friends as online. Until then the Friends panel says friends aren't switched on,
    and everything else plays normally.

@@ -441,6 +441,26 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Neighbours_Stop_At_The_Limit_Friends_Do_Not()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var rules = new GameRules(c, s);
+            var snap = rules.Snapshot();
+            for (int i = 0; i < 30; i++) rules.RememberFriend("friend" + i, snap, true);
+            for (int i = 0; i < c.rules.neighbourMax; i++) Assert.IsTrue(rules.AddNeighbour("n" + i, snap));
+            Assert.IsFalse(rules.AddNeighbour("one_more", snap), "neighbours are capped");
+            Assert.IsFalse(rules.AddNeighbour("n0", snap), "no doubles");
+            Assert.AreEqual(c.rules.neighbourMax, rules.NeighbourCount());
+            rules.RememberFriend("friend30", snap, true);
+            Assert.AreEqual(31 + c.rules.neighbourMax, s.friends.Count, "friends by code have no limit");
+            rules.RememberFriend("n0", snap, true);
+            Assert.AreEqual(c.rules.neighbourMax - 1, rules.NeighbourCount(), "adding a neighbour by code makes them a friend");
+            rules.RemoveFriend("n1");
+            Assert.IsTrue(rules.AddNeighbour("new", snap));
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
