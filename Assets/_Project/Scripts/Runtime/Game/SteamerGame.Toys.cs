@@ -179,6 +179,22 @@ namespace Squishy.Runtime.Game
             }
         }
 
+        private float strayPopT;
+
+        /// <summary>
+        /// Bubbles left over when bubble time was cut short (swapped out, interrupted): they pop one after another
+        /// instead of hanging in the air for ever.
+        /// </summary>
+        private void StepStrayBubbles(float dt)
+        {
+            if (bubbles.Count == 0 || (ai.act != null && ai.act.role == "bubbles")) return;
+            bubbleLeft = 0;
+            strayPopT -= dt;
+            if (strayPopT > 0) return;
+            strayPopT = .12f;
+            PopBubble(bubbles.Count - 1, 0);
+        }
+
         private void PopBubble(int k, float gain)
         {
             var b = bubbles[k];

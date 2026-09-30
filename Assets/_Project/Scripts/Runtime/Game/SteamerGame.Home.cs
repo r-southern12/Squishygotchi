@@ -363,6 +363,7 @@ namespace Squishy.Runtime.Game
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
             CleanupCook();
+            if (chainFrom == null) EndToys(); // a new activity: the last toy's bits (bubbles, the pom-pom) are tidied away
             ai.act = new Activity { it = it, role = role, act = act, recipe = recipe, combo = cm, chained = chainFrom != null };
             ai.actT = 0;
             ai.kicks = 0;
@@ -934,6 +935,7 @@ namespace Squishy.Runtime.Game
                 extra += .08f * Mathf.Clamp01(energyT / 20f) * Mathf.Sin(time * 2.4f);
             }
             StepTipCoin(dt);
+            StepStrayBubbles(dt);
             // Sitting or lying on something: the squishy drapes over its edges (a big one envelops a small stool).
             var supRole = ai.mode == "act" && ai.act != null && ai.act.it != null ? ai.act.role : null;
             bool sup = (supRole == "seat" || supRole == "lounge" || supRole == "bed") && ai.actT > .2f;
