@@ -83,9 +83,8 @@ namespace Squishy.Runtime.Game
             bool fresh = !ui.PanelOpen("info");
             ui.SetPanelTitle("info", "Prestige store");
             var body = ui.PanelBody("info");
-            Big(body, S.prestige + " prestige", "Earned mostly when a squishy lives a full life, and a little each time it grows up well. Spend it on accessories here.");
-            Hud.Para(body, Rules.Fav.name + "'s life so far: day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + ", quality of life " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "%. If it keeps living like this, it will earn about " + Rules.ProjectedPrestige() + " prestige at old age. Better care means a longer life and more prestige.");
-            Hud.Para(body, "A little is also earned each time it grows into a new life stage (young, adult, elder), more the better it has been looked after.");
+            Big(body, S.prestige + " prestige", "Earned from a full life and growing up well.");
+            Hud.Para(body, Rules.Fav.name + ": day " + S.age + " of about " + Mathf.RoundToInt(Rules.ExpectedLifespanDays()) + " · care " + Mathf.RoundToInt(Rules.QualityOfLife() * 100) + "% · about " + Rules.ProjectedPrestige() + " at old age", 13, "#6F5F52");
             ShopCosmetics(body);
             body.Gap(8);
             if (fresh) { ui.OpenPanel("info"); sfx.Tap(); }
@@ -265,7 +264,7 @@ namespace Squishy.Runtime.Game
             {
                 bool own = Rules.HasCosmetic(c.id), worn = S.hat == c.id || S.face == c.id || S.neck == c.id;
                 var id = c.id;
-                ui.Rec(body, null, c.name, (c.slot == "hat" ? "Hat" : c.slot == "neck" ? "Neck" : "Face") + (own ? worn ? " · wearing" : " · owned" : " · " + c.price + " prestige"),
+                ui.Rec(body, null, c.name, (c.slot == "hat" ? "Hat" : c.slot == "neck" ? "Neck" : "Face") + (own ? worn ? " · wearing" : " · owned" : ""),
                     own ? (worn ? "Take off" : "Wear") : c.price.ToString(),
                     () =>
                     {

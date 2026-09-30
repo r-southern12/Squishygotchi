@@ -80,7 +80,8 @@ namespace Squishy.Runtime.UI
         }
 
         public VisualElement PanelBody(string id) { var b = _panelBody[id]; b.Clear(); return b.contentContainer; }
-        public void SetPanelTitle(string id, string title) { _panelTitle[id].text = title; }
+        /// <summary>Sets a panel's title and clears its subtitle (it kept the last screen's, e.g. "15 prizes · 11 new").</summary>
+        public void SetPanelTitle(string id, string title) { _panelTitle[id].text = title; if (_panelSub.ContainsKey(id)) _panelSub[id].text = ""; }
         public void SetPanelSub(string id, string sub) { _panelSub[id].text = sub; }
         public bool PanelOpen(string id) { return _panels[id].style.display != DisplayStyle.None; }
 

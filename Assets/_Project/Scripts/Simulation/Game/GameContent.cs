@@ -38,7 +38,7 @@ namespace Squishy.Simulation.Game
     [Serializable]
     public class ComboData
     {
-        public string id, name, lead, act, then, text;
+        public string id, name, lead, act, then, text, @short; // short: a few words for lists (text: the full description)
         public string[] slots;
         public int thenSlot;
         public bool chainLeads, passive;

@@ -203,26 +203,39 @@ namespace Squishy.Runtime.Game
         public void OnComfort()
         {
             ui.SetPanelTitle("info", "Comfort");
+            ui.SetPanelSub("info", "");
             var body = ui.PanelBody("info");
-            int decor = items.Count(i => i.a.comfort > 0);
             int slow = Mathf.RoundToInt(Mathf.Min(C.rules.comfortSlowMax, comfort * C.rules.comfortSlowPerPoint) * 100);
-            Big(body, Mathf.RoundToInt(comfort).ToString(), "Needs drain " + slow + "% slower · about " + Mathf.RoundToInt(Rules.HappyRate(comfort) * 60) + " coins an hour while Happy");
-            int cc = Mathf.RoundToInt(Rules.ComboComfort(S.items));
-            Hud.Para(body, decor + " decor pieces" + (setBonus.Length > 0 ? " + " + setBonus + " set bonus" : "") + (cc > 0 ? " + " + cc + " from combos" : "") + ". Add decor and make combos to raise it.", 12, "#6F5F52");
-            // Room progression at a glance.
-            Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length + " · pieces " + Rules.ItemCount() + "/" + Rules.ItemSlots());
+            Big(body, Mathf.RoundToInt(comfort).ToString(), "Needs drain " + slow + "% slower · +" + Mathf.RoundToInt(Rules.HappyRate(comfort) * 60) + " coins an hour when Happy");
+            // Where it comes from, at a glance.
+            int cc = Mathf.RoundToInt(Rules.ComboComfort(S.items)), set = setBonus.Length > 0 ? Mathf.RoundToInt(C.rules.setBonus) : 0;
+            var src = new VisualElement().Row(Align.Center).In(body);
+            src.style.flexWrap = Wrap.Wrap;
+            src.style.marginBottom = 10;
+            Pill(src, "Pieces +" + Mathf.Max(0, Mathf.RoundToInt(comfort) - cc - set));
+            if (set > 0) Pill(src, setBonus + " set +" + set);
+            if (cc > 0) Pill(src, "Combos +" + cc);
+            // The room.
+            Hud.Sec(body, "Room level " + (S.roomLv + 1) + " of " + C.roomLevels.Length);
+            Hud.Para(body, Rules.ItemCount() + " of " + Rules.ItemSlots() + " pieces · " + Rules.ToysOut() + " of " + Rules.ToySlots() + " toys out", 13, "#6F5F52");
             if (S.roomLv + 1 < C.roomLevels.Length)
             {
                 var nx = C.roomLevels[S.roomLv + 1];
-                Hud.Para(body, "Next: " + Rules.SquishKinds + "/" + nx.need + " squishies · " + S.coins + "/" + nx.cost + " coins → space for " + nx.slots + " pieces", 12, "#6F5F52");
                 if (Rules.CanExpand()) Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; LevelUpRoom(); ui.ClosePanel("info"); }, false, 4);
+                else Hud.Para(body, "Next level: " + nx.cost + " coins" + (Rules.SquishKinds < nx.need ? " and " + nx.need + " squishies" : ""), 13, "#6F5F52");
             }
-            else Hud.Para(body, "Your room holds as much as it can.");
-            Hud.Para(body, "Toys out: " + Rules.ToysOut() + " of " + Rules.ToySlots() + ". The steamer grows wider as " + Rules.Fav.name + " grows bigger, with room for one more toy each time.", 12, "#6F5F52");
             ComboList(body);
             body.Gap(8);
             ui.OpenPanel("info");
             sfx.Tap();
+        }
+
+        private static void Pill(VisualElement parent, string text)
+        {
+            var p = new Frame().Set(Css.C("#EFE4D2"), 99).Pad(4, 10, 4, 10).In(parent);
+            p.style.marginRight = 6;
+            p.style.marginBottom = 4;
+            Css.Label(p, text, "Figtree", 700, 12, Hud.Ink);
         }
 
         internal static void BigText(VisualElement body, string big, string rest) { Big(body, big, rest); }

@@ -349,20 +349,21 @@ namespace Squishy.Runtime.Game
         private void ComboList(VisualElement body)
         {
             if (combos.Count == 0) return;
-            Hud.Sec(body, "Combos · " + combos.Count(m => m.Done) + " of " + combos.Count + " · +" + Mathf.RoundToInt(C.rules.comboComfort) + " comfort each");
-            Hud.Para(body, "Some pieces are better together. Put them right next to each other (or on the same rug) to find out what they do.", 12, "#6F5F52");
+            Hud.Sec(body, "Combos · " + combos.Count(m => m.Done) + " of " + combos.Count);
+            Hud.Para(body, "Put pieces right next to each other · +" + Mathf.RoundToInt(C.rules.comboComfort) + " comfort each", 12, "#6F5F52");
             foreach (var m in combos.OrderByDescending(x => x.Done).ThenByDescending(x => x.have))
             {
-                var row = new Frame().Set(Css.C(m.Done ? "#EEF3E6" : "#FFF9EF"), 12).Col().Pad(7, 10, 7, 10).In(body);
-                row.style.marginTop = 6;
+                var row = new Frame().Set(Css.C(m.Done ? "#EEF3E6" : "#FFF9EF"), 12).Col().Pad(6, 10, 6, 10).In(body);
+                row.style.marginTop = 5;
                 var top = new VisualElement().Row(Align.Center).In(row);
                 var name = Css.Label(top, m.combo.name, "Figtree", 700, 14);
                 name.style.flexGrow = 1;
+                if (m.Done && !string.IsNullOrEmpty(m.combo.@short)) Css.Label(top, m.combo.@short, "Figtree", 600, 12, "#5F7F62").Margin(0, 8, 0, 0);
                 Css.Label(top, m.have + "/" + m.pieces.Length, "Gluten", 800, 13, m.Done ? "#4C7552" : m.have > 0 ? "#A07324" : Hud.Muted);
+                if (m.have == 0) continue;
                 var parts = new List<string>();
                 for (int j = 0; j < m.pieces.Length; j++) parts.Add(m.pieces[j] != null ? (C.Type(m.pieces[j].Arch) != null ? C.Type(m.pieces[j].Arch).name : m.pieces[j].Arch) : "?");
-                if (m.have > 0) Css.Label(row, string.Join(" · ", parts), "Figtree", 600, 12, Hud.Muted).Wrap();
-                if (m.Done) Css.Label(row, m.combo.text, "Figtree", 600, 12, "#5F7F62").Wrap();
+                Css.Label(row, string.Join(" · ", parts), "Figtree", 600, 12, Hud.Muted).Wrap();
             }
         }
     }

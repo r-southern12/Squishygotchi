@@ -3389,7 +3389,8 @@
       "lead": "cushion",
       "act": "meditate",
       "calmMinutes": 30,
-      "text": "It sits very still and breathes slowly. Rest, and needs drain slower for a while after."
+      "text": "It sits very still and breathes slowly. Rest, and needs drain slower for a while after.",
+      "short": "Rest · calm 30 min"
     },
     {
       "id": "reading_nook",
@@ -3401,7 +3402,8 @@
       ],
       "lead": "beanbag|cushion",
       "act": "read",
-      "text": "It curls up by the bookcase with a little book. Rest and Play."
+      "text": "It curls up by the bookcase with a little book. Rest and Play.",
+      "short": "Rest + Play"
     },
     {
       "id": "tea_time",
@@ -3413,7 +3415,8 @@
       ],
       "lead": "teatable",
       "act": "teaparty",
-      "text": "Tea for two: a bigger, cosier tea break. Rest and Hunger."
+      "text": "Tea for two: a bigger, cosier tea break. Rest and Hunger.",
+      "short": "Tea for two"
     },
     {
       "id": "dinner_table",
@@ -3425,7 +3428,8 @@
       ],
       "lead": "stove",
       "passive": true,
-      "text": "After cooking it carries the dish to the table and eats sitting down. A little Play on top of the meal."
+      "text": "After cooking it carries the dish to the table and eats sitting down. A little Play on top of the meal.",
+      "short": "Eats at the table"
     },
     {
       "id": "chefs_corner",
@@ -3440,7 +3444,8 @@
       "cookMul": 0.65,
       "wearSkip": 0.5,
       "bonusIng": 0.2,
-      "text": "Quicker cooking, tools wear half as fast, and sometimes an ingredient is saved."
+      "text": "Quicker cooking, tools wear half as fast, and sometimes an ingredient is saved.",
+      "short": "Quicker cooking"
     },
     {
       "id": "spa_bath",
@@ -3451,7 +3456,8 @@
       ],
       "lead": "tub",
       "act": "spa",
-      "text": "Petals on the water and a long, happy soak. Clean fills higher, plus Rest."
+      "text": "Petals on the water and a long, happy soak. Clean fills higher, plus Rest.",
+      "short": "Clean + Rest"
     },
     {
       "id": "steamed_clean",
@@ -3464,7 +3470,8 @@
       "lead": "shower",
       "then": "shake",
       "thenSlot": 1,
-      "text": "After the shower it steps onto the mat and shakes itself dry. Extra Clean."
+      "text": "After the shower it steps onto the mat and shakes itself dry. Extra Clean.",
+      "short": "Shakes dry"
     },
     {
       "id": "splash_slide",
@@ -3476,7 +3483,8 @@
       "lead": "slide",
       "then": "splash",
       "thenSlot": 1,
-      "text": "Down the slide and straight into the bath with a splash. Clean and Play."
+      "text": "Down the slide and straight into the bath with a splash. Clean and Play.",
+      "short": "Slide into the bath"
     },
     {
       "id": "playground",
@@ -3488,7 +3496,8 @@
       ],
       "lead": "trampoline|ball",
       "chainLeads": true,
-      "text": "Bouncing, then kicking the ball about. A big Play boost."
+      "text": "Bouncing, then kicking the ball about. A big Play boost.",
+      "short": "Big Play"
     },
     {
       "id": "concert",
@@ -3500,7 +3509,8 @@
       ],
       "lead": "xylophone",
       "act": "concert",
-      "text": "It plays a whole tune, then takes a bow. Play."
+      "text": "It plays a whole tune, then takes a bow. Play.",
+      "short": "Plays a tune"
     },
     {
       "id": "bubble_garden",
@@ -3512,7 +3522,8 @@
       ],
       "lead": "bubbles",
       "act": "bubblegarden",
-      "text": "More bubbles, drifting through the leaves. Play."
+      "text": "More bubbles, drifting through the leaves. Play.",
+      "short": "More bubbles"
     },
     {
       "id": "pompom_den",
@@ -3525,7 +3536,8 @@
       "lead": "pomwand",
       "then": "cuddle",
       "thenSlot": 1,
-      "text": "After the chase it flops onto the cushion and cuddles the pom-pom. Play and Rest."
+      "text": "After the chase it flops onto the cushion and cuddles the pom-pom. Play and Rest.",
+      "short": "Play + Rest"
     },
     {
       "id": "dress_up",
@@ -3536,7 +3548,8 @@
       ],
       "lead": "wardrobe",
       "act": "dressup",
-      "text": "It pops out of the wardrobe wearing an accessory for a moment: one of yours, or one it could earn."
+      "text": "It pops out of the wardrobe wearing an accessory for a moment: one of yours, or one it could earn.",
+      "short": "Tries on accessories"
     }
   ],
   "trayRooms": [
