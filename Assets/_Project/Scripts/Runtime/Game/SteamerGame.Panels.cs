@@ -218,7 +218,7 @@ namespace Squishy.Runtime.Game
                 if (Rules.CanExpand()) Hud.Button(body, "Level up · " + nx.cost + " coins", "#6F9A74", "#4C7552", Hud.Cream, 14, 44, 16, () => { if (!Spend(nx.cost)) return; LevelUpRoom(); ui.ClosePanel("info"); }, false, 4);
             }
             else Hud.Para(body, "Your room holds as much as it can.");
-            Hud.Para(body, "The steamer itself grows wider as " + Rules.Fav.name + " grows bigger.", 12, "#6F5F52");
+            Hud.Para(body, "Toys out: " + Rules.ToysOut() + " of " + Rules.ToySlots() + ". The steamer grows wider as " + Rules.Fav.name + " grows bigger, with room for one more toy each time.", 12, "#6F5F52");
             ComboList(body);
             body.Gap(8);
             ui.OpenPanel("info");
@@ -470,7 +470,7 @@ namespace Squishy.Runtime.Game
                 int c = Rules.SquishCount(e.i), si = C.SizeIdxFor(Mathf.Max(1, c));
                 var nxt = si + 1 < C.sizes.Length ? C.sizes[si + 1] : null;
                 meta = f.tier + " tier";
-                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + (nxt != null && nxt.room > C.sizes[si].room ? " · " + nxt.name + " makes the steamer bigger" : "") : "Not found yet. Find it in steamers.";
+                note = c > 0 ? C.sizes[si].name + " · " + c + " cop" + (c > 1 ? "ies" : "y") + (nxt != null ? " · " + nxt.at + " for " + nxt.name : "") + (nxt != null && nxt.room > C.sizes[si].room ? " · " + nxt.name + " makes the steamer bigger (+1 toy)" : "") : "Not found yet. Find it in steamers.";
                 if (c > 0 && e.i != S.favIdx && !S.dead) Act("Make favourite", () => { Rules.SwapFavourite(e.i); TaskEvent("swap_fav"); SetPet(e.i); shownStage = (GameRules.Life)(-1); ApplyLook(); DrawNeeds(); WriteSave(); Floater("Now " + f.name + " · day " + S.age + "!"); CloseCatalogue(); });
                 if (e.i == S.favIdx && !S.dead)
                 {

@@ -302,11 +302,15 @@ namespace Squishy.Runtime.Game
             if (ai.act != null && ai.act.role == "slide") ai.y = 0;
         }
 
-        /// <summary>Placing a toy from storage swaps out the one in the room (one toy at a time).</summary>
+        /// <summary>
+        /// Placing a toy: fine while there's toy room (one, plus one each time the steamer has grown); when it's full, the
+        /// longest-out toy goes back to storage to make room.
+        /// </summary>
         private Item SwapOutSlot(string arch)
         {
             var t = C.Type(arch);
             if (t == null || string.IsNullOrEmpty(t.slot)) return null;
+            if (items.FindAll(x => C.SameSlot(x.arch, arch)).Count < Rules.ToySlots()) return null;
             var cur = items.Find(x => x.arch != arch && C.SameSlot(x.arch, arch));
             if (cur == null) return null;
             if (ai.act != null && ai.act.it == cur) FinishActivity();
@@ -314,6 +318,7 @@ namespace Squishy.Runtime.Game
             items.Remove(cur);
             S.items.Remove(cur.st);
             cur.g.gameObject.SetActive(false);
+            ui.SetHint(C.Cat(cur.key).name + " went to storage · " + Rules.ToySlots() + " toy" + (Rules.ToySlots() == 1 ? "" : "s") + " out at this steamer size", true);
             return cur;
         }
     }

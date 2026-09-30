@@ -158,7 +158,7 @@ The Comfort panel shows room progression: current level, pieces used, and what t
 
 - Each item type (bed, lamp, stove…) is a **piece**. Its look is a **skin**, one of 24 styles.
 - Steamers mostly unlock **skins**. A skin for a type you don't own yet also gives you that piece.
-- **Stations** are limited to one each per room (stools two). **Decor** is limited by room slots plus the size bonus. **One toy** is out at a time; swap toys from storage.
+- **Stations** are limited to one each per room (stools two). **Decor** is limited by room slots plus the size bonus. **Toys:** one can be out at first, and one more each time the steamer grows wider (Mini 1, Standard 2, Jumbo 3, Giant 4; data). With toy room full, placing another sends the longest-out toy to storage.
 
 **Arrange mode**
 

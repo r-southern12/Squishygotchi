@@ -390,6 +390,23 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void One_More_Toy_Out_Each_Time_The_Steamer_Grows()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 3);
+            var rules = new GameRules(c, s);
+            Assert.AreEqual(1, rules.ToySlots(), "one toy at Mini");
+            int prev = 1;
+            for (int i = 1; i < c.sizes.Length; i++)
+            {
+                s.roomSize = i;
+                bool wider = c.sizes[i].room > c.sizes[i - 1].room;
+                Assert.AreEqual(prev + (wider ? 1 : 0), rules.ToySlots(), c.sizes[i].name + ": one more only when the steamer grows");
+                prev = rules.ToySlots();
+            }
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.

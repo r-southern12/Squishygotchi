@@ -2093,31 +2093,36 @@
       "name": "Mini",
       "s": 0.1,
       "at": 1,
-      "room": 1.75
+      "room": 1.75,
+      "toys": 1
     },
     {
       "name": "Standard",
       "s": 0.15,
       "at": 3,
-      "room": 2.05
+      "room": 2.05,
+      "toys": 2
     },
     {
       "name": "Jumbo",
       "s": 0.21,
       "at": 6,
-      "room": 2.35
+      "room": 2.35,
+      "toys": 3
     },
     {
       "name": "Giant",
       "s": 0.29,
       "at": 12,
-      "room": 2.65
+      "room": 2.65,
+      "toys": 4
     },
     {
       "name": "Super Mega",
       "s": 0.4,
       "at": 25,
-      "room": 2.65
+      "room": 2.65,
+      "toys": 4
     }
   ],
   "roomLevels": [

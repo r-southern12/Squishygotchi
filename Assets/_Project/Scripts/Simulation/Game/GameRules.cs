@@ -275,7 +275,21 @@ namespace Squishy.Simulation.Game
         public int ItemCount() { int n = 0; foreach (var it in S.items) if (it.Arch != C.tomb.id) n++; return n; }
 
         /// <summary>The steamer's radius: set by the biggest size reached here (it never shrinks back).</summary>
-        public float RoomRadius() { return C.sizes[Math.Max(Math.Min(S.roomSize, C.sizes.Length - 1), FavSizeIdx)].room; }
+        public float RoomRadius() { return C.sizes[RoomSizeIdx].room; }
+
+        /// <summary>The biggest size reached here (the steamer's width and toy room follow it).</summary>
+        public int RoomSizeIdx { get { return Math.Max(Math.Min(S.roomSize, C.sizes.Length - 1), FavSizeIdx); } }
+
+        /// <summary>Toys that can be out at once: one, and one more each time the steamer grows wider (data).</summary>
+        public int ToySlots() { return Math.Max(1, C.sizes[RoomSizeIdx].toys); }
+
+        /// <summary>Toys out in the room now.</summary>
+        public int ToysOut()
+        {
+            int n = 0;
+            foreach (var it in S.items) { var t = C.Type(it.Arch); if (t != null && t.slot == "toy") n++; }
+            return n;
+        }
 
         /// <summary>Records a bigger size reached; true when that makes the steamer wider.</summary>
         public bool ReachRoomSize()

@@ -687,7 +687,7 @@ namespace Squishy.Runtime.Game
         {
             string key0 = S.storage[i], arch = key0.Split(':')[0];
             // Every piece takes space (a toy swapped for the one out doesn't need more).
-            bool swaps = items.Any(x => x.arch != "tomb" && x.arch != arch && C.SameSlot(x.arch, arch));
+            bool swaps = C.Type(arch) != null && C.Type(arch).slot == "toy" && items.Count(x => C.SameSlot(x.arch, arch)) >= Rules.ToySlots();
             if (!swaps && Rules.ItemCount() >= Rules.ItemSlots()) { ui.SetHint("Room full (" + Rules.ItemSlots() + " pieces). Level up the room for more space.", true); sfx.Bonk(); Buzz(20); return; }
             if (!C.IsDecor(arch) && items.Count(x => x.arch == arch) >= C.MaxPerRoom(arch)) { ui.SetHint("Only " + C.MaxPerRoom(arch) + " " + C.Type(arch).name.ToLowerInvariant() + " per room", true); sfx.Bonk(); Buzz(20); return; }
             Snap();
@@ -827,7 +827,7 @@ namespace Squishy.Runtime.Game
             shake = .4f;
             sfx.Land();
             Buzz(30, 40, 30);
-            ui.SetHint(Rules.Fav.name + " is " + C.sizes[Rules.FavSizeIdx].name + " now: the steamer grew bigger!", true);
+            ui.SetHint(Rules.Fav.name + " is " + C.sizes[Rules.FavSizeIdx].name + " now: the steamer grew bigger, with room for " + Rules.ToySlots() + " toys out!", true);
             DrawTray();
             WriteSave();
         }

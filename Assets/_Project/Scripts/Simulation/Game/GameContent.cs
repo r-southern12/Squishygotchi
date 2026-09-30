@@ -31,7 +31,7 @@ namespace Squishy.Simulation.Game
     [Serializable] public class ToolSkinData { public string name, col, rarity; }
     [Serializable] public class RecipeData { public string name, bonusNeed, col, note; public int[] ing, tools; public int lvl; public float hunger, cap, bonus; public bool starter; }
     [Serializable] public class SnackData { public string name, color, shape; }
-    [Serializable] public class SizeData { public string name; public float s, room; public int at; } // room: the steamer's radius once a squishy reaches this size
+    [Serializable] public class SizeData { public string name; public float s, room; public int at, toys; } // room: the steamer's radius once a squishy reaches this size; toys: how many toys can be out at once
     [Serializable] public class TrayRoomData { public string id, name; }
 
     /// <summary>A furniture combo: see GameRules.Combos.</summary>

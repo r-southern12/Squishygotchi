@@ -16,7 +16,7 @@ namespace Squishy.Runtime.Game
             var size = C.sizes[sizeIdx];
             bool wider = sizeIdx > 0 && size.room > C.sizes[sizeIdx - 1].room;
             ui.Celebrate("sq:" + S.favIdx, Rules.Fav.name + " grew!", 0, size.name,
-                "Bigger means squishier: more to press and pinch." + (wider ? " Your steamer grows bigger too." : ""));
+                "Bigger means squishier: more to press and pinch." + (wider ? " Your steamer grows bigger too, with room for another toy." : ""));
             Fanfare();
         }
 
