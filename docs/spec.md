@@ -403,7 +403,7 @@ Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Deci
 
 ## Notifications and widget
 
-- **Only the squishy itself** sends notifications: a need getting low, a need run out, a warning before neglect kills, and a **good morning** at 8 am when it was put to bed for the night (a postcard of it happy in its room, "☀️ Good morning!"; it goes first if a care reminder falls at the same time). No task or gift notifications.
+- **Only the squishy itself** sends notifications: a need getting low, a need run out, a warning before neglect kills, and a **good morning** at 8 am when it was put to bed for the night (a postcard of it happy in its room with a sun in its thought bubble; the text is just ☀️; it goes first if a care reminder falls at the same time). No task or gift notifications.
 - **Pictures, not text:** each notification is a little postcard of your own squishy (its type, mood and life stage) with a thought bubble showing what it wants (bowl, ball, moon, water drop). The title is its name; the text is just an emoji.
 - **Calm policy:** never between 9 pm and 8 am (moved to the morning), and at least 3 hours apart, except the neglect warning.
 - **Squishy portraits** are painted in code, icon-style, for every type × mood (happy, needs something, sad) × life stage.

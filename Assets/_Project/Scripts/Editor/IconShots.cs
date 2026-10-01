@@ -124,6 +124,8 @@ namespace Squishy.EditorTools
                 var scene = (byte[])typeof(Squishy.Runtime.Game.Notifier).GetMethod("Scene", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { png, new System.Collections.Generic.List<int> { 0, 1, 3 }, rules });
                 Directory.CreateDirectory(Dir);
                 File.WriteAllBytes(Dir + "/notif.png", scene);
+                var happyPng = Squishy.Runtime.Game.SquishyArt.Png(rules.Fav, Squishy.Runtime.Game.SquishyArt.Mood.Happy, rules.LifeStage());
+                File.WriteAllBytes(Dir + "/notif_morning.png", (byte[])typeof(Squishy.Runtime.Game.Notifier).GetMethod("Scene", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { happyPng, new System.Collections.Generic.List<int> { 4 }, rules }));
                 Finish(0);
                 return;
             }

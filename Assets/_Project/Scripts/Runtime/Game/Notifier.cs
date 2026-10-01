@@ -157,7 +157,7 @@ namespace Squishy.Runtime.Game
             var stage = rules.LifeStage();
             var happy = SquishyArt.Png(f, SquishyArt.Mood.Happy, stage);
             Save("happy", happy);
-            Save("morning", Scene(happy, null, rules)); // the good-morning postcard: happy in its room
+            Save("morning", Scene(happy, new[] { Sun }, rules)); // the good-morning postcard: happy in its room, a sun in its bubble
             var droopy = SquishyArt.Png(f, SquishyArt.Mood.Droopy, stage);
             Save("droopy", droopy);
             var sad = SquishyArt.Png(f, SquishyArt.Mood.Sad, stage);
@@ -209,6 +209,8 @@ namespace Squishy.Runtime.Game
         }
 
         /// <summary>One need's little picture, centred at (cx, cy) at scale s: a bowl, a ball, a moon, a drop (or a heart for "fading").</summary>
+        private const int Sun = 4; // a thought-bubble picture that isn't a need: good morning
+
         private static void DrawNeed(Three.Canvas2D g, int need, float cx, float cy, float s, Color bubble)
         {
             if (need == 0)
@@ -239,6 +241,19 @@ namespace Squishy.Runtime.Game
                 g.FillCircle(cx, cy + 14 * s, 30 * s, drop);
                 g.FillPolygon(new[] { new Vector2(cx, cy - 44 * s), new Vector2(cx - 27 * s, cy + 4 * s), new Vector2(cx + 27 * s, cy + 4 * s) }, drop);
                 g.FillCircle(cx - 10 * s, cy + 8 * s, 8 * s, bubble);
+            }
+            else if (need == Sun)
+            {
+                // Good morning: a warm sun with rounded rays.
+                var gold = Three.Canvas2D.Css("#F2B33D");
+                for (int i = 0; i < 8; i++)
+                {
+                    float a = i * Mathf.PI / 4;
+                    g.Line(cx + Mathf.Cos(a) * 36 * s, cy + Mathf.Sin(a) * 36 * s, cx + Mathf.Cos(a) * 54 * s, cy + Mathf.Sin(a) * 54 * s, gold, 9 * s);
+                    g.FillCircle(cx + Mathf.Cos(a) * 54 * s, cy + Mathf.Sin(a) * 54 * s, 4.5f * s, gold);
+                }
+                g.FillCircle(cx, cy, 28 * s, Three.Canvas2D.Css("#F7C948"));
+                g.FillCircle(cx - 8 * s, cy - 8 * s, 9 * s, Three.Canvas2D.Css("#FCE38A"));
             }
             else
             {
@@ -358,7 +373,7 @@ namespace Squishy.Runtime.Game
             {
                 var morning = now.Date.AddHours(QuietTo);
                 if (morning <= now) morning = morning.AddDays(1);
-                plans.Add(new Plan { when = morning, title = name, text = "☀️ Good morning!", mood = "morning" });
+                plans.Add(new Plan { when = morning, title = name, text = "☀️", mood = "morning" });
             }
             // Tasks and gifts never notify: only the squishy itself does.
 
