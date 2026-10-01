@@ -55,8 +55,17 @@ namespace Squishy.Runtime.Game
             float z = Mathf.Max(0, c.zoom), close = Mathf.Max(0, -c.zoom), e = c.edit;
             float hx = ai.x * (1 - z), hz = ai.z * (1 - z), hy = (Y0 + pet.Scale * (1 - .35f * Mathf.Min(1, close)) + ai.y) * (1 - z) + .3f * z;
             float tx = hx + (c.panT.x - hx) * e, tz = hz + (c.panT.z - hz) * e, ty = hy + (.25f - hy) * e;
-            float kk = Mathf.Min(1, dt * (e > .5f ? 12 : 3));
+            // Zoomed in, the same lag covers much more of the screen (it nearly went off the edge): follow faster the closer
+            // the view, and never fall more than a short way behind. The room views keep their gentle drift.
+            float closeK = Mathf.Clamp01(close);
+            float kk = Mathf.Min(1, dt * (e > .5f ? 12 : 3 + 7 * closeK));
             c.target += new Vector3((tx - c.target.x) * kk, (ty - c.target.y) * kk, (tz - c.target.z) * kk);
+            if (closeK > 0 && e < .5f)
+            {
+                float maxLag = Mathf.Lerp(.6f, .1f, closeK) * (.6f + pet.Scale * 2);
+                var lag = new Vector2(tx - c.target.x, tz - c.target.z);
+                if (lag.magnitude > maxLag) { var keep = lag.normalized * maxLag; c.target.x = tx - keep.x; c.target.z = tz - keep.y; }
+            }
             float near = .45f + pet.Scale * 2.4f;
             float dH = FitDist((near + (HR * 1.12f - near) * z) * (1 - .55f * Mathf.Min(1, close) - .27f * Mathf.Max(0, close - 1))) /* past -1: closer still, for squishing */, dE = FitDist(.7f + (HR * 1.12f - .7f) * c.ez), elH = 42 + 14 * z - 14 * close + c.htilt;
             float d = dH + (dE - dH) * e, el = (elH + (c.tilt - elH) * e) * Mathf.Deg2Rad;
