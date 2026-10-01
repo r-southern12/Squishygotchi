@@ -88,9 +88,13 @@ namespace Squishy.Runtime.Game
         /// The way from here to there: points to walk through (on the floor), and jumps onto and off low pieces
         /// where crossing them beats going round. The goal itself isn't included.
         /// </summary>
+        /// <summary>Whether the last NavWay found a way all the way to its goal (not just the nearest point it could reach).</summary>
+        private bool navReached;
+
         private List<PathPt> NavWay(float sx, float sz, float gx, float gz, Item skip)
         {
             var way = new List<PathPt>();
+            navReached = true;
             if (navDirty || navKind == null || Mathf.Abs(navPetR - PetRadius()) > .005f || Mathf.Abs(navR - FLOOR_R) > .001f) BuildNav();
             int start = NavCellAt(sx, sz), goal = NavCellAt(gx, gz), n = navN * navN;
             if (start == goal) return way;
@@ -137,6 +141,8 @@ namespace Squishy.Runtime.Game
                     heap.Push(nc, nd + Vector2.Distance(NavPos(nc), gp));
                 }
             }
+            // Couldn't get there: the caller gives up rather than walking the last stretch through furniture.
+            navReached = best == goal || Vector2.Distance(NavPos(best), gp) <= NavCell * 1.5f;
             // Back from the goal (or the nearest reachable cell) to the start.
             var cells = new List<int>();
             for (int c = best; c != -1; c = came[c]) cells.Add(c);
@@ -236,6 +242,24 @@ namespace Squishy.Runtime.Game
         }
 
         /// <summary>Chasing the ball: it slides round tall pieces instead of going through them.</summary>
+        /// <summary>
+        /// Walking on the floor: never inside a tall piece (only the one it's heading for). A safety net under the route
+        /// finder, so nothing is ever seen walking through furniture; low pieces it hops over are left to the route.
+        /// </summary>
+        private void PushOutOfTall(Item ignore)
+        {
+            float pr = PetRadius();
+            foreach (var o in obstacles)
+            {
+                if (o.it == ignore || (o.it != null && HopTop(o.it) > 0)) continue;
+                float dx = ai.x - o.x, dz = ai.z - o.z, d = Dist(dx, dz), min = o.r + pr * .8f;
+                if (d >= min) continue;
+                if (d < 1e-4f) { dx = -o.x; dz = -o.z; d = Mathf.Max(1e-4f, Dist(dx, dz)); }
+                ai.x = o.x + dx / d * min;
+                ai.z = o.z + dz / d * min;
+            }
+        }
+
         private void PushOutOfFurniture(Item ignore)
         {
             float pr = PetRadius();

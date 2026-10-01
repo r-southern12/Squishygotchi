@@ -318,6 +318,8 @@ namespace Squishy.Runtime.Game
                 if (i.a.role == "tea") table = i; else if (i.a.role == "seat") seat = i;
             }
             if (table == null || seat == null) return false;
+            var spot = SeatSpot(seat, table);
+            if (!PlanPath(spot.stand.x, spot.stand.y, spot.y, spot.approach, seat)) return false; // no way to the stool: it eats at the stove
             if (cookTool != null) { Node.Destroy(cookTool); cookTool = null; }
             if (A.it.parts.pan != null) A.it.parts.pan.gameObject.SetActive(true);
             // The dish goes on the table, on the stool's side.
@@ -330,9 +332,8 @@ namespace Squishy.Runtime.Game
             ai.act = new Activity { it = table, role = "dine", act = act, recipe = A.recipe, combo = m, chained = true };
             ai.actT = 0;
             ai.target = table;
-            ai.spot = SeatSpot(seat, table);
-            ai.mode = "walk";
-            PlanPath(ai.spot.stand.x, ai.spot.stand.y, ai.spot.y, ai.spot.approach, seat);
+            ai.spot = spot;
+            ai.mode = "walk"; // the walk was planned above
             ui.ShowBubble("hunger", "Dinner at the table", false);
             return true;
         }

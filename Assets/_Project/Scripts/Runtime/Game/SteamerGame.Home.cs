@@ -297,17 +297,36 @@ namespace Squishy.Runtime.Game
             return new Vector2(it.tx + Mathf.Sin(it.ry) * d, it.tz + Mathf.Cos(it.ry) * d);
         }
 
-        private void PlanPath(float tx, float tz, float ty, Vector2? approach, Item skip)
+        /// <summary>Plans the walk there. False when there's no way through (it won't walk through furniture to get there).</summary>
+        private bool PlanPath(float tx, float tz, float ty, Vector2? approach, Item skip)
         {
             var pts = new List<PathPt>();
             float cx = ai.x, cz = ai.z;
             if (ai.y > .02f && ai.perch.HasValue) { pts.Add(new PathPt { x = ai.perch.Value.x, z = ai.perch.Value.y, y = 0, big = true }); cx = ai.perch.Value.x; cz = ai.perch.Value.y; }
             float gx = approach.HasValue ? approach.Value.x : tx, gz = approach.HasValue ? approach.Value.y : tz;
             pts.AddRange(NavWay(cx, cz, gx, gz, skip)); // round tall pieces, over low ones
+            if (!navReached) { ai.path.Clear(); ai.seg = null; return false; }
             if (approach.HasValue) pts.Add(new PathPt { x = approach.Value.x, z = approach.Value.y, y = 0 });
             pts.Add(new PathPt { x = tx, z = tz, y = ty, big = ty > .09f });
             ai.path = pts;
             ai.seg = null;
+            return true;
+        }
+
+        /// <summary>No way to the piece without going through furniture: it doesn't go (and says so when you asked).</summary>
+        private void CantReach(Item it, bool user)
+        {
+            ai.act = null;
+            ai.target = null;
+            ai.spot = null;
+            ai.mode = "idle";
+            ai.idleT = user ? 2.5f : .5f;
+            if (user)
+            {
+                var t = it != null ? C.Type(it.arch) : null;
+                FloaterAt(it, "Can't reach the " + (t != null ? t.name.ToLowerInvariant() : "piece"), "bad");
+                sfx.Bonk();
+            }
         }
 
         private Item NearestRole(string role)
@@ -481,7 +500,7 @@ namespace Squishy.Runtime.Game
                 var s = SeatSpot(seat, it);
                 ai.spot = s;
                 ai.mode = "walk";
-                PlanPath(s.stand.x, s.stand.y, s.y, s.approach, seat);
+                if (!PlanPath(s.stand.x, s.stand.y, s.y, s.approach, seat)) { CantReach(it, user); return; }
             }
             else if (it.a.cat == "Floor")
             {
@@ -491,7 +510,7 @@ namespace Squishy.Runtime.Game
                 var s = new Spot { stand = FreeSpotNear(at, it), y = 0 };
                 ai.spot = s;
                 ai.mode = "walk";
-                PlanPath(s.stand.x, s.stand.y, 0, null, it);
+                if (!PlanPath(s.stand.x, s.stand.y, 0, null, it)) { CantReach(it, user); return; }
             }
             else if (role == "slide")
             {
@@ -500,7 +519,7 @@ namespace Squishy.Runtime.Game
                 var s = new Spot { stand = FreeSpotNear(new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), it), y = 0, face = new Vector2(it.tx, it.tz) };
                 ai.spot = s;
                 ai.mode = "walk";
-                PlanPath(s.stand.x, s.stand.y, 0, null, it);
+                if (!PlanPath(s.stand.x, s.stand.y, 0, null, it)) { CantReach(it, user); return; }
             }
             else
             {
@@ -508,7 +527,7 @@ namespace Squishy.Runtime.Game
                 if (role == "dressup") s.face = null; // it faces you, not the wardrobe
                 ai.spot = s;
                 ai.mode = "walk";
-                PlanPath(s.stand.x, s.stand.y, s.y, s.approach, it);
+                if (!PlanPath(s.stand.x, s.stand.y, s.y, s.approach, it)) { CantReach(it, user); return; }
             }
             // Busy by itself with something: say so, and that a tap now earns a tip (the passive-income interaction).
             if (user) ui.ShowBubble(string.IsNullOrEmpty(act.need) ? "idle" : act.need, recipe != null && role == "eat" ? recipe.name : act.label, false);
@@ -548,7 +567,7 @@ namespace Squishy.Runtime.Game
             ai.act = null;
             ai.target = null;
             ai.mode = "walk";
-            PlanPath(tx, tz, 0, null, null);
+            if (!PlanPath(tx, tz, 0, null, null)) { ai.mode = "idle"; ai.idleT = 1; }
             ui.HideBubble();
         }
 
@@ -1068,6 +1087,7 @@ namespace Squishy.Runtime.Game
             ai.z = s.fz + (s.tz - s.fz) * u;
             ai.y = s.fy + (s.ty - s.fy) * u;
             if (s.chase) PushOutOfFurniture(ball); // chasing the ball: round the furniture, not through it
+            else if (!s.big && s.fy <= .02f && s.ty <= .02f) PushOutOfTall(ai.target); // on the floor: never through a tall piece
             YawTo(s.tx, s.tz, dt, 10);
             if (s.big) lift = .4f * Mathf.Sin(Mathf.PI * u);
             else

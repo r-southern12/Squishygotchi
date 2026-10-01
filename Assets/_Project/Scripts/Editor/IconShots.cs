@@ -137,6 +137,34 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_REACH") == "1")
+            {
+                // Ask for every piece in the room in turn: which can it reach (walk) and which does it give up on.
+                EditorApplication.update -= Tick;
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var fl = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var aiObj = T.GetField("ai", fl).GetValue(game);
+                var items = (System.Collections.IList)T.GetField("items", fl).GetValue(game);
+                var rr = (Squishy.Simulation.Game.GameRules)T.GetField("Rules", fl).GetValue(game);
+                rr.S.asleep = false; rr.S.tucked = false;
+                var sb = new System.Text.StringBuilder("REACH:");
+                foreach (var it in items)
+                {
+                    aiObj.GetType().GetField("mode").SetValue(aiObj, "idle");
+                    aiObj.GetType().GetField("act").SetValue(aiObj, null);
+                    try { T.GetMethod("UseItem", fl).Invoke(game, new object[] { it, true, null, null }); }
+                    catch (System.Exception e) { sb.Append(" [ERR " + e.InnerException?.Message + "]"); }
+                    string arch = (string)it.GetType().GetProperty("arch").GetValue(it);
+                    string mode = (string)aiObj.GetType().GetField("mode").GetValue(aiObj);
+                    var act = aiObj.GetType().GetField("act").GetValue(aiObj);
+                    sb.Append(" " + arch + "=" + (act == null ? "none" : mode));
+                }
+                Debug.Log(sb.ToString());
+                Debug.Log(game.NavSelfCheck(200));
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FOODS") == "1")
             {
                 // Every ingredient model at its own (true) size in a row, plus their measured sizes, to set display sizes.
