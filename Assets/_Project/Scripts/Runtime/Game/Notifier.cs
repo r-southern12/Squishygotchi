@@ -155,7 +155,9 @@ namespace Squishy.Runtime.Game
             var f = rules.Fav;
             // Painted, icon-style portraits of this squishy type (a camera render came back blank on phones).
             var stage = rules.LifeStage();
-            Save("happy", SquishyArt.Png(f, SquishyArt.Mood.Happy, stage));
+            var happy = SquishyArt.Png(f, SquishyArt.Mood.Happy, stage);
+            Save("happy", happy);
+            Save("morning", Scene(happy, null, rules)); // the good-morning postcard: happy in its room
             var droopy = SquishyArt.Png(f, SquishyArt.Mood.Droopy, stage);
             Save("droopy", droopy);
             var sad = SquishyArt.Png(f, SquishyArt.Mood.Sad, stage);
@@ -351,11 +353,18 @@ namespace Squishy.Runtime.Game
                     if (fade > 600) plans.Add(new Plan { when = now.AddSeconds(fade), title = name, text = "💛 …", mood = "fade", urgent = true });
                 }
             }
-            // Tasks and gifts never notify: only the squishy itself asking for care does.
+            // Good morning (user request, 2 Oct 2026): put to bed for the night, it says hello when the quiet hours end.
+            if (s.asleep)
+            {
+                var morning = now.Date.AddHours(QuietTo);
+                if (morning <= now) morning = morning.AddDays(1);
+                plans.Add(new Plan { when = morning, title = name, text = "☀️ Good morning!", mood = "morning" });
+            }
+            // Tasks and gifts never notify: only the squishy itself does.
 
             // Calm policy: quiet hours move to the morning; keep at least 3 hours between reminders.
             foreach (var p in plans) if (!p.urgent) p.when = OutOfQuietHours(p.when);
-            plans.Sort((a, b) => a.when.CompareTo(b.when));
+            plans.Sort((a, b) => { int c = a.when.CompareTo(b.when); return c != 0 ? c : a.mood == "morning" ? -1 : b.mood == "morning" ? 1 : 0; }); // at the same time, good morning goes first
             DateTime last = DateTime.MinValue;
             foreach (var p in plans)
             {
