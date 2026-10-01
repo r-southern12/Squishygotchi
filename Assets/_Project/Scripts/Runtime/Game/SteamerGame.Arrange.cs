@@ -102,9 +102,28 @@ namespace Squishy.Runtime.Game
                 bool block = close && it.a.cat != "Floor" && Occludes(it, from, to);
                 it.hideT = block ? .35f : Mathf.Max(0, it.hideT - dt);
                 bool hide = it.hideT > 0;
-                if (hide == it.hidden) continue;
+                // Fade out of the way and back (user request, 2 Oct 2026: it used to switch off at once).
+                float goal = hide ? 0 : 1;
+                if (Mathf.Approximately(it.fade, goal) && hide == it.hidden) continue;
+                it.fade = Mathf.MoveTowards(it.fade, goal, dt / .3f);
                 it.hidden = hide;
-                foreach (var r in it.g.GetComponentsInChildren<Renderer>(true)) r.enabled = !hide;
+                SetFade(it, it.fade);
+            }
+        }
+
+        private static readonly int FadeId = Shader.PropertyToID("_Fade");
+        private MaterialPropertyBlock fadeBlock;
+
+        /// <summary>Fades a piece (1 shown, 0 gone); fully faded it stops drawing altogether.</summary>
+        private void SetFade(Item it, float f)
+        {
+            if (fadeBlock == null) fadeBlock = new MaterialPropertyBlock();
+            foreach (var r in it.g.GetComponentsInChildren<Renderer>(true))
+            {
+                r.enabled = f > .001f;
+                r.GetPropertyBlock(fadeBlock);
+                fadeBlock.SetFloat(FadeId, f);
+                r.SetPropertyBlock(fadeBlock);
             }
         }
 

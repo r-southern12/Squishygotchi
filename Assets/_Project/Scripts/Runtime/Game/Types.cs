@@ -20,6 +20,7 @@ namespace Squishy.Runtime.Game
         public float restT; // a ball: how long it has sat still away from home
         public float h, hideT; // height (measured once); how long it stays hidden once it stops blocking the view
         public bool hidden;
+        public float fade = 1; // 1 shown, 0 faded out of the way (blocking the zoomed-in view)
 
         public string key { get { return st.key; } }
         public string arch { get { return st.Arch; } }

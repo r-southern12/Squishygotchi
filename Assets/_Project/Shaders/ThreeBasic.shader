@@ -10,6 +10,7 @@ Shader "Squishy/ThreeBasic"
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend", Float) = 0
         _ZWrite ("ZWrite", Float) = 1
+        [HideInInspector] _Fade ("Fade (1 = visible)", Float) = 1
     }
 
     SubShader
@@ -37,7 +38,19 @@ Shader "Squishy/ThreeBasic"
                 float _SrcBlend;
                 float _DstBlend;
                 float _ZWrite;
+                float _Fade;
             CBUFFER_END
+
+            // Fading pieces out of the way (a piece blocking the zoomed-in view): a 4x4 ordered dither, so opaque materials
+            // can dissolve smoothly; the tilt-shift blur softens it into a fade. _Fade: 1 visible, 0 gone.
+            static const float kBayer[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+            void FadeClip(float4 positionCS, float fade)
+            {
+                if (fade >= .999) return;
+                int x = (int)fmod(floor(positionCS.x), 4.0), y = (int)fmod(floor(positionCS.y), 4.0);
+                clip(fade - (kBayer[y * 4 + x] + .5) / 16.0);
+            }
+
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
 
@@ -64,6 +77,7 @@ Shader "Squishy/ThreeBasic"
 
             half4 Frag(Varyings i) : SV_Target
             {
+                FadeClip(i.positionCS, _Fade);
                 float4 c = _BaseColor * SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * i.tint;
                 return c;
             }
