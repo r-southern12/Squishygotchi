@@ -96,6 +96,8 @@ namespace Squishy.Simulation.Game
         public float babyDrain; // needs drain this many times faster in the Baby stage (babies need more looking after)
         public float needVariance; // each squishy's own appetite: per life stage, each need drains up to this much faster or slower
         public float visitFeed, visitPet; // how much a friend's snack and squish top up Hunger and Play
+        public float visitPlay, visitPamper, stickerHours; // playing together tops up Play, pampering tops up Clean; a sticker stays this long
+        public int visitMaxActs, stickerMax; // caring things a visit pays the host for; stickers in a room at once
         public float dentRadius, flingHold, flingSpeed; // tactile squish: dent size in the world; hold time and speed of the ping // per caring action on a visit: for you, and for the friend you visited
         public int[] stagePrestige; // paid on reaching Young, Adult, Elder, scaled by quality of life so far
         public float lifespanMinDays, lifespanMaxDays, babyDays, prestigeBase, prestigePerQol, trialDays, giftHours;

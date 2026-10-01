@@ -2880,7 +2880,12 @@
       "#E1B96A",
       "#E7D8BD"
     ],
-    "needVariance": 0.3
+    "needVariance": 0.3,
+    "visitPlay": 0.15,
+    "visitPamper": 0.2,
+    "visitMaxActs": 6,
+    "stickerHours": 24,
+    "stickerMax": 6
   },
   "cosmetics": [
     {

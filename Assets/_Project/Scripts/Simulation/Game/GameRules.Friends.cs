@@ -62,7 +62,7 @@ namespace Squishy.Simulation.Game
         /// Returns the coins paid (0 if this visit was already counted).
         /// </summary>
         /// <summary>What a friend's visit did for you, for the "while you were away" card.</summary>
-        public sealed class VisitGift { public string friendId, name; public int coins; public float hunger, play; public bool watered; }
+        public sealed class VisitGift { public string friendId, name, sticker; public int coins; public float hunger, play, together, clean; public bool watered; }
 
         /// <summary>
         /// A friend's visit while you were away: coins, plus the care itself carries over to your squishy
@@ -77,6 +77,15 @@ namespace Squishy.Simulation.Game
             if (what.Contains("feed")) { g.hunger = Math.Min(R.visitFeed, 1 - S.needs[Needs.Hunger]); S.needs[Needs.Hunger] += g.hunger; }
             if (what.Contains("pet")) { g.play = Math.Min(R.visitPet, 1 - S.needs[Needs.Play]); S.needs[Needs.Play] += g.play; }
             if (what.Contains("water")) { g.watered = true; foreach (var p in S.items) if (p.Arch == "plant") p.wilt = 0; }
+            // Brought their squishy and played together; pampered yours; left a sticker (user request, 2 Oct 2026).
+            if (what.Contains("play")) { g.together = Math.Min(R.visitPlay, 1 - S.needs[Needs.Play]); S.needs[Needs.Play] += g.together; }
+            if (what.Contains("pamper")) { g.clean = Math.Min(R.visitPamper, 1 - S.needs[Needs.Clean]); S.needs[Needs.Clean] += g.clean; }
+            int si = what.IndexOf("sticker:", StringComparison.Ordinal);
+            if (si >= 0)
+            {
+                string kind = what.Substring(si + 8).Split(',')[0];
+                if (!string.IsNullOrEmpty(kind)) { AddSticker(kind, g.name); g.sticker = kind; }
+            }
             return g;
         }
 
@@ -87,10 +96,21 @@ namespace Squishy.Simulation.Game
             if (done != null && done.at >= at) return 0;
             if (done == null) S.visitsCredited.Add(done = new VisitCredit { id = friendId });
             done.at = at;
-            int coins = Math.Min(acts, 3) * R.visitHostCoins;
+            int coins = Math.Min(acts, R.visitMaxActs > 0 ? R.visitMaxActs : 3) * R.visitHostCoins;
             AddCoins(coins);
             return coins;
         }
+
+        /// <param name="byCode">Found by their friend code: a real friend (a neighbour you then add by code becomes one).</param>
+        /// <summary>A friend's sticker on your floor for a day (the oldest goes when there are too many).</summary>
+        public void AddSticker(string kind, string from)
+        {
+            PruneStickers();
+            while (S.stickers.Count >= Math.Max(1, R.stickerMax)) S.stickers.RemoveAt(0);
+            S.stickers.Add(new StickerState { kind = kind, from = from, until = Clock.UtcNow.AddHours(R.stickerHours > 0 ? R.stickerHours : 24).Ticks, a = (float)(Random() * Math.PI * 2), r = .45f + (float)Random() * .3f });
+        }
+
+        public void PruneStickers() { long now = Clock.UtcNow.Ticks; S.stickers.RemoveAll(x => x == null || x.until < now); }
 
         /// <param name="byCode">Found by their friend code: a real friend (a neighbour you then add by code becomes one).</param>
         public void RememberFriend(string id, RoomSnapshot snap, bool byCode = false)

@@ -77,6 +77,54 @@ namespace Squishy.Runtime.Three
         }
 
         /// <summary>A four-point star with a soft glow: the sparkle sprite for squish and bounce effects (linear, alpha only).</summary>
+        /// <summary>A die-cut sticker (heart, star, flower or wave) with a white border, painted once and kept.</summary>
+        public static Texture2D Sticker(string kind)
+        {
+            string key = "sticker_" + kind;
+            if (Cache.TryGetValue(key, out var hit)) return hit;
+            const int S = 128;
+            var g = new Canvas2D(S, S);
+            Color white = Color.white;
+            void Shape(float grow, Color col)
+            {
+                float c = S / 2f;
+                if (kind == "heart")
+                {
+                    float k = 1 + grow;
+                    g.FillCircle(c - 18 * k, c - 10 * k, 22 * k, col);
+                    g.FillCircle(c + 18 * k, c - 10 * k, 22 * k, col);
+                    g.FillPolygon(new[] { new Vector2(c - 39 * k, c - 2 * k), new Vector2(c + 39 * k, c - 2 * k), new Vector2(c, c + 44 * k) }, col);
+                }
+                else if (kind == "star")
+                {
+                    var pts = new System.Collections.Generic.List<Vector2>();
+                    for (int i = 0; i < 10; i++) { float a = -Mathf.PI / 2 + i * Mathf.PI / 5, rr = (i % 2 == 0 ? 50 : 22) * (1 + grow); pts.Add(new Vector2(c + Mathf.Cos(a) * rr, c + 4 + Mathf.Sin(a) * rr)); }
+                    g.FillPolygon(pts, col);
+                }
+                else if (kind == "flower")
+                {
+                    for (int i = 0; i < 5; i++) { float a = -Mathf.PI / 2 + i * Mathf.PI * 2 / 5; g.FillCircle(c + Mathf.Cos(a) * 24, c + Mathf.Sin(a) * 24, 20 * (1 + grow) + grow * 10, col); }
+                    if (grow == 0) g.FillCircle(c, c, 14, Canvas2D.Css("#F7C948"));
+                }
+                else // wave: a waving hand
+                {
+                    float k = 1 + grow, w = 9 * k + grow * 6;
+                    g.FillCircle(c, c + 12, 26 * k, col);
+                    for (int f = 0; f < 4; f++)
+                    {
+                        float fx = c - 18 + f * 12, top = c - 34 + Mathf.Abs(f - 1.5f) * 6;
+                        g.Line(fx, c + 6, fx, top, col, w);
+                        g.FillCircle(fx, top, w / 2, col);
+                    }
+                    g.Line(c - 24, c + 18, c - 40, c + 2, col, w);
+                    g.FillCircle(c - 40, c + 2, w / 2, col);
+                }
+            }
+            Shape(.16f, white); // the white die-cut border
+            Shape(0, Canvas2D.Css(kind == "heart" ? "#E86A92" : kind == "star" ? "#F2B33D" : kind == "flower" ? "#B48CE0" : "#F7C948"));
+            return Cache[key] = g.ToTexture(true, false, true, "Sticker " + kind);
+        }
+
         /// <summary>A soap bubble seen face on: nearly clear inside, a bright rim with a rainbow sheen, a white highlight.</summary>
         public static Texture2D Bubble()
         {

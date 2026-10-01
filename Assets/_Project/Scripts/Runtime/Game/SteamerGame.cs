@@ -180,7 +180,7 @@ namespace Squishy.Runtime.Game
             else
             {
                 StepHome(dt);
-                StepMeta(dt);
+                if (visiting) StepVisit(dt); // your squishy along on a visit, pampering
                 HomeCamera(dt);
                 StepOccluders(dt);
                 homeSteam.Update(dt, true, cam);

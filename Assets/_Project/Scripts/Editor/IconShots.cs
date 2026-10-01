@@ -366,8 +366,12 @@ namespace Squishy.EditorTools
                 if (_bathAt < 0) { T.GetMethod("TestVisit", flags).Invoke(game, null); _bathAt = f; return; }
                 if (!vis) { if (f - _bathAt > 600) { Debug.LogError("IconShots: visit never started"); Finish(1); } return; }
                 if (_inBath < 0) _inBath = f;
+                // The new things to do: play together, pamper, a sticker (then the photo once they have run).
+                if (f - _inBath == 10) { T.GetMethod("VisitPlay", flags).Invoke(game, null); T.GetMethod("VisitPamper", flags).Invoke(game, null); T.GetMethod("PressSticker", flags).Invoke(game, new object[] { "star" }); }
+                if (f - _inBath == 40) Debug.Log("IconShots: visit extras buddy=" + (T.GetField("buddy", flags).GetValue(game) != null) + " pamperT=" + T.GetField("pamperT", flags).GetValue(game) + " playT=" + T.GetField("bPlayT", flags).GetValue(game));
                 if (f - _inBath < 120) return;
                 EditorApplication.update -= Tick;
+                Debug.Log("IconShots: visit done=" + string.Join(",", (System.Collections.Generic.HashSet<string>)T.GetField("visitDone", flags).GetValue(game)));
                 var vpet = FindPet();
                 var cam = Camera.main;
                 var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };

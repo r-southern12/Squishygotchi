@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Squishy.Runtime.Models;
+using Squishy.Runtime.Three;
 using Squishy.Runtime.UI;
 using Squishy.Simulation.Game;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static Squishy.Runtime.Game.Ease;
 
 namespace Squishy.Runtime.Game
 {
@@ -193,6 +197,8 @@ namespace Squishy.Runtime.Game
                 visiting = true;
                 RebuildHome();
                 SetMode("visit");
+                visitSticker = null;
+                BringBuddy(); // your squishy comes along
                 ShowVisitCard();
                 ui.SetCoins(Own.S.coins);
             });
@@ -201,6 +207,9 @@ namespace Squishy.Runtime.Game
         private void ShowVisitCard()
         {
             ui.ShowVisit("Visiting " + Rules.Fav.name + "'s steamer", VisitSub(),
+                ("Play together", "#6E9C9A", "#4F7876", Hud.Cream, (Action)VisitPlay),
+                ("Pamper", "#E86A92", "#B84A70", Hud.Cream, (Action)VisitPamper),
+                ("Sticker", "#8C7BB0", "#6A5A8E", Hud.Cream, (Action)VisitSticker),
                 ("Give a snack", "#D9A64A", "#B0822F", Hud.Cream, (Action)VisitSnack),
                 ("Go home", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => EndVisit(false))));
         }
@@ -208,7 +217,228 @@ namespace Squishy.Runtime.Game
         private string VisitSub()
         {
             string Tick(string k, string label) { return (visitDone.Contains(k) ? "✓ " : "") + label; }
-            return Tick("pet", "Squish them") + " · " + Tick("feed", "give a snack") + " · " + Tick("water", "water a plant");
+            return Tick("pet", "Squish") + " · " + Tick("feed", "Snack") + " · " + Tick("water", "Water") + " · " + Tick("play", "Play") + " · " + Tick("pamper", "Pamper") + " · " + Tick("sticker", "Sticker");
+        }
+
+        // ---------------- more to do on a visit (user request, 2 Oct 2026) ----------------
+
+        private SquishyModel buddy; // your own squishy, along for the visit
+        private float bx, bz, byaw, bhop, bLift, bExtra, bPlayT = -1, bBumped;
+        private Item bBall;
+        private Transform brush;
+        private float pamperT = -1;
+        private string visitSticker;
+
+        /// <summary>Your squishy comes along: it appears beside theirs and follows it round their room.</summary>
+        private void BringBuddy()
+        {
+            buddy = new SquishyModel(room, C.sizes[ownRules.FavSizeIdx].s);
+            buddy.SetFinish(C.finishes[ownRules.S.favIdx]);
+            buddy.SetStage(ownRules.LifeStage());
+            buddy.SetCosmetics(ownRules.Worn(ownRules.S.hat), ownRules.Worn(ownRules.S.face), ownRules.Worn(ownRules.S.neck));
+            Node.SetLayer(buddy.Pivot, HomeLayer);
+            var start = FreeSpotNear(new Vector2(ai.x + PetRadius() * 2.4f, ai.z), null);
+            bx = start.x;
+            bz = start.y;
+            byaw = Mathf.Atan2(ai.x - bx, ai.z - bz);
+            bPlayT = -1;
+        }
+
+        private float BuddyR { get { return buddy != null ? buddy.Scale * 1.14f : .15f; } }
+
+        /// <summary>Each frame of a visit: your squishy follows theirs (or plays), the brush pampers, keeping clear of furniture.</summary>
+        private void StepVisit(float dt)
+        {
+            if (!visiting || buddy == null) return;
+            var host = new Vector2(ai.x, ai.z);
+            Vector2 goal;
+            float speed = .55f * (.8f + buddy.Scale * 2);
+            bExtra = 0;
+            if (bPlayT >= 0)
+            {
+                // Playing together: hop over and bump into them, then kick their ball over (or a little dance).
+                bPlayT += dt;
+                float contact = PetRadius() + BuddyR - .02f;
+                if (bBumped < 0)
+                {
+                    goal = host;
+                    speed *= 1.6f;
+                    if (Vector2.Distance(new Vector2(bx, bz), host) <= contact + .03f)
+                    {
+                        bBumped = 0;
+                        pet.V += 5;
+                        buddy.V += 5;
+                        sfx.Note(3);
+                        Buzz(15);
+                        var pw = PetWorld();
+                        Glints(new Vector3((pw.x + bx) / 2, pw.y + pet.Scale, (pw.z + bz) / 2), "#F2A7B8", 6);
+                        ownRules.S.needs[Needs.Play] = Mathf.Min(1, ownRules.S.needs[Needs.Play] + C.rules.visitPlay);
+                        VisitAct("play");
+                        bBall = items.Find(i => i.arch == "ball");
+                    }
+                }
+                else if (bBall != null)
+                {
+                    goal = new Vector2(bBall.tx, bBall.tz);
+                    speed *= 1.5f;
+                    if (Vector2.Distance(new Vector2(bx, bz), goal) <= BuddyR + bBall.a.r + .04f)
+                    {
+                        // A pass to their squishy, who chases it.
+                        var to = (host - goal).normalized;
+                        bBall.vx = to.x * 3.2f;
+                        bBall.vz = to.y * 3.2f;
+                        bBall.bv = -5;
+                        buddy.V += 3;
+                        sfx.Kick();
+                        if (ai.mode == "idle" || ai.mode == "walk") UseItem(bBall, false);
+                        bBall = null;
+                        bPlayT = 99;
+                    }
+                }
+                else
+                {
+                    goal = new Vector2(bx, bz);
+                    bBumped += dt;
+                    if (Mathf.Repeat(bBumped, .45f) < dt) { buddy.V += 3; pet.V += 3; sfx.Note(UnityEngine.Random.Range(0, 6)); }
+                    if (bBumped > 1.8f) bPlayT = 99;
+                }
+                if (bPlayT > 12) bPlayT = -1; // done (or gave up)
+            }
+            else
+            {
+                // Following: a little way off to one side of theirs.
+                var side = new Vector2(Mathf.Cos(Time.time * .2f), Mathf.Sin(Time.time * .2f)) * (PetRadius() + BuddyR + .22f);
+                goal = host + side;
+            }
+            goal = FreeSpotNear(goal, null);
+            var pos = new Vector2(bx, bz);
+            var to2 = goal - pos;
+            float dist = to2.magnitude;
+            bool moving = dist > .06f;
+            if (moving)
+            {
+                float step = Mathf.Min(dist, speed * dt);
+                pos += to2 / dist * step;
+                bhop += step / (.16f + buddy.Scale * .6f);
+                bLift = buddy.Scale * .55f * Mathf.Abs(Mathf.Sin(Mathf.PI * bhop));
+                bExtra = -.12f * Mathf.Sin(Mathf.PI * (bhop - Mathf.Floor(bhop)));
+                byaw = Mathf.LerpAngle(byaw * Mathf.Rad2Deg, Mathf.Atan2(to2.x, to2.y) * Mathf.Rad2Deg, Mathf.Min(1, dt * 8)) * Mathf.Deg2Rad;
+            }
+            else
+            {
+                bLift *= .8f;
+                byaw = Mathf.LerpAngle(byaw * Mathf.Rad2Deg, Mathf.Atan2(ai.x - pos.x, ai.z - pos.y) * Mathf.Rad2Deg, Mathf.Min(1, dt * 4)) * Mathf.Deg2Rad; // watching them
+            }
+            // Never inside furniture or inside their squishy.
+            pos = FreeSpotNear(pos, null);
+            var away = pos - host;
+            float minD = PetRadius() + BuddyR - (bPlayT >= 0 && bBumped < 0 ? .04f : 0);
+            if (away.magnitude < minD && away.magnitude > 1e-4f) pos = host + away.normalized * minD;
+            bx = pos.x;
+            bz = pos.y;
+            buddy.Update(dt, bExtra, false, 0);
+            buddy.Pivot.localPosition = new Vector3(bx, Y0 + .02f + bLift, bz);
+            Node.Rot(buddy.Yaw, 0, byaw, 0);
+            StepPamper(dt);
+        }
+
+        /// <summary>Play together: your squishy hops over to theirs.</summary>
+        private void VisitPlay()
+        {
+            if (buddy == null) return;
+            if (visitDone.Contains("play")) { Floater("Already played · come back another day"); return; }
+            bPlayT = 0;
+            bBumped = -1;
+            sfx.Tap();
+        }
+
+        /// <summary>Pamper: a soft brush over their squishy, with bubbles; it tops up their Clean.</summary>
+        private void VisitPamper()
+        {
+            if (pamperT >= 0) return;
+            if (visitDone.Contains("pamper")) { Floater("All pampered!"); return; }
+            ai.act = new Activity { role = "makeDo", act = new ActivityData { label = "Being pampered", need = "clean", dur = 3.2f, rate = 0 } };
+            ai.mode = "act";
+            ai.actT = 0;
+            ai.self = true;
+            ai.spot = null;
+            ai.target = null;
+            ai.path.Clear();
+            ai.seg = null;
+            brush = Node.Group(room, "pamperBrush");
+            Node.Mesh(brush, ThreeGeo.Cyl(.014f, .016f, .17f, 10), ThreeMat.M("#C9A27A"), 0, .09f, 0, shadow: false);
+            Node.Mesh(brush, ThreeGeo.RBox(.11f, .04f, .06f, .015f), ThreeMat.M("#E86A92"), 0, 0, 0, shadow: false);
+            Node.Mesh(brush, ThreeGeo.RBox(.1f, .03f, .05f, .01f), ThreeMat.M("#FFF7EC"), 0, -.03f, 0, shadow: false);
+            Node.SetLayer(brush, HomeLayer);
+            pamperT = 0;
+            pet.Express(SquishyModel.Mouth.Grin, 3.4f);
+            sfx.Tap();
+        }
+
+        private void StepPamper(float dt)
+        {
+            if (pamperT < 0 || brush == null) return;
+            pamperT += dt;
+            var pw = PetWorld();
+            float h = pet.Scale * pet.StageScale, sweep = Mathf.Sin(pamperT * 7) * h * .6f;
+            brush.localPosition = new Vector3(pw.x + sweep, pw.y + h * 1.05f + .03f * Mathf.Abs(Mathf.Sin(pamperT * 14)), pw.z + h * .2f);
+            brush.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(pamperT * 7) * 25);
+            if (UnityEngine.Random.value < dt * 10) bathBubbles.Spawn(new Vector3(pw.x + Rnd(-h, h) * .6f, pw.y + h * Rnd(.6f, 1.1f), pw.z + Rnd(-h, h) * .5f), new Vector3(Rnd(-.05f, .05f), Rnd(.12f, .3f), Rnd(-.05f, .05f)), Rnd(.025f, .045f), Rnd(1f, 1.8f), 1.5f, .03f);
+            if (Mathf.Repeat(pamperT, .5f) < dt) pet.V += 1.5f;
+            if (pamperT > 3.2f)
+            {
+                Node.Destroy(brush);
+                brush = null;
+                pamperT = -1;
+                Rules.S.needs[Needs.Clean] = Mathf.Min(1, Rules.S.needs[Needs.Clean] + C.rules.visitPamper);
+                Glints(new Vector3(pw.x, pw.y + h, pw.z), "#FFF3D6", 5);
+                VisitAct("pamper");
+            }
+        }
+
+        /// <summary>Leave a sticker: pick one; it's pressed onto their floor (they see it for a day, and who left it).</summary>
+        private void VisitSticker()
+        {
+            if (visitDone.Contains("sticker")) { Floater("One sticker a visit"); return; }
+            Action Pick(string kind) { return () => { ui.HideMemo(); PressSticker(kind); }; }
+            ui.ShowDialog("Leave a sticker", "They'll see it on their floor for a day.", "icon:friends",
+                ("Heart", "#E86A92", "#B84A70", Hud.Cream, Pick("heart")),
+                ("Star", "#F2B33D", "#C48A1E", Hud.Cream, Pick("star")),
+                ("Flower", "#B48CE0", "#8A68B4", Hud.Cream, Pick("flower")),
+                ("Wave", "#D9A64A", "#B0822F", Hud.Cream, Pick("wave")));
+        }
+
+        private void PressSticker(string kind)
+        {
+            var spot = FreeSpotNear(new Vector2(ai.x + Rnd(-.3f, .3f), ai.z + PetRadius() + .3f), null);
+            PlaceStickerAt(kind, spot.x, spot.y, Rnd(-.4f, .4f));
+            visitSticker = kind;
+            sfx.Snap();
+            Buzz(12);
+            Glints(new Vector3(spot.x, Y0 + .1f, spot.y), "#FFF3D6", 4);
+            VisitAct("sticker");
+        }
+
+        /// <summary>A sticker lying flat on the floor.</summary>
+        private Transform PlaceStickerAt(string kind, float x, float z, float turn)
+        {
+            var mat = ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Alpha, Textures.Sticker(kind), true, false);
+            var t = Node.Mesh(room, ThreeGeo.Plane(.22f, .22f), mat, x, Y0 + .006f, z, shadow: false);
+            t.localRotation = Quaternion.Euler(-90, turn * Mathf.Rad2Deg, 0);
+            Node.SetLayer(t, HomeLayer);
+            return t;
+        }
+
+        /// <summary>Your own room: the stickers friends left (each for a day), out on the floor.</summary>
+        private void PlaceStickers()
+        {
+            if (visiting || Rules == null) return;
+            Rules.PruneStickers();
+            foreach (var st in S.stickers)
+            {
+                var p = FreeSpotNear(new Vector2(Mathf.Cos(st.a), Mathf.Sin(st.a)) * FLOOR_R * st.r, null);
+                PlaceStickerAt(st.kind, p.x, p.y, st.a * 3);
+            }
         }
 
         /// <summary>"While you were away": each friend who visited and exactly what they did for your squishy.</summary>
@@ -225,6 +455,9 @@ namespace Squishy.Runtime.Game
                 if (g.hunger > 0) did.Add("gave " + fav + " a snack (+" + Mathf.RoundToInt(g.hunger * 100) + "% hunger)");
                 if (g.play > 0) did.Add("squished them (+" + Mathf.RoundToInt(g.play * 100) + "% play)");
                 if (g.watered) did.Add("watered your plant");
+                if (g.together > 0) did.Add("came round to play (+" + Mathf.RoundToInt(g.together * 100) + "% play)");
+                if (g.clean > 0) did.Add("pampered " + fav + " (+" + Mathf.RoundToInt(g.clean * 100) + "% clean)");
+                if (g.sticker != null) did.Add("left a " + g.sticker + " sticker");
                 if (did.Count == 0) did.Add("popped in to say hi");
                 sb.Append(g.name).Append(" ").Append(string.Join(", ", did)).Append(". +").Append(g.coins).Append(" coins.\n");
                 coins += g.coins;
@@ -245,7 +478,7 @@ namespace Squishy.Runtime.Game
             ui.SetCoins(ownRules.S.coins);
             sfx.Coin();
             Floater("+" + C.rules.visitCoins + " coins · your friend gets some too");
-            _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone), ownRules.Fav.name); // the squishy's name: your own name stays on the phone
+            _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone.Select(k => k == "sticker" && visitSticker != null ? "sticker:" + visitSticker : k)), ownRules.Fav.name); // the squishy's name: your own name stays on the phone
         }
 
         private void VisitSnack()
@@ -267,6 +500,10 @@ namespace Squishy.Runtime.Game
             bool realVisit = visitId != null;
             Action back = () =>
             {
+                buddy = null; // its model goes with their room
+                brush = null;
+                pamperT = -1;
+                bPlayT = -1;
                 visiting = false;
                 Rules = ownRules;
                 ownRules = null;

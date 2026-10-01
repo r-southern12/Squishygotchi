@@ -41,6 +41,7 @@ namespace Squishy.Simulation.Game
         public List<string> cosmetics = new List<string>();
         public string hat = "", face = "", neck = "";
         public List<CosColor> cosColors = new List<CosColor>(); // colours picked for accessories
+        public List<StickerState> stickers = new List<StickerState>(); // stickers friends left on the floor (each lasts a day)
         public bool premium;
         public long onlineReadyAt; // when the next free in-game steamer can be claimed
         public bool asleep; // turned in for the night
@@ -104,6 +105,10 @@ namespace Squishy.Simulation.Game
     /// <summary>A friend you've visited: their cloud player id, code and what their squishy looked like last time.</summary>
     [System.Serializable]
     public class CosColor { public string id, color; }
+
+    /// <summary>A sticker a friend pressed onto your floor: what, who, until when, and where (angle and how far out, 0-1).</summary>
+    [System.Serializable]
+    public class StickerState { public string kind, from; public long until; public float a, r; }
 
     [System.Serializable]
     public class FriendData { public string code, id, avatar; public int finish; public bool neighbour; } // neighbour: found at random (not by code)

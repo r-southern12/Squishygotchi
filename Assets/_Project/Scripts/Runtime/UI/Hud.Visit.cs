@@ -25,6 +25,8 @@ namespace Squishy.Runtime.UI
             _vSub.style.unityTextAlign = TextAnchor.MiddleCenter;
             _vSub.Wrap();
             _vBtns = new VisualElement().Row().In(_visit);
+            _vBtns.style.flexWrap = Wrap.Wrap; // more things to do than fit one row
+            _vBtns.style.justifyContent = Justify.Center;
         }
 
         public void ShowVisit(string title, string sub, params (string label, string bg, string shadow, string color, Action act)[] buttons)
@@ -34,11 +36,12 @@ namespace Squishy.Runtime.UI
             _vBtns.Clear();
             foreach (var b in buttons)
             {
-                var btn = Button(_vBtns, b.label, b.bg, b.shadow, b.color, 16, 46, 16, b.act, false, 4);
+                var btn = Button(_vBtns, b.label, b.bg, b.shadow, b.color, 16, 44, 15, b.act, false, 4);
                 btn.style.flexGrow = 1;
-                btn.style.flexBasis = 0;
+                btn.style.flexBasis = Length.Percent(30);
+                btn.style.marginLeft = btn.style.marginRight = 4;
+                btn.style.marginBottom = 8;
             }
-            _vBtns.Gap(10);
             _visit.BringToFront();
             PopIn(_visit, .45f, .2f, 1.6f, .4f, 1, 50, .8f);
         }

@@ -618,6 +618,24 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void A_Visit_Can_Play_Pamper_And_Leave_A_Sticker()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 3);
+            var rules = new GameRules(c, s);
+            s.needs = new[] { .5f, .5f, .5f, .5f };
+            var g = rules.CreditVisit("friend1", 1000, 5, "pet,play,pamper,sticker:star", "Nebula");
+            Assert.IsNotNull(g);
+            Assert.Greater(g.together, 0);
+            Assert.Greater(g.clean, 0);
+            Assert.AreEqual("star", g.sticker);
+            Assert.AreEqual(1, s.stickers.Count);
+            Assert.AreEqual("Nebula", s.stickers[0].from);
+            Assert.AreEqual(5 * c.rules.visitHostCoins, g.coins, "each caring thing pays the host");
+            Assert.IsNull(rules.CreditVisit("friend1", 1000, 5, "pet", "Nebula"), "a visit counts once");
+        }
+
+        [Test]
         public void Resets_Fall_On_The_Clock()
         {
             // 3-hour resets land at 0, 3, 6... local, so a claim at 4:50 waits only until 6:00.
