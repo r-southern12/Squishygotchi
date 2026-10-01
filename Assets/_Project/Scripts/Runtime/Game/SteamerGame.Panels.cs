@@ -152,6 +152,8 @@ namespace Squishy.Runtime.Game
 
         // ---------------- tasks ----------------
 
+        private IVisualElementScheduledItem tasksTick;
+
         private void DrawTasks()
         {
             var body = ui.PanelBody("tasks");
@@ -183,6 +185,8 @@ namespace Squishy.Runtime.Game
                     Rules.GoalDone() ? "Done! +" + C.rules.goalSteamers + " steamers · new goal " + next : "+" + C.rules.goalSteamers + " steamers · new goal " + next,
                     null, null, false, gbar);
             }
+            // Each mission says where it stands at a glance (user request, 2 Oct 2026): a green ring of progress while it's
+            // to do, a Claim button once done (the row turns green), and a countdown ring while the next one is on its way.
             for (int i = 0; i < S.tasks.Count; i++)
             {
                 var t = S.tasks[i];
@@ -190,13 +194,28 @@ namespace Squishy.Runtime.Game
                 if (!Rules.TaskReady(t))
                 {
                     var w = Rules.TaskWait(t);
-                    ui.Rec(body, null, "New task on its way", "Next care task in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m", "…", null, true, null, true);
+                    var at = System.DateTime.Now + w;
+                    var wait = ui.Rec(body, null, "Next mission on its way", "Arrives at " + at.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant() + " · in " + (int)w.TotalHours + "h " + w.Minutes.ToString("00") + "m", null, null, false, null, true);
+                    wait.style.opacity = .8f;
+                    float period = Mathf.Max(.1f, C.rules.taskCooldownHours);
+                    var countdown = Hud.Ring(48, 1 - (float)w.TotalHours / period, "#D9A64A", "#E4D6C1", "#FFF9EF", (int)w.TotalHours + ":" + w.Minutes.ToString("00"), "#A07324", 12);
+                    countdown.style.marginLeft = 8;
+                    wait.Add(countdown);
                     continue;
                 }
-                var pr = Hud.Bar(t.prog / d.goal, 8, "#6F9A74", 0, 6);
-                string sub = d.time ? Mathf.FloorToInt(t.prog / 60) + ":" + Mathf.FloorToInt(t.prog % 60).ToString("00") + " of 3:00" : Mathf.FloorToInt(t.prog) + " of " + d.goal;
+                string pay = "+" + Rules.UpcomingTaskCoins(d) + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : "");
                 int idx = i;
-                ui.Rec(body, null, d.text, sub + " · +" + Rules.UpcomingTaskCoins(d) + " coins" + (C.rules.taskSteamers > 0 ? " + " + C.rules.taskSteamers + " steamer" : ""), t.done ? "Claim" : "…", () =>
+                if (!t.done)
+                {
+                    // To do: the ring fills as it goes.
+                    string prog = d.time ? Mathf.FloorToInt(t.prog / 60) + ":" + Mathf.FloorToInt(t.prog % 60).ToString("00") : Mathf.FloorToInt(t.prog) + "/" + Mathf.RoundToInt(d.goal);
+                    var todo = ui.Rec(body, null, d.text, pay, null, null, false, null, true);
+                    var ring = Hud.Ring(48, t.prog / d.goal, "#6F9A74", "#E4D6C1", "#FFF9EF", prog, "#4C7552", d.time ? 11 : 13);
+                    ring.style.marginLeft = 8;
+                    todo.Add(ring);
+                    continue;
+                }
+                var doneRow = ui.Rec(body, null, d.text, "Done! " + pay, "Claim", () =>
                 {
                     if (!S.tasks[idx].done) return;
                     sfx.Coin();
@@ -206,8 +225,12 @@ namespace Squishy.Runtime.Game
                     if (Rules.LastRewardMessage != null) { ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .42f), Rules.LastRewardMessage); sfx.Chime(); Rules.LastRewardMessage = null; }
                     ui.TaskDot(Rules.AnyTaskDone());
                     DrawTasks();
-                }, !t.done, pr, true);
+                }, false, null, true);
+                doneRow.style.backgroundColor = Css.C("#E3EFDA");
             }
+            // Keep the rings and countdowns current while the panel is open.
+            tasksTick?.Pause();
+            tasksTick = body.schedule.Execute(() => { if (ui.PanelOpen("tasks")) DrawTasks(); }).StartingIn(30000);
             float inc = Rules.HappyRate(comfort);
             Hud.Sec(body, "While Happy");
             ui.Rec(body, null, "+" + Mathf.RoundToInt(inc * 60) + " coins an hour", "Grows with Comfort (" + Mathf.RoundToInt(comfort) + "). Pauses when your squishy isn’t Happy.", null, null, false, null, true);

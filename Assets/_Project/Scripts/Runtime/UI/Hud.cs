@@ -155,9 +155,14 @@ namespace Squishy.Runtime.UI
             pill.RegisterCallback<PointerUpEvent>(e => hold?.Pause());
             pill.RegisterCallback<PointerLeaveEvent>(e => hold?.Pause());
             Tap(pill, () => { if (!held) _g.OnCoinPill(); });
-            var odds = Modal(Chip(row1, 12).Row().Pad(0, 12, 0, 12).Size(null, 36), "unbox");
+            // A fixed width: its label rolls (Rare, Epic, Legendary) and a longer one pushed the whole row about.
+            var odds = Modal(Chip(row1, 12).Row().Pad(0, 6, 0, 6).Size(124, 36), "unbox");
             odds.style.flexShrink = 0;
-            _oddsBtnLbl = Label(odds, "Odds", "Figtree", 700, 13);
+            odds.style.justifyContent = Justify.Center;
+            _oddsBtnLbl = Label(odds, "Odds", "Figtree", 700, 12);
+            _oddsBtnLbl.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _oddsBtnLbl.style.overflow = Overflow.Hidden;
+            _oddsBtnLbl.style.textOverflow = TextOverflow.Ellipsis;
             _oddsBtnLbl.schedule.Execute(RollOddsLabel).Every(2800);
             Tap(odds, () => _g.OnOdds());
             // Gift steamer: ready every few hours.
@@ -165,6 +170,8 @@ namespace Squishy.Runtime.UI
             _gift.style.flexShrink = 0;
             _gift.Add(Icons.Make("gift", 20));
             _giftLbl = Label(_gift, "", "Gluten", 700, 13).Margin(0, 0, 0, 4);
+            _giftLbl.style.minWidth = 40; // "0:52", "Free!" and "Bonus" take the same room
+            _giftLbl.style.unityTextAlign = TextAnchor.MiddleCenter;
             Tap(_gift, () => _g.OnGift());
             Modal(_gift, "home");
             // Sound lives in Settings; the gear takes the sound button's place so the row fits the screen.
@@ -192,21 +199,29 @@ namespace Squishy.Runtime.UI
             var row3 = Modal(new VisualElement().Row(Align.Center, Justify.SpaceBetween).NoPick().In(_top), "home");
             var cond = Chip(row3, -1).Row().Pad(4, 11, 4, 8);
             cond.style.flexShrink = 0;
+            cond.style.width = 128; // "Happy" or "Holiday pause": the same width, so nothing beside it moves
             _condDot = new Frame().Set(C("#6F9A74"), -1).Size(10, 10).In(cond);
             _condTx = Label(cond, "Happy", "Figtree", 700, 13).Margin(0, 0, 0, 6);
+            _condTx.style.overflow = Overflow.Hidden;
+            _condTx.style.textOverflow = TextOverflow.Ellipsis;
+            _condTx.style.flexShrink = 1;
             // Prestige at a glance; tap for this life's outlook.
             _prestige = Chip(row3, -1).Row().Pad(4, 10, 4, 7);
             _prestige.style.flexShrink = 0;
             _prestige.Add(Icons.Make("star", 14, "#D9A64A"));
             _prestigeLbl = Label(_prestige, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
+            _prestigeLbl.style.minWidth = 28; // room for three digits
             Tap(_prestige, () => _g.OnPrestige());
             _comfort = Chip(row3, -1).Row().Pad(4, 10, 4, 7);
             _comfort.style.flexShrink = 0;
             _comfort.Add(Icons.Make("comfort", 15, "#E8828F"));
             _comfortLbl = Label(_comfort, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
+            _comfortLbl.style.minWidth = 22;
             Tap(_comfort, () => _g.OnComfort());
             // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
-            // At night: turn in for the night (hidden in the daytime).
+            // At night: turn in for the night (hidden in the daytime). A spacer keeps it and Friends on the right, so the
+            // moon appearing doesn't push the chips on the left about.
+            new VisualElement { style = { flexGrow = 1 } }.NoPick().In(row3);
             _moon = IconBtn(row3, "rest", 36, 20, -1, () => _g.OnMoon(), out _);
             _moon.Shown(false);
             IconBtn(row3, "friends", 36, 20, -1, () => _g.OnFriends(), out _viewIcon);

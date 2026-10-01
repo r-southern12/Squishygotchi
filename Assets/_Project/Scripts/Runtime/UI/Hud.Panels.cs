@@ -225,6 +225,42 @@ namespace Squishy.Runtime.UI
             return r;
         }
 
+/// <summary>A round status disc: a ring filled to frac, with a short text in the middle (a mission's progress or countdown).</summary>
+        public static VisualElement Ring(float size, float frac, string ring, string track, string fill, string text, string textCol, float fontSize = 12)
+        {
+            var e = new VisualElement().Size(size, size);
+            e.style.flexShrink = 0;
+            e.style.alignItems = Align.Center;
+            e.style.justifyContent = Justify.Center;
+            e.pickingMode = PickingMode.Ignore;
+            frac = Mathf.Clamp01(frac);
+            e.generateVisualContent += m =>
+            {
+                var p = m.painter2D;
+                float r = size / 2, w = 4.5f;
+                p.fillColor = C(fill);
+                p.BeginPath();
+                p.Arc(new Vector2(r, r), r - 1, Angle.Degrees(0), Angle.Degrees(360));
+                p.Fill();
+                p.lineWidth = w;
+                p.strokeColor = C(track);
+                p.BeginPath();
+                p.Arc(new Vector2(r, r), r - w / 2 - 1, Angle.Degrees(0), Angle.Degrees(360));
+                p.Stroke();
+                if (frac > .001f)
+                {
+                    p.strokeColor = C(ring);
+                    p.lineCap = LineCap.Round;
+                    p.BeginPath();
+                    p.Arc(new Vector2(r, r), r - w / 2 - 1, Angle.Degrees(-90), Angle.Degrees(-90 + 360 * frac));
+                    p.Stroke();
+                }
+            };
+            var l = Css.Label(e, text, "Gluten", 800, fontSize, textCol);
+            l.pickingMode = PickingMode.Ignore;
+            return e;
+        }
+
         public static VisualElement Bar(float fraction, float height, string fill, float maxWidth, float marginTop)
         {
             var bar = new Frame().Set(C("#E4D6C1"), 99).Size(null, height).Margin(marginTop, 0, 0, 0);

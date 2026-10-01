@@ -203,7 +203,7 @@ namespace Squishy.Runtime.Game
         {
             var R = C.rules;
             int r = R.pityRare - S.sinceRare, e = R.pityEpic - S.sinceEpic, l = R.pityLegendary - S.sinceLegendary;
-            ui.SetPity(new[] { "Odds · Rare in " + r, "Odds · Epic in " + e, "Odds · Legendary in " + l },
+            ui.SetPity(new[] { "Rare in " + r, "Epic in " + e, "Legendary in " + l },
                 new[] { ("Rare or better", r, R.pityRare, "#5B8FB0"), ("Epic or better", e, R.pityEpic, "#8C7BB0"), ("Legendary", l, R.pityLegendary, "#C99426") });
         }
 
