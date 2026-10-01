@@ -108,6 +108,7 @@ namespace Squishy.Runtime.World
 
         /// <summary>Sparkle mode: camera-facing star sprites that swell in, twinkle, slowly turn and fade (squish and bounce effects).</summary>
         public bool Glint;
+        public bool Bubble; // camera-facing soap bubbles: appear quickly, rise and wobble, then pop
 
         public ParticlePool(int count, Mesh mesh, Material mat, bool colored, int layer)
         {
@@ -155,6 +156,15 @@ namespace Squishy.Runtime.World
                     float env = Mathf.Sin(Mathf.PI * Mathf.Min(1, u)) , tw = .7f + .3f * Mathf.Sin(q.t * 11 + q.w.x);
                     _m[n] = Matrix4x4.TRS(Space3.U(q.p), cam.transform.rotation * Quaternion.AngleAxis(q.r.z * Mathf.Rad2Deg, Vector3.forward), Vector3.one * Mathf.Max(.001f, q.s * env * tw));
                     _c[n] = q.col * Mathf.Clamp01(env * 1.4f);
+                    n++;
+                    continue;
+                }
+                if (Bubble)
+                {
+                    float grow = Mathf.Min(1, u * 7), pop = u > .9f ? 1 + (u - .9f) * 3 : 1, fade = u > .9f ? 1 - (u - .9f) / .1f : 1;
+                    q.p.x += Mathf.Sin(q.t * 4 + q.s * 300) * .0006f; // a gentle sideways wobble as it rises
+                    _m[n] = Matrix4x4.TRS(Space3.U(q.p), cam.transform.rotation, Vector3.one * Mathf.Max(.001f, q.s * 2 * grow * pop));
+                    _c[n] = new Color(q.col.r, q.col.g, q.col.b, q.col.a * fade);
                     n++;
                     continue;
                 }

@@ -104,7 +104,7 @@ namespace Squishy.Runtime.Game
         private static List<int> NeedsAt(GameRules rules, float comfort, DateTime when, int trigger)
         {
             var s = rules.S;
-            float slow = rules.ComfortSlow(comfort);
+            float slow = rules.DrainMul(comfort);
             float[] decay = { rules.R.decayHunger, rules.R.decayPlay, rules.R.decayRest, rules.R.decayClean };
             double secs = Math.Max(0, (when - DateTime.Now).TotalSeconds), left = s.asleep ? Math.Max(0, (s.sleepUntil - DateTime.UtcNow.Ticks) / (double)TimeSpan.TicksPerSecond) : 0;
             var list = new List<int>();
@@ -341,7 +341,7 @@ namespace Squishy.Runtime.Game
             var plans = new List<Plan>();
             if (!s.tucked)
             {
-                float slow = rules.ComfortSlow(comfort);
+                float slow = rules.DrainMul(comfort);
                 float[] decay = { rules.R.decayHunger, rules.R.decayPlay, rules.R.decayRest, rules.R.decayClean };
                 int first = -1, emptyK = 0;
                 double firstLow = double.MaxValue, firstEmpty = double.MaxValue;
@@ -433,7 +433,7 @@ namespace Squishy.Runtime.Game
             try
             {
                 var s = rules.S;
-                float slow = rules.ComfortSlow(comfort);
+                float slow = rules.DrainMul(comfort);
                 float[] decay = { rules.R.decayHunger, rules.R.decayPlay, rules.R.decayRest, rules.R.decayClean };
                 using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
                 using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))

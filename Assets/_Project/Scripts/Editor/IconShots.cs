@@ -56,6 +56,14 @@ namespace Squishy.EditorTools
             if (_start < 0) _start = Time.frameCount;
             int f = Time.frameCount - _start;
             if (f > 4000) Finish(1);
+            if (f == 20 && Squishy.Runtime.Game.SteamerGame.I != null)
+            {
+                // A fresh save starts on the first-run (empty room, first steamer): checks want the furnished room.
+                var g0 = Squishy.Runtime.Game.SteamerGame.I;
+                var fl = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var r0 = (Squishy.Simulation.Game.GameRules)typeof(Squishy.Runtime.Game.SteamerGame).GetField("Rules", fl).GetValue(g0);
+                if (r0.S.intro > 0) { r0.S.intro = 0; typeof(Squishy.Runtime.Game.SteamerGame).GetMethod("RebuildHome", fl).Invoke(g0, null); }
+            }
             if (f < 180) return; // let the room build, the squishy settle and thumbnails finish
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_SOUNDS") == "1")
             {
@@ -126,6 +134,35 @@ namespace Squishy.EditorTools
                 File.WriteAllBytes(Dir + "/notif.png", scene);
                 var happyPng = Squishy.Runtime.Game.SquishyArt.Png(rules.Fav, Squishy.Runtime.Game.SquishyArt.Mood.Happy, rules.LifeStage());
                 File.WriteAllBytes(Dir + "/notif_morning.png", (byte[])typeof(Squishy.Runtime.Game.Notifier).GetMethod("Scene", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[] { happyPng, new System.Collections.Generic.List<int> { 4 }, rules }));
+                Finish(0);
+                return;
+            }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_BUBBLES") == "1")
+            {
+                // A cloud of bath bubbles beside the squishy, photographed mid-rise (to check how they read).
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var pool = (Squishy.Runtime.World.ParticlePool)T.GetField("bathBubbles", flags).GetValue(game);
+                var pw = (Vector3)T.GetMethod("PetWorld", flags).Invoke(game, null);
+                if (f < 260) { if (f % 3 == 0) pool.Spawn(pw + new Vector3(Random.Range(-.35f, .35f), Random.Range(.05f, .3f), Random.Range(-.2f, .2f)), new Vector3(0, Random.Range(.08f, .2f), 0), Random.Range(.03f, .06f), 3f, 1.5f, .03f); return; }
+                EditorApplication.update -= Tick;
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var flat = cam.transform.position - Bounds(FindPet()).center;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+                Shot(cam, rt, tex, Bounds(FindPet()), flat.normalized, 20, 2.6f, 30, Shader.GetGlobalFloat("_PostWarm"), "bubbles");
+                var bt = Squishy.Runtime.Three.Textures.Bubble();
+                var brt = new RenderTexture(bt.width * 3, bt.height * 3, 0, RenderTextureFormat.ARGB32);
+                var prevA = RenderTexture.active;
+                RenderTexture.active = brt; GL.Clear(true, true, new Color(.2f, .55f, .62f, 1)); RenderTexture.active = prevA;
+                Graphics.Blit(bt, brt, new Material(Shader.Find("Hidden/BlitCopy")) { });
+                var mat = new Material(Shader.Find("Sprites/Default"));
+                RenderTexture.active = brt; GL.Clear(true, true, new Color(.55f, .78f, .82f, 1)); GL.PushMatrix(); GL.LoadPixelMatrix(0, brt.width, brt.height, 0); Graphics.DrawTexture(new Rect(0, 0, brt.width, brt.height), bt, mat); GL.PopMatrix();
+                var btex = new Texture2D(brt.width, brt.height, TextureFormat.RGBA32, false); btex.ReadPixels(new Rect(0, 0, brt.width, brt.height), 0, 0); btex.Apply(); RenderTexture.active = prevA;
+                File.WriteAllBytes(Dir + "/bubble_tex.png", btex.EncodeToPNG());
                 Finish(0);
                 return;
             }

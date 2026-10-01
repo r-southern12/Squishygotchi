@@ -393,6 +393,10 @@ The Arrange tray has a **Combos** tab: a card for each made combo in its own col
 ### Getting about: clear spots (2 Oct 2026)
 Every walk-to spot (in front of a piece, on a rug, at the foot of the slide) is moved to the nearest clear floor if something stands there, so the squishy never walks into furniture to reach it. After the shower (Steamed clean) it shakes dry just outside the shower's opening, wherever the rug is. Tea time pours once (tea for two: once per cup), then the pot rests; no cut-off third pour.
 
+### Babies and bubbles (2 Oct 2026)
+- A baby's needs drain twice as fast (data: babyDrain) for its Baby stage, so it needs looking after more often, like a Tamagotchi baby; reminders and the widget predict with the same rate.
+- Bath and spa bubbles are proper soap bubbles: nearly clear inside, a bright rim with a rainbow sheen and a white highlight, rising with a wobble and popping (the spa makes lots more than a plain bath).
+
 ## Friends
 
 Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Decided 27 Sep 2026.

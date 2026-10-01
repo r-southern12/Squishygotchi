@@ -2782,6 +2782,7 @@
     "careMistakeFloor": 0.5,
     "careMistakeReset": 0.1,
     "babyDays": 3,
+    "babyDrain": 2,
     "prestigeBase": 20,
     "prestigePerQol": 80,
     "trialDays": 28,

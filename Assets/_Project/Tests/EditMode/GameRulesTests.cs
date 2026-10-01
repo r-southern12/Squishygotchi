@@ -367,6 +367,7 @@ namespace Squishy.Tests
         {
             var c = Content();
             var s = GameRules.NewState(c, 8);
+            s.age = (int)c.rules.babyDays + 2; // past the Baby stage (babies drain faster)
             var utc = new DateTime(2026, 9, 28, 11, 0, 0, DateTimeKind.Utc);
             var rules = new GameRules(c, s) { Clock = new ManualClock(utc) };
             s.needs = new[] { .8f, .8f, .2f, .8f };
@@ -574,6 +575,24 @@ namespace Squishy.Tests
             Assert.AreEqual(1 - c.rules.careMistakePenalty, rules.MistakeFactor(), 1e-5);
             s.careMistakes = 40;
             Assert.AreEqual(c.rules.careMistakeFloor, rules.MistakeFactor(), 1e-5, "never below half");
+        }
+
+        [Test]
+        public void Babies_Need_Looking_After_More()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 4);
+            var rules = new GameRules(c, s);
+            s.age = 1;
+            Assert.AreEqual(GameRules.Life.Baby, rules.LifeStage());
+            for (int k = 0; k < 4; k++) s.needs[k] = 1;
+            rules.StepCare(3600, 0);
+            float babyLoss = 1 - s.needs[Needs.Hunger];
+            s.age = (int)c.rules.babyDays + 2;
+            for (int k = 0; k < 4; k++) s.needs[k] = 1;
+            rules.StepCare(3600, 0);
+            float laterLoss = 1 - s.needs[Needs.Hunger];
+            Assert.AreEqual(c.rules.babyDrain, babyLoss / laterLoss, .01, "a baby's needs drain faster");
         }
 
         [Test]

@@ -94,7 +94,9 @@ namespace Squishy.Runtime.Game
             fxPool = new ParticlePool(160, ThreeGeo.Plane(1, 1), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Additive, Textures.Glint(), true, false), true, HomeLayer) { Glint = true }; // star glints, not blobs
             drops = new ParticlePool(40, ThreeGeo.Ico1(), WaterMat(), false, HomeLayer);
             // Bath bubbles: clear, round, swelling in and popping (they were white puffs that read as clouds).
-            bathBubbles = new ParticlePool(60, ThreeGeo.Sph(1, 14, 10), ThreeMat.Basic(ThreeMat.Lin("#E8F7FB"), .3f, ThreeMat.Blend.Alpha, depthWrite: false), false, HomeLayer);
+            // Soap bubbles you can see: a painted bubble (clear middle, bright rim, sheen, highlight) facing the camera.
+            // The plain pale spheres they replaced were so faint they vanished over the water.
+            bathBubbles = new ParticlePool(90, ThreeGeo.Plane(1, 1), ThreeMat.Basic(Color.white, 1, ThreeMat.Blend.Alpha, Textures.Bubble(), true, false), true, HomeLayer) { Bubble = true };
             foreach (var st in S.items) AddItem(st);
             pet = new SquishyModel(room, .1f);
             selRingMat = ThreeMat.Basic(ThreeMat.Lin("#FFD27A"), .9f, ThreeMat.Blend.Alpha, depthWrite: false);

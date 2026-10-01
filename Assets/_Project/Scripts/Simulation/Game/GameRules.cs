@@ -177,6 +177,11 @@ namespace Squishy.Simulation.Game
 
         public float ComfortSlow(float comfort) { return 1f - Math.Min(R.comfortSlowMax, comfort * R.comfortSlowPerPoint); }
 
+        /// <summary>How fast needs drain now: comfort slows it; a baby drains faster (user request, 2 Oct 2026).</summary>
+        public float DrainMul(float comfort) { return ComfortSlow(comfort) * StageDrain(); }
+
+        public float StageDrain() { return LifeStage() == Life.Baby && R.babyDrain > 0 ? R.babyDrain : 1f; }
+
         /// <summary>Drains needs, ages the squishy and runs the death clock. Returns true when it dies.</summary>
         /// <summary>Testing only (admin "Protect squishy"): needs still drain, but neglect can't kill. Not saved.</summary>
         public bool Protected;
@@ -187,7 +192,7 @@ namespace Squishy.Simulation.Game
             if (S.tucked) { S.needs[Needs.Rest] = Math.Min(1f, S.needs[Needs.Rest] + R.nightRestFill * sdt); return false; }
             S.qolSum += Condition() * sdt;
             S.qolTime += sdt;
-            float slow = ComfortSlow(comfort);
+            float slow = DrainMul(comfort);
             float[] decay = { R.decayHunger, R.decayPlay, R.decayRest, R.decayClean };
             for (int k = 0; k < 4; k++)
             {

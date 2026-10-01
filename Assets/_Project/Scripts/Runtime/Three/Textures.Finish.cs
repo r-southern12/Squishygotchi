@@ -77,6 +77,33 @@ namespace Squishy.Runtime.Three
         }
 
         /// <summary>A four-point star with a soft glow: the sparkle sprite for squish and bounce effects (linear, alpha only).</summary>
+        /// <summary>A soap bubble seen face on: nearly clear inside, a bright rim with a rainbow sheen, a white highlight.</summary>
+        public static Texture2D Bubble()
+        {
+            if (Cache.TryGetValue("bubble", out var hit)) return hit;
+            const int S = 96;
+            var g = new Canvas2D(S, S);
+            Color pink = new Color(.98f, .72f, .85f), cyan = new Color(.62f, .92f, .97f), lilac = new Color(.8f, .74f, .97f);
+            g.FillShader((x, y) =>
+            {
+                float dx = (x + .5f - S / 2f) / (S / 2f), dy = (y + .5f - S / 2f) / (S / 2f), r = Mathf.Sqrt(dx * dx + dy * dy);
+                if (r > 1) return new Color(1, 1, 1, 0);
+                float ang = Mathf.Atan2(dy, dx), u = (Mathf.Sin(ang * 2 + 1) + 1) / 2, w = (Mathf.Sin(ang * 3 - 2) + 1) / 2;
+                var sheen = Color.Lerp(Color.Lerp(pink, cyan, u), lilac, w * .5f);
+                float film = .06f, rim = Mathf.Exp(-((r - .9f) / .06f) * ((r - .9f) / .06f)) * .85f, inner = Mathf.Exp(-((r - .7f) / .14f) * ((r - .7f) / .14f)) * .1f;
+                float edge = Mathf.Exp(-((r - .975f) / .022f) * ((r - .975f) / .022f)) * .4f; // a fine darker outline so it reads on pale water
+                float hi = Mathf.Exp(-(((dx + .36f) / .17f) * ((dx + .36f) / .17f) + ((dy - .38f) / .1f) * ((dy - .38f) / .1f))) * .95f
+                         + Mathf.Exp(-(((dx - .34f) / .08f) * ((dx - .34f) / .08f) + ((dy + .32f) / .06f) * ((dy + .32f) / .06f))) * .45f;
+                var rimCol = Color.Lerp(Color.white, sheen, .35f);
+                var edgeCol = new Color(.36f, .5f, .62f);
+                float sum = film + hi + rim + inner + edge, a = Mathf.Clamp01(sum);
+                var col = (Color.white * (film + hi) + rimCol * rim + sheen * inner + edgeCol * edge) / Mathf.Max(.001f, sum);
+                col.a = a;
+                return col;
+            });
+            return Cache["bubble"] = g.ToTexture(false, false, true, "Bubble");
+        }
+
         public static Texture2D Glint()
         {
             if (Cache.TryGetValue("glint", out var hit)) return hit;
