@@ -582,7 +582,23 @@ namespace Squishy.Runtime.UI
             StyleMain();
         }
 
+        private string _hintBase = "";
+
+        /// <summary>A lasting hint for the current state ("Drag items anywhere", asleep...). It stays until replaced.</summary>
         public void SetHint(string text, bool pulse = false)
+        {
+            _hintBase = text;
+            ShowHint(text, pulse);
+        }
+
+        /// <summary>A one-off message on the hint line: shown for a few seconds, then the lasting hint comes back (they used to stay for good).</summary>
+        public void FlashHint(string text, float seconds = 4f)
+        {
+            ShowHint(text, true);
+            _hint.schedule.Execute(() => { if (_hint.text == text) ShowHint(_hintBase, false); }).StartingIn((long)(seconds * 1000));
+        }
+
+        private void ShowHint(string text, bool pulse)
         {
             if (_hint.text != text) _hint.text = text;
             Tw.Stop(_hint);

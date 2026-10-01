@@ -551,7 +551,7 @@ namespace Squishy.Runtime.Game
         {
             if (mode != "edit") return;
             int n = items.Count(x => x.arch != "tomb");
-            if (n == 0) { ui.SetHint("The room is already empty"); return; }
+            if (n == 0) { ui.FlashHint("The room is already empty"); return; }
             sfx.Tap();
             ui.ShowDialog("Put everything away?", "All " + n + " pieces go to storage, so you can start the room fresh. Undo brings them back.", null,
                 ("Put all away", "#6F9A74", "#4C7552", UI.Hud.Cream, (System.Action)(() =>
@@ -607,7 +607,7 @@ namespace Squishy.Runtime.Game
                 {
                     if (key == "__back") { Select(null); DrawTray(); sfx.Tap(); return; }
                     var c = C.Cat(key);
-                    if (!Rules.Owned(key)) { ui.SetHint("Find the " + c.name + " in steamers"); sfx.Bonk(); return; }
+                    if (!Rules.Owned(key)) { ui.FlashHint("Find the " + c.name + " in steamers"); sfx.Bonk(); return; }
                     Snap();
                     Restyle(cur, c.style);
                     TaskEvent("reskin");
@@ -753,8 +753,8 @@ namespace Squishy.Runtime.Game
             string key0 = S.storage[i], arch = key0.Split(':')[0];
             // Every piece takes space (a toy swapped for the one out doesn't need more).
             bool swaps = C.Type(arch) != null && C.Type(arch).slot == "toy" && items.Count(x => C.SameSlot(x.arch, arch)) >= Rules.ToySlots();
-            if (!swaps && Rules.ItemCount() >= Rules.ItemSlots()) { ui.SetHint("Room full (" + Rules.ItemSlots() + " pieces). Level up the room for more space.", true); sfx.Bonk(); Buzz(20); return; }
-            if (!C.IsDecor(arch) && items.Count(x => x.arch == arch) >= C.MaxPerRoom(arch)) { ui.SetHint("Only " + C.MaxPerRoom(arch) + " " + C.Type(arch).name.ToLowerInvariant() + " per room", true); sfx.Bonk(); Buzz(20); return; }
+            if (!swaps && Rules.ItemCount() >= Rules.ItemSlots()) { ui.FlashHint("Room full (" + Rules.ItemSlots() + " pieces). Level up the room for more space."); sfx.Bonk(); Buzz(20); return; }
+            if (!C.IsDecor(arch) && items.Count(x => x.arch == arch) >= C.MaxPerRoom(arch)) { ui.FlashHint("Only " + C.MaxPerRoom(arch) + " " + C.Type(arch).name.ToLowerInvariant() + " per room"); sfx.Bonk(); Buzz(20); return; }
             Snap();
             string key = S.storage[i];
             S.storage.RemoveAt(i);
@@ -866,7 +866,7 @@ namespace Squishy.Runtime.Game
             S.roomLv++;
             sfx.Chime();
             Buzz(20, 30, 20);
-            ui.SetHint("Room level " + (S.roomLv + 1) + ": space for " + Rules.ItemSlots() + " pieces", true);
+            ui.FlashHint("Room level " + (S.roomLv + 1) + ": space for " + Rules.ItemSlots() + " pieces");
             if (items.Count > 0) foreach (var it in items) it.bv = -3;
             DrawTray();
             WriteSave();
@@ -892,7 +892,7 @@ namespace Squishy.Runtime.Game
             shake = .4f;
             sfx.Land();
             Buzz(30, 40, 30);
-            ui.SetHint(Rules.CurrentSteamer.name + " steamer! Room for " + Rules.ToySlots() + " toys out and up to " + Rules.SlotCap() + " pieces", true);
+            ui.FlashHint(Rules.CurrentSteamer.name + " steamer! Room for " + Rules.ToySlots() + " toys out and up to " + Rules.SlotCap() + " pieces");
             ui.SetCoins(S.coins);
             DrawTray();
             WriteSave();

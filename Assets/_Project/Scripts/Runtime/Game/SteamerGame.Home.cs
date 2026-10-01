@@ -76,7 +76,7 @@ namespace Squishy.Runtime.Game
             furnishing = false;
             ui.ShowHud(true);
             DrawNeeds();
-            ui.SetHint("Welcome home, " + Rules.Fav.name + "!", true);
+            ui.FlashHint("Welcome home, " + Rules.Fav.name + "!");
         }
 
         private void BuildHome()

@@ -118,7 +118,7 @@ namespace Squishy.Runtime.Game
         {
             if (S.dead) return;
             CloseCook();
-            if (S.steamers <= 0 && !FirstSteamer) { ui.SetHint("No steamers. Earn them from tasks or buy one.", true); OpenShop(); return; }
+            if (S.steamers <= 0 && !FirstSteamer) { ui.FlashHint("No steamers. Earn them from tasks or buy one."); OpenShop(); return; }
             WipeTo(() =>
             {
                 SetMode("unbox");
