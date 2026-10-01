@@ -587,12 +587,34 @@ namespace Squishy.Tests
             Assert.AreEqual(GameRules.Life.Baby, rules.LifeStage());
             for (int k = 0; k < 4; k++) s.needs[k] = 1;
             rules.StepCare(3600, 0);
-            float babyLoss = 1 - s.needs[Needs.Hunger];
+            float babyLoss = (1 - s.needs[Needs.Hunger]) / rules.NeedMul(Needs.Hunger);
             s.age = (int)c.rules.babyDays + 2;
             for (int k = 0; k < 4; k++) s.needs[k] = 1;
             rules.StepCare(3600, 0);
-            float laterLoss = 1 - s.needs[Needs.Hunger];
+            float laterLoss = (1 - s.needs[Needs.Hunger]) / rules.NeedMul(Needs.Hunger);
             Assert.AreEqual(c.rules.babyDrain, babyLoss / laterLoss, .01, "a baby's needs drain faster");
+        }
+
+        [Test]
+        public void Each_Squishy_Has_Its_Own_Appetite_Per_Stage()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 9);
+            var rules = new GameRules(c, s);
+            var muls = new float[4];
+            bool differ = false;
+            for (int k = 0; k < 4; k++)
+            {
+                muls[k] = rules.NeedMul(k);
+                Assert.That(muls[k], Is.InRange(1 - c.rules.needVariance, 1 + c.rules.needVariance));
+                Assert.AreEqual(muls[k], rules.NeedMul(k), "fixed within a stage");
+                if (k > 0 && System.Math.Abs(muls[k] - muls[0]) > .01f) differ = true;
+            }
+            Assert.IsTrue(differ, "some needs drain faster than others");
+            s.age = (int)c.rules.babyDays + 2;
+            bool changed = false;
+            for (int k = 0; k < 4; k++) if (System.Math.Abs(rules.NeedMul(k) - muls[k]) > .001f) changed = true;
+            Assert.IsTrue(changed, "and it changes as it grows up");
         }
 
         [Test]

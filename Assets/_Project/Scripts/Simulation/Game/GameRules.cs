@@ -88,6 +88,7 @@ namespace Squishy.Simulation.Game
             s.storage.AddRange(st.storage);
             var rules = new GameRules(c, s);
             rules.RandomiseStarterStyles();
+            s.lifeSeed = (int)(rules.Random() * int.MaxValue) | 1;
             s.intro = 1; // a new game opens its first steamer (the starter squishy) into an empty room
             for (int i = 0; i < 3; i++) s.tasks.Add(rules.NewTask());
             s.rng = rules._rng.State;
@@ -182,6 +183,22 @@ namespace Squishy.Simulation.Game
 
         public float StageDrain() { return LifeStage() == Life.Baby && R.babyDrain > 0 ? R.babyDrain : 1f; }
 
+        /// <summary>
+        /// This squishy's appetite for one need (user request, 2 Oct 2026): each life stage, every need drains up to
+        /// needVariance faster or slower, at random but fixed for that stage (so one might get hungry fast and stay clean
+        /// for ages, and change as it grows up).
+        /// </summary>
+        public float NeedMul(int k)
+        {
+            float v = R.needVariance;
+            if (v <= 0) return 1;
+            uint h = (uint)(S.lifeSeed != 0 ? S.lifeSeed : S.favIdx * 7919 + 17);
+            h ^= (uint)((int)LifeStage() * 0x9E3779B9u) ^ (uint)(k * 0x85EBCA6Bu);
+            h ^= h >> 16; h *= 0x7FEB352Du; h ^= h >> 15; h *= 0x846CA68Bu; h ^= h >> 16;
+            float u = (h % 10000) / 9999f;
+            return 1 + v * (u * 2 - 1);
+        }
+
         /// <summary>Drains needs, ages the squishy and runs the death clock. Returns true when it dies.</summary>
         /// <summary>Testing only (admin "Protect squishy"): needs still drain, but neglect can't kill. Not saved.</summary>
         public bool Protected;
@@ -198,7 +215,7 @@ namespace Squishy.Simulation.Game
             {
                 // Asleep for the night: Rest fills up by morning while the others drain slowly.
                 if (k == Needs.Rest && RestFill) S.needs[k] = Math.Min(1f, S.needs[k] + R.nightRestFill * sdt);
-                else S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * DrainScale * sdt);
+                else S.needs[k] = Math.Max(0f, S.needs[k] - decay[k] * slow * NeedMul(k) * DrainScale * sdt);
             }
             StepCareMistakes(sdt, RestFill);
             S.dayT += sdt;

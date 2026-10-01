@@ -112,7 +112,7 @@ namespace Squishy.Runtime.Game
             for (int k = 0; k < 4; k++)
             {
                 if (k == trigger) continue;
-                double rate = decay[k] * slow, asleepFor = Math.Min(secs, left);
+                double rate = decay[k] * slow * rules.NeedMul(k), asleepFor = Math.Min(secs, left);
                 double level = k == Needs.Rest && asleepFor > 0
                     ? Math.Min(1, s.needs[k] + rules.R.nightRestFill * asleepFor) - rate * (secs - asleepFor) // it rests while asleep
                     : s.needs[k] - rate * (asleepFor * rules.R.nightDrain + (secs - asleepFor));
@@ -347,7 +347,7 @@ namespace Squishy.Runtime.Game
                 double firstLow = double.MaxValue, firstEmpty = double.MaxValue;
                 for (int k = 0; k < 4; k++)
                 {
-                    double rate = decay[k] * slow;
+                    double rate = decay[k] * slow * rules.NeedMul(k);
                     if (rate <= 0) continue;
                     double low = Until(s.needs[k] - LowAt, rate, rules), empty = Until(s.needs[k], rate, rules);
                     if (k == Needs.Rest && s.asleep)
@@ -447,7 +447,7 @@ namespace Squishy.Runtime.Game
                     for (int k = 0; k < 4; k++)
                     {
                         ed.Call<AndroidJavaObject>("putFloat", "need" + k, s.needs[k]).Dispose();
-                        ed.Call<AndroidJavaObject>("putFloat", "rate" + k, decay[k] * slow).Dispose();
+                        ed.Call<AndroidJavaObject>("putFloat", "rate" + k, decay[k] * slow * rules.NeedMul(k)).Dispose();
                     }
                     foreach (var kv in Pictures) ed.Call<AndroidJavaObject>("putString", "img_" + kv.Key, kv.Value).Dispose();
                     ed.Call("apply");

@@ -395,6 +395,7 @@ The Arrange tray has a **Combos** tab: a card for each made combo in its own col
 Every walk-to spot (in front of a piece, on a rug, at the foot of the slide) is moved to the nearest clear floor if something stands there, so the squishy never walks into furniture to reach it. After the shower (Steamed clean) it shakes dry just outside the shower's opening, wherever the rug is. Tea time pours once (tea for two: once per cup), then the pot rests; no cut-off third pour.
 
 ### Babies and bubbles (2 Oct 2026)
+- Each squishy has its own appetite: in each life stage every need drains up to 30% faster or slower (data: needVariance), random but fixed for that stage and kept per squishy, so one might get hungry quickly and stay clean for ages, and that changes as it grows up.
 - A baby's needs drain 1.5 times as fast (data: babyDrain): 4 hours to empty instead of 6; reminders and the widget predict with the same rate.
 - Bath and spa bubbles are proper soap bubbles: nearly clear inside, a bright rim with a rainbow sheen and a white highlight, rising with a wobble and popping (the spa makes lots more than a plain bath).
 

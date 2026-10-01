@@ -91,6 +91,7 @@ namespace Squishy.Simulation.Game
             S.dayT = 0;
             S.qolSum = 0;
             S.qolTime = 0;
+            S.lifeSeed = (int)(Random() * int.MaxValue) | 1; // a new life, its own appetite
             ResetCareMistakes(0);
             S.tucked = false;
             for (int k = 0; k < 4; k++) S.needs[k] = .75f;
@@ -106,7 +107,7 @@ namespace Squishy.Simulation.Game
         {
             if (next == S.favIdx || SquishCount(next) == 0) return;
             S.lifeOf.RemoveAll(l => l.i == S.favIdx);
-            S.lifeOf.Add(new LifeState { i = S.favIdx, age = S.age, dayT = S.dayT, qolSum = S.qolSum, qolTime = S.qolTime, stageAwarded = S.stageAwarded, careMistakes = S.careMistakes });
+            S.lifeOf.Add(new LifeState { i = S.favIdx, age = S.age, dayT = S.dayT, qolSum = S.qolSum, qolTime = S.qolTime, stageAwarded = S.stageAwarded, careMistakes = S.careMistakes, lifeSeed = S.lifeSeed });
             var mine = S.lifeOf.Find(l => l.i == next);
             if (mine != null) S.lifeOf.Remove(mine);
             else mine = new LifeState { i = next, age = 1 };
@@ -117,6 +118,7 @@ namespace Squishy.Simulation.Game
             S.qolTime = mine.qolTime;
             S.stageAwarded = mine.stageAwarded;
             S.careMistakes = mine.careMistakes; // the room's needs carry over, so an empty spell in progress keeps counting
+            S.lifeSeed = mine.lifeSeed != 0 ? mine.lifeSeed : (int)(Random() * int.MaxValue) | 1; // each squishy keeps its own appetite
         }
 
         private void ResetCareMistakes(int n)

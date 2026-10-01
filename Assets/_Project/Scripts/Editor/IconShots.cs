@@ -137,6 +137,57 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_FOODS") == "1")
+            {
+                // Every ingredient model at its own (true) size in a row, plus their measured sizes, to set display sizes.
+                EditorApplication.update -= Tick;
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var fl = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var fc = (Squishy.Simulation.Game.GameContent)typeof(Squishy.Runtime.Game.SteamerGame).GetField("C", fl).GetValue(game);
+                var row = new GameObject("foodRow").transform;
+                row.position = new Vector3(0, 20, 0);
+                var sb = new System.Text.StringBuilder("FoodSizes:");
+                float x = 0;
+                for (int i = 0; i < fc.pantry.Length; i++)
+                {
+                    var fo = Squishy.Runtime.Models.KitchenModels.Food(fc, i, row);
+                    var b = Squishy.Runtime.Three.Node.LocalBounds(fo, row);
+                    float w = Mathf.Max(b.size.x, b.size.z);
+                    if (System.Environment.GetEnvironmentVariable("ICONSHOTS_REVEAL") == "1")
+                    {
+                        // As the steamer reveal shows it: filling the plate (1.6 wide, 1.3 tall), then its own size.
+                        float k = Mathf.Min(1.6f / Mathf.Max(.01f, w), 1.3f / Mathf.Max(.01f, b.size.y)) * (fc.pantry[i].size > 0 ? fc.pantry[i].size : 1);
+                        fo.localScale *= k;
+                        b = Squishy.Runtime.Three.Node.LocalBounds(fo, row);
+                        w = Mathf.Max(b.size.x, b.size.z);
+                    }
+                    sb.Append(" " + i + ":" + fc.pantry[i].name + "=" + w.ToString("F3") + "x" + b.size.y.ToString("F3"));
+                    fo.localPosition += new Vector3(x + w / 2 - b.center.x, -b.min.y, -b.center.z);
+                    x += w + .04f;
+                    Squishy.Runtime.Three.Node.SetLayer(fo, Camera.main.gameObject.layer);
+                }
+                Debug.Log(sb.ToString());
+                var cam = Camera.main;
+                foreach (Transform t in row) Squishy.Runtime.Three.Node.SetLayer(t, 0);
+                cam.cullingMask = 1;
+                var rt = new RenderTexture(2400, 400, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                cam.targetTexture = rt;
+                cam.aspect = 6;
+                cam.fieldOfView = 20;
+                var centre = row.position + new Vector3(x / 2, .08f, 0);
+                cam.transform.position = centre + new Vector3(0, .25f, -1) * (x * .52f / Mathf.Tan(10 * Mathf.Deg2Rad) / 6 * 1.4f);
+                cam.transform.LookAt(centre);
+                cam.Render();
+                var tex = new Texture2D(2400, 400, TextureFormat.RGBA32, false);
+                RenderTexture.active = rt;
+                tex.ReadPixels(new Rect(0, 0, 2400, 400), 0, 0);
+                tex.Apply();
+                RenderTexture.active = null;
+                Directory.CreateDirectory(Dir);
+                File.WriteAllBytes(Dir + "/foods_row.png", tex.EncodeToPNG());
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_BUBBLES") == "1")
             {
                 // A cloud of bath bubbles beside the squishy, photographed mid-rise (to check how they read).
