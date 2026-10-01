@@ -38,6 +38,69 @@ namespace Squishy.EditorTools
             EditorApplication.Exit(0);
         }
 
+        /// <summary>The store app id (Google Play package name, App Store bundle id). It can never change after the first upload.</summary>
+        public const string AppId = "com.naturaltwenty.squishiotchi";
+
+        /// <summary>
+        /// The Google Play release: a signed App Bundle (Builds/Squishiotchi.aab), version code raised by one, and admin
+        /// tools forced off (SQUISHY_STORE). The upload key and its password live outside the project, in
+        /// Documents/Squishiotchi signing/keystore.properties (or the folder in SQUISHY_SIGNING), never on GitHub.
+        /// </summary>
+        [MenuItem("Squishy/Build/Google Play bundle (release)")]
+        public static void BuildAndroidRelease()
+        {
+            string dir = System.Environment.GetEnvironmentVariable("SQUISHY_SIGNING");
+            if (string.IsNullOrEmpty(dir)) dir = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Squishiotchi signing");
+            var propsPath = System.IO.Path.Combine(dir, "keystore.properties");
+            if (!System.IO.File.Exists(propsPath)) { Debug.LogError("Squishy: no signing setup at " + propsPath); if (Application.isBatchMode) EditorApplication.Exit(1); return; }
+            var props = new System.Collections.Generic.Dictionary<string, string>();
+            foreach (var line in System.IO.File.ReadAllLines(propsPath))
+            {
+                if (line.TrimStart().StartsWith("#")) continue;
+                int eq = line.IndexOf('=');
+                if (eq > 0) props[line.Substring(0, eq).Trim()] = line.Substring(eq + 1).Trim();
+            }
+            AppIcon.Make();
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, AppId);
+            PlayerSettings.Android.useCustomKeystore = true;
+            PlayerSettings.Android.keystoreName = props["keystore"];
+            PlayerSettings.Android.keystorePass = props["password"];
+            PlayerSettings.Android.keyaliasName = props["alias"];
+            PlayerSettings.Android.keyaliasPass = props["password"];
+            PlayerSettings.Android.bundleVersionCode++;
+            EditorUserBuildSettings.buildAppBundle = true;
+            PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.Android, ManagedStrippingLevel.High);
+            PlayerSettings.stripEngineCode = true;
+            PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.Android, UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
+            PlayerSettings.SetIl2CppCompilerConfiguration(NamedBuildTarget.Android, Il2CppCompilerConfiguration.Master);
+            string defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.Android);
+            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Android, string.IsNullOrEmpty(defines) ? "SQUISHY_STORE" : defines + ";SQUISHY_STORE");
+            UnityEditor.Build.Reporting.BuildReport report;
+            try
+            {
+                report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+                {
+                    scenes = new[] { ScenePath },
+                    locationPathName = "Builds/Squishiotchi.aab",
+                    target = BuildTarget.Android,
+                    options = BuildOptions.CompressWithLz4HC,
+                });
+            }
+            finally
+            {
+                // Test APKs keep admin tools; the password isn't left in the project settings.
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Android, defines);
+                PlayerSettings.Android.useCustomKeystore = false;
+                PlayerSettings.Android.keystorePass = "";
+                PlayerSettings.Android.keyaliasPass = "";
+                EditorUserBuildSettings.buildAppBundle = false;
+                AssetDatabase.SaveAssets();
+            }
+            Debug.Log("Squishy: Google Play bundle " + report.summary.result + ", version code " + PlayerSettings.Android.bundleVersionCode + ", " + report.summary.totalSize / (1024 * 1024) + " MB, " + report.summary.totalErrors + " errors.");
+            if (Application.isBatchMode) EditorApplication.Exit(report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded ? 0 : 1);
+        }
+
         /// <summary>Builds a test APK to Builds/Squishy.apk (debug-signed). Batch: -executeMethod Squishy.EditorTools.ProjectSetup.BuildAndroid</summary>
         [MenuItem("Squishy/Build/Android APK")]
         public static void BuildAndroid()
@@ -86,7 +149,7 @@ namespace Squishy.EditorTools
         [MenuItem("Squishy/Setup/Apply Player Settings")]
         public static void ApplyPlayerSettings()
         {
-            PlayerSettings.companyName = "SquishyDumpling";
+            PlayerSettings.companyName = "Natural Twenty on Re-entry";
             PlayerSettings.productName = "Squishiotchi";
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
             PlayerSettings.allowedAutorotateToPortrait = true;
@@ -96,7 +159,7 @@ namespace Squishy.EditorTools
             PlayerSettings.colorSpace = ColorSpace.Linear;
             foreach (var target in new[] { NamedBuildTarget.Android, NamedBuildTarget.iOS })
             {
-                PlayerSettings.SetApplicationIdentifier(target, "com.squishydumpling.game"); // placeholder: change before the first store upload
+                PlayerSettings.SetApplicationIdentifier(target, AppId); // permanent once uploaded to a store
                 PlayerSettings.SetScriptingBackend(target, ScriptingImplementation.IL2CPP);
             }
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;

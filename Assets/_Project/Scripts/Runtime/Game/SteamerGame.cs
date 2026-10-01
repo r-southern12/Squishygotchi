@@ -65,6 +65,9 @@ namespace Squishy.Runtime.Game
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
             C = JsonUtility.FromJson<GameContent>(Resources.Load<TextAsset>("Content/game_content").text);
+#if SQUISHY_STORE
+            C.rules.adminTools = false; // a store build never has the test tools
+#endif
             C.Init();
             SteamerModel.DefaultSkin = C.skins[0];
 

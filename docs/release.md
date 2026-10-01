@@ -5,7 +5,9 @@ Everything in the game is built; these steps need your accounts. Numbers and ids
 
 ## Before any public build
 - Set `"adminTools": false` (hides the hold-the-coins test panel).
-- Change the placeholder bundle id `com.squishydumpling.game` (Squishy > Setup > Apply Player Settings) to your own.
+- App id (package name): **`com.naturaltwenty.squishiotchi`** (set 1 Oct 2026; permanent after the first upload).
+- Upload key: `Documents/Squishiotchi signing/` (`upload.keystore` + `keystore.properties` with its password). Back that folder up in two safe places and keep the password in a password manager. With Play App Signing, a lost upload key can be reset through Google support.
+- Release build: `Squishy > Build > Google Play bundle (release)` makes `Builds/Squishiotchi.aab`, signed, version code +1, admin tools off.
 - Build: `Squishy > Build > Android APK` (test) or a signed App Bundle for Play (Build Settings, tick "Build App Bundle", set a keystore).
 
 ## Google Play (Android)

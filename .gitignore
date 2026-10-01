@@ -37,3 +37,8 @@ crashlytics-build.properties
 .DS_Store
 Thumbs.db
 /Builds/
+
+# Signing keys and their passwords never go in the repo
+*.keystore
+*.jks
+keystore.properties
