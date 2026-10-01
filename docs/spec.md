@@ -387,6 +387,9 @@ Once you own an accessory you can wear it in any of its colours, and change it a
 ### Lifespan and care mistakes (1 Oct 2026)
 A squishy lives 14 to 21 days (longer the better its quality of life). A **care mistake** is a need left empty for 30 minutes while it's awake (not asleep for the night or on holiday pause); it counts once, until that need is looked after again (above 10%). Each mistake takes 5% off the prestige for a full life, never below half. A short note says when one happens ("Care mistake: Nebula was hungry too long", or how many happened while you were away); the Prestige store shows this life's mistakes and the projected prestige, and the life card lists them. All numbers are data.
 
+### Combos while arranging (2 Oct 2026)
+The Arrange tray has a **Combos** tab: a card for each made combo in its own colour with the pieces that make it, then ones under way ("Tea time 2/3 · Needs Teapot"). A **Colours** toggle (on by default, remembered) puts a ring in each made combo's colour under its pieces while arranging (a piece in two combos gets two rings). The note when a combo grows or is made is one short line ("Tea time 2/3", "Tea time!") in a dark pill so it reads over furniture, and stays up longer. All toasts now pop in, hold a moment and then drift away (about 1.7 s; combo notes 2.4 s).
+
 ## Friends
 
 Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Decided 27 Sep 2026.

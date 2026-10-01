@@ -632,8 +632,10 @@ namespace Squishy.Runtime.Game
                 if (n > 0) tabs.Add((r.id, r.name + " " + n));
             }
             if (skins.Count > 1) tabs.Add(("steamer", "Steamer"));
+            if (C.combos != null && C.combos.Length > 0) tabs.Add(("combos", "Combos " + Rules.Combos(S.items).Count(m => m.Done)));
             if (trayTab == null || !tabs.Any(t => t.id == trayTab)) trayTab = tabs.Count > 0 ? tabs[0].id : null;
             ui.DrawTrayTabs(tabs, trayTab, id => { trayTab = id; DrawTray(); sfx.Tap(); });
+            if (trayTab == "combos") { DrawComboTab(); return; }
             var list = new List<(string, bool, bool, string)>();
             if (trayTab == "stored") list.AddRange(stored);
             else if (trayTab != null && trayTab != "steamer")
@@ -665,6 +667,68 @@ namespace Squishy.Runtime.Game
         }
 
         private string trayTab;
+
+        private static readonly string[] ComboColours = { "#E86A92", "#3C8DBC", "#F2A03D", "#6FA58E", "#8C7BB0", "#D8412F", "#2FA4A9", "#D9A64A", "#5145B8", "#7DBA5E", "#C8674E", "#E1B96A", "#A0724E", "#F3A6BD" };
+
+        /// <summary>Each combo keeps its own colour (by its place in the data).</summary>
+        private string ComboColour(string id) { int i = System.Array.FindIndex(C.combos, x => x.id == id); return ComboColours[Mathf.Max(0, i) % ComboColours.Length]; }
+
+        /// <summary>The Combos tab: what's been made and from which pieces; ones under way and what they still need.</summary>
+        private void DrawComboTab()
+        {
+            var all = Rules.Combos(S.items);
+            string Name(string arch) { var t = C.Type(arch); return t != null ? t.name : arch; }
+            var cards = new List<(string, string, string, string, bool)>();
+            foreach (var m in all.Where(x => x.Done))
+                cards.Add((ComboColour(m.combo.id), m.combo.name, "✓", string.Join(", ", m.pieces.Where(p => p != null).Select(p => Name(p.Arch))), true));
+            foreach (var m in all.Where(x => !x.Done && x.have >= 1).OrderByDescending(x => x.have))
+            {
+                var need = new List<string>();
+                for (int j = 0; j < m.pieces.Length; j++) if (m.pieces[j] == null) need.Add(Name(m.combo.slots[j].Split('|')[0]));
+                cards.Add((ComboColour(m.combo.id), m.combo.name, m.have + "/" + m.pieces.Length, "Needs " + string.Join(", ", need), false));
+            }
+            int made = all.Count(x => x.Done);
+            ui.DrawComboCards("Combos · " + made + " made", cards, !S.comboColoursOff, () => { S.comboColoursOff = !S.comboColoursOff; WriteSave(); RefreshComboRings(); DrawTray(); sfx.Tap(); });
+        }
+
+        private readonly List<(Transform ring, Item it, int n)> comboRings = new List<(Transform, Item, int)>();
+
+        /// <summary>Arrange only, with Colours on: a ring in its combo's colour under every piece of each made combo.</summary>
+        private void RefreshComboRings()
+        {
+            foreach (var r in comboRings) if (r.ring != null) Node.Destroy(r.ring);
+            comboRings.Clear();
+            if (mode != "edit" || S.comboColoursOff || room == null) return;
+            var count = new Dictionary<Item, int>();
+            foreach (var m in Rules.Combos(S.items))
+            {
+                if (!m.Done) continue;
+                var mat = ThreeMat.Basic(ThreeMat.Lin(ComboColour(m.combo.id)), .9f, ThreeMat.Blend.Alpha, depthWrite: false);
+                foreach (var p in m.pieces)
+                {
+                    var it = ItemOf(p);
+                    if (it == null) continue;
+                    count.TryGetValue(it, out int n);
+                    count[it] = n + 1;
+                    var ring = Node.Mesh(room, ThreeGeo.FlatRing(.88f, 1, 48), mat, 0, 0, 0, shadow: false);
+                    Node.SetLayer(ring, HomeLayer);
+                    comboRings.Add((ring, it, n));
+                }
+            }
+            StepComboRings();
+        }
+
+        /// <summary>Keeps the combo rings under their pieces (a piece in two combos gets two rings, one inside the other).</summary>
+        private void StepComboRings()
+        {
+            foreach (var r in comboRings)
+            {
+                if (r.ring == null || r.it == null || r.it.g == null) continue;
+                float s = (r.it.a.circles != null && r.it.a.circles.Length > 0 ? .62f : r.it.a.r + .1f) + r.n * .09f;
+                r.ring.localPosition = new Vector3(r.it.g.localPosition.x, Y0 + .04f + r.n * .002f, r.it.g.localPosition.z);
+                r.ring.localScale = new Vector3(s, 1, s);
+            }
+        }
 
         private bool InRoom(string key, string room)
         {

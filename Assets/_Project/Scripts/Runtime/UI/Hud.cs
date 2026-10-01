@@ -422,6 +422,50 @@ namespace Squishy.Runtime.UI
             }
         }
 
+/// <summary>
+        /// The Arrange tray's Combos tab: a Colours toggle, then a card for each combo (made ones in their colour, with
+        /// the pieces that make them; ones under way say what they still need).
+        /// </summary>
+        public void DrawComboCards(string title, List<(string color, string name, string count, string detail, bool done)> cards, bool coloursOn, Action toggle)
+        {
+            _trayTitle.text = title;
+            _trayList.Clear();
+            var t = new Frame().Set(C(coloursOn ? "#6F5F52" : "#EADCC6"), 12).Size(66, 56).In(_trayList);
+            t.style.flexShrink = 0;
+            t.style.marginRight = 6;
+            t.style.alignItems = Align.Center;
+            t.style.justifyContent = Justify.Center;
+            Label(t, "Colours", "Gluten", 700, 12, coloursOn ? "#FFF9EF" : Ink);
+            Label(t, coloursOn ? "On" : "Off", "Figtree", 700, 11, coloursOn ? "#FFF9EF" : Muted);
+            Tap(t, toggle);
+            if (cards.Count == 0)
+            {
+                var e = Label(_trayList, "No combos yet. Put pieces right next to each other.", "Figtree", 400, 12, Muted);
+                e.Wrap();
+                e.style.maxWidth = 220;
+                e.style.alignSelf = Align.Center;
+                return;
+            }
+            foreach (var c in cards)
+            {
+                var b = new Frame().Set(C(c.done ? "#FFF9EF" : "#EFE4D2"), 12).Size(158, 56).Pad(4, 8, 4, 8).In(_trayList);
+                b.style.flexShrink = 0;
+                b.style.marginRight = 6;
+                b.style.borderLeftWidth = 6;
+                b.style.borderLeftColor = C(c.done ? c.color : "#CDB999");
+                var top = new VisualElement().Row(Align.Center).In(b);
+                var n = Label(top, c.name, "Gluten", 700, 12, Ink);
+                n.style.flexGrow = 1;
+                n.style.flexShrink = 1;
+                n.style.overflow = Overflow.Hidden;
+                n.style.textOverflow = TextOverflow.Ellipsis;
+                Label(top, c.count, "Figtree", 800, 11, c.done ? "#4C7552" : "#A07324");
+                var d = Label(b, c.detail, "Figtree", 600, 9.5f, Muted);
+                d.Wrap();
+                d.style.overflow = Overflow.Hidden;
+            }
+        }
+
         public void DrawTray(string title, List<(string key, bool owned, bool on, string label)> list, string emptyText, Action<string> onClick)
         {
             _trayTitle.text = title;
@@ -661,7 +705,7 @@ namespace Squishy.Runtime.UI
             if (cls != "z")
             {
                 float now = Time.realtimeSinceStartup, start = Mathf.Max(now, _floatFree);
-                _floatFree = start + .55f;
+                _floatFree = start + .65f;
                 if (start > now + .01f) { _floaters.schedule.Execute(() => ShowFloat(p, text, cls)).StartingIn((long)((start - now) * 1000)); return; }
             }
             ShowFloat(p, text, cls);
@@ -669,7 +713,7 @@ namespace Squishy.Runtime.UI
 
         private void ShowFloat(Vector2 p, string text, string cls)
         {
-            var l = Label(_floaters, text, "Gluten", 800, cls == "z" ? 20 : 17, Cream);
+            var l = Label(_floaters, text, "Gluten", 800, cls == "z" ? 20 : cls == "combo" ? 18 : 17, Cream);
             l.style.maxWidth = Width * .86f;
             l.Wrap();
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -677,11 +721,21 @@ namespace Squishy.Runtime.UI
             l.style.left = p.x;
             l.style.top = p.y;
             l.style.textShadow = Shadow(2, cls == "z" ? "#6A5A91" : cls == "bad" ? "#6B5A4E" : "#B85C45");
-            Tw.Run(l, 1.1f, u =>
+            if (cls == "combo")
+            {
+                // Combo notes over busy furniture: a soft dark pill so they read at a glance.
+                l.style.backgroundColor = new StyleColor(new Color(.3f, .22f, .17f, .82f));
+                l.style.paddingLeft = l.style.paddingRight = 14;
+                l.style.paddingTop = l.style.paddingBottom = 5;
+                l.style.borderTopLeftRadius = l.style.borderTopRightRadius = l.style.borderBottomLeftRadius = l.style.borderBottomRightRadius = 99;
+            }
+            // Pop in, hold a moment, then drift up and fade (was 1.1s: gone before it could be read).
+            Tw.Run(l, cls == "combo" ? 2.4f : 1.7f, u =>
             {
                 float op, ty, sc;
-                if (u < .2f) { float k = Tweens.EaseOut(u / .2f); op = k; ty = Mathf.Lerp(-30, -70, k); sc = Mathf.Lerp(.6f, 1.1f, k); }
-                else { float k = Tweens.EaseOut((u - .2f) / .8f); op = 1 - k; ty = Mathf.Lerp(-70, -230, k); sc = Mathf.Lerp(1.1f, 1, k); }
+                if (u < .12f) { float k = Tweens.EaseOut(u / .12f); op = k; ty = Mathf.Lerp(-30, -70, k); sc = Mathf.Lerp(.6f, 1.1f, k); }
+                else if (u < .55f) { float k = (u - .12f) / .43f; op = 1; ty = Mathf.Lerp(-70, -95, k); sc = Mathf.Lerp(1.1f, 1, Mathf.Min(1, k * 3)); }
+                else { float k = Tweens.EaseOut((u - .55f) / .45f); op = 1 - k; ty = Mathf.Lerp(-95, -200, k); sc = 1; }
                 l.style.opacity = op;
                 l.style.translate = new Translate(Length.Percent(-50), Length.Percent(ty));
                 l.style.scale = Vector2.one * sc;

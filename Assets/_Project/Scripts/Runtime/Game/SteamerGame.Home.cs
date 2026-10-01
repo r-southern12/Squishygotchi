@@ -1304,6 +1304,7 @@ namespace Squishy.Runtime.Game
                 it.g.RotY(it.ry);
                 if (it.arch == "shower" && it.parts.curtain != null) AnimateCurtain(it, dt);
             }
+            if (comboRings.Count > 0) StepComboRings();
             selRing.gameObject.SetActive(mode == "edit" && sel != null);
             if (sel != null)
             {

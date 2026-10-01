@@ -298,6 +298,7 @@ namespace Squishy.Runtime.Game
             ui.SetMode(m2);
             if (m2 == "home") ui.SetHint("");
             if (m2 == "edit") { ui.SetHint("Drag items anywhere"); DrawTray(); }
+            RefreshComboRings(); // shown while arranging only
             ui.SetSteamers(S.steamers, m2 == "home");
         }
 

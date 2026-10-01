@@ -61,6 +61,7 @@ namespace Squishy.Simulation.Game
         public bool hideRoom; // Settings: other players can't find your room as a neighbour (friends with your code still can)
         public List<VisitCredit> visitsCredited = new List<VisitCredit>();
         public bool welcomed;
+        public bool comboColoursOff; // Arrange: the coloured rings under made combos are switched off
         public int intro; // a new game's first run: 1 = its first steamer to open, 2 = the room furnishing itself, 0 = done
     }
 
