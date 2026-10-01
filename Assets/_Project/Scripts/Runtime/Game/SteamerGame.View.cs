@@ -422,7 +422,7 @@ namespace Squishy.Runtime.Game
                     sfx.Tap();
                     Buzz(8);
                     if (!visiting && S.tipPile > 0 && it == energisedBy && ai.mode != "act") { TipCoins(); drag = null; return; } // tap what it played with
-                    if (visiting && it.a.role != "plant") { Floater("Just visiting · their plants would love some water"); drag = null; return; }
+                    if (visiting && it.a.role != "plant") { Floater("Just visiting"); drag = null; return; }
                     if (it.a.role == "eat") OpenCook(it); else UseItem(it, true);
                 }
             }
