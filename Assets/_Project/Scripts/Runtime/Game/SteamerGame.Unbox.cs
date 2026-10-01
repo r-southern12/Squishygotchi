@@ -118,7 +118,7 @@ namespace Squishy.Runtime.Game
         {
             if (S.dead) return;
             CloseCook();
-            if (S.steamers <= 0) { ui.SetHint("No steamers. Earn them from tasks or buy one.", true); OpenShop(); return; }
+            if (S.steamers <= 0 && !FirstSteamer) { ui.SetHint("No steamers. Earn them from tasks or buy one.", true); OpenShop(); return; }
             WipeTo(() =>
             {
                 SetMode("unbox");
@@ -152,6 +152,7 @@ namespace Squishy.Runtime.Game
                 ustate = "idle";
                 SetMode("home");
                 PlaceLamps();
+                if (S.intro == 1) { S.intro = 2; FurnishRoom(); } // the first squishy's new home fills with furniture
                 if (grewTo.HasValue)
                 {
                     growAnim = (pet.Scale, C.sizes[grewTo.Value].s, 0);
@@ -166,7 +167,7 @@ namespace Squishy.Runtime.Game
 
         private void DropLid()
         {
-            SetLayers(Rules.RollLayers());
+            SetLayers(FirstSteamer ? 1 : Rules.RollLayers());
             ustate = "lidIn";
             ust = 0;
             ui.ShowHud(true);
@@ -269,7 +270,7 @@ namespace Squishy.Runtime.Game
 
         public void HoldStart()
         {
-            if (mode == "unbox" && S.steamers <= 0 && (ustate == "closed" || ustate == "charging")) { Floater("No steamers left", "bad"); sfx.Bonk(); keepHeld = false; return; }
+            if (mode == "unbox" && S.steamers <= 0 && !FirstSteamer && (ustate == "closed" || ustate == "charging")) { Floater("No steamers left", "bad"); sfx.Bonk(); keepHeld = false; return; }
             if (mode == "unbox") keepHeld = true;
             if (mode == "unbox" && (ustate == "closed" || ustate == "charging")) { holding = true; ustate = "charging"; ui.MainDown(true); }
         }
@@ -287,12 +288,12 @@ namespace Squishy.Runtime.Game
         {
             if (!keepHeld) return;
             if (ustate == "closed" && !holding && S.steamers > 0) { holding = true; ustate = "charging"; ui.MainDown(true); }
-            else if (ustate == "card" && Time.time - cardShownAt > 1.4f && (layer > 0 || S.steamers > 0)) CardAgain();
+            else if (ustate == "card" && !FirstSteamer && Time.time - cardShownAt > 1.4f && (layer > 0 || S.steamers > 0)) CardAgain();
         }
 
         private void Pop()
         {
-            if (S.steamers <= 0) { holding = false; keepHeld = false; charge = 0; ustate = "closed"; sfx.Hum(0); ui.MainDown(false); Floater("No steamers left", "bad"); return; }
+            if (S.steamers <= 0 && !FirstSteamer) { holding = false; keepHeld = false; charge = 0; ustate = "closed"; sfx.Hum(0); ui.MainDown(false); Floater("No steamers left", "bad"); return; }
             ustate = "pop";
             ust = 0;
             charge = 0;
@@ -318,9 +319,9 @@ namespace Squishy.Runtime.Game
                 confetti.Spawn(new Vector3(Rnd(-.2f, .2f), (H * layers + .5f) * US, Rnd(-.2f, .2f)), new Vector3(Mathf.Cos(a) * sp * .55f, Rnd(3.4f, 6), Mathf.Sin(a) * sp * .55f), 1, Rnd(2.2f, 3), 1.1f, -5, .01f,
                     new Vector3(Rnd(0, 6), Rnd(0, 6), Rnd(0, 6)), new Vector3(Rnd(-10, 10), Rnd(-10, 10), Rnd(-10, 10)), ThreeMat.Lin(Conf[i % Conf.Length]));
             }
-            Rules.SetSteamers(S.steamers - 1);
+            if (!FirstSteamer) Rules.SetSteamers(S.steamers - 1); // the first one is a gift
             PreparePrize();
-            TaskEvent("unbox");
+            if (!FirstSteamer) TaskEvent("unbox");
             UMove("reveal", reduce ? .3f : 1.4f);
             WriteSave();
         }
@@ -337,7 +338,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Rolls this layer's prize and builds its display model (hidden until it launches).</summary>
         private void PreparePrize()
         {
-            reward = Rules.RollReward();
+            reward = FirstSteamer ? new Reward { type = "sq", i = S.favIdx, rar = "Common" } : Rules.RollReward(); // the first steamer holds your starter squishy
             ClearPrize();
             newbie.Pivot.gameObject.SetActive(false);
             if (reward.type == "sq")
@@ -433,14 +434,14 @@ namespace Squishy.Runtime.Game
             raysOn = 1;
             sfx.Chime();
             Buzz(15);
-            var card = Rules.Claim(reward);
-            if (card.isNew) TaskEvent("new_prize");
+            var card = FirstSteamer ? Rules.FirstSquishyCard() : Rules.Claim(reward);
+            if (card.isNew && !FirstSteamer) TaskEvent("new_prize");
             // Duplicates pay coins the player taps to collect (collected anyway if they move on).
             cardCoins = card.delayedCoins;
             if (card.grewTo >= 0) grewTo = card.grewTo;
             if (card.kitchenChanged) DecorateStoves();
             ui.CardCoins(cardCoins, CollectCardCoins);
-            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, layer > 0 ? "Next layer" : S.steamers > 0 ? "Again" : "Get steamers");
+            ui.ShowCard(card.isNew, card.name, card.tier, card.dot, card.meta, FirstSteamer ? "Take it home" : layer > 0 ? "Next layer" : S.steamers > 0 ? "Again" : "Get steamers");
             WriteSave();
         }
 
@@ -458,9 +459,13 @@ namespace Squishy.Runtime.Game
             WriteSave();
         }
 
+        /// <summary>A new game's first steamer (it holds the starter squishy and costs nothing).</summary>
+        private bool FirstSteamer { get { return S.intro == 1; } }
+
         public void CardAgain()
         {
             CollectCardCoins();
+            if (FirstSteamer) { GoHome(); return; } // "Take it home"
             if (layer > 0) { NextLayer(); return; }
             if (S.steamers <= 0) { GoHome(); Later(.5f, OpenShop); return; }
             // Clear the last prize straight away so it never shows inside the next steamer.

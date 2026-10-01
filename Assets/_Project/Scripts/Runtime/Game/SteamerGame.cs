@@ -101,6 +101,7 @@ namespace Squishy.Runtime.Game
             Notifier.Init();
             Notifier.Clear();
             GoOnline(); // friends: anonymous sign-in and sharing your room (fails soft offline)
+            if (S.intro > 0) HideForIntro(); // a new game: an empty room until its first steamer is opened
             if (S.asleep) { SleepNow(inBed: true); ShowWakeScreen(AfterIntro); } // after a night's sleep: already in bed behind the wake-up screen, not the title
             else ui.ShowIntro(AfterIntro);
         }
@@ -306,6 +307,7 @@ namespace Squishy.Runtime.Game
 
         private void CatchUp(DateTime saved, DateTime now)
         {
+            if (S.intro > 0) return; // no squishy at home yet: nothing to catch up
             now = Rules.TrustedNow(now); // never trust a clock wound backwards
             float away = (float)Math.Min((now - saved).TotalSeconds, 7 * 24 * 3600.0);
             if (away <= 1) return;

@@ -249,6 +249,14 @@ namespace Squishy.Runtime.Game
         {
             sfx.Chime();
             if (!S.welcomed) EditProfile(false);
+            else AfterWelcome();
+        }
+
+        /// <summary>A new game: its first steamer to open; a room left half-furnished finishes off.</summary>
+        private void AfterWelcome()
+        {
+            if (S.intro == 1) Later(.4f, EnterUnbox);
+            else if (S.intro == 2) FurnishRoom();
         }
 
         private void EditProfile(bool edit)
@@ -260,6 +268,7 @@ namespace Squishy.Runtime.Game
                 WriteSave();
                 sfx.Chime();
                 ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), edit ? "Saved!" : "Hi, " + n + "!");
+                if (!edit) AfterWelcome();
             });
         }
 

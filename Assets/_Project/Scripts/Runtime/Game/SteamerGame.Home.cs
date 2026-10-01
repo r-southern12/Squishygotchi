@@ -23,6 +23,62 @@ namespace Squishy.Runtime.Game
 
         // ---------------- building ----------------
 
+        // ---------------- the first run ----------------
+
+        private bool furnishing;
+
+        /// <summary>A new game's room before its first steamer: empty (the pieces are there, hidden, and pop in later).</summary>
+        private void HideForIntro()
+        {
+            foreach (var it in items) it.g.gameObject.SetActive(false);
+            pet.Pivot.gameObject.SetActive(false);
+            ui.SetHint("");
+        }
+
+        /// <summary>The first squishy comes home: the room turns slowly while the starter pieces pop in, then it appears.</summary>
+        private void FurnishRoom() { StartCoroutine(FurnishRoomCo()); }
+
+        private System.Collections.IEnumerator FurnishRoomCo()
+        {
+            if (furnishing) yield break;
+            furnishing = true;
+            ui.ShowHud(false);
+            HideForIntro();
+            yield return new WaitForSeconds(.8f);
+            // The rug first, then round the room so each piece arrives as the room turns.
+            var order = new List<Item>(items);
+            order.Sort((a, b) => (a.arch == "rug" ? -10 : Mathf.Atan2(a.tz, a.tx)).CompareTo(b.arch == "rug" ? -10 : Mathf.Atan2(b.tz, b.tx)));
+            foreach (var it in order)
+            {
+                if (it == null || it.g == null) continue;
+                it.g.gameObject.SetActive(true);
+                it.grow = 0;
+                it.g.localScale = Vector3.one * .01f;
+                it.bv = -3; // lands with a little wobble
+                Glints(new Vector3(it.tx, .3f, it.tz), "#FFE08A", 1);
+                sfx.Pop();
+                Buzz(8);
+                yield return new WaitForSeconds(.32f);
+            }
+            yield return new WaitForSeconds(.5f);
+            // Last, the squishy itself.
+            pet.Pivot.gameObject.SetActive(true);
+            float size = pet.Scale;
+            pet.Scale = .01f;
+            growAnim = (.01f, size, 0);
+            for (int i = 0; i < 10; i++) { float a = i / 10f * Mathf.PI * 2; Glints(new Vector3(ai.x + Mathf.Cos(a) * .25f, .25f, ai.z + Mathf.Sin(a) * .25f), "#FFE08A", 1); }
+            pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 2.5f);
+            sfx.Chime();
+            Buzz(20, 30, 20);
+            S.intro = 0;
+            WriteSave();
+            yield return new WaitForSeconds(1.2f);
+            furnishing = false;
+            ui.ShowHud(true);
+            DrawNeeds();
+            ui.SetHint("Welcome home, " + Rules.Fav.name + "!", true);
+        }
+
         private void BuildHome()
         {
             HR = Rules.RoomRadius();
@@ -834,6 +890,7 @@ namespace Squishy.Runtime.Game
         {
             pet.Chewing = false; // StepAct turns it on while eating
             if (S.dead || _dying) { pet.Update(dt, .35f, true, 1); ApplyPetTransform(0, true); AnimateFurniture(dt); return; }
+            if (S.intro > 0) { AnimateFurniture(dt); return; } // the first run: nothing lives here yet (no needs, no wandering)
             if (S.tucked)
             {
                 // Tucked in: fast asleep where it lies, gently breathing; nothing drains.

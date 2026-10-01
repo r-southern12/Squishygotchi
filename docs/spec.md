@@ -426,7 +426,7 @@ Soft-block diorama with a tilt-shift miniature look.
 
 ## Mobile controls and performance
 
-- Portrait only. First launch: a title screen (the room slowly turning behind the logo), then a welcome card (your name, a colour, your friend code). Your name stays on the phone.
+- Portrait only. First launch: a title screen (an empty room slowly turning behind the logo), then a welcome card (your name, a colour, your friend code), then your **first steamer**: hold to open it as usual; it always holds your starter squishy, costs nothing and doesn't count toward odds or missions. Its card says "Take it home": the empty room turns slowly while the starter furniture pops in piece by piece (rug first), then the squishy appears, and the game begins (needs only start then). Quitting part way picks up where it left off. Your name stays on the phone.
 - Bottom bar: Tasks, Shop, Unbox (steamer count), Catalogue, Arrange. Top: squishy chip (tree), coins, prestige, gift, Settings, Friends.
 - Home camera follows the squishy; drag to turn and tilt; **pinch zooms smoothly through close-up, follow and whole room** (no view button).
 - Hold-to-charge unboxing anywhere on screen; haptic ticks.

@@ -88,6 +88,7 @@ namespace Squishy.Simulation.Game
             s.storage.AddRange(st.storage);
             var rules = new GameRules(c, s);
             rules.RandomiseStarterStyles();
+            s.intro = 1; // a new game opens its first steamer (the starter squishy) into an empty room
             for (int i = 0; i < 3; i++) s.tasks.Add(rules.NewTask());
             s.rng = rules._rng.State;
             return s;
@@ -474,6 +475,13 @@ namespace Squishy.Simulation.Game
         }
 
         /// <summary>Adds the prize to the collection and describes it for the reveal card.</summary>
+        /// <summary>The first steamer's card: the starter squishy, already yours (nothing is added or counted).</summary>
+        public RewardCard FirstSquishyCard()
+        {
+            var f = C.finishes[S.favIdx];
+            return new RewardCard { isNew = true, key = "sq:" + S.favIdx, name = f.name, tier = C.FinishRarity(f) + " · " + f.tier, dot = C.TierColor(f.tier), meta = "Your very first squishy!" };
+        }
+
         public RewardCard Claim(Reward rw)
         {
             var card = new RewardCard { isNew = true, dot = "#D8C7AE" };
