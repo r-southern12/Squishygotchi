@@ -225,6 +225,7 @@ namespace Squishy.Runtime.UI
             _hint.style.minHeight = 24;
             _hint.style.maxWidth = 300;
             _hint.Wrap();
+            _hint.pickingMode = PickingMode.Ignore;
             var controls = new VisualElement().Row(Align.Center, Justify.Center).NoPick().In(_bottom);
             _controls = controls;
             controls.style.width = Length.Percent(100);
@@ -547,6 +548,10 @@ namespace Squishy.Runtime.UI
             _bIcon = Icons.Make("idle", 16).In(_bubble);
             _bText = Label(_bubble, "", "Figtree", 700, 13).Margin(0, 0, 0, 5);
             _bubble.style.opacity = 0;
+            // Never catches taps: hidden, it only fades out and stays put, and it sat invisibly over the Arrange button.
+            _bubble.pickingMode = PickingMode.Ignore;
+            _bIcon.pickingMode = PickingMode.Ignore;
+            _bText.pickingMode = PickingMode.Ignore;
         }
 
         // ---------------- state setters ----------------
@@ -714,6 +719,7 @@ namespace Squishy.Runtime.UI
         private void ShowFloat(Vector2 p, string text, string cls)
         {
             var l = Label(_floaters, text, "Gluten", 800, cls == "z" ? 20 : cls == "combo" ? 18 : 17, Cream);
+            l.pickingMode = PickingMode.Ignore; // toasts drift over the buttons: they must never block a tap
             l.style.maxWidth = Width * .86f;
             l.Wrap();
             l.style.unityTextAlign = TextAnchor.MiddleCenter;

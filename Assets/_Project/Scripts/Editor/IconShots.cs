@@ -129,6 +129,33 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_EDIT") == "1")
+            {
+                // Press Arrange from code in a few situations and log what happens (mode, and any error).
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var rules = (Squishy.Simulation.Game.GameRules)T.GetField("Rules", flags).GetValue(game);
+                if (f == 100) { Debug.Log("EDITCHK intro=" + rules.S.intro + " mode=" + T.GetField("mode", flags).GetValue(game)); rules.S.intro = 0; T.GetMethod("RebuildHome", flags).Invoke(game, null); return; }
+                if (f == 140 || f == 200 || f == 260)
+                {
+                    try
+                    {
+                        if (f == 200) { T.GetMethod("GoToBed", flags).Invoke(game, null); }
+                        if (f == 260) { var ui = T.GetField("ui", flags).GetValue(game); }
+                        game.EnterEdit();
+                        Debug.Log("EDITCHK f" + f + " after EnterEdit mode=" + T.GetField("mode", flags).GetValue(game));
+                        T.GetMethod("ExitEdit", flags).Invoke(game, null);
+                        Debug.Log("EDITCHK f" + f + " after ExitEdit mode=" + T.GetField("mode", flags).GetValue(game));
+                    }
+                    catch (System.Exception e) { Debug.Log("EDITCHK f" + f + " ERROR " + e); }
+                    return;
+                }
+                if (f < 300) return;
+                EditorApplication.update -= Tick;
+                Finish(0);
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_COS") == "1")
             {
                 // Every prestige accessory on the squishy: a front sheet and a three-quarter sheet (7 across).
