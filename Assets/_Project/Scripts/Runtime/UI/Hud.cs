@@ -596,8 +596,13 @@ namespace Squishy.Runtime.UI
             ((VisualElement)_badge.userData).Shown(visible);
         }
 
-        public void SetGift(string text, bool ready)
+        private bool _giftReady;
+        private float _giftJiggleT = 2;
+
+        /// <param name="jiggle">Wiggle now and then to be noticed: only for a free steamer (never to nudge towards a video ad).</param>
+        public void SetGift(string text, bool ready, bool jiggle = false)
         {
+            _giftReady = ready && jiggle;
             _giftLbl.text = text;
             _gift.Fill = ready ? C("#FBE3DA") : ChipFill;
             _gift.MarkDirtyRepaint();
@@ -763,9 +768,28 @@ namespace Squishy.Runtime.UI
             Tw.Run(_wipe, .38f, u => { _wipeR = 1 - Tweens.Bezier(.6f, 0, .4f, 1, u); _wipe.MarkDirtyRepaint(); }, () => _wipe.pickingMode = PickingMode.Ignore);
         }
 
+        /// <summary>
+        /// A free (or bonus) steamer waiting: the gift button gives a little wiggle every few seconds so it gets noticed
+        /// (user request, 2 Oct 2026: a young player didn't spot it). A wiggle, never a flash.
+        /// </summary>
+        private void StepGiftJiggle(float dt)
+        {
+            if (!_giftReady || !_hudShown) { _giftJiggleT = 2; return; }
+            _giftJiggleT -= dt;
+            if (_giftJiggleT > 0) return;
+            _giftJiggleT = 5;
+            Tw.Run(_gift, .7f, u =>
+            {
+                float k = 1 - u;
+                _gift.style.rotate = new Rotate(Angle.Degrees(Mathf.Sin(u * Mathf.PI * 6) * 9 * k));
+                _gift.style.scale = Vector2.one * (1 + .08f * Mathf.Sin(u * Mathf.PI) * k);
+            }, () => { _gift.style.rotate = new Rotate(Angle.Degrees(0)); _gift.style.scale = Vector2.one; });
+        }
+
         public void Update(float dt)
         {
             Tw.Update(dt);
+            StepGiftJiggle(dt);
             StepIntro(dt);
             StepNight(dt);
         }

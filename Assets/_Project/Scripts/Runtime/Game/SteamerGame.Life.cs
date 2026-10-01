@@ -62,8 +62,8 @@ namespace Squishy.Runtime.Game
             if (canExpand && !toldExpand && mode == "home") { toldExpand = true; ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "Room can level up!"); sfx.Chime(); }
             if (!canExpand) toldExpand = false;
             StepNight(1);
-            if (Rules.OnlineReady()) ui.SetGift("Free!", true);
-            else if (Rules.BonusReady()) ui.SetGift("Bonus", true);
+            if (Rules.OnlineReady()) ui.SetGift("Free!", true, true);
+            else if (Rules.BonusReady()) ui.SetGift("Bonus", true, S.premium); // a free player's bonus is a video: no wiggle
             else { var w = Rules.OnlineWait(); ui.SetGift((int)w.TotalHours + ":" + w.Minutes.ToString("00"), false); }
             if (mode == "home" && !S.dead && !_dying && Rules.ReachedOldAge()) OldAge();
             if (mode == "home" && !paywallShown && Rules.TrialOver() && !S.dead && !_dying) ShowPaywall();

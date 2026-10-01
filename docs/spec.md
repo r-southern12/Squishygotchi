@@ -295,6 +295,7 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Mission streak (a mission each day) | Coin bonus on missions: +10% per day after the first, up to +50%; missing a day starts again (no steamers) |
 | Missions goal (15 missions before it resets; a new goal every Monday and Thursday) | +10 steamers |
 | Free steamer | 1 to claim from the gift chip; refills at each 3-hour reset on the clock (midnight, 3am, 6am...), so the wait is often under 3 hours; it does not stack while away |
+| Free steamer waiting | The gift button gives a gentle wiggle every 5 seconds (never a flash). Not for a free player's bonus steamer, which needs a video: no nudging towards ads. |
 | Bonus steamer | 1 more, refilling at the same 3-hour resets: an optional short video for free players, simply included with the full game |
 | Every 3 hours | 5 at most: 3 from care tasks, the free one and the bonus one. Nothing arrives on its own. |
 | Open 10 | With 10 or more steamers, open ten at once (same odds and pity): the steamer boils harder and they burst open in turn with a little confetti (a bit more for Epic and Legendary; no flashes or counting popups), then the prizes are listed best first with a spinning 3D showcase of the one you tap (tap to enlarge) |
