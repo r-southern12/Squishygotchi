@@ -109,9 +109,21 @@ namespace Squishy.Runtime.Models
         }
 
         // ---- pinch and squeeze (two fingers, zoomed in) ----
-        private bool _pinchOn;
-        private Vector3 _pinchA, _pinchB, _pinchMid, _pinchAxis, _pinchShift, _pinchShiftT, _pinchN, _pinchC;
-        private float _pinch, _pinchT, _pinchHalf, _pinchReach, _bodyR;
+
+        /// <summary>One rubber band round the body: where it was pinched, how hard, and whether the fingers are still on it.</summary>
+        private sealed class Band
+        {
+            public Vector3 a, b, n, c, shift, shiftT;
+            public float amt, target, reach;
+            public bool on;
+        }
+
+        // Pinches stack (user request, 2 Oct 2026): a new pinch adds a band; earlier ones keep their shape and relax slowly
+        // as before, instead of jumping to the new spot.
+        private readonly List<Band> _bands = new List<Band>();
+        private Band _band; // the one under the fingers now
+        private float _pinch, _bodyR; // _pinch: all the bands' squeeze together
+        private const int MaxBands = 3;
 
         /// <summary>
         /// Two fingers on the squishy: like a rubber band round it where you pinch (see PinchMove). The band wraps round
@@ -120,36 +132,62 @@ namespace Squishy.Runtime.Models
         public void BeginPinch(Vector3 worldA, Vector3 worldB, Vector3? worldView = null)
         {
             EnsureTactileMesh();
-            _pinchA = Body.InverseTransformPoint(worldA);
-            _pinchB = Body.InverseTransformPoint(worldB);
+            if (_band != null) _band.on = false;
+            var nb = new Band { a = Body.InverseTransformPoint(worldA), b = Body.InverseTransformPoint(worldB), on = true };
             // The squeeze closes along the line between the fingers, wherever they are on the body.
-            _pinchMid = (_pinchA + _pinchB) / 2;
-            var ab = _pinchB - _pinchA;
-            _pinchHalf = Mathf.Max(.06f, ab.magnitude / 2);
-            _pinchAxis = ab.sqrMagnitude > 1e-6f ? ab.normalized : Vector3.right;
+            var mid = (nb.a + nb.b) / 2;
+            var ab = nb.b - nb.a;
+            var axis = ab.sqrMagnitude > 1e-6f ? ab.normalized : Vector3.right;
             var view = worldView.HasValue ? Body.InverseTransformDirection(worldView.Value).normalized : Vector3.forward;
-            var n = Vector3.Cross(_pinchAxis, view);
-            if (n.sqrMagnitude < 1e-4f) n = Vector3.Cross(_pinchAxis, Vector3.up);
+            var n = Vector3.Cross(axis, view);
+            if (n.sqrMagnitude < 1e-4f) n = Vector3.Cross(axis, Vector3.up);
             if (n.sqrMagnitude < 1e-4f) n = Vector3.up;
-            _pinchN = n.normalized; // the band's plane holds the line between the fingers and the line of sight
-            _pinchC = Core - _pinchN * Vector3.Dot(Core - _pinchMid, _pinchN); // the band's centre: the body's middle, on that plane
+            nb.n = n.normalized; // the band's plane holds the line between the fingers and the line of sight
+            nb.c = Core - nb.n * Vector3.Dot(Core - mid, nb.n); // the band's centre: the body's middle, on that plane
             if (_bodyR <= 0 && _tBase != null) foreach (var v in _tBase) _bodyR = Mathf.Max(_bodyR, (v - Core).magnitude);
             if (_bodyR <= 0) _bodyR = 1;
-            _pinchReach = Mathf.Max(.1f, _bodyR * .22f); // the band's width
-            _pinchShift = _pinchShiftT = Vector3.zero;
-            _pinchOn = true;
-            _pinchT = 0;
+            nb.reach = Mathf.Max(.1f, _bodyR * .22f); // the band's width
+            // At most a few bands: the oldest let-go one makes way.
+            while (_bands.Count >= MaxBands)
+            {
+                int k = _bands.FindIndex(x => !x.on);
+                if (k < 0) k = 0;
+                _bands.RemoveAt(k);
+            }
+            _bands.Add(nb);
+            _band = nb;
         }
 
         /// <summary>0 = fingers where they started, 1 = squeezed as far as it goes.</summary>
-        public void SetPinch(float amount) { if (_pinchOn) _pinchT = Mathf.Clamp(amount, 0, .96f); }
+        public void SetPinch(float amount) { if (_band != null && _band.on) _band.target = Mathf.Clamp(amount, 0, .96f); }
 
         /// <summary>Both fingers moved together: the squeezed lump goes with them (world offset since the pinch began).</summary>
-        public void DragPinch(Vector3 worldOffset) { if (_pinchOn) _pinchShiftT = Body.InverseTransformVector(worldOffset); }
+        public void DragPinch(Vector3 worldOffset) { if (_band != null && _band.on) _band.shiftT = Body.InverseTransformVector(worldOffset); }
 
-        public void EndPinch() { _pinchOn = false; _pinchT = 0; }
+        /// <summary>Fingers off: this band relaxes back slowly (others already made keep relaxing too).</summary>
+        public void EndPinch()
+        {
+            if (_band != null) { _band.on = false; _band.target = 0; }
+            _band = null;
+        }
 
-        public bool Pinching { get { return _pinchOn; } }
+        public bool Pinching { get { return _band != null && _band.on; } }
+
+        /// <summary>Each band follows its fingers quickly, and rises back like memory foam when they let go.</summary>
+        private void StepBands(float dt)
+        {
+            float total = 0, relax = 2.3f / Mathf.Max(.2f, RiseTime * 2); // let go, a pinch rises back slowly (half a press's speed), so pinches stack
+            for (int i = _bands.Count - 1; i >= 0; i--)
+            {
+                var bd = _bands[i];
+                bd.amt += (bd.target - bd.amt) * Mathf.Min(1, dt * (bd.target > bd.amt ? 10 : relax));
+                bd.shift += ((bd.on ? bd.shiftT : Vector3.zero) - bd.shift) * Mathf.Min(1, dt * (bd.on ? 10 : relax));
+                if (!bd.on && bd.amt < .002f) { _bands.RemoveAt(i); continue; }
+                if (bd.amt > .02f) { PokeInside(bd.a, bd.amt * dt * 4); PokeInside(bd.b, bd.amt * dt * 4); }
+                total += bd.amt;
+            }
+            _pinch = Mathf.Min(1.5f, total);
+        }
 
         // ---- draping over what it sits on ----
         private float _supR = 1, _drape, _drapeT, _drapeApplied;
@@ -184,11 +222,7 @@ namespace Squishy.Runtime.Models
             foreach (var d in _dents) if (d.held) target += d.depth / Mathf.Max(.01f, d.r);
             target += _pinch * .08f; // a pinch hardly squashes the whole body: the pinched spot does the work
             _tSquash += (Mathf.Min(.22f, target * .25f) - _tSquash) * Mathf.Min(1, dt * (target > 0 ? 6 : 2.3f / Mathf.Max(.2f, RiseTime)));
-            // The squeeze follows the fingers quickly, and rises back like memory foam when they let go.
-            _pinch += (_pinchT - _pinch) * Mathf.Min(1, dt * (_pinchT > _pinch ? 10 : 2.3f / Mathf.Max(.2f, RiseTime)));
-            _pinchShift += ((_pinchOn ? _pinchShiftT : Vector3.zero) - _pinchShift) * Mathf.Min(1, dt * (_pinchOn ? 10 : 2.3f / Mathf.Max(.2f, RiseTime)));
-            if (_pinch < .002f && !_pinchOn) _pinch = 0;
-            if (_pinch > .02f) { PokeInside(_pinchA, _pinch * dt * 4); PokeInside(_pinchB, _pinch * dt * 4); }
+            StepBands(dt); // each pinch band squeezes in quickly and rises back slowly
             _drape += (_drapeT - _drape) * Mathf.Min(1, dt * (_drapeT > _drape ? 3 : 1.5f));
             if (_drape < .002f && _drapeT <= 0) _drape = 0;
             bool draping = Mathf.Abs(_drape - _drapeApplied) > .003f;
@@ -278,8 +312,14 @@ namespace Squishy.Runtime.Models
         /// <summary>How much this point is in the band (1 on the band's line round the body, fading either side).</summary>
         private float PinchGrip(Vector3 b)
         {
-            float d = Vector3.Dot(b - _pinchC, _pinchN);
-            return Mathf.Exp(-d * d / (_pinchReach * _pinchReach));
+            float g = 0;
+            foreach (var bd in _bands)
+            {
+                if (bd.amt <= 0) continue;
+                float d = Vector3.Dot(b - bd.c, bd.n);
+                g = Mathf.Max(g, Mathf.Exp(-d * d / (bd.reach * bd.reach)));
+            }
+            return g;
         }
 
         /// <summary>
@@ -289,14 +329,20 @@ namespace Squishy.Runtime.Models
         /// </summary>
         private Vector3 PinchMove(Vector3 b)
         {
-            var rel = b - _pinchC;
-            float d = Vector3.Dot(rel, _pinchN);
-            var radial = rel - _pinchN * d; // out from the band's centre, across the band
-            float w = _pinchReach, k = Mathf.Exp(-d * d / (w * w)), side = 1 - k;
-            var waist = -radial * (_pinch * .62f * k); // cinched in, down to about a third of the width at a full squeeze
-            var swell = radial * (_pinch * .16f * side); // the halves fill out with what was squeezed from the middle
-            var apart = _pinchN * (Mathf.Sign(d) * _pinch * .18f * _bodyR * Mathf.SmoothStep(0, 1, Mathf.Abs(d) / (w * 2))); // and push apart
-            return waist + swell + apart + _pinchShift * (k + .3f * side);
+            var total = Vector3.zero;
+            foreach (var bd in _bands)
+            {
+                if (bd.amt <= 0) continue;
+                var rel = b - bd.c;
+                float d = Vector3.Dot(rel, bd.n);
+                var radial = rel - bd.n * d; // out from the band's centre, across the band
+                float w = bd.reach, k = Mathf.Exp(-d * d / (w * w)), side = 1 - k;
+                var waist = -radial * (bd.amt * .62f * k); // cinched in, down to about a third of the width at a full squeeze
+                var swell = radial * (bd.amt * .16f * side); // the halves fill out with what was squeezed from the middle
+                var apart = bd.n * (Mathf.Sign(d) * bd.amt * .18f * _bodyR * Mathf.SmoothStep(0, 1, Mathf.Abs(d) / (w * 2))); // and push apart
+                total += waist + swell + apart + bd.shift * (k + .3f * side);
+            }
+            return total;
         }
 
         // ---- the face rides the surface ----

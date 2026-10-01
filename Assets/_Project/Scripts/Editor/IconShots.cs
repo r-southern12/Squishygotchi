@@ -571,6 +571,13 @@ namespace Squishy.EditorTools
                 for (int i = 0; i < 20; i++) model.Update(.05f, 0, false, 0);
                 Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch");
                 model.EndPinch();
+                // A second pinch straight after (higher up): the first keeps its shape and relaxes slowly, both show.
+                for (int i = 0; i < 4; i++) model.Update(.05f, 0, false, 0);
+                model.BeginPinch(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(-.35f, .62f, .7f).normalized)), model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(.35f, .62f, .7f).normalized)));
+                model.SetPinch(.9f);
+                for (int i = 0; i < 12; i++) model.Update(.05f, 0, false, 0);
+                Shot(cam, rt, tex, model.Body.GetComponent<Renderer>().bounds, flat, 14, 1.6f, 30, warm, "pinch_double");
+                model.EndPinch();
                 for (int i = 0; i < 100; i++) model.Update(.05f, 0, false, 0);
                 model.BeginPinch(model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(-.3f, .5f, .8f).normalized)), model.Body.TransformPoint(Squishy.Runtime.Models.SquishyModel.ShapeAt(new Vector3(.3f, .5f, .8f).normalized)));
                 model.SetPinch(.9f);
