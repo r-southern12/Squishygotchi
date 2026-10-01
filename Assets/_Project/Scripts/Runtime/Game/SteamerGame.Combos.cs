@@ -276,7 +276,7 @@ namespace Squishy.Runtime.Game
             if (!ai.self && !visiting) TaskEvent("combo_" + c.id);
         }
 
-        /// <summary>A combo that carries on to its next piece (shower, then shake dry on the rug; the slide into the tub...).</summary>
+        /// <summary>A combo that carries on to its next piece (shower, then shake dry just outside it; the slide into the tub...).</summary>
         private bool ChainCombo(Activity A)
         {
             if (A == null || A.combo == null || A.chained || S.dead || visiting) return false;

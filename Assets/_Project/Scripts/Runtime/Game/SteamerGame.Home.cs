@@ -259,7 +259,40 @@ namespace Squishy.Runtime.Game
                 if (string.IsNullOrEmpty(it.a.face) && !act.inside) approach = NearestSide(it) ?? approach; // no front: the nearest clear side
                 return new Spot { approach = approach, stand = new Vector2(px, pz), y = act.perch > 0 ? act.perch : .06f };
             }
-            return new Spot { stand = new Vector2(sx, sz), y = 0, face = new Vector2(px, pz) };
+            return new Spot { stand = FreeSpotNear(new Vector2(sx, sz), it), y = 0, face = new Vector2(px, pz) };
+        }
+
+        /// <summary>
+        /// The nearest clear floor to a point: out of every piece's footprint (except the one being used) and inside the
+        /// steamer. Walk-to spots use it so the squishy never walks into furniture to reach them.
+        /// </summary>
+        private Vector2 FreeSpotNear(Vector2 p, Item ignore)
+        {
+            float pr = PetRadius();
+            for (int pass = 0; pass < 8; pass++)
+            {
+                bool moved = false;
+                foreach (var o in obstacles)
+                {
+                    if (o.it == ignore) continue;
+                    float dx = p.x - o.x, dz = p.y - o.z, d = Dist(dx, dz), min = o.r + pr + .03f;
+                    if (d >= min) continue;
+                    if (d < 1e-4f) { dx = -o.x; dz = -o.z; d = Dist(dx, dz); if (d < 1e-4f) { dx = 1; dz = 0; d = 1; } } // dead centre: out towards the middle
+                    p = new Vector2(o.x + dx / d * min, o.z + dz / d * min);
+                    moved = true;
+                }
+                float l = p.magnitude;
+                if (l > FLOOR_R - .12f) p *= (FLOOR_R - .12f) / l;
+                if (!moved) break;
+            }
+            return p;
+        }
+
+        /// <summary>Just outside a piece's open front (where the squishy steps out of the shower).</summary>
+        private Vector2 OutsideOf(Item it)
+        {
+            float d = it.a.r + PetRadius() + .12f;
+            return new Vector2(it.tx + Mathf.Sin(it.ry) * d, it.tz + Mathf.Cos(it.ry) * d);
         }
 
         private void PlanPath(float tx, float tz, float ty, Vector2? approach, Item skip)
@@ -316,8 +349,9 @@ namespace Squishy.Runtime.Game
             var pot = table.parts.pot;
             if (pot == null) return;
             const float Cycle = 2.6f;
-            int round = Mathf.FloorToInt(t / Cycle);
+            int round = Mathf.FloorToInt(t / Cycle), pours = forTwo ? 2 : 1;
             float c = t - round * Cycle;
+            if (round >= pours) { round = pours - 1; c = Cycle; } // all poured: the pot stays set down
             float tilt = c < .5f ? Mathf.SmoothStep(0, 1, c / .5f) : c < 1.4f ? 1 : c < 1.9f ? 1 - Mathf.SmoothStep(0, 1, (c - 1.4f) / .5f) : 0;
             // Which cup: the one in front of the squishy, or each in turn for two.
             Transform cup = null;
@@ -449,7 +483,10 @@ namespace Squishy.Runtime.Game
             }
             else if (it.a.cat == "Floor")
             {
-                var s = new Spot { stand = new Vector2(it.tx, it.tz), y = 0 };
+                // On the rug, but never inside what stands on it (a cushion in the middle); shaking dry after the shower
+                // happens just outside the shower, wherever the rug is (it ran across the room through everything).
+                var at = chainFrom != null && chainFrom.it != null && comboAct == "shake" ? OutsideOf(chainFrom.it) : new Vector2(it.tx, it.tz);
+                var s = new Spot { stand = FreeSpotNear(at, it), y = 0 };
                 ai.spot = s;
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, 0, null, it);
@@ -458,7 +495,7 @@ namespace Squishy.Runtime.Game
             {
                 // Start at the foot of the ladder, behind the slide.
                 float dx = Mathf.Sin(it.ry), dz = Mathf.Cos(it.ry);
-                var s = new Spot { stand = new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), y = 0, face = new Vector2(it.tx, it.tz) };
+                var s = new Spot { stand = FreeSpotNear(new Vector2(it.tx - dx * .34f, it.tz - dz * .34f), it), y = 0, face = new Vector2(it.tx, it.tz) };
                 ai.spot = s;
                 ai.mode = "walk";
                 PlanPath(s.stand.x, s.stand.y, 0, null, it);

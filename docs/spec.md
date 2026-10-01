@@ -390,6 +390,9 @@ A squishy lives 14 to 21 days (longer the better its quality of life). A **care 
 ### Combos while arranging (2 Oct 2026)
 The Arrange tray has a **Combos** tab: a card for each made combo in its own colour with the pieces that make it, then ones under way ("Tea time 2/3 · Needs Teapot"). A **Colours** toggle (on by default, remembered) puts a ring in each made combo's colour under its pieces while arranging (a piece in two combos gets two rings). The note when a combo grows or is made is one short line ("Tea time 2/3", "Tea time!") in a dark pill so it reads over furniture, and stays up longer. All toasts now pop in, hold a moment and then drift away (about 1.7 s; combo notes 2.4 s).
 
+### Getting about: clear spots (2 Oct 2026)
+Every walk-to spot (in front of a piece, on a rug, at the foot of the slide) is moved to the nearest clear floor if something stands there, so the squishy never walks into furniture to reach it. After the shower (Steamed clean) it shakes dry just outside the shower's opening, wherever the rug is. Tea time pours once (tea for two: once per cup), then the pot rests; no cut-off third pour.
+
 ## Friends
 
 Built on Unity Gaming Services (anonymous sign-in, public Cloud Save data). Decided 27 Sep 2026.
