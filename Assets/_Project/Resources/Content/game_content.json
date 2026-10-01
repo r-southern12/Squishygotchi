@@ -2740,10 +2740,10 @@
     }
   ],
   "rules": {
-    "decayHunger": 0.0000278,
-    "decayPlay": 0.0000347,
-    "decayRest": 0.0000198,
-    "decayClean": 0.0000154,
+    "decayHunger": 0.000046296,
+    "decayPlay": 0.000046296,
+    "decayRest": 0.000046296,
+    "decayClean": 0.000046296,
     "comfortSlowPerPoint": 0.02,
     "comfortSlowMax": 0.4,
     "setBonus": 3,
@@ -2782,7 +2782,7 @@
     "careMistakeFloor": 0.5,
     "careMistakeReset": 0.1,
     "babyDays": 3,
-    "babyDrain": 2,
+    "babyDrain": 1.5,
     "prestigeBase": 20,
     "prestigePerQol": 80,
     "trialDays": 28,

@@ -66,7 +66,7 @@ flowchart LR
 
 Only your favourite squishy lives in the room. Four needs (Hunger, Play, Rest, Clean) drain in real time, including while the app is closed.
 
-**Drain:** full to empty takes about 10 h (Hunger), 8 h (Play), 14 h (Rest) and 18 h (Clean). Comfort slows it. A squishy with a need at zero for 12 hours dies.
+**Drain (2 Oct 2026):** full to empty takes about **6 hours** for every need (Hunger, Play, Rest, Clean) from Young on, and **4 hours** for a Baby (data: decay rates and babyDrain 1.5). Comfort slows it (up to 40%), and asleep for the night it drains at a third of the speed. A squishy with a need at zero for 12 hours dies.
 
 **Who fills needs**
 
@@ -395,7 +395,7 @@ The Arrange tray has a **Combos** tab: a card for each made combo in its own col
 Every walk-to spot (in front of a piece, on a rug, at the foot of the slide) is moved to the nearest clear floor if something stands there, so the squishy never walks into furniture to reach it. After the shower (Steamed clean) it shakes dry just outside the shower's opening, wherever the rug is. Tea time pours once (tea for two: once per cup), then the pot rests; no cut-off third pour.
 
 ### Babies and bubbles (2 Oct 2026)
-- A baby's needs drain twice as fast (data: babyDrain) for its Baby stage, so it needs looking after more often, like a Tamagotchi baby; reminders and the widget predict with the same rate.
+- A baby's needs drain 1.5 times as fast (data: babyDrain): 4 hours to empty instead of 6; reminders and the widget predict with the same rate.
 - Bath and spa bubbles are proper soap bubbles: nearly clear inside, a bright rim with a rainbow sheen and a white highlight, rising with a wobble and popping (the spa makes lots more than a plain bath).
 
 ## Friends
