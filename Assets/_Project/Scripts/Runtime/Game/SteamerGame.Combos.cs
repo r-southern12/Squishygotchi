@@ -87,10 +87,14 @@ namespace Squishy.Runtime.Game
 
         // ---------------- the activities ----------------
 
+        private Item cuddleWand; // the wand whose pom-pom is being cuddled (its own is hidden meanwhile)
+
         private void ClearComboProps()
         {
             foreach (var p in comboProps) if (p != null) Node.Destroy(p);
             comboProps.Clear();
+            if (cuddleWand != null && cuddleWand.parts.pom != null) cuddleWand.parts.pom.gameObject.SetActive(true); // the cuddled pom-pom goes back on its wand
+            cuddleWand = null;
             if (comboDressed) { comboDressed = false; RefreshCosmetics(); }
         }
 
@@ -145,6 +149,8 @@ namespace Squishy.Runtime.Game
                 case "cuddle":
                 {
                     var pw = items.Find(i => i.arch == "pomwand");
+                    // It cuddles the pom-pom it caught: the wand's own pom-pom stays off until the cuddle ends (there were two).
+                    if (pw != null && pw.parts.pom != null) { pw.parts.pom.gameObject.SetActive(false); cuddleWand = pw; }
                     var pp = Prop("cuddlePom");
                     ItemModels.Pompom(pp, C.Style(pw != null ? pw.style : null) ?? C.Style("minimal"), .06f);
                     Node.SetLayer(pp, HomeLayer);
