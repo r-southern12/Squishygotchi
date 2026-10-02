@@ -206,18 +206,29 @@ namespace Squishy.Runtime.Game
 
         private void ShowVisitCard()
         {
-            ui.ShowVisit("Visiting " + Rules.Fav.name + "'s steamer", VisitSub(),
-                ("Play together", "#6E9C9A", "#4F7876", Hud.Cream, (Action)VisitPlay),
+            ui.ShowVisit("Visiting " + Rules.Fav.name + "'s steamer", VisitTodos(),
+                ("Play", "#6E9C9A", "#4F7876", Hud.Cream, (Action)VisitPlay),
                 ("Pamper", "#E86A92", "#B84A70", Hud.Cream, (Action)VisitPamper),
                 ("Sticker", "#8C7BB0", "#6A5A8E", Hud.Cream, (Action)VisitSticker),
                 ("Give a snack", "#D9A64A", "#B0822F", Hud.Cream, (Action)VisitSnack),
                 ("Go home", "#6F9A74", "#4C7552", Hud.Cream, (Action)(() => EndVisit(false))));
         }
 
-        private string VisitSub()
+        /// <summary>The visit's things to do, ticked off as they're done (the ones without a button say how).</summary>
+        private Hud.VisitTodo[] VisitTodos()
         {
-            string Tick(string k, string label) { return (visitDone.Contains(k) ? "✓ " : "") + label; }
-            return Tick("pet", "Squish") + " · " + Tick("feed", "Snack") + " · " + Tick("water", "Water") + " · " + Tick("play", "Play") + " · " + Tick("pamper", "Pamper") + " · " + Tick("sticker", "Sticker");
+            string n = Rules.Fav.name;
+            bool plants = items.Any(it => it.a.role == "plant");
+            Hud.VisitTodo T(string k, string text, string hint) { return new Hud.VisitTodo(text, hint, visitDone.Contains(k)); }
+            return new[]
+            {
+                T("pet", "Give " + n + " a squish", "tap them"),
+                T("feed", "Give " + n + " a snack", null),
+                T("water", "Water a plant", plants ? "tap a plant" : "no plants here"),
+                T("play", "Play together", null),
+                T("pamper", "Pamper " + n, null),
+                T("sticker", "Leave a sticker", null),
+            };
         }
 
         // ---------------- more to do on a visit (user request, 2 Oct 2026) ----------------
@@ -405,7 +416,8 @@ namespace Squishy.Runtime.Game
                 ("Heart", "#E86A92", "#B84A70", Hud.Cream, Pick("heart")),
                 ("Star", "#F2B33D", "#C48A1E", Hud.Cream, Pick("star")),
                 ("Flower", "#B48CE0", "#8A68B4", Hud.Cream, Pick("flower")),
-                ("Wave", "#D9A64A", "#B0822F", Hud.Cream, Pick("wave")));
+                ("Wave", "#D9A64A", "#B0822F", Hud.Cream, Pick("wave")),
+                ("Not now", "#EADCC6", "#CDB999", Hud.Ink, (Action)(() => ui.HideMemo())));
         }
 
         private void PressSticker(string kind)
@@ -472,7 +484,7 @@ namespace Squishy.Runtime.Game
         {
             if (!visiting || !visitDone.Add(kind)) return;
             visitActs++;
-            ui.SetVisitSub(VisitSub());
+            ui.SetVisitTodos(VisitTodos());
             if (visitId == null) { Floater("Test visit: " + kind); return; }
             ownRules.AddCoins(C.rules.visitCoins);
             ui.SetCoins(ownRules.S.coins);

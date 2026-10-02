@@ -421,6 +421,9 @@ namespace Squishy.Runtime.UI
             _memoBtns.Gap(10);
             _mName.text = name;
             _mMeta.text = meta;
+            // A dialog over the visit card (the sticker picker): the visit card steps aside until it closes.
+            if (_visit != null && _visit.style.display != DisplayStyle.None) { _visit.Shown(false); _visitUnderMemo = true; }
+            _memo.BringToFront();
             PopIn(_memo, .55f, .2f, 1.6f, .4f, 1, 60, .7f);
         }
 
@@ -433,7 +436,11 @@ namespace Squishy.Runtime.UI
             PopIn(_memo, .55f, .2f, 1.6f, .4f, 1, 60, .7f);
         }
 
-        public void HideMemo() { _memo.Shown(false); }
+        public void HideMemo()
+        {
+            _memo.Shown(false);
+            if (_visitUnderMemo) { _visitUnderMemo = false; PopIn(_visit, .45f, .2f, 1.6f, .4f, 1, 50, .8f); }
+        }
         public bool AnyPanelOpen { get { foreach (var k in PanelIds) if (PanelOpen(k)) return true; return _memo.style.display != DisplayStyle.None; } }
 
         // ---------------- catalogue sheet ----------------
