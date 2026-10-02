@@ -124,6 +124,22 @@ namespace Squishy.Simulation.Game
             f.finish = snap.favIdx;
         }
 
+        /// <summary>How long until you can visit this friend again (zero when you can). Once every few hours each.</summary>
+        public TimeSpan VisitWait(string id)
+        {
+            var f = S.friends.Find(x => x.id == id);
+            if (f == null || f.visitedAt <= 0) return TimeSpan.Zero;
+            long gap = TimeSpan.FromHours(R.visitCooldownHours).Ticks;
+            long left = f.visitedAt + gap - Clock.UtcNow.Ticks;
+            return TimeSpan.FromTicks(Math.Max(0, Math.Min(gap, left))); // a clock turned back never makes it longer
+        }
+
+        public void MarkVisited(string id)
+        {
+            var f = S.friends.Find(x => x.id == id);
+            if (f != null) f.visitedAt = Clock.UtcNow.Ticks;
+        }
+
         /// <summary>Neighbours you have (random players, not added by code).</summary>
         public int NeighbourCount()
         {

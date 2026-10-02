@@ -111,7 +111,7 @@ namespace Squishy.Simulation.Game
     public class StickerState { public string kind, from; public long until; public float a, r; }
 
     [System.Serializable]
-    public class FriendData { public string code, id, avatar; public int finish; public bool neighbour; } // neighbour: found at random (not by code)
+    public class FriendData { public string code, id, avatar; public int finish; public bool neighbour; public long visitedAt; } // neighbour: found at random (not by code); visitedAt: your last visit (UTC ticks)
 
     /// <summary>The latest visit from one friend that has already paid you coins.</summary>
     [System.Serializable]

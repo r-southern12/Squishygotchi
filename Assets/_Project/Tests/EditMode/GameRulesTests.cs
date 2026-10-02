@@ -485,6 +485,26 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Each_Friend_Can_Be_Visited_Once_Every_Few_Hours()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var clock = new ManualClock(new System.DateTime(2026, 10, 2, 12, 0, 0));
+            var rules = new GameRules(c, s) { Clock = clock };
+            var snap = rules.Snapshot();
+            rules.RememberFriend("a", snap, true);
+            rules.RememberFriend("b", snap, true);
+            Assert.AreEqual(System.TimeSpan.Zero, rules.VisitWait("a"), "never visited: go any time");
+            rules.MarkVisited("a");
+            Assert.AreEqual(c.rules.visitCooldownHours, rules.VisitWait("a").TotalHours, 1e-6);
+            Assert.AreEqual(System.TimeSpan.Zero, rules.VisitWait("b"), "each friend has their own wait");
+            clock.Advance(System.TimeSpan.FromHours(c.rules.visitCooldownHours - .5));
+            Assert.AreEqual(30, rules.VisitWait("a").TotalMinutes, 1e-6);
+            clock.Advance(System.TimeSpan.FromMinutes(31));
+            Assert.AreEqual(System.TimeSpan.Zero, rules.VisitWait("a"));
+        }
+
+        [Test]
         public void Full_Game_Collects_Twice_As_Many_Overnight()
         {
             var c = Content();

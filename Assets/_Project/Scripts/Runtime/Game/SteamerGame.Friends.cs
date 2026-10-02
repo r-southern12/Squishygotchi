@@ -118,7 +118,19 @@ namespace Squishy.Runtime.Game
             int fi = Mathf.Clamp(f.finish, 0, C.finishes.Length - 1);
             var remove = Hud.Button(null, "Remove", "#EADCC6", "#CDB999", Hud.Ink, 10, 26, 12, () => AskRemoveFriend(fr), false, 2).Margin(4, 0, 0, 0);
             remove.style.alignSelf = Align.FlexStart;
-            ui.Rec(body, "sq:" + fi, C.finishes[fi].name + "'s steamer", sub, "Visit", () => VisitFriend(fr), !Online.Ready, remove);
+            var wait = Rules.VisitWait(f.id); // one visit each every few hours: the button counts down
+            ui.Rec(body, "sq:" + fi, C.finishes[fi].name + "'s steamer", sub, wait > TimeSpan.Zero ? WaitText(wait) : "Visit", () => VisitFriend(fr), !Online.Ready || wait > TimeSpan.Zero, remove);
+        }
+
+        private static string WaitText(TimeSpan w) { return w.TotalHours >= 1 ? (int)w.TotalHours + "h " + w.Minutes + "m" : Math.Max(1, (int)Math.Ceiling(w.TotalMinutes)) + "m"; }
+
+        private bool VisitedRecently(string id)
+        {
+            var w = Rules.VisitWait(id);
+            if (w <= TimeSpan.Zero) return false;
+            Floater("Back in " + WaitText(w));
+            sfx.Bonk();
+            return true;
         }
 
         private void AskRemoveFriend(FriendData f)
@@ -164,11 +176,13 @@ namespace Squishy.Runtime.Game
             if (!found.HasValue) { Floater("Code not found", "bad"); sfx.Bonk(); return; }
             Rules.RememberFriend(found.Value.id, found.Value.room, true);
             WriteSave();
+            if (VisitedRecently(found.Value.id)) { OnFriends(); return; }
             StartVisit(found.Value.id, found.Value.room);
         }
 
         private async void VisitFriend(FriendData f)
         {
+            if (VisitedRecently(f.id)) return;
             Floater("Knocking…");
             var room = await Online.Load(f.id);
             if (room == null) { Floater("Couldn't connect", "bad"); sfx.Bonk(); return; }
@@ -183,6 +197,7 @@ namespace Squishy.Runtime.Game
         {
             if (visiting || mode != "home" || S.dead) return;
             ui.ClosePanels();
+            if (friendId != null) Rules.MarkVisited(friendId);
             WriteSave();
             ownRules = Rules;
             visitStart = DateTime.UtcNow;

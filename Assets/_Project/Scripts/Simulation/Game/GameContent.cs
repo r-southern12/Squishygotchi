@@ -89,6 +89,7 @@ namespace Squishy.Simulation.Game
         public int tipMin, tipMax;
         public float energySeconds; // how long it stays energised (and squishable for coins) after playing by itself
         public int visitCoins, visitHostCoins;
+        public float visitCooldownHours = 3; // one visit to each friend in this many hours
         public int neighbourMax, neighbourActiveDays, neighbourOffer; // neighbours: random players (no code) you can add, found among those who played in the last few days
         // Care mistakes: a need left empty this long (seconds, awake) is one mistake, counted once until the need is above
         // careMistakeReset again; each takes careMistakePenalty off the old-age prestige, never below careMistakeFloor of it.
