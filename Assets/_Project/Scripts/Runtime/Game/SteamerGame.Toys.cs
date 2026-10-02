@@ -334,7 +334,7 @@ namespace Squishy.Runtime.Game
             items.Remove(cur);
             S.items.Remove(cur.st);
             cur.g.gameObject.SetActive(false);
-            ui.FlashHint(C.Cat(cur.key).name + " went to storage · " + Rules.ToySlots() + " toy" + (Rules.ToySlots() == 1 ? "" : "s") + " out at this steamer size");
+            ui.FlashHint(C.Cat(cur.key).name + " put away");
             return cur;
         }
     }

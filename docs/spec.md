@@ -306,6 +306,8 @@ Currencies: **coins** (earned by playing), **steamers** (opened for rewards), **
 | Duplicate furniture skin | 20 coins |
 | Duplicate tool / tool skin / steamer skin | 10 / 15 / 30 coins |
 
+**Toasts (2 Oct 2026):** every toast, floater and hint is a few words ("+3 coins", "Room full", "Watered", "Can't reach"); none at all when the HUD already shows it (visit coins: the counter and coin sound only).
+
 **Mission states (2 Oct 2026):** each mission row ends in a status disc: a green ring filling with progress ("1/3") while it's to do; a green row with a Claim button once done; and, after claiming, "Next mission on its way · arrives at 3:00 pm" with a mustard ring counting down to the next reset ("1:23"). The panel refreshes itself while open. HUD chips with changing text (the steamer screen's odds label, the gift timer, the mood chip, prestige and hearts) have fixed widths so nothing shifts when they change.
 
 **Care tasks:** 3 at a time; each pays its coins and 1 steamer; a claimed task is replaced at the next 3-hour reset on the clock (tasks are rate-limited, not farmable). About 33 missions (food, cleaning, rest, play, mood, garden, home, friends; none ask you to open steamers) live in the data; one is only offered if you own what it needs (a slide mission needs a slide; a visit mission needs a friend), and the last 8 shown never come straight back. Missions count events; no two missions ask for the same thing.

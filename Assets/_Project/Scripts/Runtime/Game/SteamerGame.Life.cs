@@ -23,7 +23,7 @@ namespace Squishy.Runtime.Game
 
         private void InitMeta()
         {
-            store = new Store(C.rules.fullUnlockProductId, () => { S.premium = true; WriteSave(); ui.HideMemo(); paywallShown = false; ui.ShowHud(true); Floater("Full game unlocked! Thank you!"); sfx.Chime(); });
+            store = new Store(C.rules.fullUnlockProductId, () => { S.premium = true; WriteSave(); ui.HideMemo(); paywallShown = false; ui.ShowHud(true); Floater("Thank you!"); sfx.Chime(); });
             Ads.Init(C.rules.adsGameIdAndroid, C.rules.adsGameIdIos);
             sfx.SoundOn = S.soundOn;
             sfx.MusicOn = S.musicOn;
@@ -52,7 +52,7 @@ namespace Squishy.Runtime.Game
             {
                 int k = Rules.LastMistakeNeed;
                 string word = k == Needs.Hunger ? "hungry" : k == Needs.Play ? "bored" : k == Needs.Rest ? "tired" : "grubby";
-                Floater(Rules.NewMistakes == 1 ? "Care mistake: " + Rules.Fav.name + " was " + word + " too long" : Rules.NewMistakes + " care mistakes while you were away", "bad");
+                Floater(Rules.NewMistakes == 1 ? Rules.Fav.name + " got too " + word : Rules.NewMistakes + " care mistakes", "bad");
                 Rules.NewMistakes = 0;
             }
             // A bigger steamer bought: it grows wider (back home, not mid-unbox or visiting).
@@ -76,7 +76,7 @@ namespace Squishy.Runtime.Game
             if (st == shownStage) return;
             shownStage = st;
             int grewUp = visiting ? 0 : Rules.AwardStagePrestige();
-            if (grewUp > 0) Later(1.2f, () => Floater(Rules.Fav.name + " is growing up well · +" + grewUp + " prestige"));
+            if (grewUp > 0) Later(1.2f, () => Floater("+" + grewUp + " prestige"));
             pet.SetStage(st);
             pet.SetCosmetics(Rules.Worn(S.hat), Rules.Worn(S.face), Rules.Worn(S.neck));
             UpdateSub();
@@ -225,7 +225,7 @@ namespace Squishy.Runtime.Game
             if (!S.dead)
                 Toggle(body, "Holiday pause (needs pause while you're away)", S.tucked, v =>
                 {
-                    if (v && !Rules.CanTuck()) { Floater("Too weak to pause now: look after " + Rules.Fav.name + " first", "bad"); OnSettings(); return; }
+                    if (v && !Rules.CanTuck()) { Floater("Too weak to pause", "bad"); OnSettings(); return; }
                     if (v) Tuck(); else Wake();
                     OnSettings();
                 });

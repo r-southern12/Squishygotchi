@@ -325,7 +325,7 @@ namespace Squishy.Runtime.Game
             if (user)
             {
                 var t = it != null ? C.Type(it.arch) : null;
-                FloaterAt(it, "Can't reach the " + (t != null ? t.name.ToLowerInvariant() : "piece"), "bad");
+                FloaterAt(it, "Can't reach", "bad");
                 sfx.Bonk();
             }
         }
@@ -466,11 +466,11 @@ namespace Squishy.Runtime.Game
                 comboAct = chainFrom != null ? cm.combo.then : cm.combo.act;
                 if (string.IsNullOrEmpty(role) || role == "decor") role = comboAct;
             }
-            if (role == "decor") { FloaterAt(it, "Decor · +" + it.a.comfort + " comfort"); return; }
+            if (role == "decor") { FloaterAt(it, "+" + it.a.comfort + " comfort"); return; }
             if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
             var act = !string.IsNullOrEmpty(comboAct) ? C.Activity(comboAct) ?? C.Activity(role) : C.Activity(role);
             if (act == null) return;
-            if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat nearby", "bad"); return; }
+            if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat", "bad"); return; }
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
             CleanupCook();
@@ -710,7 +710,7 @@ namespace Squishy.Runtime.Game
                 SetLampShade(A.it);
                 PlaceLamps();
                 sfx.Tap();
-                FloaterAt(A.it, A.it.st.lampOn ? "Lights on" : "Lights off · full rest");
+                FloaterAt(A.it, A.it.st.lampOn ? "Lights on" : "Lights off");
             }
             if (A.role == "bath") sfx.Bath();
             if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; ComputeComfort(); }
@@ -735,7 +735,7 @@ namespace Squishy.Runtime.Game
                     {
                         if (chef != null && Random.value < chef.wearSkip) continue;
                         S.toolDur[i] = Mathf.Max(0, S.toolDur[i] - 1);
-                        if (S.toolDur[i] == 0) { int ti = i; var st = A.it; Later(.9f, () => FloaterAt(st, C.tools[ti].name + " broke! Fix it in the shop", "bad")); }
+                        if (S.toolDur[i] == 0) { int ti = i; var st = A.it; Later(.9f, () => FloaterAt(st, C.tools[ti].name + " broke!", "bad")); }
                     }
                 }
                 Floater("Cooking " + rc.name);
@@ -765,7 +765,7 @@ namespace Squishy.Runtime.Game
                     Floater("-1 " + C.snacks[k].name);
                     if (!ai.self) TaskEvent("snack");
                 }
-                else { Floater("No snacks · buy some in the shop", "bad"); ai.actT = A.act.dur; }
+                else { Floater("No snacks", "bad"); ai.actT = A.act.dur; }
             }
             StartCombo(A);
         }
@@ -785,7 +785,7 @@ namespace Squishy.Runtime.Game
             var A = ai.act;
             if (A != null && !ai.self)
             {
-                if (A.role == "plant") { FloaterAt(A.it, "Watered · +comfort"); if (visiting) VisitAct("water"); else TaskEvent("water"); }
+                if (A.role == "plant") { FloaterAt(A.it, "Watered"); if (visiting) VisitAct("water"); else TaskEvent("water"); }
                 if ((A.role == "eat" || A.role == "dine") && A.recipe != null && A.recipe.ing.Length > 0)
                 {
                     int i = System.Array.IndexOf(C.recipes, A.recipe), l0 = Rules.RecipeLvl(i);
@@ -817,7 +817,7 @@ namespace Squishy.Runtime.Game
             ui.HideBubble();
             S.tucked = true;
             Floater("Holiday pause on");
-            ui.SetHint("Holiday pause · needs are paused · turn it off in Settings");
+            ui.SetHint("Holiday pause");
             sfx.Chime();
             WriteSave();
         }

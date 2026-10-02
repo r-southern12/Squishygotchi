@@ -24,7 +24,7 @@ namespace Squishy.Runtime.Game
         public void OpenTen()
         {
             if (mode != "unbox" || !(ustate == "closed" || ustate == "card")) return;
-            if (S.steamers < OpenMany) { Floater("You need " + OpenMany + " steamers (you have " + S.steamers + ")", "bad"); sfx.Bonk(); return; }
+            if (S.steamers < OpenMany) { Floater("Need " + OpenMany + " steamers", "bad"); sfx.Bonk(); return; }
             // Finish the steamer on the table first: its unopened layers are yours.
             if (ustate == "card")
             {

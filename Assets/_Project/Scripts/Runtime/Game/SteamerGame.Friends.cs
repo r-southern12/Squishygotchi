@@ -140,28 +140,28 @@ namespace Squishy.Runtime.Game
             neighbourPicks = await Online.Strangers(C.rules.neighbourOffer, C.rules.neighbourActiveDays, skip);
             findingNeighbours = false;
             if (visiting) return;
-            if (neighbourPicks.Count == 0) { Floater("No one new around right now · try again later"); sfx.Bonk(); }
+            if (neighbourPicks.Count == 0) { Floater("No one new nearby"); sfx.Bonk(); }
             OnFriends();
         }
 
         private void AddNeighbour((string id, RoomSnapshot room) pick)
         {
-            if (!Rules.AddNeighbour(pick.id, pick.room)) { Floater("Can't add more neighbours", "bad"); sfx.Bonk(); return; }
+            if (!Rules.AddNeighbour(pick.id, pick.room)) { Floater("Neighbours full", "bad"); sfx.Bonk(); return; }
             neighbourPicks.RemoveAll(p => p.id == pick.id);
             WriteSave();
             sfx.Chime();
-            Floater(C.finishes[Mathf.Clamp(pick.room.favIdx, 0, C.finishes.Length - 1)].name + " is your neighbour now");
+            Floater("New neighbour!");
             OnFriends();
         }
 
         private async void VisitByCode(string code)
         {
             code = (code ?? "").Trim().ToUpperInvariant();
-            if (code.Length < 8) { Floater("Friend codes look like ABCD-2345", "bad"); sfx.Bonk(); return; }
+            if (code.Length < 8) { Floater("Check the code", "bad"); sfx.Bonk(); return; }
             if (code == Rules.EnsureFriendCode()) { Floater("That's your own code!", "bad"); sfx.Bonk(); return; }
-            Floater("Looking for your friend…");
+            Floater("Looking…");
             var found = await Online.Find(code);
-            if (!found.HasValue) { Floater("No steamer found with that code", "bad"); sfx.Bonk(); return; }
+            if (!found.HasValue) { Floater("Code not found", "bad"); sfx.Bonk(); return; }
             Rules.RememberFriend(found.Value.id, found.Value.room, true);
             WriteSave();
             StartVisit(found.Value.id, found.Value.room);
@@ -169,9 +169,9 @@ namespace Squishy.Runtime.Game
 
         private async void VisitFriend(FriendData f)
         {
-            Floater("Knocking on the steamer…");
+            Floater("Knocking…");
             var room = await Online.Load(f.id);
-            if (room == null) { Floater("Couldn't reach your friend's steamer", "bad"); sfx.Bonk(); return; }
+            if (room == null) { Floater("Couldn't connect", "bad"); sfx.Bonk(); return; }
             Rules.RememberFriend(f.id, room);
             StartVisit(f.id, room);
         }
@@ -357,7 +357,7 @@ namespace Squishy.Runtime.Game
         private void VisitPlay()
         {
             if (buddy == null) return;
-            if (visitDone.Contains("play")) { Floater("Already played · come back another day"); return; }
+            if (visitDone.Contains("play")) { Floater("Already played"); return; }
             bPlayT = 0;
             bBumped = -1;
             sfx.Tap();
@@ -410,7 +410,7 @@ namespace Squishy.Runtime.Game
         /// <summary>Leave a sticker: pick one; it's pressed onto their floor (they see it for a day, and who left it).</summary>
         private void VisitSticker()
         {
-            if (visitDone.Contains("sticker")) { Floater("One sticker a visit"); return; }
+            if (visitDone.Contains("sticker")) { Floater("One per visit"); return; }
             Action Pick(string kind) { return () => { ui.HideMemo(); PressSticker(kind); }; }
             ui.ShowDialog("Leave a sticker", "They'll see it on their floor for a day.", "icon:friends",
                 ("Heart", "#E86A92", "#B84A70", Hud.Cream, Pick("heart")),
@@ -488,8 +488,7 @@ namespace Squishy.Runtime.Game
             if (visitId == null) { Floater("Test visit: " + kind); return; }
             ownRules.AddCoins(C.rules.visitCoins);
             ui.SetCoins(ownRules.S.coins);
-            sfx.Coin();
-            Floater("+" + C.rules.visitCoins + " coins · your friend gets some too");
+            sfx.Coin(); // no toast: the coins counter and the sound are enough
             _ = Online.RecordVisit(visitId, visitActs, string.Join(",", visitDone.Select(k => k == "sticker" && visitSticker != null ? "sticker:" + visitSticker : k)), ownRules.Fav.name); // the squishy's name: your own name stays on the phone
         }
 
@@ -497,12 +496,12 @@ namespace Squishy.Runtime.Game
         {
             var own = ownRules.S;
             int k = Array.FindIndex(own.snacks, n => n > 0);
-            if (k < 0) { Floater("You have no snacks · buy some in the shop", "bad"); sfx.Bonk(); return; }
-            if (visitDone.Contains("feed")) { Floater("They're full, thank you!"); return; }
+            if (k < 0) { Floater("No snacks", "bad"); sfx.Bonk(); return; }
+            if (visitDone.Contains("feed")) { Floater("They're full"); return; }
             own.snacks[k]--;
             pet.Chewing = true;
             pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 2.5f);
-            Floater(C.snacks[k].name + " · yum!");
+            Floater("Yum!");
             VisitAct("feed");
         }
 

@@ -118,7 +118,7 @@ namespace Squishy.Runtime.Game
         {
             if (S.dead) return;
             CloseCook();
-            if (S.steamers <= 0 && !FirstSteamer) { ui.FlashHint("No steamers. Earn them from tasks or buy one."); OpenShop(); return; }
+            if (S.steamers <= 0 && !FirstSteamer) { ui.FlashHint("No steamers"); OpenShop(); return; }
             WipeTo(() =>
             {
                 SetMode("unbox");
@@ -255,7 +255,7 @@ namespace Squishy.Runtime.Game
         {
             var names = new System.Collections.Generic.List<string>();
             for (; layer > 0; layer--) { var c = Rules.Claim(Rules.RollReward()); names.Add(c.name); if (c.delayedCoins > 0) Rules.AddCoins(c.delayedCoins); if (c.kitchenChanged) DecorateStoves(); }
-            Later(.8f, () => Floater("Also in the stack: " + string.Join(", ", names)));
+            Later(.8f, () => Floater("Also: " + string.Join(", ", names)));
         }
 
         /// <summary>Some ingredients are small: a chilli shows at half the size of a cabbage (data: size).</summary>

@@ -450,7 +450,7 @@ namespace Squishy.Runtime.Game
             ui.CloseSheet();
             camS.zoomT = 1;
             ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .4f), "Previewing " + s.shortName);
-            ui.SetHint("Preview · open the catalogue to go back");
+            ui.SetHint("Preview");
         }
 
         private List<Entry> Entries()

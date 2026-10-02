@@ -118,7 +118,7 @@ namespace Squishy.Runtime.Game
             ui.SetHint(AsleepHint);
         }
 
-        private string AsleepHint { get { return Rules.Fav.name + " is asleep until morning\nTap the moon to wake it"; } }
+        private string AsleepHint { get { return "Tap the moon to wake " + Rules.Fav.name; } }
 
         /// <summary>Already lying in its bed, asleep (no walk across the room).</summary>
         private void PutInBed()
