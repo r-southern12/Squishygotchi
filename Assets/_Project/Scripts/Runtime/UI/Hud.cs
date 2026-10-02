@@ -199,7 +199,7 @@ namespace Squishy.Runtime.UI
             var row3 = Modal(new VisualElement().Row(Align.Center, Justify.SpaceBetween).NoPick().In(_top), "home");
             var cond = Chip(row3, -1).Row().Pad(4, 11, 4, 8);
             cond.style.flexShrink = 0;
-            cond.style.width = 128; // "Happy" or "Holiday pause": the same width, so nothing beside it moves
+            cond.style.minWidth = 96; // room for the usual moods, so the chips beside it don't jump about (it only grows for long ones)
             _condDot = new Frame().Set(C("#6F9A74"), -1).Size(10, 10).In(cond);
             _condTx = Label(cond, "Happy", "Figtree", 700, 13).Margin(0, 0, 0, 6);
             _condTx.style.overflow = Overflow.Hidden;
@@ -210,13 +210,11 @@ namespace Squishy.Runtime.UI
             _prestige.style.flexShrink = 0;
             _prestige.Add(Icons.Make("star", 14, "#D9A64A"));
             _prestigeLbl = Label(_prestige, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
-            _prestigeLbl.style.minWidth = 28; // room for three digits
             Tap(_prestige, () => _g.OnPrestige());
             _comfort = Chip(row3, -1).Row().Pad(4, 10, 4, 7);
             _comfort.style.flexShrink = 0;
             _comfort.Add(Icons.Make("comfort", 15, "#E8828F"));
             _comfortLbl = Label(_comfort, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
-            _comfortLbl.style.minWidth = 22;
             Tap(_comfort, () => _g.OnComfort());
             // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
             // At night: turn in for the night (hidden in the daytime). A spacer keeps it and Friends on the right, so the
