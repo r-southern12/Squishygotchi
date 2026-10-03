@@ -474,3 +474,17 @@ Soft-block diorama with a tilt-shift miniature look.
 - [x] Friend features for v1: codes, visits, caring for coins.
 - [x] Squishy character design.
 - [ ] Server-side time and cloud save of your own game.
+
+
+## Changes, 4 Oct 2026
+
+- **Startup animation:** after the Unity splash, the studio animation (Resources/Video/startup.mp4, 6 s, imported without sound) plays silently, centred at 80% of the screen width on its own edge colour, then fades; a tap skips it.
+- **Shower:** glass sides between front and back posts; they steam up while it showers and clear slowly after.
+- **Pom-pom chase:** the caught pom-pom is carried to the cuddle; a quick tap on another piece stops the chase; batting is at most twice a second.
+- **Sitting on pieces:** the squishy sits on the piece's own top (per style), never sunk in; soft pieces (beanbag, cushion) poof as it lands.
+- **Combo rings:** one ring per piece, in coloured segments, one per combo it's in.
+- **Happy income** accrues while the app is closed, for as long as it stays Happy (not on holiday pause).
+- **Tea:** Tea time and Tea for two give Rest, and only a little Hunger (alsoMul 0.1).
+- **Happy tricks:** when Happy and idle, now and then a bounce, a bounce with a spin, or a bounce with a flip.
+- **HUD:** mood, prestige, comfort and friends chips spread evenly across the screen.
+- **Sink:** a quick wash fills Clean to 65%; past that it says "Needs a bath".

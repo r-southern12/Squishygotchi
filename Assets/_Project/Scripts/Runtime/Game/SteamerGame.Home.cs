@@ -1416,6 +1416,16 @@ namespace Squishy.Runtime.Game
             p.curtainMesh.vertices = p.curtainWork;
             p.curtainMesh.RecalculateBounds();
             RayPick.Forget(p.curtainMesh);
+            // Steam on the glass: it fogs up while it showers and clears slowly after.
+            bool on = ai.mode == "act" && ai.act != null && ai.act.it == it && ai.act.role == "shower";
+            float s0 = p.steam;
+            p.steam = Mathf.MoveTowards(p.steam, on ? 1 : 0, dt / (on ? 2.5f : 9f));
+            if (p.glass != null && (p.steam != s0 || p.steam > 0))
+            {
+                var c = Color.Lerp(ThreeMat.Lin("#D6ECF0"), ThreeMat.Lin("#F7FAFA"), p.steam);
+                c.a = Mathf.Lerp(.16f, .66f, p.steam);
+                p.glass.SetVector("_BaseColor", c);
+            }
         }
     }
 }

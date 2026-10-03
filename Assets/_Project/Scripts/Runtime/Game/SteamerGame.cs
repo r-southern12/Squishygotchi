@@ -104,6 +104,7 @@ namespace Squishy.Runtime.Game
             if (S.intro > 0) HideForIntro(); // a new game: an empty room until its first steamer is opened
             if (S.asleep) { SleepNow(inBed: true); ShowWakeScreen(AfterIntro); } // after a night's sleep: already in bed behind the wake-up screen, not the title
             else ui.ShowIntro(AfterIntro);
+            ui.PlayStartupVideo(); // the studio animation, after the Unity splash
         }
 
         private void SetupRendering()

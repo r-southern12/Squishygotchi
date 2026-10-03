@@ -18,6 +18,8 @@ namespace Squishy.Runtime.Models
         public Mesh curtainMesh;
         public Vector3[] curtainBase, curtainWork;
         public float open = 1, openT = 1;
+        public Material glass; // shower: its glass sides
+        public float steam; // shower: how steamed up the glass is (0 clear, 1 fogged)
         public float topWiltX, topSwayZ; // plant top rotation pieces
     }
 
@@ -218,6 +220,14 @@ namespace Squishy.Runtime.Models
                     p.curtainWork = (Vector3[])p.curtainBase.Clone();
                     p.curtain = Node.Mesh(g, p.curtainMesh, Pattern(s, true), 0, .97f, .27f, shadow: true, receive: false);
                     p.open = 1; p.openT = 1;
+                    // Glass sides between front and back posts (user request, 4 Oct 2026): clear and faintly blue; they
+                    // steam up while it showers.
+                    p.glass = Basic(Lin("#D6ECF0"), .16f, ThreeMat.Blend.Alpha, null, true, false);
+                    foreach (var sx in new[] { -1f, 1f })
+                    {
+                        Node.Mesh(g, Cyl(.018f, .018f, 1f, 6), T, sx * .26f, .5f, .26f);
+                        Node.Mesh(g, RBox(.008f, .88f, .49f, .003f), p.glass, sx * .26f, .5f, 0, shadow: false, receive: false);
+                    }
                     break;
                 }
                 case "lamp":

@@ -216,6 +216,37 @@ namespace Squishy.EditorTools
                 Finish(0);
                 return;
             }
+            if (System.Environment.GetEnvironmentVariable("ICONSHOTS_SHOWER") == "1")
+            {
+                // A shower in the room: photographed with clear glass, then steamed up mid-shower.
+                var game = Squishy.Runtime.Game.SteamerGame.I;
+                var fl = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var T = typeof(Squishy.Runtime.Game.SteamerGame);
+                var rr = (Squishy.Simulation.Game.GameRules)T.GetField("Rules", fl).GetValue(game);
+                if (f == 40) { rr.S.asleep = false; rr.S.tucked = false; rr.S.items.Add(new Squishy.Simulation.Game.PieceState { key = "shower:aegean", x = .55f, z = -.3f }); T.GetMethod("RebuildHome", fl).Invoke(game, null); return; }
+                if (f < 60) return;
+                Squishy.Runtime.Game.Item sh = null;
+                foreach (Squishy.Runtime.Game.Item it in (System.Collections.IList)T.GetField("items", fl).GetValue(game)) if (it.a.id == "shower") sh = it;
+                if (sh == null) { Debug.Log("SHOWERCHK no shower"); EditorApplication.update -= Tick; Finish(1); return; }
+                var cam = Camera.main;
+                var rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { antiAliasing = 8 };
+                var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false, false);
+                var flat = cam.transform.position - sh.g.position;
+                flat.y = 0;
+                Directory.CreateDirectory(Dir);
+                if (f == 60) { Shot(cam, rt, tex, Bounds(sh.g), flat.normalized, 22, 1.25f, 30, Shader.GetGlobalFloat("_PostWarm"), "shower_clear"); T.GetMethod("UseItem", fl).Invoke(game, new object[] { sh, true, null, null }); return; }
+                var aiObj = T.GetField("ai", fl).GetValue(game);
+                string mode = (string)aiObj.GetType().GetField("mode").GetValue(aiObj);
+                float actT = (float)aiObj.GetType().GetField("actT").GetValue(aiObj);
+                if ((mode == "act" && actT > 3f) || f > 2000)
+                {
+                    EditorApplication.update -= Tick;
+                    Debug.Log("SHOWERCHK mode=" + mode + " actT=" + actT + " steam=" + sh.parts.steam);
+                    Shot(cam, rt, tex, Bounds(sh.g), flat.normalized, 22, 1.25f, 30, Shader.GetGlobalFloat("_PostWarm"), "shower_steam");
+                    Finish(0);
+                }
+                return;
+            }
             if (System.Environment.GetEnvironmentVariable("ICONSHOTS_BUBBLES") == "1")
             {
                 // A cloud of bath bubbles beside the squishy, photographed mid-rise (to check how they read).
