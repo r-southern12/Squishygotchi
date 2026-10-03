@@ -76,7 +76,13 @@ namespace Squishy.Runtime.Game
             if (st == shownStage) return;
             shownStage = st;
             int grewUp = visiting ? 0 : Rules.AwardStagePrestige();
-            if (grewUp > 0) Later(1.2f, () => Floater("+" + grewUp + " prestige"));
+            if (grewUp > 0)
+            {
+                // The star counter goes up with it (and the once-a-second check doesn't say it twice).
+                ui.SetPrestige(S.prestige);
+                shownPrestige = S.prestige;
+                Later(1.2f, () => Floater("+" + grewUp + " prestige"));
+            }
             pet.SetStage(st);
             pet.SetCosmetics(Rules.Worn(S.hat), Rules.Worn(S.face), Rules.Worn(S.neck));
             UpdateSub();
