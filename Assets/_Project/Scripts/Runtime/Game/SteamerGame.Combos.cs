@@ -98,6 +98,31 @@ namespace Squishy.Runtime.Game
             if (comboDressed) { comboDressed = false; RefreshCosmetics(); }
         }
 
+        private Item carryPom; // the wand whose pom-pom it carries from the chase to the cuddle
+
+        /// <summary>The pom-pom held in front of it, hugged to its tummy.</summary>
+        private void CuddlePomAt(Transform t)
+        {
+            var pw = PetWorld();
+            float h = pet.Scale * pet.StageScale;
+            var front = new Vector3(Mathf.Sin(petYawY), 0, Mathf.Cos(petYawY));
+            t.localPosition = new Vector3(pw.x + front.x * (PetRadius() + .02f), pw.y + .28f * h, pw.z + front.z * (PetRadius() + .02f));
+        }
+
+        /// <summary>Each frame: the carried pom-pom goes along; anything else happening instead puts it back on its wand.</summary>
+        private void StepCarry()
+        {
+            if (carryPom == null) return;
+            if (floatPom == null || ai.act == null || ai.act.act == null || ai.act.act.role != "cuddle")
+            {
+                if (floatPom != null) floatPom.gameObject.SetActive(false);
+                if (carryPom.parts.pom != null) carryPom.parts.pom.gameObject.SetActive(true);
+                carryPom = null;
+                return;
+            }
+            CuddlePomAt(floatPom);
+        }
+
         private Transform Prop(string name)
         {
             var g = Node.Group(room, name);
@@ -151,8 +176,10 @@ namespace Squishy.Runtime.Game
                     var pw = items.Find(i => i.arch == "pomwand");
                     // It cuddles the pom-pom it caught: the wand's own pom-pom stays off until the cuddle ends (there were two).
                     if (pw != null && pw.parts.pom != null) { pw.parts.pom.gameObject.SetActive(false); cuddleWand = pw; }
+                    if (carryPom != null) { if (floatPom != null) floatPom.gameObject.SetActive(false); carryPom = null; } // the carried one becomes the cuddled one
                     var pp = Prop("cuddlePom");
-                    ItemModels.Pompom(pp, C.Style(pw != null ? pw.style : null) ?? C.Style("minimal"), .06f);
+                    ItemModels.Pompom(pp, C.Style(pw != null ? pw.style : null) ?? C.Style("minimal"), .065f);
+                    CuddlePomAt(pp);
                     Node.SetLayer(pp, HomeLayer);
                     pet.Express(SquishyModel.Mouth.Grin, 2);
                     break;
@@ -212,7 +239,7 @@ namespace Squishy.Runtime.Game
                     break;
                 case "cuddle":
                     extra = .06f * Mathf.Sin(t * 2.2f);
-                    if (comboProps.Count > 0) comboProps[0].localPosition = new Vector3(pw.x + front.x * (PetRadius() + .02f), pw.y + .28f * h, pw.z + front.z * (PetRadius() + .02f));
+                    if (comboProps.Count > 0) CuddlePomAt(comboProps[0]);
                     if (Random.value < dt * 1.5f) Glints(new Vector3(pw.x, pw.y + h * .9f, pw.z), "#F2A7B8", 1);
                     break;
                 case "dressup":
@@ -291,7 +318,15 @@ namespace Squishy.Runtime.Game
             if (!string.IsNullOrEmpty(c.then)) next = ItemOf(A.combo.pieces[c.thenSlot]);
             else if (c.chainLeads) foreach (var p in A.combo.pieces) { var i = ItemOf(p); if (i != null && i != A.it && IsLead(A.combo, i)) next = i; }
             if (next == null) return false;
+            bool carry = A.role == "wand" && c.then == "cuddle" && floatPom != null && floatPom.gameObject.activeSelf;
             EndToys();
+            if (carry)
+            {
+                // It takes the pom-pom it caught to the cushion (the wand's own stays off; the cuddle uses this one).
+                carryPom = A.it;
+                if (A.it.parts.pom != null) A.it.parts.pom.gameObject.SetActive(false);
+                floatPom.gameObject.SetActive(true);
+            }
             var sh = items.Find(i => i.arch == "shower");
             if (sh != null && sh.parts.curtain != null) sh.parts.openT = 1;
             bool plop = A.role == "slide" && DockedTub(A.it) == next; // docked: it lands right in the bath

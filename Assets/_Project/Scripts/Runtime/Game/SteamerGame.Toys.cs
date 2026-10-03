@@ -307,6 +307,7 @@ namespace Squishy.Runtime.Game
         private void EndToys()
         {
             if (floatPom != null) floatPom.gameObject.SetActive(false);
+            carryPom = null;
             foreach (var it in items) if (it.parts.pom != null) it.parts.pom.gameObject.SetActive(true);
             foreach (var b in bubbles) Node.Destroy(b.t);
             bubbles.Clear();

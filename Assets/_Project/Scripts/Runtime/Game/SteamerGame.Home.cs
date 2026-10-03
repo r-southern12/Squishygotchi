@@ -260,7 +260,10 @@ namespace Squishy.Runtime.Game
                 if (it.a.face == "z") { dx = Mathf.Sin(it.ry); dz = Mathf.Cos(it.ry); l = 1; }
                 var approach = new Vector2(px + dx / l * (rr + .18f), pz + dz / l * (rr + .18f));
                 if (string.IsNullOrEmpty(it.a.face) && !act.inside) approach = NearestSide(it) ?? approach; // no front: the nearest clear side
-                return new Spot { approach = approach, stand = new Vector2(px, pz), y = act.perch > 0 ? act.perch : .06f };
+                // On top of the piece itself (its own height for its style; reading on the beanbag sank into it), else the
+                // activity's height.
+                float top = act.inside ? 0 : HopTop(it);
+                return new Spot { approach = approach, stand = new Vector2(px, pz), y = act.perch > 0 ? (top > 0 ? top : act.perch) : .06f };
             }
             return new Spot { stand = FreeSpotNear(new Vector2(sx, sz), it), y = 0, face = new Vector2(px, pz) };
         }
@@ -699,10 +702,20 @@ namespace Squishy.Runtime.Game
             }
         }
 
+        /// <summary>Sitting on a piece that's squashing (a beanbag poofing as it lands): it sinks and rises with it.</summary>
+        private float PerchSink()
+        {
+            var A = ai.act;
+            if (ai.mode != "act" || A == null || A.it == null || A.it.bx == 0 || !(A.act.perch > 0 || A.night)) return 1;
+            return 1 + A.it.bx * .3f;
+        }
+
         private void StartAct()
         {
             var A = ai.act;
             if (A == null) return;
+            // Landing on a piece: soft ones (beanbag, cushion) poof down and back; others give a little bounce.
+            if (A.it != null && (A.act.perch > 0 || A.night) && ai.y > .02f) A.it.bv = A.it.a.role == "lounge" ? -9 : -5;
             if (!ai.self && !visiting && !A.night) TaskEvent("act_" + A.role); // (bedtime isn't a nap mission) missions: "go down the slide", "bath time"...
             if (A.role == "lamp" && A.it != null)
             {
@@ -1062,7 +1075,7 @@ namespace Squishy.Runtime.Game
 
         private void ApplyPetTransform(float lift, bool sleeping)
         {
-            pet.Pivot.localPosition = new Vector3(ai.x, Y0 + .02f + ai.y + lift, ai.z);
+            pet.Pivot.localPosition = new Vector3(ai.x, Y0 + .02f + ai.y * PerchSink() + lift, ai.z);
             petYawZ = sleeping ? Mathf.Sin(ai.actT * .8f) * .05f : petYawZ * .9f;
             Node.Rot(pet.Yaw, 0, petYawY, petYawZ);
         }

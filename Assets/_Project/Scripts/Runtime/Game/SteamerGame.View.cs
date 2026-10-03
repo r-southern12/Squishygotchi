@@ -192,6 +192,7 @@ namespace Squishy.Runtime.Game
             {
                 // Pom-pom chase: a touch anywhere steers the pom-pom (even on the squishy or furniture), so small hands can't miss.
                 drag.wand = true;
+                drag.t0 = Time.realtimeSinceStartup;
                 var fw = FloorPoint(p, 0);
                 if (fw.HasValue) wandFinger = new Vector2(fw.Value.x, fw.Value.z);
                 return;
@@ -363,7 +364,17 @@ namespace Squishy.Runtime.Game
             if (ptrs.Count > 0 && drag.item != null) return;
             if (drag.tactile) { EndTactile(); drag = null; return; }
             if (drag.squish && drag.flung) { drag = null; return; }
-            if (drag.wand) { wandFinger = null; drag = null; return; }
+            if (drag.wand)
+            {
+                wandFinger = null;
+                // A quick tap on another piece stops the chase and goes to that instead (user request, 4 Oct 2026);
+                // touches anywhere else keep steering the pom-pom.
+                bool tap = Time.realtimeSinceStartup - drag.t0 < .3f && (p - drag.start).magnitude < 20;
+                var other = tap ? ItemHit(p) : null;
+                drag = null;
+                if (other != null && ai.act != null && other != ai.act.it && !string.IsNullOrEmpty(other.a.role)) UseItem(other, true);
+                return;
+            }
             if (drag.item != null)
             {
                 var it = drag.item;

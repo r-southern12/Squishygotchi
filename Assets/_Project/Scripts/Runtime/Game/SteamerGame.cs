@@ -180,6 +180,7 @@ namespace Squishy.Runtime.Game
             else
             {
                 StepHome(dt);
+                StepCarry(); // the pom-pom it carries to the cuddle
                 if (visiting) StepVisit(dt); // your squishy along on a visit, pampering
                 StepMeta(dt);
                 HomeCamera(dt);
