@@ -485,6 +485,25 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void Happy_Income_Only_While_Every_Need_Is_Over_Half()
+        {
+            var c = Content();
+            var s = GameRules.NewState(c, 1);
+            var rules = new GameRules(c, s);
+            for (int k = 0; k < 4; k++) s.needs[k] = .9f;
+            int coins0 = s.coins;
+            int paid = 0;
+            for (int i = 0; i < 360; i++) paid += rules.StepHappy(10, 0); // an hour
+            Assert.AreEqual(Mathf.RoundToInt(c.rules.happyBase * 60), paid, 1);
+            Assert.AreEqual(coins0 + paid, s.coins);
+            s.needs[2] = .4f;
+            Assert.AreEqual(0, rules.StepHappy(3600, 0), "not Happy: nothing");
+            s.needs[2] = .9f;
+            s.tucked = true;
+            Assert.AreEqual(0, rules.StepHappy(3600, 0), "paused for a holiday: nothing");
+        }
+
+        [Test]
         public void Each_Friend_Can_Be_Visited_Once_Every_Few_Hours()
         {
             var c = Content();

@@ -60,6 +60,7 @@ namespace Squishy.Simulation.Game
     {
         public string role, label, need, also;
         public float dur, rate, perch, front, cap;
+        public float alsoMul; // the second need fills at this share of the rate (0: half)
         public bool toward, needSeat, sleep, scrub, inside, closed; // closed: eyes shut (a quiet moment)
     }
 

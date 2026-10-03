@@ -2243,6 +2243,7 @@
       "label": "Tea time",
       "need": "rest",
       "also": "hunger",
+      "alsoMul": 0.1,
       "dur": 4.5,
       "rate": 0.1,
       "front": 0.2,
@@ -2383,6 +2384,7 @@
       "label": "Tea for two",
       "need": "rest",
       "also": "hunger",
+      "alsoMul": 0.1,
       "dur": 5.5,
       "rate": 0.16,
       "front": 0.2,
@@ -3468,7 +3470,7 @@
       ],
       "lead": "teatable",
       "act": "teaparty",
-      "text": "Tea for two: a bigger, cosier tea break. Rest and Hunger.",
+      "text": "Tea for two: a bigger, cosier tea break. Rest, and a little Hunger.",
       "short": "Tea for two"
     },
     {

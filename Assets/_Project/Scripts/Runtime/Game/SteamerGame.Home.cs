@@ -1000,8 +1000,7 @@ namespace Squishy.Runtime.Game
             {
                 TaskEvent("happy", dt);
                 if (S.needs[0] > .5f && S.needs[1] > .5f && S.needs[2] > .5f && S.needs[3] > .5f) TaskEvent("allhalf", dt);
-                S.happyT += dt * Rules.HappyRate(comfort) / 60;
-                if (S.happyT >= 1) { int n = Mathf.FloorToInt(S.happyT); S.happyT -= n; Rules.AddCoins(n); }
+                Rules.StepHappy(dt, comfort);
             }
             if (homeWall.Grow.HasValue)
             {
@@ -1182,7 +1181,7 @@ namespace Squishy.Runtime.Game
                 if (i >= 0 && S.needs[i] < capN) S.needs[i] = Mathf.Min(capN, S.needs[i] + r * dt);
             }
             if (!string.IsNullOrEmpty(act.need)) Fill(act.need, rate);
-            if (!string.IsNullOrEmpty(act.also)) Fill(act.also, rate * .5f);
+            if (!string.IsNullOrEmpty(act.also)) Fill(act.also, rate * (act.alsoMul > 0 ? act.alsoMul : .5f));
             if (A.role == "eat" && it != null)
             {
                 var pan = it.parts.pan;

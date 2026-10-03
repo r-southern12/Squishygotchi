@@ -273,6 +273,21 @@ namespace Squishy.Simulation.Game
 
         public float HappyRate(float comfort) { return R.happyBase * (1f + comfort / R.happyComfortDivisor); }
 
+        /// <summary>
+        /// Happy income for dt seconds: coins while Happy (every need over half), in the game or away from it (user
+        /// request, 4 Oct 2026). Not while paused for a holiday. Returns the coins paid.
+        /// </summary>
+        public int StepHappy(float dt, float comfort)
+        {
+            if (S.dead || S.tucked || Condition() <= .5f) return 0;
+            S.happyT += dt * HappyRate(comfort) / 60;
+            if (S.happyT < 1) return 0;
+            int n = (int)Math.Floor(S.happyT);
+            S.happyT -= n;
+            AddCoins(n);
+            return n;
+        }
+
         // ---- room ----
         public int PieceCount(string arch)
         {
