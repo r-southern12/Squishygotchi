@@ -713,32 +713,48 @@ namespace Squishy.Runtime.Game
 
         private readonly List<(Transform ring, Item it, int n)> comboRings = new List<(Transform, Item, int)>();
 
-        /// <summary>Arrange only, with Colours on: a ring in its combo's colour under every piece of each made combo.</summary>
+        /// <summary>
+        /// Arrange only, with Colours on: one ring under every piece of a made combo, split into a coloured segment for
+        /// each combo it's part of (user request, 4 Oct 2026: it used to get a ring per combo, one inside the other).
+        /// </summary>
         private void RefreshComboRings()
         {
             foreach (var r in comboRings) if (r.ring != null) Node.Destroy(r.ring);
             comboRings.Clear();
             if (mode != "edit" || S.comboColoursOff || room == null) return;
-            var count = new Dictionary<Item, int>();
+            var colours = new Dictionary<Item, List<string>>();
+            var order = new List<Item>();
             foreach (var m in Rules.Combos(S.items))
             {
                 if (!m.Done) continue;
-                var mat = ThreeMat.Basic(ThreeMat.Lin(ComboColour(m.combo.id)), .9f, ThreeMat.Blend.Alpha, depthWrite: false);
                 foreach (var p in m.pieces)
                 {
                     var it = ItemOf(p);
                     if (it == null) continue;
-                    count.TryGetValue(it, out int n);
-                    count[it] = n + 1;
-                    var ring = Node.Mesh(room, ThreeGeo.FlatRing(.88f, 1, 48), mat, 0, 0, 0, shadow: false);
-                    Node.SetLayer(ring, HomeLayer);
-                    comboRings.Add((ring, it, n));
+                    if (!colours.TryGetValue(it, out var list)) { colours[it] = list = new List<string>(); order.Add(it); }
+                    string col = ComboColour(m.combo.id);
+                    if (!list.Contains(col)) list.Add(col);
                 }
+            }
+            foreach (var it in order)
+            {
+                var list = colours[it];
+                var ring = Node.Group(room, "comboRing");
+                int k = list.Count;
+                float gap = k > 1 ? .12f : 0, each = Mathf.PI * 2 / k;
+                for (int i = 0; i < k; i++)
+                {
+                    var mat = ThreeMat.Basic(ThreeMat.Lin(list[i]), .9f, ThreeMat.Blend.Alpha, depthWrite: false);
+                    var mesh = k == 1 ? ThreeGeo.FlatRing(.86f, 1, 48) : ThreeGeo.FlatArc(.86f, 1, Mathf.Max(6, 48 / k), Mathf.PI / 2 + i * each + gap / 2, each - gap);
+                    Node.Mesh(ring, mesh, mat, 0, 0, 0, shadow: false);
+                }
+                Node.SetLayer(ring, HomeLayer);
+                comboRings.Add((ring, it, 0));
             }
             StepComboRings();
         }
 
-        /// <summary>Keeps the combo rings under their pieces (a piece in two combos gets two rings, one inside the other).</summary>
+        /// <summary>Keeps the combo rings under their pieces.</summary>
         private void StepComboRings()
         {
             foreach (var r in comboRings)

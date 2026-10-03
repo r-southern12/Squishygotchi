@@ -317,6 +317,28 @@ namespace Squishy.Runtime.Three
             return Cache[key] = mb.Build(key, flat: false);
         }
 
+        /// <summary>Part of a flat ring: from angle start, len radians round (a combo ring's coloured segment).</summary>
+        public static Mesh FlatArc(float inner, float outer, int seg, float start, float len)
+        {
+            string key = "arc" + inner + "," + outer + "," + seg + "," + start + "," + len;
+            if (Cache.TryGetValue(key, out var cached)) return cached;
+            var mb = new MeshBuilder();
+            for (int j = 0; j <= 1; j++)
+            for (int i = 0; i <= seg; i++)
+            {
+                float r = j == 0 ? inner : outer, th = start + (float)i / seg * len;
+                float x = r * Mathf.Cos(th), y = r * Mathf.Sin(th);
+                mb.Vert(new Vector3(x, 0f, -y), Vector3.up, new Vector2((x / outer + 1f) / 2f, (y / outer + 1f) / 2f));
+            }
+            for (int i = 0; i < seg; i++)
+            {
+                int a = i, b = i + seg + 1, c = i + seg + 2, d = i + 1;
+                mb.Tri(a, b, d);
+                mb.Tri(b, c, d);
+            }
+            return Cache[key] = mb.Build(key, flat: false);
+        }
+
         /// <summary>A plane for instanced confetti (double-sided, so mirroring only matters for placement).</summary>
         public static Mesh PlaneMirrored(float w, float h)
         {
