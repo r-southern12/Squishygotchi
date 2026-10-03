@@ -16,6 +16,7 @@ namespace Squishy.Runtime.Game
         private Transform floatPom;
         private Vector3 pomPos, pomGoal;
         private Vector2? wandFinger;
+        private float wandHitT;
         private sealed class Bubble { public Transform t; public Vector3 p, v; public float born, life; }
         private readonly List<Bubble> bubbles = new List<Bubble>();
         private Item bubbleToy;
@@ -82,9 +83,12 @@ namespace Squishy.Runtime.Game
             pomPos = Vector3.MoveTowards(pomPos, pomGoal, dt * (wandFinger.HasValue ? 6 : 1.1f));
             floatPom.localPosition = pomPos + new Vector3(0, .05f * Mathf.Sin(t * 7), 0);
             ChaseTo(pomPos.x, pomPos.z, dt, ref lift);
-            if (Dist(pomPos.x - ai.x, pomPos.z - ai.z) < PetRadius() + .08f)
+            wandHitT -= dt;
+            // A bat now and then, not every frame (a finger holding the pom-pom on it stacked the squash into a pancake).
+            if (wandHitT <= 0 && Dist(pomPos.x - ai.x, pomPos.z - ai.z) < PetRadius() + .08f)
             {
-                pet.V += 2.5f;
+                wandHitT = .5f;
+                pet.V = Mathf.Min(pet.V + 2.5f, 3);
                 sfx.Kick();
                 GainPlay(.03f);
                 float a = Rnd(0, Mathf.PI * 2);

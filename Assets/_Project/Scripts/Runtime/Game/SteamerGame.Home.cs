@@ -474,6 +474,9 @@ namespace Squishy.Runtime.Game
             var act = !string.IsNullOrEmpty(comboAct) ? C.Activity(comboAct) ?? C.Activity(role) : C.Activity(role);
             if (act == null) return;
             if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat", "bad"); return; }
+            // A quick fix only goes so far (the sink: Clean up to 65%): say so instead of washing for nothing.
+            int capK = Needs.Index(act.need);
+            if (user && act.cap > 0 && capK >= 0 && S.needs[capK] >= act.cap - .01f) { FloaterAt(it, act.role == "wash" ? "Needs a bath" : "Only to " + Mathf.RoundToInt(act.cap * 100) + "%"); return; }
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
             CleanupCook();
