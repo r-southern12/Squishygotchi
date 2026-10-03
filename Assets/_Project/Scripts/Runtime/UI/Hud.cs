@@ -199,7 +199,8 @@ namespace Squishy.Runtime.UI
             var row3 = Modal(new VisualElement().Row(Align.Center, Justify.SpaceBetween).NoPick().In(_top), "home");
             var cond = Chip(row3, -1).Row().Pad(4, 11, 4, 8);
             cond.style.flexShrink = 0;
-            cond.style.minWidth = 96; // room for the usual moods, so the chips beside it don't jump about (it only grows for long ones)
+            cond.style.minWidth = 84; // room for every mood word, so the chips beside it don't jump about
+            cond.style.justifyContent = Justify.Center;
             _condDot = new Frame().Set(C("#6F9A74"), -1).Size(10, 10).In(cond);
             _condTx = Label(cond, "Happy", "Figtree", 700, 13).Margin(0, 0, 0, 6);
             _condTx.style.overflow = Overflow.Hidden;
@@ -217,9 +218,8 @@ namespace Squishy.Runtime.UI
             _comfortLbl = Label(_comfort, "0", "Gluten", 700, 13).Margin(0, 0, 0, 4);
             Tap(_comfort, () => _g.OnComfort());
             // Zoom is pinch-only now (close-up, follow, whole room); this slot opens Friends.
-            // At night: turn in for the night (hidden in the daytime). A spacer keeps it and Friends on the right, so the
-            // moon appearing doesn't push the chips on the left about.
-            new VisualElement { style = { flexGrow = 1 } }.NoPick().In(row3);
+            // At night: turn in for the night (hidden in the daytime). The row spreads its chips evenly across the screen
+            // (user request, 4 Oct 2026).
             _moon = IconBtn(row3, "rest", 36, 20, -1, () => _g.OnMoon(), out _);
             _moon.Shown(false);
             IconBtn(row3, "friends", 36, 20, -1, () => _g.OnFriends(), out _viewIcon);

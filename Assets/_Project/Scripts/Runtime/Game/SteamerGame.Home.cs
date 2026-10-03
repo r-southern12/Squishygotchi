@@ -969,7 +969,7 @@ namespace Squishy.Runtime.Game
                 pet.Update(dt, .18f + .04f * Mathf.Sin(time * 1.6f), true, 0);
                 zTimer -= dt;
                 if (zTimer <= 0 && mode == "home") { zTimer = 1.6f; Floater("z", "z"); }
-                ui.SetCond("Holiday pause", "#8C7BB0");
+                ui.SetCond("Paused", "#8C7BB0");
                 ai.actT += dt;
                 ApplyPetTransform(0, true);
                 AnimateFurniture(dt);
@@ -992,7 +992,7 @@ namespace Squishy.Runtime.Game
             if (died) { Die(); return; }
             float cond = Condition();
             var st = GameRules.Stage(cond);
-            if (S.asleep) ui.SetCond("Tucked in", "#8C7BB0"); // asleep for the night
+            if (S.asleep) ui.SetCond("Asleep", "#8C7BB0"); // asleep for the night
             else ui.SetCond(st[0], st[1]);
             float droop = Sstep(.5f, .08f, cond);
             pet.Grey = Sstep(.25f, .03f, cond) * .85f;
