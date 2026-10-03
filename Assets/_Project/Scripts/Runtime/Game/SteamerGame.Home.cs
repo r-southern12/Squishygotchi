@@ -1027,7 +1027,8 @@ namespace Squishy.Runtime.Game
             }
             else if (ai.mode == "idle")
             {
-                ai.idleT -= dt;
+                bool tricking = StepTrick(dt, cond, ref lift); // now and then, when Happy: a bounce, a spin or a flip
+                if (!tricking) ai.idleT -= dt;
                 if (ai.idleT <= 0) Autonomous();
                 var cp = Space3.U(cam.transform.position);
                 YawTo(cp.x, cp.z, dt, 3);
@@ -1076,7 +1077,18 @@ namespace Squishy.Runtime.Game
         {
             pet.Pivot.localPosition = new Vector3(ai.x, Y0 + .02f + ai.y * PerchSink() + lift, ai.z);
             petYawZ = sleeping ? Mathf.Sin(ai.actT * .8f) * .05f : petYawZ * .9f;
-            Node.Rot(pet.Yaw, 0, petYawY, petYawZ);
+            Node.Rot(pet.Yaw, 0, petYawY + trickSpin, petYawZ);
+            if (trickFlip != 0)
+            {
+                // A flip turns over round the middle of its body, not its base.
+                var q = Quaternion.AngleAxis(trickFlip * Mathf.Rad2Deg, Vector3.right);
+                var c = Vector3.up * (.45f * pet.Scale * pet.StageScale);
+                pet.Yaw.localPosition = pet.Yaw.localRotation * (c - q * c);
+                pet.Yaw.localRotation = pet.Yaw.localRotation * q;
+            }
+            else pet.Yaw.localPosition = Vector3.zero;
+            trickSpin = trickFlip = 0;
+            if (ai.mode != "idle") trickKind = -1; // anything else happening ends a trick
         }
 
         private void StepWalk(float dt, float slowMove, float droop, float hopH, ref float lift, ref float extra)
