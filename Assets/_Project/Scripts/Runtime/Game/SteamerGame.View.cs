@@ -688,7 +688,7 @@ namespace Squishy.Runtime.Game
 
         private string trayTab;
 
-        private static readonly string[] ComboColours = { "#E86A92", "#3C8DBC", "#F2A03D", "#6FA58E", "#8C7BB0", "#D8412F", "#2FA4A9", "#D9A64A", "#5145B8", "#7DBA5E", "#C8674E", "#E1B96A", "#A0724E", "#F3A6BD" };
+        private static readonly string[] ComboColours = { "#E86A92", "#3C8DBC", "#F2A03D", "#6FA58E", "#8C7BB0", "#D8412F", "#2FA4A9", "#D9A64A", "#5145B8", "#7DBA5E", "#C8674E", "#E1B96A", "#A0724E", "#F3A6BD", "#B5527A", "#4E9BD1", "#9C6ADE", "#E0703C", "#58A65C", "#C9A227" };
 
         /// <summary>Each combo keeps its own colour (by its place in the data).</summary>
         private string ComboColour(string id) { int i = System.Array.FindIndex(C.combos, x => x.id == id); return ComboColours[Mathf.Max(0, i) % ComboColours.Length]; }

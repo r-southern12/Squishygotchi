@@ -2459,6 +2459,50 @@
       "dur": 6,
       "rate": 0.03,
       "front": 0.22
+    },
+    {
+      "role": "bedstory",
+      "label": "Bedtime story",
+      "need": "rest",
+      "dur": 11,
+      "rate": 0.14,
+      "perch": 0.3,
+      "sleep": true
+    },
+    {
+      "role": "tablesnack",
+      "label": "Snack at the table",
+      "need": "hunger",
+      "dur": 3,
+      "rate": 0.075,
+      "cap": 0.75
+    },
+    {
+      "role": "bubblebath",
+      "label": "Bubble bath",
+      "need": "clean",
+      "also": "play",
+      "dur": 7,
+      "rate": 0.15,
+      "perch": 0.06,
+      "scrub": true
+    },
+    {
+      "role": "bubblebounce",
+      "label": "Bubble bounce",
+      "need": "play",
+      "dur": 9,
+      "rate": 0.06,
+      "perch": 0.2
+    },
+    {
+      "role": "pomdance",
+      "label": "Pom-pom dance",
+      "need": "play",
+      "dur": 8,
+      "rate": 0.05,
+      "front": 0.18,
+      "toward": true
     }
   ],
   "tasks": [
@@ -3605,6 +3649,84 @@
       "act": "dressup",
       "text": "It pops out of the wardrobe wearing an accessory for a moment: one of yours, or one it could earn.",
       "short": "Tries on accessories"
+    },
+    {
+      "id": "bedtime_story",
+      "name": "Bedtime story",
+      "slots": [
+        "bed",
+        "shelf",
+        "lamp"
+      ],
+      "lead": "bed",
+      "act": "bedstory",
+      "story": true,
+      "text": "It reads a little book in bed before it naps, and before it sleeps for the night. Rest.",
+      "short": "Story in bed"
+    },
+    {
+      "id": "midnight_snack",
+      "name": "Midnight snack",
+      "slots": [
+        "fridge",
+        "teatable",
+        "chair|cushion"
+      ],
+      "lead": "fridge",
+      "passive": true,
+      "snackAct": "tablesnack",
+      "text": "Snacks are carried to the table and eaten sitting down, and they fill more Hunger.",
+      "short": "Snacks at the table"
+    },
+    {
+      "id": "greenhouse",
+      "name": "Greenhouse",
+      "slots": [
+        "plant",
+        "plant",
+        "lamp"
+      ],
+      "lead": "plant",
+      "passive": true,
+      "wiltMul": 0.5,
+      "text": "The plants wilt half as fast, and watering one waters both.",
+      "short": "Plants stay fresh"
+    },
+    {
+      "id": "bubble_bath",
+      "name": "Bubble bath",
+      "slots": [
+        "tub",
+        "bubbles"
+      ],
+      "lead": "tub",
+      "act": "bubblebath",
+      "text": "The bubble wand blows bubbles into the bath and it splashes about in them. Clean and Play.",
+      "short": "Clean + Play"
+    },
+    {
+      "id": "bubble_bounce",
+      "name": "Bubble bounce",
+      "slots": [
+        "trampoline",
+        "bubbles"
+      ],
+      "lead": "trampoline",
+      "act": "bubblebounce",
+      "text": "Bubbles drift over the trampoline and it bounces up to pop them. Play.",
+      "short": "Big Play"
+    },
+    {
+      "id": "pompom_dance",
+      "name": "Pom-pom dance",
+      "slots": [
+        "xylophone",
+        "pomwand"
+      ],
+      "lead": "xylophone",
+      "act": "pomdance",
+      "text": "The xylophone plays a tune and it dances after the pom-pom. Play.",
+      "short": "Play"
     }
   ],
   "trayRooms": [

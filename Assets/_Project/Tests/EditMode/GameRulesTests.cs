@@ -285,6 +285,31 @@ namespace Squishy.Tests
         }
 
         [Test]
+        public void New_Combos_Are_Found_Two_Plants_Make_A_Greenhouse()
+        {
+            var c = Content();
+            var rules = new GameRules(c, GameRules.NewState(c, 1));
+            string sty = c.styles[0].id;
+            var room = new System.Collections.Generic.List<PieceState>
+            {
+                new PieceState { key = "plant:" + sty, x = 0, z = 0 },
+                new PieceState { key = "lamp:" + sty, x = .4f, z = 0 },
+                new PieceState { key = "tub:" + sty, x = -2, z = 2 },
+                new PieceState { key = "bubbles:" + sty, x = -1.5f, z = 2 },
+                new PieceState { key = "xylophone:" + sty, x = 2, z = -2 },
+                new PieceState { key = "pomwand:" + sty, x = 2.45f, z = -2 },
+            };
+            var all = rules.Combos(room);
+            Assert.AreEqual(2, all.Find(m => m.combo.id == "greenhouse").have, "one plant and a lamp: 2 of 3");
+            Assert.IsTrue(all.Find(m => m.combo.id == "bubble_bath").Done);
+            Assert.IsTrue(all.Find(m => m.combo.id == "pompom_dance").Done);
+            room.Add(new PieceState { key = "plant:" + sty, x = -.4f, z = 0 });
+            var gh = rules.Combos(room).Find(m => m.combo.id == "greenhouse");
+            Assert.IsTrue(gh.Done, "a second plant beside them");
+            Assert.AreEqual(.5f, gh.combo.wiltMul, 1e-6);
+        }
+
+        [Test]
         public void Room_Holds_One_More_Piece_Per_Level_Up_To_30_And_Widens_With_Size()
         {
             var c = Content();

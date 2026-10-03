@@ -71,6 +71,7 @@ namespace Squishy.Runtime.Game
         public bool chained; // the second part of a combo (it doesn't carry on again)
         public float cookMul = 1; // Chef's corner: cooking goes quicker
         public bool night; // asleep for the night (lasts until it wakes)
+        public bool story; // Bedtime story: a little book read in bed first
     }
 
     /// <summary>The squishy's brain state (the prototype's `ai`).</summary>

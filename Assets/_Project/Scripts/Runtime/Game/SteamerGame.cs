@@ -320,7 +320,7 @@ namespace Squishy.Runtime.Game
             for (float t = 0; t < away && !S.dead; t += 10)
             {
                 float step = Mathf.Min(10, away - t);
-                foreach (var it in items) if (it.arch == "plant") it.st.wilt = Mathf.Min(1, it.st.wilt + step * C.rules.plantWiltRate);
+                foreach (var it in items) if (it.arch == "plant") it.st.wilt = Mathf.Min(1, it.st.wilt + step * C.rules.plantWiltRate * WiltMul(it));
                 Rules.DrainScale = Rules.DrainScaleAt(saved.Ticks + (long)(t * TimeSpan.TicksPerSecond)); // asleep overnight: slower
                 if (Rules.StepCare(step, comfort)) S.dead = true;
                 else paid += Rules.StepHappy(step, comfort); // happy income keeps coming while it stays Happy

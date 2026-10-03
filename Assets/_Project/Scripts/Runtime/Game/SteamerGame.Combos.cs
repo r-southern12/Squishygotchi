@@ -138,19 +138,23 @@ namespace Squishy.Runtime.Game
             switch (A.act.role)
             {
                 case "read":
+                    MakeBook();
+                    break;
+                case "bubblebath":
+                case "bubblebounce":
                 {
-                    // A little open book held in front of it.
-                    var b = Prop("book");
-                    Node.Mesh(b, ThreeGeo.RBox(.2f, .014f, .15f, .006f), ThreeMat.M("#C8674E"), 0, 0, 0, shadow: false);
-                    foreach (var s in new[] { -1f, 1f })
-                    {
-                        var page = Node.Mesh(b, ThreeGeo.RBox(.09f, .012f, .13f, .005f), ThreeMat.M("#FFF6E6"), s * .048f, .012f, 0, shadow: false);
-                        page.RotZ(-s * .18f);
-                        for (int k = 0; k < 3; k++) Node.Mesh(b, ThreeGeo.RBox(.06f, .002f, .008f, .001f), ThreeMat.M("#B9A58C"), s * .05f, .021f + (s < 0 ? .006f : .006f), -.035f + k * .032f, shadow: false).RotZ(-s * .18f);
-                    }
-                    var flip = Node.Mesh(b, ThreeGeo.RBox(.088f, .006f, .128f, .003f), ThreeMat.M("#FFF6E6"), .044f, .018f, 0, shadow: false);
-                    flip.name = "flip";
-                    Node.SetLayer(b, HomeLayer);
+                    // The bubble wand beside it blows a stream of bubbles over (into the bath, over the trampoline).
+                    var w = PieceOf(A.combo, "bubbles");
+                    if (w != null && A.it != null) { bubbleToy = w; bubbleLeft = A.act.role == "bubblebath" ? 14 : 12; bubbleEmitT = 0; bubblePlant = new Vector2(A.it.tx, A.it.tz); }
+                    break;
+                }
+                case "pomdance":
+                {
+                    // The pom-pom comes off its wand to dance; the xylophone plays the tune (see StepToy).
+                    var w = PieceOf(A.combo, "pomwand");
+                    if (w != null && w.parts.pom != null) StartWand(w);
+                    concertNote = 0;
+                    noteT = 0;
                     break;
                 }
                 case "spa":
@@ -208,18 +212,74 @@ namespace Squishy.Runtime.Game
                     break;
                 case "read":
                     extra = .03f * Mathf.Sin(t * 2);
-                    if (comboProps.Count > 0)
-                    {
-                        var b = comboProps[0];
-                        b.localPosition = new Vector3(pw.x + front.x * (PetRadius() + .06f), pw.y + .32f * h, pw.z + front.z * (PetRadius() + .06f));
-                        b.localRotation = Quaternion.Euler(-35, petYawY * Mathf.Rad2Deg, 0);
-                        var flip = b.Find("flip");
-                        if (flip != null) { float u = Mathf.Repeat(t / 1.8f, 1); flip.localRotation = Quaternion.Euler(0, 0, u < .3f ? u / .3f * 180 : 180); flip.localPosition = new Vector3(u < .3f ? .044f * Mathf.Cos(u / .3f * Mathf.PI) : -.044f, .018f + (u < .3f ? .04f * Mathf.Sin(u / .3f * Mathf.PI) : 0), 0); }
-                    }
+                    if (comboProps.Count > 0) PlaceBook(comboProps[0], t);
                     break;
                 case "teaparty":
                     if (Random.value < dt * 2) Glints(new Vector3(pw.x, pw.y + h * .9f, pw.z), "#F2A7B8", 1);
                     break;
+                case "tablesnack":
+                {
+                    // The snack on the plate gets smaller as it's eaten.
+                    var plate = comboProps.Count > 0 ? comboProps[0] : null;
+                    var bite = plate != null ? plate.Find("bite") : null;
+                    if (bite != null) { float k = Mathf.Clamp01(1 - (t - .4f) / Mathf.Max(.1f, A.act.dur - .6f)); bite.localScale = new Vector3(1, .8f, 1) * Mathf.Max(.001f, k); bite.gameObject.SetActive(k > .02f); }
+                    break;
+                }
+                case "bubblebath":
+                {
+                    // Bubbles drift into the bath and join the foam; it splashes about in them.
+                    if (it0 == null) break;
+                    var wp = it0.parts.water != null ? ThreeWorld(it0.parts.water) : new Vector3(it0.tx, Y0 + .19f, it0.tz);
+                    StepComboBubbles(dt, new Vector3(wp.x, wp.y + .16f, wp.z), .14f);
+                    for (int k = bubbles.Count - 1; k >= 0; k--)
+                    {
+                        var bb = bubbles[k];
+                        if (time - bb.born < 1.2f || Dist(bb.p.x - wp.x, bb.p.z - wp.z) > .2f || bb.p.y > wp.y + .22f) continue;
+                        for (int f = 0; f < 5; f++) bathBubbles.Spawn(new Vector3(bb.p.x + Rnd(-.05f, .05f), wp.y + .03f, bb.p.z + Rnd(-.05f, .05f)), new Vector3(Rnd(-.03f, .03f), Rnd(.06f, .16f), Rnd(-.03f, .03f)), Rnd(.022f, .04f), Rnd(1.2f, 2f), 1.5f, .03f);
+                        PopBubble(k, .01f);
+                    }
+                    if (Random.value < dt * 14) bathBubbles.Spawn(new Vector3(wp.x + Rnd(-.22f, .22f), wp.y + .03f, wp.z + Rnd(-.14f, .14f)), new Vector3(Rnd(-.04f, .04f), Rnd(.1f, .26f), Rnd(-.04f, .04f)), Rnd(.022f, .045f), Rnd(1.4f, 2.4f), 1.5f, .03f);
+                    if (Random.value < dt * 1.2f)
+                    {
+                        pet.V += 1.5f;
+                        for (int k = 0; k < 10; k++) { float a = Rnd(0, Mathf.PI * 2), sp = Rnd(.4f, 1f); drops.Spawn(new Vector3(pw.x, pw.y + .1f, pw.z), new Vector3(Mathf.Cos(a) * sp, Rnd(.8f, 1.6f), Mathf.Sin(a) * sp), .018f, .6f, 0, -6); }
+                    }
+                    break;
+                }
+                case "bubblebounce":
+                {
+                    // Bubbles hang over the trampoline at the top of its bounce; it pops them on the way up.
+                    if (it0 == null) break;
+                    float top = Y0 + .02f + ai.y + lift + h * 1.3f;
+                    StepComboBubbles(dt, new Vector3(it0.tx, Y0 + .02f + ai.y + .4f + h * 1.3f, it0.tz), .2f);
+                    for (int k = bubbles.Count - 1; k >= 0; k--)
+                    {
+                        var bb = bubbles[k];
+                        if (lift > .28f && Dist(bb.p.x - ai.x, bb.p.z - ai.z) < PetRadius() + .12f && Mathf.Abs(bb.p.y - top) < .12f) { PopBubble(k, .04f); pet.V += 1.5f; }
+                    }
+                    if (bubbles.Count == 0 && bubbleLeft == 0 && t > 2) ai.actT = Mathf.Max(ai.actT, A.act.dur - .4f); // all popped
+                    break;
+                }
+                case "pomdance":
+                {
+                    // The pom-pom dances a figure of eight in front of the xylophone in time with the tune; it hops after it.
+                    if (it0 == null || floatPom == null || !floatPom.gameObject.activeSelf) break;
+                    var st = ai.spot != null ? ai.spot.stand : new Vector2(ai.x, ai.z);
+                    var n = new Vector3(st.x - it0.tx, 0, st.y - it0.tz);
+                    n = n.sqrMagnitude > 1e-4f ? n.normalized : Vector3.forward;
+                    var side = new Vector3(n.z, 0, -n.x);
+                    var c = new Vector3(st.x, Y0 + .26f, st.y) + n * .18f;
+                    float ph = t * 1.6f;
+                    pomGoal = c + side * (Mathf.Sin(ph) * .3f) + n * (Mathf.Sin(ph * 2) * .12f) + Vector3.up * (.06f * Mathf.Abs(Mathf.Sin(ph * 4)));
+                    pomPos = Vector3.Lerp(pomPos, pomGoal, Mathf.Min(1, dt * 8));
+                    floatPom.localPosition = pomPos;
+                    var to = new Vector3(pomPos.x - ai.x, 0, pomPos.z - ai.z);
+                    float d = to.magnitude, keep = PetRadius() + .1f;
+                    if (d > keep) { var aim = new Vector3(ai.x, 0, ai.z) + to / d * (d - keep); ChaseTo(aim.x, aim.z, dt, ref lift); }
+                    else YawTo(pomPos.x, pomPos.z, dt, 8);
+                    if (Random.value < dt * 1.5f) Glints(new Vector3(pomPos.x, pomPos.y + .05f, pomPos.z), "#F2A7B8", 1);
+                    break;
+                }
                 case "spa":
                     // A spa bath: lots of clear bubbles rising round it (bigger than a plain bath's).
                     if (it0 != null && it0.parts.water != null && Random.value < dt * 16)
@@ -273,6 +333,156 @@ namespace Squishy.Runtime.Game
             }
         }
 
+        /// <summary>A little open book held in front of it (the reading nook, a bedtime story).</summary>
+        private Transform MakeBook()
+        {
+            var b = Prop("book");
+            Node.Mesh(b, ThreeGeo.RBox(.2f, .014f, .15f, .006f), ThreeMat.M("#C8674E"), 0, 0, 0, shadow: false);
+            foreach (var s in new[] { -1f, 1f })
+            {
+                var page = Node.Mesh(b, ThreeGeo.RBox(.09f, .012f, .13f, .005f), ThreeMat.M("#FFF6E6"), s * .048f, .012f, 0, shadow: false);
+                page.RotZ(-s * .18f);
+                for (int k = 0; k < 3; k++) Node.Mesh(b, ThreeGeo.RBox(.06f, .002f, .008f, .001f), ThreeMat.M("#B9A58C"), s * .05f, .021f + (s < 0 ? .006f : .006f), -.035f + k * .032f, shadow: false).RotZ(-s * .18f);
+            }
+            var flip = Node.Mesh(b, ThreeGeo.RBox(.088f, .006f, .128f, .003f), ThreeMat.M("#FFF6E6"), .044f, .018f, 0, shadow: false);
+            flip.name = "flip";
+            Node.SetLayer(b, HomeLayer);
+            return b;
+        }
+
+        /// <summary>Holds the book in front of it and turns a page now and then.</summary>
+        private void PlaceBook(Transform b, float t)
+        {
+            var pw = PetWorld();
+            float h = pet.Scale * pet.StageScale;
+            var front = new Vector3(Mathf.Sin(petYawY), 0, Mathf.Cos(petYawY));
+            b.localPosition = new Vector3(pw.x + front.x * (PetRadius() + .06f), pw.y + .32f * h, pw.z + front.z * (PetRadius() + .06f));
+            b.localRotation = Quaternion.Euler(-35, petYawY * Mathf.Rad2Deg, 0);
+            var flip = b.Find("flip");
+            if (flip != null) { float u = Mathf.Repeat(t / 1.8f, 1); flip.localRotation = Quaternion.Euler(0, 0, u < .3f ? u / .3f * 180 : 180); flip.localPosition = new Vector3(u < .3f ? .044f * Mathf.Cos(u / .3f * Mathf.PI) : -.044f, .018f + (u < .3f ? .04f * Mathf.Sin(u / .3f * Mathf.PI) : 0), 0); }
+        }
+
+        // ---------------- Bedtime story (user request, 4 Oct 2026) ----------------
+
+        private const float StoryRead = 5f; // seconds of reading before its eyes close
+
+        /// <summary>Reading in bed: the book in front of it, a gentle sway.</summary>
+        private void StepStory(float t, ref float extra)
+        {
+            extra = .03f * Mathf.Sin(t * 2);
+            if (comboProps.Count == 0) MakeBook();
+            PlaceBook(comboProps[0], t);
+        }
+
+        /// <summary>The story's over: the book goes away and it drifts off.</summary>
+        private void EndStory()
+        {
+            if (comboProps.Count == 0) return;
+            var pw = PetWorld();
+            Glints(new Vector3(pw.x, pw.y + pet.Scale * pet.StageScale * .5f, pw.z), "#FFF3D6", 3);
+            foreach (var p in comboProps) if (p != null) Node.Destroy(p);
+            comboProps.Clear();
+            sfx.Pop();
+        }
+
+        // ---------------- Midnight snack and Greenhouse ----------------
+
+        /// <summary>A finished Midnight snack round this fridge.</summary>
+        private GameRules.ComboMatch SnackCombo(Item fridge)
+        {
+            if (visiting || fridge == null) return null;
+            return combos.Find(m => m.Done && m.combo.passive && !string.IsNullOrEmpty(m.combo.snackAct) && System.Array.IndexOf(m.pieces, fridge.st) >= 0);
+        }
+
+        /// <summary>Midnight snack: the snack goes on a little plate on the table and it's eaten sitting down.</summary>
+        private bool MoveSnackToTable(Activity A)
+        {
+            var m = SnackCombo(A.it);
+            if (m == null) return false;
+            Item table = null, seat = null;
+            foreach (var p in m.pieces)
+            {
+                var i = ItemOf(p);
+                if (i == null) continue;
+                if (i.a.role == "tea") table = i; else if (i.a.role == "seat" || i.a.role == "lounge") seat = i;
+            }
+            if (table == null || seat == null) return false;
+            var spot = SeatSpot(seat, table);
+            if (!PlanPath(spot.stand.x, spot.stand.y, spot.y, spot.approach, seat)) return false; // can't get to the seat: eaten at the fridge
+            var plate = Prop("snackPlate");
+            Node.Mesh(plate, ThreeGeo.Cyl(.075f, .065f, .014f, 18), ThreeMat.M("#FFF6E6"), 0, .007f, 0, shadow: false);
+            var bite = Node.Mesh(plate, ThreeGeo.Sph(.036f, 12, 9), ThreeMat.M("#E9BE66"), 0, .036f, 0, shadow: false);
+            bite.name = "bite";
+            bite.localScale = new Vector3(1, .8f, 1);
+            Node.SetLayer(plate, HomeLayer);
+            float dx = seat.tx - table.tx, dz = seat.tz - table.tz, l = Mathf.Max(.001f, Dist(dx, dz));
+            float top = table.parts.pot != null ? ThreeWorld(table.parts.pot).y : Y0 + .3f;
+            plate.localPosition = new Vector3(table.tx + dx / l * .14f, top, table.tz + dz / l * .14f);
+            sfx.Drop();
+            ai.act = new Activity { it = table, role = "snack", act = C.Activity(m.combo.snackAct) ?? A.act, combo = m, chained = true };
+            ai.actT = 0;
+            ai.target = table;
+            ai.spot = spot;
+            ai.mode = "walk"; // the walk was planned above
+            return true;
+        }
+
+        /// <summary>Greenhouse: its plants wilt more slowly.</summary>
+        private float WiltMul(Item plant)
+        {
+            foreach (var m in combos) if (m.Done && m.combo.wiltMul > 0 && System.Array.IndexOf(m.pieces, plant.st) >= 0) return m.combo.wiltMul;
+            return 1;
+        }
+
+        /// <summary>Greenhouse: watering one plant waters the others in it too.</summary>
+        private void WaterGreenhouse(Item plant)
+        {
+            foreach (var m in combos)
+            {
+                if (!m.Done || m.combo.wiltMul <= 0 || System.Array.IndexOf(m.pieces, plant.st) < 0) continue;
+                foreach (var p in m.pieces)
+                {
+                    var o = ItemOf(p);
+                    if (o == null || o == plant || o.arch != "plant" || o.st.wilt <= 0) continue;
+                    o.st.wilt = 0;
+                    o.parts.topWiltX = 0;
+                    ApplyPlantTop(o);
+                    var wp = o.Pos;
+                    for (int k = 0; k < 6; k++) drops.Spawn(new Vector3(wp.x + Rnd(-.1f, .1f), wp.y + .7f, wp.z + Rnd(-.1f, .1f)), new Vector3(0, -1, 0), .015f, .4f, 0, -3);
+                }
+            }
+        }
+
+        private Item PieceOf(GameRules.ComboMatch m, string arch)
+        {
+            foreach (var p in m.pieces) if (p != null && p.Arch == arch) return ItemOf(p);
+            return null;
+        }
+
+        // ---------------- Bubble bath, Bubble bounce ----------------
+
+        /// <summary>The wand blows its bubbles; they drift over to the goal (each to its own spot round it) and bob there.</summary>
+        private void StepComboBubbles(float dt, Vector3 goal, float spread)
+        {
+            if (bubbleLeft > 0 && bubbleToy != null)
+            {
+                bubbleEmitT -= dt;
+                if (bubbleEmitT <= 0) { EmitBubble(); bubbleLeft--; bubbleEmitT = Rnd(.25f, .45f); }
+                if (bubbleToy.parts.wand != null) bubbleToy.parts.wand.RotZ(-.35f + .5f * Mathf.Sin(time * 9));
+            }
+            else if (bubbleToy != null && bubbleToy.parts.wand != null) bubbleToy.parts.wand.RotZ(-.35f);
+            for (int k = bubbles.Count - 1; k >= 0; k--)
+            {
+                var bb = bubbles[k];
+                var g = goal + new Vector3(Mathf.Sin(bb.born * 5.3f) * spread, Mathf.Sin(bb.born * 3.1f) * .08f, Mathf.Cos(bb.born * 4.7f) * spread);
+                bb.v += (g - bb.p) * (.9f * dt);
+                bb.v *= Mathf.Exp(-1.1f * dt);
+                bb.p += bb.v * dt;
+                bb.t.localPosition = bb.p + new Vector3(Mathf.Sin(time * 2 + bb.born) * .02f, Mathf.Sin(time * 3 + bb.born) * .015f, Mathf.Cos(time * 1.7f + bb.born) * .02f);
+                if (time - bb.born > bb.life) PopBubble(k, 0);
+            }
+        }
+
         /// <summary>A few soft glints drifting up (calm sparkles, warm hearts' pink).</summary>
         private void Glints(Vector3 at, string hex, int n)
         {
@@ -306,6 +516,7 @@ namespace Squishy.Runtime.Game
                 Floater("Calm for " + Mathf.RoundToInt(c.calmMinutes) + " min");
             }
             if (A.act.role == "concert") { Floater("Encore!"); pet.V += 4; sfx.Chime(); }
+            if (A.act.role == "pomdance") EndToys(); // the pom-pom goes back on its wand
             if (!ai.self && !visiting) TaskEvent("combo_" + c.id);
         }
 

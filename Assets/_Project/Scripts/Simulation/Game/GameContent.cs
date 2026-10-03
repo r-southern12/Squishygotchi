@@ -51,6 +51,9 @@ namespace Squishy.Simulation.Game
         public int thenSlot;
         public bool chainLeads, passive;
         public float gap, calmMinutes, cookMul, wearSkip, bonusIng; // gap: how close the pieces must be (edge to edge); 0 = rules.comboGap
+        public bool story; // Bedtime story: reads in bed before napping or sleeping for the night
+        public string snackAct; // Midnight snack: snacks are carried to the table and eaten with this activity
+        public float wiltMul; // Greenhouse: its plants wilt this much as fast (and watering one waters them all)
     }
 
     [Serializable] public class RoomLevelData { public int slots, need, cost; } // slots: pieces the room holds (every piece counts)

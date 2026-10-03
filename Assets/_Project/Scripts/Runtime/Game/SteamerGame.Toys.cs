@@ -50,7 +50,7 @@ namespace Squishy.Runtime.Game
                 case "music":
                     extra = .12f * Mathf.Abs(Mathf.Sin(t * 8));
                     noteT -= dt;
-                    if (noteT <= 0) { noteT = a.act.role == "concert" ? .4f : ai.self ? .55f : .45f; PlayBar(it, a.act.role == "concert" ? ConcertBar() : Random.Range(0, 6), false); }
+                    if (noteT <= 0) { bool tune = a.act.role == "concert" || a.act.role == "pomdance"; noteT = tune ? .4f : ai.self ? .55f : .45f; PlayBar(it, tune ? ConcertBar() : Random.Range(0, 6), false); }
                     return true;
                 case "slide": StepSlide(it, t, ref lift, ref extra); return true;
             }
@@ -191,7 +191,7 @@ namespace Squishy.Runtime.Game
         /// </summary>
         private void StepStrayBubbles(float dt)
         {
-            if (bubbles.Count == 0 || (ai.act != null && ai.act.role == "bubbles")) return;
+            if (bubbles.Count == 0 || (ai.act != null && (ai.act.role == "bubbles" || ai.act.act.role == "bubblebath" || ai.act.act.role == "bubblebounce"))) return;
             bubbleLeft = 0;
             strayPopT -= dt;
             if (strayPopT > 0) return;

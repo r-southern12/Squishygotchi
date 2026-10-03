@@ -476,12 +476,12 @@ namespace Squishy.Runtime.Game
             if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat", "bad"); return; }
             // A quick fix only goes so far (the sink: Clean up to 65%): say so instead of washing for nothing.
             int capK = Needs.Index(act.need);
-            if (user && act.cap > 0 && capK >= 0 && S.needs[capK] >= act.cap - .01f) { FloaterAt(it, act.role == "wash" ? "Needs a bath" : "Only to " + Mathf.RoundToInt(act.cap * 100) + "%"); return; }
+            if (user && act.cap > 0 && capK >= 0 && S.needs[capK] >= act.cap - .01f && !(role == "snack" && SnackCombo(it) != null)) { FloaterAt(it, act.role == "wash" ? "Needs a bath" : "Only to " + Mathf.RoundToInt(act.cap * 100) + "%"); return; }
             if (role == "eat" && recipe == null) recipe = C.recipes[0];
             if (Condition() < .1f && !user) return;
             CleanupCook();
             if (chainFrom == null) EndToys(); // a new activity: the last toy's bits (bubbles, the pom-pom) are tidied away
-            ai.act = new Activity { it = it, role = role, act = act, recipe = recipe, combo = cm, chained = chainFrom != null };
+            ai.act = new Activity { it = it, role = role, act = act, recipe = recipe, combo = cm, chained = chainFrom != null, story = cm != null && cm.combo.story && role == "bed" };
             ai.actT = 0;
             ai.kicks = 0;
             ai.self = !user;
@@ -729,7 +729,7 @@ namespace Squishy.Runtime.Game
                 FloaterAt(A.it, A.it.st.lampOn ? "Lights on" : "Lights off");
             }
             if (A.role == "bath") sfx.Bath();
-            if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; ComputeComfort(); }
+            if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; WaterGreenhouse(A.it); ComputeComfort(); }
             if (A.role == "shower" && A.it != null) A.it.parts.openT = 0;
             StartToy(A);
             if (A.recipe != null && A.role == "eat")
@@ -772,7 +772,7 @@ namespace Squishy.Runtime.Game
                 Node.SetLayer(cookDish, HomeLayer);
                 cookStove = A.it;
             }
-            if (A.role == "snack")
+            if (A.role == "snack" && !A.chained)
             {
                 int k = System.Array.FindIndex(S.snacks, n => n > 0);
                 if (k >= 0)
@@ -780,6 +780,7 @@ namespace Squishy.Runtime.Game
                     S.snacks[k]--;
                     Floater("-1 " + C.snacks[k].name);
                     if (!ai.self) TaskEvent("snack");
+                    if (MoveSnackToTable(A)) return;
                 }
                 else { Floater("No snacks", "bad"); ai.actT = A.act.dur; }
             }
@@ -988,7 +989,7 @@ namespace Squishy.Runtime.Game
             foreach (var it in items)
                 if (it.arch == "plant")
                 {
-                    if (!visiting) it.st.wilt = Mathf.Min(1, it.st.wilt + sdt * C.rules.plantWiltRate);
+                    if (!visiting) it.st.wilt = Mathf.Min(1, it.st.wilt + sdt * C.rules.plantWiltRate * WiltMul(it));
                     it.parts.topWiltX = it.st.wilt * .35f;
                     ApplyPlantTop(it);
                 }
@@ -1013,7 +1014,7 @@ namespace Squishy.Runtime.Game
                 if (homeWall.Grow >= 1) { homeWall.Group.localScale = Vector3.one; homeWall.Grow = null; }
             }
             float slowMove = 1 - droop * .55f, extra = 0, lift = 0;
-            bool sleeping = ai.mode == "act" && ai.act != null && (ai.act.act.sleep || ai.act.act.closed);
+            bool sleeping = ai.mode == "act" && ai.act != null && (ai.act.act.sleep || ai.act.act.closed) && !(ai.act.story && ai.actT < StoryRead);
             float hopH = pet.Scale * .9f;
             if (mode == "edit" || pet.Held)
             {
@@ -1256,8 +1257,10 @@ namespace Squishy.Runtime.Game
                 extra = .06f * Mathf.Sin(t * 3);
                 PourTea(it, t, dt, A.act.role == "teaparty");
             }
+            else if (act.sleep && A.story && t < StoryRead) StepStory(t, ref extra); // a little book first
             else if (act.sleep)
             {
+                if (A.story) EndStory();
                 extra = .18f + .04f * Mathf.Sin(t * 1.6f);
                 zTimer -= dt;
                 if (zTimer <= 0) { zTimer = 1.3f; Floater("z", "z"); }

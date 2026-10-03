@@ -113,6 +113,7 @@ namespace Squishy.Runtime.Game
                 ai.actT = 0;
                 ai.self = false;
             }
+            if (inBed && ai.act != null) ai.act.story = false; // already asleep: no story again
             if (inBed) PutInBed();
             ui.ShowBubble("rest", "Asleep for the night", false);
             ui.SetHint(AsleepHint);
