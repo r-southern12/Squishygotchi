@@ -171,7 +171,7 @@ namespace Squishy.Runtime.Game
             code = (code ?? "").Trim().ToUpperInvariant();
             if (code.Length < 8) { Floater("Check the code", "bad"); sfx.Bonk(); return; }
             if (code == Rules.EnsureFriendCode()) { Floater("That's your own code!", "bad"); sfx.Bonk(); return; }
-            Floater("Looking…");
+            Floater("Knocking…");
             var found = await Online.Find(code);
             if (!found.HasValue) { Floater("Code not found", "bad"); sfx.Bonk(); return; }
             Rules.RememberFriend(found.Value.id, found.Value.room, true);

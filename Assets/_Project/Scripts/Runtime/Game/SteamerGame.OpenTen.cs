@@ -226,7 +226,6 @@ namespace Squishy.Runtime.Game
             }
             if (total <= 0) return;
             AddCoins(total);
-            ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .35f), "+" + total + " coins");
             Buzz(10, 20, 10);
             WriteSave();
         }

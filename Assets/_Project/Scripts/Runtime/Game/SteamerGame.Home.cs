@@ -469,8 +469,7 @@ namespace Squishy.Runtime.Game
                 comboAct = chainFrom != null ? cm.combo.then : cm.combo.act;
                 if (string.IsNullOrEmpty(role) || role == "decor") role = comboAct;
             }
-            if (role == "decor") { FloaterAt(it, "+" + it.a.comfort + " comfort"); return; }
-            if (string.IsNullOrEmpty(role)) { if (it.a.cat == "Wall") FloaterAt(it, "Room divider"); return; }
+            if (role == "decor" || string.IsNullOrEmpty(role)) { it.bv = -4; sfx.Tap(); return; } // decor, a divider: a little wobble
             var act = !string.IsNullOrEmpty(comboAct) ? C.Activity(comboAct) ?? C.Activity(role) : C.Activity(role);
             if (act == null) return;
             if (act.needSeat && !SeatNear(it)) { FloaterAt(it, "Needs a seat", "bad"); return; }
@@ -646,7 +645,6 @@ namespace Squishy.Runtime.Game
             WriteSave();
             sfx.Coin();
             Buzz(15);
-            Floater("+" + coins + " coins");
             pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f);
         }
 
@@ -672,8 +670,6 @@ namespace Squishy.Runtime.Game
             EndToys();
             var a = ai.act;
             bool energise = !visiting && a != null && ai.self && a.it != null;
-            if (a != null && !string.IsNullOrEmpty(a.act.need))
-                Floater((ai.self ? "" : "+") + char.ToUpper(a.act.need[0]) + a.act.need.Substring(1));
             ai.act = null;
             ai.target = null;
             ai.mode = "idle";
@@ -726,7 +722,6 @@ namespace Squishy.Runtime.Game
                 SetLampShade(A.it);
                 PlaceLamps();
                 sfx.Tap();
-                FloaterAt(A.it, A.it.st.lampOn ? "Lights on" : "Lights off");
             }
             if (A.role == "bath") sfx.Bath();
             if (A.role == "plant" && A.it != null) { A.it.st.wilt = 0; WaterGreenhouse(A.it); ComputeComfort(); }
@@ -754,7 +749,6 @@ namespace Squishy.Runtime.Game
                         if (S.toolDur[i] == 0) { int ti = i; var st = A.it; Later(.9f, () => FloaterAt(st, C.tools[ti].name + " broke!", "bad")); }
                     }
                 }
-                Floater("Cooking " + rc.name);
                 sfx.Cook();
                 var pan = A.it.parts.pan;
                 cookTi = rc.tools.Length > 0 ? rc.tools[0] : -1;
@@ -778,7 +772,6 @@ namespace Squishy.Runtime.Game
                 if (k >= 0)
                 {
                     S.snacks[k]--;
-                    Floater("-1 " + C.snacks[k].name);
                     if (!ai.self) TaskEvent("snack");
                     if (MoveSnackToTable(A)) return;
                 }
@@ -802,7 +795,7 @@ namespace Squishy.Runtime.Game
             var A = ai.act;
             if (A != null && !ai.self)
             {
-                if (A.role == "plant") { FloaterAt(A.it, "Watered"); if (visiting) VisitAct("water"); else TaskEvent("water"); }
+                if (A.role == "plant") { if (visiting) VisitAct("water"); else TaskEvent("water"); }
                 if ((A.role == "eat" || A.role == "dine") && A.recipe != null && A.recipe.ing.Length > 0)
                 {
                     int i = System.Array.IndexOf(C.recipes, A.recipe), l0 = Rules.RecipeLvl(i);
@@ -833,7 +826,6 @@ namespace Squishy.Runtime.Game
             ai.mode = "idle";
             ui.HideBubble();
             S.tucked = true;
-            Floater("Holiday pause on");
             ui.SetHint("Holiday pause");
             sfx.Chime();
             WriteSave();
@@ -845,7 +837,6 @@ namespace Squishy.Runtime.Game
             S.tucked = false;
             ai.idleT = 1.5f;
             pet.V += 3;
-            Floater("Welcome back!");
             ui.SetHint("");
             sfx.Chime();
             WriteSave();

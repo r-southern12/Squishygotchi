@@ -280,7 +280,7 @@ namespace Squishy.Runtime.Game
             if (S.dead) return;
             if (id != "happy" && id != "squish") pet.Express(Squishy.Runtime.Models.SquishyModel.Mouth.Grin, 1.2f); // fun moments show on its face
             bool fin = Rules.TaskEvent(id, n);
-            if (fin) { Floater("Task done!"); sfx.Chime(); }
+            if (fin) sfx.Chime();
             ui.TaskDot(Rules.AnyTaskDone());
             if (ui.PanelOpen("tasks") && (fin || UnityEngine.Random.value < .1f)) DrawTasks();
         }

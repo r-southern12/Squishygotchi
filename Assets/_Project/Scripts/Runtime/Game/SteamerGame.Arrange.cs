@@ -180,9 +180,13 @@ namespace Squishy.Runtime.Game
                 else if (m.have < before && before >= 2) lines.Add(m.combo.name + " " + m.have + "/" + m.pieces.Length);
             }
             if (lines.Count == 0) return;
-            string text = lines[0]; // one short line (two joined were too long to read)
-            if (at != null) FloaterAt(at, text, "combo");
-            else Floater(text, "combo");
+            if (done)
+            {
+                // Only a finished combo gets a toast (the rings show progress).
+                string text = lines[0];
+                if (at != null) FloaterAt(at, text, "combo");
+                else Floater(text, "combo");
+            }
             RefreshComboRings();
             if (trayTab == "combos" || done) DrawTray();
             if (done) sfx.Chime();

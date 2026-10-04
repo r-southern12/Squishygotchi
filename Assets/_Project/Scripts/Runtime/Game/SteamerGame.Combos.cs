@@ -32,7 +32,6 @@ namespace Squishy.Runtime.Game
             {
                 // Already in the room when the game opens: one gentle note rather than a stack of cards.
                 combosPrimed = true;
-                if (found.Count > 0) { string msg = found.Count == 1 ? found[0].name + " combo!" : found.Count + " combos found!"; Later(4, () => Floater(msg)); }
                 return;
             }
             foreach (var c in found)
@@ -158,7 +157,6 @@ namespace Squishy.Runtime.Game
                     break;
                 }
                 case "spa":
-                    Floater("Aaah…");
                     break;
                 case "splash":
                 {
@@ -172,7 +170,6 @@ namespace Squishy.Runtime.Game
                     sfx.Bath();
                     Buzz(20);
                     pet.V += 5;
-                    Floater("Splash!");
                     break;
                 }
                 case "cuddle":
@@ -189,7 +186,6 @@ namespace Squishy.Runtime.Game
                     break;
                 }
                 case "concert": concertNote = 0; break;
-                case "teaparty": Floater("Tea for two"); break;
                 case "meditate": pet.Express(SquishyModel.Mouth.Sleep, .5f); break;
             }
         }
@@ -317,7 +313,6 @@ namespace Squishy.Runtime.Game
                             Glints(new Vector3(pw.x, pw.y + h * .8f, pw.z), "#FFE08A", 5);
                             sfx.Pop();
                             pet.Express(SquishyModel.Mouth.Grin, 3);
-                            Floater((Rules.HasCosmetic(pick.id) ? "Wearing " : "Trying on ") + pick.name);
                         }
                     }
                     if (comboDressed) lift += Mathf.Abs(Mathf.Sin(t * 5)) * .1f;
@@ -515,7 +510,7 @@ namespace Squishy.Runtime.Game
                 Rules.StartCalm(c.calmMinutes);
                 Floater("Calm for " + Mathf.RoundToInt(c.calmMinutes) + " min");
             }
-            if (A.act.role == "concert") { Floater("Encore!"); pet.V += 4; sfx.Chime(); }
+            if (A.act.role == "concert") { pet.V += 4; sfx.Chime(); }
             if (A.act.role == "pomdance") EndToys(); // the pom-pom goes back on its wand
             if (!ai.self && !visiting) TaskEvent("combo_" + c.id);
         }

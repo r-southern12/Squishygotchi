@@ -273,7 +273,6 @@ namespace Squishy.Runtime.Game
                 string n = Rules.SetProfile(name, color);
                 WriteSave();
                 sfx.Chime();
-                ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .3f), edit ? "Saved!" : "Hi, " + n + "!");
                 if (!edit) AfterWelcome();
             });
         }

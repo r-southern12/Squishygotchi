@@ -454,7 +454,6 @@ namespace Squishy.Runtime.Game
             cardCoins = 0;
             AddCoins(n);
             ui.CardCoinsCollected();
-            ui.FloatAt(new Vector2(ui.Width / 2, ui.Height * .55f), "+" + n + " coins");
             Buzz(10, 20, 10);
             WriteSave();
         }
