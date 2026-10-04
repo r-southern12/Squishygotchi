@@ -272,7 +272,7 @@ namespace Squishy.Runtime.Game
 
         private float BuddyR { get { return buddy != null ? buddy.Scale * 1.14f : .15f; } }
 
-        /// <summary>Each frame of a visit: your squishy follows theirs (or plays), the brush pampers, keeping clear of furniture.</summary>
+        /// <summary>Each frame of a visit: your squishy stays near (or plays), the brush pampers, keeping clear of furniture.</summary>
         private void StepVisit(float dt)
         {
             if (!visiting || buddy == null) return;
@@ -332,9 +332,12 @@ namespace Squishy.Runtime.Game
             }
             else
             {
-                // Following: a little way off to one side of theirs.
-                var side = new Vector2(Mathf.Cos(Time.time * .2f), Mathf.Sin(Time.time * .2f)) * (PetRadius() + BuddyR + .22f);
-                goal = host + side;
+                // It stays put and watches theirs (user, 4 Oct 2026: following them round jittered; no following at all).
+                // It only steps aside if theirs comes right up to it.
+                goal = new Vector2(bx, bz);
+                var off = goal - host;
+                float clear = PetRadius() + BuddyR + .06f;
+                if (off.magnitude < clear) goal = host + (off.magnitude > 1e-4f ? off.normalized : Vector2.right) * (clear + .15f);
             }
             goal = FreeSpotNear(goal, null);
             var pos = new Vector2(bx, bz);
@@ -358,7 +361,7 @@ namespace Squishy.Runtime.Game
             // Never inside furniture or inside their squishy.
             pos = FreeSpotNear(pos, null);
             var away = pos - host;
-            float minD = PetRadius() + BuddyR - (bPlayT >= 0 && bBumped < 0 ? .04f : 0);
+            float minD = (PetRadius() + BuddyR) * .75f; // only a deep overlap is pushed apart at once (stepping aside does the rest)
             if (away.magnitude < minD && away.magnitude > 1e-4f) pos = host + away.normalized * minD;
             bx = pos.x;
             bz = pos.y;
