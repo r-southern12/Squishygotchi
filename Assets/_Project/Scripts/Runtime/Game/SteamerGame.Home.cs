@@ -1279,7 +1279,7 @@ namespace Squishy.Runtime.Game
                 if (Random.value < dt * 28) { var wp = it.Pos; drops.Spawn(new Vector3(wp.x + Rnd(-.12f, .12f), wp.y + .85f, wp.z + Rnd(-.2f, .05f)), new Vector3(0, -2, 0), .015f, .45f, 0, -4); }
             }
             else if (A.role == "wash") extra = .08f * Mathf.Sin(t * 10);
-            else if (A.role == "bounce") { lift = Mathf.Abs(Mathf.Sin(t * 4)) * .5f; if (Mathf.Abs(Mathf.Sin(t * 4)) < .08f) extra = .4f; }
+            else if (A.role == "bounce") StepTrampoline(A, dt, t, ref lift, ref extra);
             else if (A.role == "plant" && it != null)
             {
                 it.parts.topSwayZ = Mathf.Sin(t * 9) * .08f * (1 - t / act.dur);
@@ -1393,6 +1393,7 @@ namespace Squishy.Runtime.Game
                 it.g.localScale = new Vector3((1 - it.bx * .18f) * gs, (1 + it.bx * .3f) * gs, (1 - it.bx * .18f) * gs);
                 it.g.RotY(it.ry);
                 if (it.arch == "shower" && it.parts.curtain != null) AnimateCurtain(it, dt);
+                if (it.arch == "trampoline" && it.parts.mat != null && !(ai.mode == "act" && ai.act != null && ai.act.it == it)) it.parts.mat.localPosition = new Vector3(0, .18f, 0); // the mat at rest
             }
             if (comboRings.Count > 0) StepComboRings();
             selRing.gameObject.SetActive(mode == "edit" && sel != null);

@@ -2336,8 +2336,8 @@
       "role": "bounce",
       "label": "Bouncing",
       "need": "play",
-      "dur": 4,
-      "rate": 0.2,
+      "dur": 6,
+      "rate": 0.14,
       "perch": 0.2
     },
     {
